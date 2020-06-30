@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+
+        <th:block th:fragment="header">
+            <title th:text="${config.uploadTitle}">Validator</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
+            <link rel="stylesheet" th:href="@{/webjars/font-awesome/5.13.0/css/all.min.css}"/>
+            <link rel="stylesheet" th:href="@{/webjars/bootstrap/3.4.1/css/bootstrap.min.css}"/>
+            <link rel="stylesheet" th:href="@{/webjars/codemirror/5.50.0/lib/codemirror.css}"/>
+            <link rel="stylesheet" th:href="@{/css/style-min.css}"/>
+            <script th:src="@{/webjars/jquery/3.5.1/jquery.min.js}"></script>
+            <script th:src="@{/webjars/bootstrap/3.4.1/js/bootstrap.min.js}"></script>
+            <script th:src="@{/webjars/codemirror/5.50.0/lib/codemirror.js}"></script>
+            <script th:src="@{/js/lib/busy-min.js}"></script>
+            <script th:src="@{/js/itb-upload-min.js}"></script>
+        </th:block>
+
+    </head>
+    <body>
+
+        <th:block th:fragment="about">
+            <div class="container about-section" th:if="${config.showAbout} and ${not minimalUI}">
+                This service is powered by the ISA&sup2; Interoperability Test Bed, a conformance testing service offered by the European Commission's DG DIGIT for projects
+                involved in the delivery of cross-border public services. Find out more <a href="https://joinup.ec.europa.eu/solution/interoperability-test-bed" target="_blank">here</a>.
+            </div>
+        </th:block>
+
+        <th:block th:fragment="buildInfo">
+            <div style="display: none;">
+                <div id="build.version" th:text="${@environment.getProperty('validator.buildVersion')}">buildVersion</div>
+                <div id="build.timestamp" th:text="${@environment.getProperty('validator.buildTimestamp')}">buildTimestamp</div>
+                <div id="startup.timestamp" th:text="${appConfig.startupTimestamp}">startupTimestamp</div>
+                <div id="resource.timestamp" th:text="${appConfig.resourceUpdateTimestamp}">resourceTimestamp</div>
+            </div>
+        </th:block>
+
+        <div th:fragment="footer(config, minimalUI)" th:if="${not minimalUI}">
+            <div th:if="${config.htmlFooter!=''}">
+                <div th:utext="${config.htmlFooter}">Footer</div>
+            </div>
+        </div>
+
+    </body>
+</html>
