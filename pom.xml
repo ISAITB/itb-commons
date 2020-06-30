@@ -32,6 +32,17 @@
         <version.jaxb>2.3.1</version.jaxb>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>itbRepoRead</id>
+            <url>${itbRepoReadUrl}</url>
+        </repository>
+    </repositories>
+
     <distributionManagement>
         <repository>
             <id>itbRepoWrite</id>
