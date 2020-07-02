@@ -496,7 +496,15 @@ function downloadReportPDF() {
 	});
 }
 function getLineFromPositionString(positionString) {
-	var line = parseInt(positionString.trim().split(':')[1])-1;
+    var line = 0;
+    if (positionString) {
+        var positionParts = positionString.trim().split(':');
+        if (positionParts.length == 3) {
+            if (!isNaN(positionParts[1])) {
+                line = parseInt(positionParts[1]);
+            }
+        }
+    }
 	if (line < 0) {
 		line = 0;
 	}
