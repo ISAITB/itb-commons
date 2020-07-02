@@ -62,6 +62,14 @@ Provides custom plugin support for validators. To include define in your `pom.xm
 </dependency>
 ```
 
+To fully support plugins in a validator, apart from including this dependency (which by the way would be transitively brought in also through the `validation-commons` library),
+you need to do the following:
+1. Define a bean of type `PluginConfigProvider`. A default implementation for this is also provided by `DomainPluginConfigProvider` from `validation-commons` that loads plugin
+   configuration from the domain configuration file.
+2. As part of the validator's specific validation process, use the `PluginManager` to load the plugins to execute and call them.
+
+The approach to pass input and the expected output from the plugin are specific to the type of validator. These need to be documented in the specific validator's README file.
+
 # Library development
 
 Development of the library requires eventually publishing built artifacts to the ITB development repository. For 
