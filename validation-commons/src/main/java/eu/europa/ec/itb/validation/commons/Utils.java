@@ -1,9 +1,10 @@
 package eu.europa.ec.itb.validation.commons;
 
-import com.gitb.core.AnyContent;
-import com.gitb.core.ConfigurationType;
-import com.gitb.core.TypedParameter;
-import com.gitb.core.UsageEnumeration;
+import com.gitb.core.*;
+import com.gitb.tr.TAR;
+import com.gitb.tr.TestAssertionGroupReportsType;
+import com.gitb.tr.TestResultType;
+import com.gitb.tr.ValidationCounters;
 import com.gitb.vs.ValidateRequest;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -26,18 +27,20 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Stack;
+import java.math.BigInteger;
+import java.util.*;
 
 public class Utils {
 
     public static String LINE_NUMBER_KEY_NAME = "lineNumber";
 
-    public static XMLGregorianCalendar getXMLGregorianCalendarDateTime() throws DatatypeConfigurationException {
+    public static XMLGregorianCalendar getXMLGregorianCalendarDateTime() {
         GregorianCalendar calendar = new GregorianCalendar();
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
+        try {
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
+        } catch (DatatypeConfigurationException e) {
+            throw new IllegalStateException("Unable to construct data type factory for date", e);
+        }
     }
 
     public static byte[] serialize(Node content) {
@@ -182,6 +185,93 @@ public class Utils {
             }
         }
         return inputs;
+    }
+
+    public static TAR mergeReports(List<TAR> reports) {
+        return mergeReports(reports.toArray(new TAR[0]));
+    }
+
+    public static TAR mergeReports(TAR[] reports) {
+        TAR mergedReport = reports[0];
+        if (reports.length > 1) {
+            for (int i=1; i < reports.length; i++) {
+                TAR report = reports[i];
+                if (report != null) {
+                    if (report.getCounters() != null) {
+                        if (mergedReport.getCounters() == null) {
+                            mergedReport.setCounters(new ValidationCounters());
+                            mergedReport.getCounters().setNrOfAssertions(BigInteger.ZERO);
+                            mergedReport.getCounters().setNrOfWarnings(BigInteger.ZERO);
+                            mergedReport.getCounters().setNrOfErrors(BigInteger.ZERO);
+                        }
+                        if (report.getCounters().getNrOfAssertions() != null) {
+                            mergedReport.getCounters().setNrOfAssertions(mergedReport.getCounters().getNrOfAssertions().add(report.getCounters().getNrOfAssertions()));
+                        }
+                        if (report.getCounters().getNrOfWarnings() != null) {
+                            mergedReport.getCounters().setNrOfWarnings(mergedReport.getCounters().getNrOfWarnings().add(report.getCounters().getNrOfWarnings()));
+                        }
+                        if (report.getCounters().getNrOfErrors() != null) {
+                            mergedReport.getCounters().setNrOfErrors(mergedReport.getCounters().getNrOfErrors().add(report.getCounters().getNrOfErrors()));
+                        }
+                    }
+                    if (report.getReports() != null) {
+                        if (mergedReport.getReports() == null) {
+                            mergedReport.setReports(new TestAssertionGroupReportsType());
+                        }
+                        mergedReport.getReports().getInfoOrWarningOrError().addAll(report.getReports().getInfoOrWarningOrError());
+                    }
+                    if (mergedReport.getResult() == null) {
+                        mergedReport.setResult(TestResultType.UNDEFINED);
+                    }
+                    if (report.getResult() != null && report.getResult() != TestResultType.UNDEFINED) {
+                        if ((mergedReport.getResult() == TestResultType.UNDEFINED) ||
+                                (mergedReport.getResult() == TestResultType.SUCCESS && report.getResult() != TestResultType.SUCCESS) ||
+                                (mergedReport.getResult() == TestResultType.WARNING && report.getResult() == TestResultType.FAILURE)) {
+                            mergedReport.setResult(report.getResult());
+                        }
+                    }
+                    if (report.getContext() != null) {
+                        if (mergedReport.getContext() == null) {
+                            mergedReport.setContext(report.getContext());
+                        } else {
+                            if (report.getContext().getItem() != null) {
+                                for (AnyContent item: report.getContext().getItem()) {
+                                    if (item.getName() != null) {
+                                        List<AnyContent> matchedInputs = getInputFor(mergedReport.getContext().getItem(), item.getName());
+                                        if (matchedInputs.isEmpty()) {
+                                            mergedReport.getContext().getItem().add(item);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return mergedReport;
+    }
+
+    public static AnyContent createInputItem(String name, String value) {
+        return createInputItem(name, value, ValueEmbeddingEnumeration.STRING);
+    }
+
+    public static AnyContent createInputItem(String name, String value, ValueEmbeddingEnumeration embeddingType) {
+        return createInputItem(name, value, embeddingType, "string");
+    }
+
+    public static AnyContent createInputItem(String name, String value, ValueEmbeddingEnumeration embeddingType, String type) {
+        return createInputItem(name, value, embeddingType, type, null);
+    }
+
+    public static AnyContent createInputItem(String name, String value, ValueEmbeddingEnumeration embeddingType, String type, String encoding) {
+        AnyContent input = new AnyContent();
+        input.setName(name);
+        input.setValue(value);
+        input.setEmbeddingMethod(embeddingType);
+        input.setType(type);
+        input.setEncoding(encoding);
+        return input;
     }
 
 }
