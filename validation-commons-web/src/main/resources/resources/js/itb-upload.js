@@ -496,9 +496,9 @@ function downloadReportPDF() {
 	});
 }
 function getLineFromPositionString(positionString) {
-    var line = 0;
+    var line = 0, positionParts;
     if (positionString) {
-        var positionParts = positionString.trim().split(':');
+        positionParts = positionString.trim().split(':');
         if (positionParts.length == 3) {
             if (!isNaN(positionParts[1])) {
                 line = parseInt(positionParts[1]);
