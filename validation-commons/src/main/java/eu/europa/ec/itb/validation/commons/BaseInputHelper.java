@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -94,30 +95,41 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
         return validationType==null ? domainConfig.getType().get(0) : validationType;
     }
 
-    /*
-    This method can be overriden to provide special processing for external artifacts.
-     */
-    public List<FileInfo> getExternalArtifactInfo(AnyContent containerContent, R domainConfig, String validationType, String artifactType, String artifactContentInputName, String artifactEmbeddingMethodInputName, File parentFolder) {
+    public List<FileContent> toExternalArtifactContents(ValidateRequest validateRequest, String artifactContainerInputName, String artifactContentInputName, String artifactEmbeddingMethodInputName) {
+        List<AnyContent> listInput = Utils.getInputFor(validateRequest, artifactContainerInputName);
+        if (!listInput.isEmpty()) {
+            return toExternalArtifactContents(listInput.get(0), artifactContentInputName, artifactEmbeddingMethodInputName);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<FileContent> toExternalArtifactContents(AnyContent containerContent, String artifactContentInputName, String artifactEmbeddingMethodInputName) {
         List<FileContent> filesContent = new ArrayList<>();
-        FileContent artifactContent = getExternalArtifactContent(containerContent, artifactContentInputName, artifactEmbeddingMethodInputName);
+        FileContent artifactContent = toExternalArtifactContent(containerContent, artifactContentInputName, artifactEmbeddingMethodInputName);
         if (!StringUtils.isEmpty(artifactContent.getContent())) {
             filesContent.add(artifactContent);
         }
         for (AnyContent content: containerContent.getItem()) {
-            FileContent fileContent = getExternalArtifactContent(content, artifactContentInputName, artifactEmbeddingMethodInputName);
+            FileContent fileContent = toExternalArtifactContent(content, artifactContentInputName, artifactEmbeddingMethodInputName);
             if (!StringUtils.isEmpty(fileContent.getContent())) {
                 filesContent.add(fileContent);
             }
         }
-        return fileManager.getExternalValidationArtifacts(domainConfig, validationType, artifactType, parentFolder, filesContent);
+        return filesContent;
     }
 
-    public List<FileInfo> validateExternalArtifacts(R domainConfig, ValidateRequest validateRequest, String artifactContainerInputName, String artifactContentInputName, String artifactEmbeddingMethodInputName, String validationType, String artifactType, File parentFolder) {
+    /*
+    This method can be overriden to provide special processing for external artifacts.
+     */
+    public List<FileInfo> getExternalArtifactInfo(AnyContent containerContent, R domainConfig, String validationType, String artifactType, String artifactContentInputName, String artifactEmbeddingMethodInputName, File parentFolder) {
+        return fileManager.getExternalValidationArtifacts(domainConfig, validationType, artifactType, parentFolder, toExternalArtifactContents(containerContent, artifactContentInputName, artifactEmbeddingMethodInputName));
+    }
+
+    public List<FileInfo> validateExternalArtifacts(R domainConfig, List<FileContent> externalArtifacts, String validationType, String artifactType, File parentFolder) {
         List<FileInfo> artifacts = new ArrayList<>();
-        List<FileContent> filesContent = new ArrayList<>();
         ExternalArtifactSupport support = domainConfig.getArtifactInfo().get(validationType).get(artifactType).getExternalArtifactSupport();
-        List<AnyContent> listInput = Utils.getInputFor(validateRequest, artifactContainerInputName);
-        if (listInput.isEmpty()) {
+        if (externalArtifacts == null || externalArtifacts.isEmpty()) {
             if (support == ExternalArtifactSupport.REQUIRED) {
                 if (artifactType == null) {
                     throw new ValidatorException(String.format("Validation type [%s] expects user-provided artifacts.", validationType));
@@ -128,20 +140,26 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
         } else {
             if (support == ExternalArtifactSupport.NONE) {
                 if (artifactType == null) {
-                    throw new ValidatorException(String.format("Validation type [%s] does not expect user-provided.", validationType));
+                    throw new ValidatorException(String.format("Validation type [%s] does not expect user-provided artifacts.", validationType));
                 } else {
-                    throw new ValidatorException(String.format("Validation type [%s] does not expect user-provided (%s).", validationType, artifactType));
+                    throw new ValidatorException(String.format("Validation type [%s] does not expect user-provided artifacts (%s).", validationType, artifactType));
                 }
             }
-            artifacts = getExternalArtifactInfo(listInput.get(0), domainConfig, validationType, artifactType, artifactContentInputName, artifactEmbeddingMethodInputName, parentFolder);
+            artifacts = fileManager.getExternalValidationArtifacts(domainConfig, validationType, artifactType, parentFolder, externalArtifacts);
         }
         return artifacts;
     }
+
+    public List<FileInfo> validateExternalArtifacts(R domainConfig, ValidateRequest validateRequest, String artifactContainerInputName, String artifactContentInputName, String artifactEmbeddingMethodInputName, String validationType, String artifactType, File parentFolder) {
+        List<FileContent> artifactContents = toExternalArtifactContents(validateRequest, artifactContainerInputName, artifactContentInputName, artifactEmbeddingMethodInputName);
+        return validateExternalArtifacts(domainConfig, artifactContents, validationType, artifactType, parentFolder);
+    }
+
     public void populateFileContentFromInput(FileContent fileContent, AnyContent inputItem) {
         // Nothing by default.
     }
 
-    private FileContent getExternalArtifactContent(AnyContent content, String artifactContentInputName, String artifactEmbeddingMethodInputName) {
+    private FileContent toExternalArtifactContent(AnyContent content, String artifactContentInputName, String artifactEmbeddingMethodInputName) {
         FileContent fileContent = new FileContent();
         ValueEmbeddingEnumeration embeddingMethod = null;
         ValueEmbeddingEnumeration explicitEmbeddingMethod = null;
