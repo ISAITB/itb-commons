@@ -183,7 +183,7 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
                 }
                 if (explicitEmbeddingMethod == null) {
                     // Embedding method not provided as input nor as parameter.
-                    throw new ValidatorException(String.format("For user-provided schemas the embedding method needs to be provided either as a separate input [%s] or as an attribute of the [%s] input.", artifactEmbeddingMethodInputName, artifactContentInputName));
+                    throw new ValidatorException(String.format("For user-provided artefacts the embedding method needs to be provided either as a separate input [%s] or as an attribute of the [%s] input.", artifactEmbeddingMethodInputName, artifactContentInputName));
                 }
                 if (embeddingMethod == ValueEmbeddingEnumeration.BASE_64 && explicitEmbeddingMethod != ValueEmbeddingEnumeration.BASE_64) {
                     // This is a URI or a plain text string encoded as BASE64.
