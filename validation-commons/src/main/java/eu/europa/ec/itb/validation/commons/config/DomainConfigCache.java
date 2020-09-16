@@ -211,27 +211,54 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
         return configValues;
     }
 
-    protected Map<String, Boolean> parseBooleanMap(String key, Configuration config, List<String> types) {
+    protected Map<String, Boolean> parseBooleanMap(String key, Configuration config, List<String> types, boolean defaultIfMissing) {
         Map<String, Boolean> map = new HashMap<>();
         for (String type: types) {
-            boolean value = false;
-
+            boolean value;
             try {
-                value = config.getBoolean(key+"."+type);
-            }catch(Exception e){
-                value = false;
+                value = config.getBoolean(key+"."+type, defaultIfMissing);
+            } catch (Exception e) {
+                value = defaultIfMissing;
             }
-            finally {
-                map.put(type, value);
-            }
+            map.put(type, value);
         }
         return map;
+    }
+
+    protected Map<String, Character> parseCharacterMap(String key, Configuration config, List<String> types, char defaultIfMissing) {
+        Map<String, Character> map = new HashMap<>();
+        for (String type: types) {
+            String value;
+            try {
+                value = config.getString(key+"."+type, Character.valueOf(defaultIfMissing).toString());
+            } catch (Exception e) {
+                value = Character.valueOf(defaultIfMissing).toString();
+            }
+            map.put(type, value.toCharArray()[0]);
+        }
+        return map;
+    }
+
+    protected Map<String, Boolean> parseBooleanMap(String key, Configuration config, List<String> types) {
+        return parseBooleanMap(key, config, types, false);
     }
 
     protected <R extends Enum<R>> Map<String, R> parseEnumMap(String key, Class<R> enumType, R defaultValue, Configuration config, List<String> types) {
         Map<String, R> map = new HashMap<>();
         for (String type: types) {
             map.put(type, R.valueOf(enumType, config.getString(key+"."+type, defaultValue.name())));
+        }
+        return map;
+    }
+
+    protected <R extends Enum<R>> Map<String, R> parseEnumMap(String key, R defaultValue, Configuration config, List<String> types, Function<String,R> fnEnumBuilder) {
+        Map<String, R> map = new HashMap<>();
+        for (String type: types) {
+            if (config.containsKey(key+"."+type)) {
+                map.put(type, fnEnumBuilder.apply(config.getString(key+"."+type)));
+            } else {
+                map.put(type, defaultValue);
+            }
         }
         return map;
     }

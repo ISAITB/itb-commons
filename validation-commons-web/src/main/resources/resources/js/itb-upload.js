@@ -6,6 +6,9 @@ _state.listenerEvents['ADDED_EXTERNAL_ARTIFACT_INPUT'] = true;
 _state.listenerEvents['REMOVED_EXTERNAL_ARTIFACT_INPUT'] = true;
 _state.listenerEvents['RESET_EXTERNAL_ARTIFACT_INPUTS'] = true;
 _state.listenerEvents['INPUT_CONTENT_TYPE_CHANGED'] = true;
+_state.listenerEvents['VALIDATION_TYPE_CHANGED'] = true;
+_state.listenerEvents['FORM_READY'] = true;
+_state.listenerEvents['SUBMIT_STATUS_VALIDATED'] = true;
 
 $(document).ready(function() {
 	checkForSubmit();
@@ -19,6 +22,7 @@ $(document).ready(function() {
 	    });
 	}
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+    notifyListeners('FORM_READY', {});
 });
 
 function configure(config) {
@@ -43,6 +47,9 @@ function configure(config) {
         }
         if (config.externalArtifacts) {
             _config.externalArtifacts = config.externalArtifacts;
+        }
+        if (config.custom) {
+            _config.custom = config.custom;
         }
     }
 }
@@ -72,6 +79,7 @@ function validationTypeChanged() {
 	cleanExternalArtifacts();
 	checkForSubmit();
 	resetExternalArtifacts();
+    notifyListeners('VALIDATION_TYPE_CHANGED', { validationType: $('#validationType').val() });
 }
 
 function cleanExternalArtifacts() {
@@ -275,6 +283,11 @@ function fixMargins(artifactType) {
 }
 
 function checkForSubmit() {
+    updateSubmitStatus();
+	notifyListeners('SUBMIT_STATUS_VALIDATED', {});
+}
+
+function updateSubmitStatus() {
 	var type = $('#contentType').val(),
 	    inputType = $('#validationType'),
 	    submitDisabled = true,
@@ -299,15 +312,12 @@ function checkForSubmit() {
                 }
             }
         }
-
 	}
-
     if (_config.isMinimalUI) {
         $('#inputFileSubmitMinimal').prop('disabled', submitDisabled);
     } else {
         $('#inputFileSubmit').prop('disabled', submitDisabled);
     }
-
 }
 
 function externalElementHasValue(elementExt) {
@@ -388,6 +398,12 @@ function toggleExternalArtefacts() {
                 $(".externalClass_"+_config.artifactTypes[i]).addClass("hidden");
             } else {
                 $(".externalClass_"+_config.artifactTypes[i]).removeClass("hidden");
+            }
+        }
+        if (_config.artifactTypes.length == 1) {
+            var artifactSupport = getExternalArtifactSupport(_config.artifactTypes[0]);
+            if (artifactSupport != "none") {
+                addExternal(_config.artifactTypes[0]);
             }
         }
     } else {
