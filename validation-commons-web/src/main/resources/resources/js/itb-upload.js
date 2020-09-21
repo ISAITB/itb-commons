@@ -540,8 +540,9 @@ function setCode(reportItemElement) {
 		});
 		// Add report messages
 		$('.item-info').each(function(index, element) {
-		    var line, text, type, indicatorIcon, indicator;
+		    var line, lineToHighlight, text, type, indicatorIcon, indicator;
 			line = getLineFromPositionString($(this).find('.item-info-location').text());
+			lineToHighlight = line - 1
 			text = $(this).find('.item-info-text').text().trim();
 			type = 'info';
 			indicatorIcon = '<i class="fa fa-info-circle report-item-icon info-icon"></i>';
@@ -560,22 +561,23 @@ function setCode(reportItemElement) {
 						text +
 					'</span>' +
 				'</div>');
-			cm.addLineWidget(line, indicator[0], {
+			cm.addLineWidget(lineToHighlight, indicator[0], {
 				coverGutter: false,
 				noHScroll: true,
 				above: true
 			});
-			cm.getDoc().addLineClass(line, 'background', 'indicator-line-widget');
+			cm.getDoc().addLineClass(lineToHighlight, 'background', 'indicator-line-widget');
 		});
 		$('#input-content-modal').modal('show');
 		$('#input-content-modal').on('shown.bs.modal', function() {
 			cm.refresh();
 			if (reportItemElement) {
-			    var line, t, middleHeight;
+			    var line, lineToHighlight, t, middleHeight;
 				line = getLineFromPositionString($(reportItemElement).find('.item-info-location').text());
-				cm.getDoc().addLineClass(line, 'background', 'selected-editor-line');
-				cm.markText({line: line, ch: 0}, {line: line+1, ch: 0}, {className: 'selected-editor-line-text'});
-				t = cm.charCoords({line: line, ch: 0}, "local").top;
+    			lineToHighlight = line - 1
+				cm.getDoc().addLineClass(lineToHighlight, 'background', 'selected-editor-line');
+				cm.markText({line: lineToHighlight, ch: 0}, {line: lineToHighlight+1, ch: 0}, {className: 'selected-editor-line-text'});
+				t = cm.charCoords({line: lineToHighlight, ch: 0}, "local").top;
 				middleHeight = cm.getScrollerElement().offsetHeight / 2;
 				cm.scrollTo(null, t - middleHeight - 5);
 			}
