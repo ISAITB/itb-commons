@@ -19,6 +19,7 @@ public class LabelConfig {
     private String downloadPDFReportButton;
     private String resultSubSectionDetailsTitle;
     private String resultTestLabel;
+    private String resultLocationLabel;
     private String popupTitle;
     private String popupCloseButton;
     private String resultValidationTypeLabel;
@@ -27,6 +28,14 @@ public class LabelConfig {
     private String optionContentDirectInput;
     private String includeExternalArtefacts;
     private String externalArtefactsTooltip;
+
+    public String getResultLocationLabel() {
+        return resultLocationLabel;
+    }
+
+    public void setResultLocationLabel(String resultLocationLabel) {
+        this.resultLocationLabel = resultLocationLabel;
+    }
 
     public String getResultSectionTitle() {
         return resultSectionTitle;
