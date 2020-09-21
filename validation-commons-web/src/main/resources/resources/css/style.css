@@ -153,3 +153,6 @@ body {
 .result-details-panel {
     padding: 0px 15px 0px 15px;
 }
+.hidden {
+    visibility: hidden;
+}
