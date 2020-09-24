@@ -8,6 +8,7 @@ import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
+import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -114,7 +115,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             byte[] decodedBytes = Base64.getDecoder().decode(content);
             FileUtils.writeByteArrayToFile(tempFile, decodedBytes);
         } catch (IOException e) {
-            throw new IllegalStateException("Error when transforming the Base64 into File.", e);
+            throw new ValidatorException("Error when processing the provided Base64 data.", e);
         }
         return tempFile;
     }
@@ -228,7 +229,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             }
             return connection.getInputStream();
         } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to read provided URI", e);
+            throw new ValidatorException("Unable to read provided URI", e);
         }
     }
 
@@ -539,7 +540,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                         try {
                             file = getFileFromString(targetFolder, content, contentType);
                         } catch (IOException e) {
-                            throw new IllegalStateException("Unable to save string value to file", e);
+                            throw new ValidatorException("Unable to process provided string value", e);
                         }
                         break;
                     case URI:
@@ -547,7 +548,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                         try {
                             file = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType);
                         } catch (IOException e) {
-                            throw new IllegalStateException("Unable to save URL to file", e);
+                            throw new ValidatorException("Unable to process provided URI resource", e);
                         }
                         break;
                     default: // BASE_64
@@ -559,11 +560,11 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 try {
                     file = getFileFromURLOrBase64(targetFolder, content, null, artifactType);
                 } catch (IOException e) {
-                    throw new IllegalStateException("Unable to save content (URL or BASE64) to file", e);
+                    throw new ValidatorException("Unable to save content (URL or BASE64) to file", e);
                 }
             }
         } else {
-            throw new IllegalArgumentException("Unable to store empty content");
+            throw new ValidatorException("Unable to store empty content");
         }
         return file;
     }
