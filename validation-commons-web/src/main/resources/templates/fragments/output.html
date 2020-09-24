@@ -56,8 +56,8 @@
             </div>
         </div>
 
-        <div th:fragment="reportDetails(config, minimalUI, clickableItems)" th:if="${!minimalUI}">
-            <div class="panel panel-default" th:classappend="${minimalUI} ? remove : ''" th:if="${report.reports != null && report.reports.infoOrWarningOrError != null && report.reports.infoOrWarningOrError.size() > 0}">
+        <div th:fragment="reportDetails(config, minimalUI, clickableItems)">
+            <div class="panel panel-default" th:style="${minimalUI}?'display:none':''" th:classappend="${minimalUI} ? remove : ''" th:if="${report.reports != null && report.reports.infoOrWarningOrError != null && report.reports.infoOrWarningOrError.size() > 0}">
                 <div class="panel-heading">
                     <h3 class="panel-title" th:text="${config.label.resultSubSectionDetailsTitle}">Details</h3>
                 </div>
@@ -70,7 +70,7 @@
                                     <i th:case="'warning'" class="fa fa-exclamation-triangle report-item-icon warning-icon item-info-warning"></i>
                                     <i th:case="'info'" class="fa fa-info-circle report-item-icon info-icon item-info-info"></i>
                                     <span th:text="${item.value.description}" class="item-info-text">Description</span>
-                                    <span th:if="${clickableItems}" style="visibility: hidden" th:text="${item.value.location}" class="item-info-location">INPUT:0:0</span>
+                                    <span th:if="${clickableItems}" style="display: none" th:text="${item.value.location}" class="item-info-location">INPUT:0:0</span>
                                 </div>
                             </div>
                             <div th:if="${!clickableItems && item.value.location != null}" class="col-xs-12 report-item-test"><span class="report-item-test-label" th:text="${config.label.resultLocationLabel}">Location:</span><span th:text="${item.value.location}">Location</span></div>
