@@ -12,11 +12,29 @@ public class DomainConfig {
     private String domain;
     private String domainName;
     private List<String> type;
+    private List<String> declaredType;
+    private Map<String, List<String>> validationTypeOptions;
     private Set<ValidatorChannel> channels = new HashSet<>();
     private Map<String, TypedValidationArtifactInfo> artifactInfo;
     // Plugin configuration.
     private List<PluginInfo> pluginDefaultConfig;
     private Map<String, List<PluginInfo>> pluginPerTypeConfig;
+
+    public List<String> getDeclaredType() {
+        return declaredType;
+    }
+
+    public void setDeclaredType(List<String> declaredType) {
+        this.declaredType = declaredType;
+    }
+
+    public Map<String, List<String>> getValidationTypeOptions() {
+        return validationTypeOptions;
+    }
+
+    public void setValidationTypeOptions(Map<String, List<String>> validationTypeOptions) {
+        this.validationTypeOptions = validationTypeOptions;
+    }
 
     public Map<String, TypedValidationArtifactInfo> getArtifactInfo() {
         return artifactInfo;
@@ -104,6 +122,10 @@ public class DomainConfig {
             }
         }
         return artifactInfoMap;
+    }
+
+    public boolean hasValidationTypeOptions() {
+        return !validationTypeOptions.isEmpty();
     }
 
 }

@@ -112,7 +112,30 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setDefined(true);
                     domainConfig.setDomain(domain);
                     domainConfig.setDomainName(appConfig.getDomainIdToDomainName().get(domain));
-                    domainConfig.setType(Arrays.stream(StringUtils.split(config.getString("validator.type"), ',')).map(String::trim).collect(Collectors.toList()));
+
+                    List<String> declaredValidationTypes = Arrays.stream(StringUtils.split(config.getString("validator.type"), ',')).map(String::trim).collect(Collectors.toList());
+                    Map<String, List<String>> validationTypeOptions = new HashMap<>();
+                    for (Map.Entry<String,String> entry: parseMap("validator.typeOptions", config, declaredValidationTypes).entrySet()) {
+                        validationTypeOptions.put(entry.getKey(), Arrays.stream(StringUtils.split(entry.getValue(), ',')).map(String::trim).collect(Collectors.toList()));
+                    }
+                    List<String> validationTypes;
+                    if (validationTypeOptions.isEmpty()) {
+                        validationTypes = declaredValidationTypes;
+                    } else {
+                        validationTypes = new ArrayList<>();
+                        for (String validationType: declaredValidationTypes) {
+                            if (validationTypeOptions.containsKey(validationType)) {
+                                for (String option: validationTypeOptions.get(validationType)) {
+                                    validationTypes.add(validationType + "." + option);
+                                }
+                            } else {
+                                validationTypes.add(validationType);
+                            }
+                        }
+                    }
+                    domainConfig.setType(validationTypes);
+                    domainConfig.setDeclaredType(declaredValidationTypes);
+                    domainConfig.setValidationTypeOptions(validationTypeOptions);
                     Set<ValidatorChannel> supportedChannels = new HashSet<>(Arrays.asList(getSupportedChannels()));
                     domainConfig.setChannels(Arrays.stream(StringUtils.split(config.getString("validator.channels", getDefaultChannelsStr()), ',')).map(String::trim).map((name) -> toValidatorChannel(supportedChannels, name)).collect(Collectors.toSet()));
                     // Parse plugins - start
