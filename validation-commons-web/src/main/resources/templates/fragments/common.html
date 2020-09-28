@@ -14,6 +14,18 @@
             <script th:src="@{/webjars/codemirror/5.50.0/lib/codemirror.js}"></script>
             <script th:src="@{/js/lib/busy-min.js}"></script>
             <script th:src="@{/js/itb-upload-min.js}"></script>
+            <script th:inline="javascript">
+                var validationTypeOptions = {};
+                [# th:each="type : ${config.getDeclaredType()}"]
+                    validationTypeOptions[[# th:text="${type}" /]] = [];
+                    [# th:each="option : ${config.getValidationTypeOptions().get(type)}"]
+                        validationTypeOptions[[# th:text="${type}" /]].push({
+                            option: [# th:text="${option}" /],
+                            label: [# th:text="${config.getValidationTypeOptionLabel(type, option)}" /]
+                        });
+                    [/]
+                [/]
+            </script>
         </th:block>
 
     </head>

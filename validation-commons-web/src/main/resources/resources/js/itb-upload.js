@@ -11,8 +11,7 @@ _state.listenerEvents['FORM_READY'] = true;
 _state.listenerEvents['SUBMIT_STATUS_VALIDATED'] = true;
 
 $(document).ready(function() {
-	checkForSubmit();
-	resetExternalArtifacts();
+	prepareControls();
 	if (document.getElementById('text-editor') !== null){
 		CodeMirror.fromTextArea(document.getElementById('text-editor'), {
 	        mode: _config.codeTypeObj,
@@ -75,51 +74,230 @@ function notifyListeners(eventType, eventData) {
     }
 }
 
-function validationTypeChanged() {
-	cleanExternalArtifacts();
+function prepareControls() {
 	checkForSubmit();
-	resetExternalArtifacts();
-    notifyListeners('VALIDATION_TYPE_CHANGED', { validationType: $('#validationType').val() });
-}
-
-function cleanExternalArtifacts() {
-    var i, artifactType, j;
-    for (i=0; i < _config.artifactTypes.length; i++) {
-        artifactType = _config.artifactTypes[i],
-            elements = $(".externalDiv_"+artifactType);
-        for (j=0; j<elements.length; j++){
-            removeElement(artifactType, elements[j].getAttribute('id'));
+    var validationTypeSelect,
+        types = Object.keys(validationTypeOptions);
+    if (types.length == 1) {
+        validationTypeSelect = $('#validationType');
+        if (validationTypeSelect.length) {
+            // Remove the first empty choice and pre-select the single validation type.
+            validationTypeSelect.find('option:first').remove();
+            validationTypeSelect.val(types[0]);
+            validationTypeSelect.attr('disabled', 'disabled');
         }
+        validationTypeChanged();
+    } else {
+        resetExternalArtifacts();
     }
 }
 
-function resetExternalArtifacts() {
-    var includeExternalArtefacts, i, artifactType;
-	$(".includeExternalArtefacts").addClass('hidden');	
-	$("#externalArtefactsCheck").prop('checked', false);
-	includeExternalArtefacts = getExternalArtifactSupport();
-	if (includeExternalArtefacts == "optional") {
-        $(".includeExternalArtefacts").removeClass('hidden');
-	} else {
-		$(".includeExternalArtefacts").addClass('hidden');
-	}
-    for (i=0; i < _config.artifactTypes.length; i++) {
-        artifactType = _config.artifactTypes[i],
-            toggleExt = getExternalArtifactSupport(artifactType);
-        if (toggleExt == "required") {
-            addElement(artifactType, placeholderTextForExternalArtifactFile(artifactType), false);
-            $('#rmvButton-external_'+artifactType+'-1').addClass('hidden');
-            $('#fileToValidate-class-external_'+artifactType+'-1').removeClass('col-sm-11');
-            $('#fileToValidate-class-external_'+artifactType+'-1').addClass('col-sm-12');
-            $('#uriToValidate-external_'+artifactType+'-1').removeClass('col-sm-11');
-            $('#uriToValidate-external_'+artifactType+'-1').addClass('col-sm-12');
+function getValidationType() {
+    var type, typeToUse,
+        typeSelect = $('#validationType');
+    if (typeSelect.length) {
+        type = typeSelect.val();
+    } else {
+        // Only one type - no select.
+        validationTypes = Object.keys(validationTypeOptions);
+        if (validationTypes && validationTypes.length && validationTypes.length > 0) {
+            type = validationTypes[0];
         }
-        if (toggleExt == "none" || includeExternalArtefacts == "optional") {
-            $('.externalClass_'+artifactType).addClass('hidden');
+    }
+    if (type && type != null && type.trim().length != 0) {
+        typeToUse = type;
+    }
+    return typeToUse;
+}
+
+function getCompleteValidationType() {
+    var typeToUse, option, optionElement,
+        type = getValidationType();
+    if (type) {
+        if (validationTypeOptions[type].length > 0) {
+            optionElement = $('#validationTypeOption');
+            if (optionElement.length) {
+                option = optionElement.val();
+            } else {
+                // No option select (if only one type and option combination).
+                option = validationTypeOptions[type][0].option;
+            }
+        }
+        if (option) {
+            typeToUse = type + "." + option;
         } else {
-            $('.externalClass_'+artifactType).removeClass('hidden');
+            typeToUse = type;
         }
     }
+    return typeToUse;
+}
+
+function validationTypeChanged() {
+	setValidationOptions();
+}
+
+function setValidationOptions() {
+    var previousTypeOption, i,
+        optionSelected = false,
+        type = getValidationType(),
+        validationTypeOption = $('#validationTypeOption'),
+        validationTypeOptionDiv = $("#validationTypeOptionDiv");
+    if (validationTypeOptionDiv.length) {
+        if (validationTypeOption.length) {
+            previousTypeOption = validationTypeOption.val();
+        }
+        if (type) {
+            if (validationTypeOptions[type].length == 0) {
+                // No options - hide option select.
+                validationTypeOptionDiv.addClass('hidden');
+            } else {
+                validationTypeOption.find('option').remove();
+                for (i = 0; i < validationTypeOptions[type].length; i++) {
+                    if (previousTypeOption && previousTypeOption == validationTypeOptions[type][i].option) {
+                        optionSelected = true;
+                        validationTypeOption.append('<option value="'+validationTypeOptions[type][i].option+'" selected="true">'+validationTypeOptions[type][i].label+'</option>')
+                    } else {
+                        validationTypeOption.append('<option value="'+validationTypeOptions[type][i].option+'">'+validationTypeOptions[type][i].label+'</option>')
+                    }
+                }
+                if (!optionSelected) {
+                    validationTypeOptionDiv.find('option:first').attr('selected', 'selected');
+                }
+                if (i == 1) {
+                    // Only one option: set as disabled
+                    validationTypeOption.attr('disabled', 'disabled');
+                } else {
+                    validationTypeOption.removeAttr('disabled');
+                }
+                validationTypeOptionDiv.removeClass('hidden');
+            }
+        } else {
+            // Hide select.
+            validationTypeOptionDiv.addClass('hidden');
+        }
+    }
+    validationTypeOptionChanged();
+}
+
+function validationTypeOptionChanged() {
+    var previousCompleteType = $('#validationTypeToUse').val();
+    $('#validationTypeToUse').val(getCompleteValidationType());
+	completeValidationTypeChanged(previousCompleteType);
+}
+
+function completeValidationTypeChanged(previousValidationType) {
+	cleanExternalArtifacts({previousValidationType: previousValidationType});
+	checkForSubmit();
+	resetExternalArtifacts(previousValidationType);
+    notifyListeners('VALIDATION_TYPE_CHANGED', { validationType: getCompleteValidationType() });
+}
+
+function cleanExternalArtifacts(options) {
+    var i, j, artifactType, removeControls, previousSupportType, newSupportType, elements,
+        commonSupport = getCommonExternalArtifactSupport(),
+        validationType = getCompleteValidationType();
+    for (i = 0; i < _config.artifactTypes.length; i++) {
+        artifactType = _config.artifactTypes[i];
+        removeControls = true;
+        if (!options || !options.force) {
+            if (commonSupport[artifactType]) {
+                // No need to remove.
+                removeControls = false;
+            } else if (options && options.previousValidationType) {
+                previousSupportType = getExternalArtifactSupport({validationType: options.previousValidationType, artifactType: artifactType});
+                newSupportType = getExternalArtifactSupport({validationType: validationType, artifactType: artifactType});
+                if (newSupportType == previousSupportType) {
+                    // No need to remove.
+                    removeControls = false;
+                }
+            }
+        }
+        if (removeControls) {
+            elements = $(".externalDiv_"+artifactType);
+            for (j = 0; j < elements.length; j++){
+                removeElement(artifactType, elements[j].getAttribute('id'));
+            }
+        }
+    }
+}
+
+function resetExternalArtifacts(previousValidationType) {
+    var i, j, artifactType, previousSupport, hasRequired, hasOptional, supportType, updateControls,
+        updateCheckbox = false,
+        showCheckbox = false,
+        artifactTypesWithCommonSupport,
+        validationType = getCompleteValidationType(),
+        commonSupport = getCommonExternalArtifactSupport();
+
+    if (_config.initialExternalArtifactSetup == undefined) {
+        _config.initialExternalArtifactSetup = true;
+    }
+
+    artifactTypesWithCommonSupport = Object.keys(commonSupport);
+    if (artifactTypesWithCommonSupport.length == _config.artifactTypes.length) {
+        // All validation types share the same support for external artifacts.
+        if (_config.initialExternalArtifactSetup) {
+            updateCheckbox = true;
+            hasRequired = false;
+            hasOptional = false;
+            for (j = 0; j < artifactTypesWithCommonSupport.length; j++) {
+                artifactType = artifactTypesWithCommonSupport[j];
+                if (commonSupport[artifactType] == 'optional') {
+                    hasOptional = true;
+                } else if (commonSupport[artifactType] == 'required') {
+                   hasRequired = true;
+               }
+            }
+            _config.externalArtifactCheckVisible = hasOptional && !hasRequired
+        }
+        showCheckbox = _config.externalArtifactCheckVisible;
+    } else if (validationType) {
+        updateCheckbox = true;
+        if (getExternalArtifactSupport({validationType: validationType}) == 'optional') {
+            showCheckbox = true;
+        }
+    }
+    if (updateCheckbox) {
+        if (showCheckbox) {
+            $("#externalArtefactsCheck").prop('checked', false);
+            $(".includeExternalArtefacts").removeClass('hidden');
+        } else {
+            $(".includeExternalArtefacts").addClass('hidden');
+        }
+    }
+
+    for (i=0; i < _config.artifactTypes.length; i++) {
+        artifactType = _config.artifactTypes[i];
+        supportType = 'none';
+        updateControls = true;
+        if (commonSupport[artifactType]) {
+            supportType = commonSupport[artifactType];
+            updateControls = _config.initialExternalArtifactSetup;
+        } else if (validationType) {
+            // A validation type is defined.
+            supportType = getExternalArtifactSupport({validationType: validationType, artifactType: artifactType});
+            if (!_config.initialExternalArtifactSetup && previousValidationType) {
+                previousSupport = getExternalArtifactSupport({validationType: previousValidationType, artifactType: artifactType});
+                updateControls = supportType != previousSupport
+            }
+        }
+        if (updateControls) {
+            if (supportType == 'required') {
+                addElement(artifactType, placeholderTextForExternalArtifactFile(artifactType), false);
+                $('#rmvButton-external_'+artifactType+'-1').addClass('hidden');
+                $('#fileToValidate-class-external_'+artifactType+'-1').removeClass('col-sm-11');
+                $('#fileToValidate-class-external_'+artifactType+'-1').addClass('col-sm-12');
+                $('#uriToValidate-external_'+artifactType+'-1').removeClass('col-sm-11');
+                $('#uriToValidate-external_'+artifactType+'-1').addClass('col-sm-12');
+            }
+            if (supportType == 'none' || showCheckbox) {
+                $('.externalClass_'+artifactType).addClass('hidden');
+            } else {
+                $('.externalClass_'+artifactType).removeClass('hidden');
+            }
+        }
+    }
+    _config.initialExternalArtifactSetup = false;
 	notifyListeners('RESET_EXTERNAL_ARTIFACT_INPUTS', {});
 }
 
@@ -139,7 +317,7 @@ function placeholderTextForExternalArtifactFile(artifactType) {
 
 function addExternal(artifactType) {
     var toggleExt, indexInt;
-	toggleExt = getExternalArtifactSupport(artifactType),
+	toggleExt = getExternalArtifactSupport({artifactType: artifactType}),
         elements = $(".externalDiv_" + artifactType);
 	if (toggleExt == "required" && elements.length == 1) {
 		indexInt = getLastExternalIdNumber(".externalDiv_"+artifactType);
@@ -154,7 +332,7 @@ function addExternal(artifactType) {
 
 function removeElement(artifactType, elementId) {
 	$('#'+elementId).remove();
-	var toggleExt = getExternalArtifactSupport(artifactType),
+	var toggleExt = getExternalArtifactSupport({artifactType: artifactType}),
         elements = $(".externalDiv_"+artifactType),
         maxInputs, indexInt;
 	if (toggleExt == "required" && elements.length == 1){
@@ -290,22 +468,23 @@ function checkForSubmit() {
 function updateSubmitStatus() {
 	var type = $('#contentType').val(),
 	    inputType = $('#validationType'),
+	    inputTypeOption = $('#validationTypeOption'),
 	    submitDisabled = true,
 	    inputFile, uriInput, stringType, i;
 	$('#inputFileSubmit').prop('disabled', true);	
 	if (type == "fileType") {
 		inputFile = $("#inputFileName");
-		submitDisabled = (inputFile.val() && (!inputType.length || inputType.val()))?false:true
+		submitDisabled = (inputFile.val() && (!inputType.length || inputType.val()) && (!inputTypeOption.length || inputTypeOption.val()))?false:true
 	} else if (type == "uriType") {
 		uriInput = $("#uri");
-		submitDisabled = (uriInput.val() && (!inputType.length || inputType.val()))?false:true
+		submitDisabled = (uriInput.val() && (!inputType.length || inputType.val()) && (!inputTypeOption.length || inputTypeOption.val()))?false:true
 	} else if (type == "stringType") {
 		stringType = getCodeMirrorNative('#text-editor').getDoc();
-		submitDisabled = (stringType.getValue() && (!inputType.length || inputType.val()))?false:true
+		submitDisabled = (stringType.getValue() && (!inputType.length || inputType.val()) && (!inputTypeOption.length || inputTypeOption.val()))?false:true
 	}
 	if (!submitDisabled) {
         for (i=0; i < _config.artifactTypes.length; i++) {
-            if (getExternalArtifactSupport(_config.artifactTypes[i]) == 'required') {
+            if (getExternalArtifactSupport({artifactType: _config.artifactTypes[i]}) == 'required') {
                 submitDisabled = !externalElementHasValue(document.getElementsByName("contentType-external_"+_config.artifactTypes[i]));
                 if (submitDisabled) {
                     break;
@@ -388,12 +567,11 @@ function contentSyntaxChanged() {
 }
 
 function toggleExternalArtefacts() {
-    var checked = $("#externalArtefactsCheck").is(":checked"),
-        i, toggleExt, ext;
+    var artifactSupport, i, ext,
+        checked = $("#externalArtefactsCheck").is(":checked");
     if (checked) {
         for (i=0; i < _config.artifactTypes.length; i++) {
-            toggleExt = getExternalArtifactSupport(_config.artifactTypes[i]);
-            ext = getExternalArtifactSupport(_config.artifactTypes[i]);
+            ext = getExternalArtifactSupport({artifactType: _config.artifactTypes[i]});
             if (ext == "none") {
                 $(".externalClass_"+_config.artifactTypes[i]).addClass("hidden");
             } else {
@@ -401,7 +579,7 @@ function toggleExternalArtefacts() {
             }
         }
         if (_config.artifactTypes.length == 1) {
-            var artifactSupport = getExternalArtifactSupport(_config.artifactTypes[0]);
+            artifactSupport = getExternalArtifactSupport({artifactType: _config.artifactTypes[0]});
             if (artifactSupport != "none") {
                 addExternal(_config.artifactTypes[0]);
             }
@@ -410,27 +588,66 @@ function toggleExternalArtefacts() {
         for (i=0; i < _config.artifactTypes.length; i++) {
             $(".externalClass_"+_config.artifactTypes[i]).addClass("hidden");
         }
-        cleanExternalArtifacts();
+        cleanExternalArtifacts({force: true});
     }
 }
 
-function getExternalArtifactSupport(artifactType) {
-	var supportType = "none",
-	    validationTypeElement = $('#validationType'),
-	    type, validationTypes, currentArtifactType;
-    if (validationTypeElement.length) {
-        type = $('#validationType').val();
-    } else {
-        if (_config.externalArtifacts) {
-            validationTypes = Object.keys(_config.externalArtifacts);
-            if (validationTypes && validationTypes.length && validationTypes.length > 0) {
-                type = validationTypes[0];
+function getCommonExternalArtifactSupport() {
+    var supportType, supportTypes, resultingSupportTypes, i, j, k, artifactType, validationTypes, validationType, options, completeType, artifactTypeSupportTypes;
+    if (!_config.commonExternalArtefactsSupportSet) {
+        supportTypes = {};
+        resultingSupportTypes = {};
+        for (i = 0; i < _config.artifactTypes.length; i++) {
+            artifactType = _config.artifactTypes[i];
+            supportTypes[artifactType] = {};
+        }
+        validationTypes = Object.keys(validationTypeOptions);
+        for (i = 0; i < validationTypes.length; i++) {
+            validationType = validationTypes[i];
+            if (validationTypeOptions[validationType].length == 0) {
+                for (j = 0; j < _config.artifactTypes.length; j++) {
+                    artifactType = _config.artifactTypes[j];
+                    supportType = _config.externalArtifacts[validationType][artifactType];
+                    supportTypes[artifactType][supportType] = true;
+                }
+            } else {
+                options = validationTypeOptions[validationType];
+                for (j = 0; j < options.length; j++) {
+                    completeType = validationType + '.' + options[j].option
+                    for (k = 0; k < _config.artifactTypes.length; k++) {
+                        artifactType = _config.artifactTypes[k];
+                        supportType = _config.externalArtifacts[completeType][artifactType];
+                        supportTypes[artifactType][supportType] = true;
+                    }
+                }
             }
         }
+        for (i = 0; i < _config.artifactTypes.length; i++) {
+            artifactType = _config.artifactTypes[i];
+            artifactTypeSupportTypes = Object.keys(supportTypes[artifactType]);
+            if (artifactTypeSupportTypes.length == 1) {
+                resultingSupportTypes[artifactType] = artifactTypeSupportTypes[0];
+            }
+        }
+        _config.commonExternalArtefactsSupport = resultingSupportTypes;
+        _config.commonExternalArtefactsSupportSet = true;
     }
+    return _config.commonExternalArtefactsSupport;
+}
+
+function getExternalArtifactSupport(options) {
+	var i, currentArtifactType, artifactType,
+	    supportType = "none",
+	    type = getCompleteValidationType(),
+	    commonSupport = getCommonExternalArtifactSupport();
+	if (options) {
+	    if (options.validationType) {
+	        type = options.validationType
+	    }
+	}
 	if (type) {
-        if (artifactType) {
-            supportType = _config.externalArtifacts[type][artifactType];
+        if (options.artifactType) {
+            supportType = _config.externalArtifacts[type][options.artifactType];
         } else {
             for (currentArtifactType in _config.externalArtifacts[type]) {
                 if (_config.externalArtifacts[type][currentArtifactType] == "required") {
@@ -441,6 +658,24 @@ function getExternalArtifactSupport(artifactType) {
                 }
             }
         }
+	} else {
+	    if (options.artifactType) {
+	        if (commonSupport[options.artifactType]) {
+	            supportType = commonSupport[options.artifactType];
+	        }
+	    } else {
+            for (i = 0; i < _config.artifactTypes.length; i++) {
+                artifactType = _config.artifactTypes[i];
+                if (commonSupport[artifactType]) {
+                    if (commonSupport[artifactType] == "required") {
+                        supportType = "required";
+                        break;
+                    } else if (commonSupport[artifactType] == "optional") {
+                        supportType = "optional";
+                    }
+                }
+            }
+	    }
 	}
     return supportType;
 }

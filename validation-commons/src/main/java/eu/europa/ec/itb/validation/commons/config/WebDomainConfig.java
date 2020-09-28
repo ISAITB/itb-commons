@@ -9,6 +9,7 @@ public abstract class WebDomainConfig<T extends LabelConfig> extends DomainConfi
     private String reportTitle = "Validation report";
     private Map<String, String> webServiceDescription;
     private Map<String, String> typeLabel;
+    private Map<String, Map<String, String>> typeOptionLabel;
     private String htmlBanner;
     private String htmlFooter;
     private boolean supportMinimalUserInterface;
@@ -20,6 +21,14 @@ public abstract class WebDomainConfig<T extends LabelConfig> extends DomainConfi
     }
 
     protected abstract T newLabelConfig();
+
+    public Map<String, Map<String, String>> getTypeOptionLabel() {
+        return typeOptionLabel;
+    }
+
+    public void setTypeOptionLabel(Map<String, Map<String, String>> typeOptionLabel) {
+        this.typeOptionLabel = typeOptionLabel;
+    }
 
     public String getUploadTitle() {
         return uploadTitle;
@@ -95,5 +104,12 @@ public abstract class WebDomainConfig<T extends LabelConfig> extends DomainConfi
 
     public T getLabel() {
         return label;
+    }
+
+    public String getValidationTypeOptionLabel(String type, String option) {
+        if (typeOptionLabel.containsKey(type)) {
+            return typeOptionLabel.get(type).get(option);
+        }
+        return null;
     }
 }

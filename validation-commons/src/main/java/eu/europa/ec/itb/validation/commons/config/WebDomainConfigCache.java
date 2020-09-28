@@ -2,9 +2,11 @@ package eu.europa.ec.itb.validation.commons.config;
 
 import org.apache.commons.configuration2.Configuration;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public abstract class WebDomainConfigCache <T extends WebDomainConfig> extends DomainConfigCache<T> {
+public abstract class WebDomainConfigCache <T extends WebDomainConfig<?>> extends DomainConfigCache<T> {
 
     @Override
     public T getConfigForDomainName(String domainName) {
@@ -27,7 +29,38 @@ public abstract class WebDomainConfigCache <T extends WebDomainConfig> extends D
         domainConfig.setUploadTitle(config.getString("validator.uploadTitle", "Validator"));
         domainConfig.setReportTitle(config.getString("validator.reportTitle", "Validation report"));
         domainConfig.setWebServiceId(config.getString("validator.webServiceId", "ValidatorService"));
-        domainConfig.setTypeLabel(parseMap("validator.typeLabel", config, domainConfig.getType()));
+        // Parse labels for types and options per type (taking into account defaults). Start -
+        Map<String, String> typeLabels = parseMap("validator.typeLabel", config, domainConfig.getDeclaredType());
+        for (String type: domainConfig.getDeclaredType()) {
+            if (!typeLabels.containsKey(type)) {
+                typeLabels.put(type, type);
+            }
+        }
+        Map<String, String> defaultOptionLabels = parseMap("validator.optionLabel", config);
+        Map<String, Map<String, String>> typeOptionLabelMap = new HashMap<>();
+        for (Map.Entry<String, List<String>> typeOptionEntry: domainConfig.getValidationTypeOptions().entrySet()) {
+            String type = typeOptionEntry.getKey();
+            Map<String, String> optionLabelMap = new HashMap<>();
+            for (String option: typeOptionEntry.getValue()) {
+                String optionLabel = config.getString("validator.typeOptionLabel."+type+"."+option);
+                if (optionLabel == null) {
+                    optionLabel = defaultOptionLabels.get(option);
+                }
+                if (optionLabel == null) {
+                    optionLabel = option;
+                }
+                optionLabelMap.put(option, optionLabel);
+                // Add also as an available type label the complete type plus option label.
+                typeLabels.put(
+                        type +"."+option,
+                        config.getString("validator.completeTypeOptionLabel."+type+"."+option, typeLabels.get(type) + " - " + optionLabel)
+                );
+            }
+            typeOptionLabelMap.put(type, optionLabelMap);
+        }
+        domainConfig.setTypeLabel(typeLabels);
+        domainConfig.setTypeOptionLabel(typeOptionLabelMap);
+        // - end.
         domainConfig.setWebServiceDescription(parseMap("validator.webServiceDescription", config));
         domainConfig.setShowAbout(config.getBoolean("validator.showAbout", true));
         domainConfig.setSupportMinimalUserInterface(config.getBoolean("validator.supportMinimalUserInterface", false));
@@ -41,6 +74,7 @@ public abstract class WebDomainConfigCache <T extends WebDomainConfig> extends D
         domainConfig.getLabel().setFileInputLabel(config.getString("validator.label.fileInputLabel", "Content to validate"));
         domainConfig.getLabel().setFileInputPlaceholder(config.getString("validator.label.fileInputPlaceholder", "Select file..."));
         domainConfig.getLabel().setTypeLabel(config.getString("validator.label.typeLabel", "Validate as"));
+        domainConfig.getLabel().setOptionLabel(config.getString("validator.label.optionLabel", "Option"));
         domainConfig.getLabel().setUploadButton(config.getString("validator.label.uploadButton", "Validate"));
         domainConfig.getLabel().setResultSubSectionOverviewTitle(config.getString("validator.label.resultSubSectionOverviewTitle", "Overview"));
         domainConfig.getLabel().setResultDateLabel(config.getString("validator.label.resultDateLabel", "Date:"));

@@ -6,6 +6,7 @@ public class LabelConfig {
     private String fileInputLabel;
     private String fileInputPlaceholder;
     private String typeLabel;
+    private String optionLabel;
     private String uploadButton;
     private String resultSubSectionOverviewTitle;
     private String resultDateLabel;
@@ -28,6 +29,14 @@ public class LabelConfig {
     private String optionContentDirectInput;
     private String includeExternalArtefacts;
     private String externalArtefactsTooltip;
+
+    public String getOptionLabel() {
+        return optionLabel;
+    }
+
+    public void setOptionLabel(String optionLabel) {
+        this.optionLabel = optionLabel;
+    }
 
     public String getResultLocationLabel() {
         return resultLocationLabel;

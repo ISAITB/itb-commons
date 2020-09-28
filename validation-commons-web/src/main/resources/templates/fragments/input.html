@@ -14,6 +14,7 @@
             <h1 class="panel-title col-xs-5 minimal-title panel-title-ui">Validation input</h1>
             <div th:align="right">
                 <button type="submit" id="inputFileSubmitMinimal" class="btn btn-default" disabled="true" onclick="uploadFile()" th:text="${config.label.uploadButton}">Upload</button>
+                <input type="hidden" id="validationTypeToUse" name="validationType"/>
             </div>
         </div>
 
@@ -53,11 +54,20 @@
 
         <div th:fragment="mainFormValidationType(config)" class="form-group" th:if="${config.hasMultipleValidationTypes()}">
             <label for="validationType" class="col-sm-2 control-label" th:text="${config.label.typeLabel}">Validate as</label>
-            <div class="col-sm-10">
-                <select class="form-control" id="validationType" onchange="validationTypeChanged()" name="validationType">
+            <div th:class="${config.hasValidationTypeOptions()}? col-sm-5 : col-sm-10">
+                <select class="form-control" id="validationType" onchange="validationTypeChanged()" name="validationTypeInternal">
                     <option value="" selected="true" disabled="true"></option>
-                    <option th:each="type : ${config.type}" th:text="${config.typeLabel.get(type)}" th:attr="value=${type}">Type</option>
+                    <option th:each="type : ${config.declaredType}" th:text="${config.typeLabel.get(type)}" th:attr="value=${type}">Type</option>
                 </select>
+            </div>
+            <div id="validationTypeOptionDiv" th:if="${config.hasValidationTypeOptions()}" class="col-sm-5 hidden">
+                <div id="validationTypeOptionLabelDiv" style="float:left; width:auto; padding-right:30px;">
+                    <label for="validationTypeOption" class="control-label" th:text="${config.label.optionLabel}">Option</label>
+                </div>
+                <div id="validationTypeOptionSelectDiv" style="overflow:hidden; width:auto;">
+                    <select class="form-control" id="validationTypeOption" onchange="validationTypeOptionChanged()" name="validationTypeOptionInternal">
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -87,6 +97,7 @@
         <div th:fragment="submit(config, minimalUI)" class="form-group" th:if="${not minimalUI}">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" id="inputFileSubmit" class="btn btn-primary" disabled="true" onclick="uploadFile()" th:text="${config.label.uploadButton}">Upload</button>
+                <input type="hidden" id="validationTypeToUse" name="validationType"/>
             </div>
         </div>
 
