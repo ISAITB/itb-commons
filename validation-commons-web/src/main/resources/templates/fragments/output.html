@@ -48,9 +48,9 @@
             <div th:if="${withControls}" class="row overview-button-row">
                 <div class="col-xs-12">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default" id="viewInputButton" onclick="setCode()" disabled="true" th:text="${config.label.viewAnnotatedInputButton}">View annotated input</button>
-                        <button type="button" class="btn btn-default" id="downloadReportButtonXML" onclick="downloadReportXML()" disabled="true" th:text="${config.label.downloadXMLReportButton}">Download XML report</button>
-                        <button type="button" class="btn btn-default" id="downloadReportButtonPDF" onclick="downloadReportPDF()" disabled="true" th:text="${config.label.downloadPDFReportButton}">Download PDF report</button>
+                        <button type="button" class="btn btn-default" id="viewInputButton" onclick="setCode()" disabled="true"><span th:text="${config.label.viewAnnotatedInputButton}">View annotated input</span><span id="viewInputButtonSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
+                        <button type="button" class="btn btn-default" id="downloadReportButtonXML" onclick="downloadReportXML()" disabled="true"><span th:text="${config.label.downloadXMLReportButton}">Download XML report</span><span id="downloadReportButtonXMLSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
+                        <button type="button" class="btn btn-default" id="downloadReportButtonPDF" onclick="downloadReportPDF()" disabled="true"><span th:text="${config.label.downloadPDFReportButton}">Download PDF report</span><span id="downloadReportButtonPDFSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
                     </div>
                 </div>
             </div>

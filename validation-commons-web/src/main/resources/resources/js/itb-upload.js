@@ -697,6 +697,7 @@ function getReport(inputID) {
 			type: 'DELETE'
 		});
 		_state.reportLoad.resolve();
+		$('#viewInputButtonSpinner').addClass('hidden');
 		$('#viewInputButton').prop('disabled', false);
 	});
 }
@@ -706,6 +707,7 @@ function getResultReport(inputID) {
 		type: 'GET',
 		success: function(data) {
 			_state.itbResultReportXML = new Blob([data], { type: 'application/xml' });
+    		$('#downloadReportButtonXMLSpinner').addClass('hidden');
             $('#downloadReportButtonXML').prop('disabled', false);
 			_state.resultLoadXML.resolve();
 		}
@@ -717,6 +719,7 @@ function getResultReport(inputID) {
         if (this.readyState == 4) {
             if (this.status == 200) {
                 _state.itbResultReportPDF = new Blob([this.response], {type: "application/octet-stream"});
+        		$('#downloadReportButtonPDFSpinner').addClass('hidden');
                 $('#downloadReportButtonPDF').prop('disabled', false);
                 _state.resultLoadPDF.resolve();
             }
