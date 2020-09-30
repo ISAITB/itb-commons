@@ -48,9 +48,9 @@
             <div th:if="${withControls}" class="row overview-button-row">
                 <div class="col-xs-12">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default" id="viewInputButton" onclick="setCode()" disabled="true"><span th:text="${config.label.viewAnnotatedInputButton}">View annotated input</span><span id="viewInputButtonSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
+                        <button th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" type="button" class="btn btn-default" id="viewInputButton" onclick="setCode()" disabled="true"><span th:text="${config.label.viewAnnotatedInputButton}">View annotated input</span><span id="viewInputButtonSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
                         <button type="button" class="btn btn-default" id="downloadReportButtonXML" onclick="downloadReportXML()" disabled="true"><span th:text="${config.label.downloadXMLReportButton}">Download XML report</span><span id="downloadReportButtonXMLSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
-                        <button type="button" class="btn btn-default" id="downloadReportButtonPDF" onclick="downloadReportPDF()" disabled="true"><span th:text="${config.label.downloadPDFReportButton}">Download PDF report</span><span id="downloadReportButtonPDFSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
+                        <button th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" type="button" class="btn btn-default" id="downloadReportButtonPDF" onclick="downloadReportPDF()" disabled="true"><span th:text="${config.label.downloadPDFReportButton}">Download PDF report</span><span id="downloadReportButtonPDFSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
                     </div>
                 </div>
             </div>
@@ -62,7 +62,7 @@
                     <h3 class="panel-title" th:text="${config.label.resultSubSectionDetailsTitle}">Details</h3>
                 </div>
                 <div class="panel-body result-details-panel">
-                    <div class="report-item-container">
+                    <div th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" class="report-item-container">
                         <div class="row report-item" th:each="item : ${report.reports.infoOrWarningOrError}" th:classappend="${clickableItems?('clickable report-item-' + item.name.localPart):('report-item-' + item.name.localPart)}" th:attrappend="onclick=${clickableItems}?@{|setCode(this)|}">
                             <div class="col-xs-12 item-info">
                                 <div th:switch="${item.name.localPart}">
@@ -75,6 +75,13 @@
                             </div>
                             <div th:if="${!clickableItems && item.value.location != null}" class="col-xs-12 report-item-test"><span class="report-item-test-label" th:text="${config.label.resultLocationLabel}">Location:</span><span th:text="${item.value.location}">Location</span></div>
                             <div class="col-xs-12 report-item-test" th:if="${item.value.test != null}"><span class="report-item-test-label" th:text="${config.label.resultTestLabel}">Test:</span><span th:text="${item.value.test}">Test</span></div>
+                        </div>
+                    </div>
+                    <div th:unless="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}">
+                        <div style="padding-top:15px;padding-bottom:15px;">
+                            <div class="alert alert-warning" style="margin-bottom:0px;" th:text="${config.label.maximumReportsExceededForDetailedOutputMessage}">
+                                Maximum results exceeded for detailed display.
+                            </div>
                         </div>
                     </div>
                 </div>

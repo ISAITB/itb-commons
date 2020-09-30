@@ -152,6 +152,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setPluginDefaultConfig(parseValueList("validator.defaultPlugins", config, pluginConfigMapper));
                     domainConfig.setPluginPerTypeConfig(parseTypedValueList("validator.plugins", domainConfig.getType(), config, pluginConfigMapper));
                     // Parse plugins - end
+                    domainConfig.setMaximumReportsForDetailedOutput(config.getLong("validator.maximumReportsForDetailedOutput", 5000L));
                     // Allow subclasses to extend the configuration as needed.
                     addDomainConfiguration(domainConfig, config);
                     completeValidationArtifactConfig(domainConfig);

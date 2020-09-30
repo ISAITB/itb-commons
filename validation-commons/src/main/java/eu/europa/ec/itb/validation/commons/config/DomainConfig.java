@@ -16,9 +16,18 @@ public class DomainConfig {
     private Map<String, List<String>> validationTypeOptions;
     private Set<ValidatorChannel> channels = new HashSet<>();
     private Map<String, TypedValidationArtifactInfo> artifactInfo;
+    private Long maximumReportsForDetailedOutput;
     // Plugin configuration.
     private List<PluginInfo> pluginDefaultConfig;
     private Map<String, List<PluginInfo>> pluginPerTypeConfig;
+
+    public Long getMaximumReportsForDetailedOutput() {
+        return maximumReportsForDetailedOutput;
+    }
+
+    public void setMaximumReportsForDetailedOutput(Long maximumReportsForDetailedOutput) {
+        this.maximumReportsForDetailedOutput = maximumReportsForDetailedOutput;
+    }
 
     public List<String> getDeclaredType() {
         return declaredType;
