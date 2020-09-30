@@ -29,6 +29,15 @@ public class LabelConfig {
     private String optionContentDirectInput;
     private String includeExternalArtefacts;
     private String externalArtefactsTooltip;
+    private String maximumReportsExceededForDetailedOutputMessage;
+
+    public String getMaximumReportsExceededForDetailedOutputMessage() {
+        return maximumReportsExceededForDetailedOutputMessage;
+    }
+
+    public void setMaximumReportsExceededForDetailedOutputMessage(String maximumReportsExceededForDetailedOutputMessage) {
+        this.maximumReportsExceededForDetailedOutputMessage = maximumReportsExceededForDetailedOutputMessage;
+    }
 
     public String getOptionLabel() {
         return optionLabel;

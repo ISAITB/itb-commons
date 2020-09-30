@@ -97,6 +97,7 @@ public abstract class WebDomainConfigCache <T extends WebDomainConfig<?>> extend
         domainConfig.getLabel().setResultValidationTypeLabel(config.getString("validator.label.resultValidationTypeLabel", "Validation type:"));
         domainConfig.getLabel().setIncludeExternalArtefacts(config.getString("validator.label.includeExternalArtefacts", "Include external artefacts"));
         domainConfig.getLabel().setExternalArtefactsTooltip(config.getString("validator.label.externalArtefactsTooltip", "Additional artefacts that will be considered for the validation"));
+        domainConfig.getLabel().setMaximumReportsExceededForDetailedOutputMessage(config.getString("validator.label.maximumReportsExceededForDetailedOutputMessage", "Findings are not listed here due to their large number. Download the validation report to view further details."));
     }
 
 }

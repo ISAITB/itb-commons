@@ -690,45 +690,53 @@ function getReportData(inputID) {
     });
 }
 function getReport(inputID) {
-	$.get("input/"+inputID, function(data) {
-		_state.itbReportData = data;
-		$.ajax({
-			url: "input/"+inputID,
-			type: 'DELETE'
-		});
-		_state.reportLoad.resolve();
-		$('#viewInputButton').prop('disabled', false);
-	});
+    if ($('#viewInputButton').length) {
+        $.get("input/"+inputID, function(data) {
+            _state.itbReportData = data;
+            $.ajax({
+                url: "input/"+inputID,
+                type: 'DELETE'
+            });
+            _state.reportLoad.resolve();
+            $('#viewInputButtonSpinner').addClass('hidden');
+            $('#viewInputButton').prop('disabled', false);
+        });
+    }
 }
 function getResultReport(inputID) {
-	$.ajax({
-		url: "report/"+inputID+"/xml",
-		type: 'GET',
-		success: function(data) {
-			_state.itbResultReportXML = new Blob([data], { type: 'application/xml' });
-            $('#downloadReportButtonXML').prop('disabled', false);
-			_state.resultLoadXML.resolve();
-		}
-	});
-
-    var ajax = new XMLHttpRequest();
-    ajax.open("GET", "report/"+inputID+"/pdf", true);
-    ajax.onreadystatechange = function() {
-        if (this.readyState == 4) {
-            if (this.status == 200) {
-                _state.itbResultReportPDF = new Blob([this.response], {type: "application/octet-stream"});
-                $('#downloadReportButtonPDF').prop('disabled', false);
-                _state.resultLoadPDF.resolve();
+    if ($('#downloadReportButtonXML').length) {
+        $.ajax({
+            url: "report/"+inputID+"/xml",
+            type: 'GET',
+            success: function(data) {
+                _state.itbResultReportXML = new Blob([data], { type: 'application/xml' });
+                $('#downloadReportButtonXMLSpinner').addClass('hidden');
+                $('#downloadReportButtonXML').prop('disabled', false);
+                _state.resultLoadXML.resolve();
             }
-        } else if (this.readyState == 2) {
-            if (this.status == 200) {
-                this.responseType = "blob";
-            } else {
-                this.responseType = "text";
+        });
+    }
+    if ($('#downloadReportButtonPDF').length) {
+        var ajax = new XMLHttpRequest();
+        ajax.open("GET", "report/"+inputID+"/pdf", true);
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    _state.itbResultReportPDF = new Blob([this.response], {type: "application/octet-stream"});
+                    $('#downloadReportButtonPDFSpinner').addClass('hidden');
+                    $('#downloadReportButtonPDF').prop('disabled', false);
+                    _state.resultLoadPDF.resolve();
+                }
+            } else if (this.readyState == 2) {
+                if (this.status == 200) {
+                    this.responseType = "blob";
+                } else {
+                    this.responseType = "text";
+                }
             }
-        }
-    };
-    ajax.send(null);
+        };
+        ajax.send(null);
+    }
 	$.when(_state.resultLoadXML, _state.resultLoadPDF).done(function () {
         $.ajax({
             url: "report/"+inputID,
