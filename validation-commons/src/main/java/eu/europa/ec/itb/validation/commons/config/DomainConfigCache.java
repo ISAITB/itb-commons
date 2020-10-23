@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -272,6 +273,27 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
         for (String type: types) {
             map.put(type, R.valueOf(enumType, config.getString(key+"."+type, defaultValue.name())));
         }
+        return map;
+    }
+
+    protected <R> Map<String, R> parseObjectMap(String commonKey, Configuration config, BiFunction<String, Map<String, String>, R> fnObjectBuilder) {
+        Map<String, R> map = new HashMap<>();
+        Iterator<String> mapKeys = config.getKeys(commonKey);
+        Map<String, Map<String, String>> collectedData = new HashMap<>();
+        while (mapKeys.hasNext()) {
+            String fullKey = mapKeys.next();
+            String[] partsAfterCommon = StringUtils.split(StringUtils.substringAfter(fullKey, commonKey+"."), '.');
+            if (partsAfterCommon != null && partsAfterCommon.length == 2) {
+                Map<String, String> instanceData = collectedData.computeIfAbsent(partsAfterCommon[0], (key) -> new HashMap<>());
+                instanceData.put(partsAfterCommon[1], config.getString(fullKey));
+            }
+        }
+        collectedData.forEach((key, value) -> {
+            R obj = fnObjectBuilder.apply(key, value);
+            if (obj != null) {
+                map.put(key, obj);
+            }
+        });
         return map;
     }
 

@@ -75,7 +75,19 @@ public class PluginAdapter implements ValidationPlugin {
             }
             return response;
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException("Failed to call plugin", e);
+            String message = extractRootErrorMessage(e);
+            if (message == null) {
+                message = "Failed to call plugin";
+            }
+            throw new IllegalStateException(message, e);
+        }
+    }
+
+    private String extractRootErrorMessage(Throwable e) {
+        if (e.getCause() != null) {
+            return extractRootErrorMessage(e.getCause());
+        } else {
+            return e.getMessage();
         }
     }
 
@@ -118,7 +130,11 @@ public class PluginAdapter implements ValidationPlugin {
             Object internalResult = validateMethod.invoke(internalValidator, new Object[] {getAdaptedValidateRequest(validateRequest)});
             return toValidationResponse(internalResult);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            throw new IllegalStateException("Failed to call plugin", e);
+            String message = extractRootErrorMessage(e);
+            if (message == null) {
+                message = "Failed to call plugin";
+            }
+            throw new IllegalStateException(message, e);
         }
     }
 
