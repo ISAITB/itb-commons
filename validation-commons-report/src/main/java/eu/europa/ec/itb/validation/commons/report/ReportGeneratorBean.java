@@ -1,8 +1,8 @@
-package eu.europa.ec.itb.validation.commons.web;
+package eu.europa.ec.itb.validation.commons.report;
 
 import com.gitb.reports.ReportGenerator;
 import com.gitb.tr.TAR;
-import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
+import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ public class ReportGeneratorBean {
 
     private ReportGenerator reportGenerator = new ReportGenerator();
 
-    public void writeReport(WebDomainConfig config, File inFile, File outFile) {
+    public void writeReport(DomainConfig config, File inFile, File outFile) {
         try (FileInputStream fis = new FileInputStream(inFile); FileOutputStream fos = new FileOutputStream(outFile)) {
             reportGenerator.writeTARReport(fis, config.getReportTitle(), fos);
         } catch (Exception e) {
@@ -23,7 +23,7 @@ public class ReportGeneratorBean {
         }
     }
 
-    public void writeReport(WebDomainConfig config, TAR report, File outFile) {
+    public void writeReport(DomainConfig config, TAR report, File outFile) {
         try (FileOutputStream fos = new FileOutputStream(outFile)) {
             reportGenerator.writeTARReport(report, config.getReportTitle(), fos);
         } catch (Exception e) {

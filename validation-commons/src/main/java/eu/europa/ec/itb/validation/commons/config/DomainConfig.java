@@ -9,6 +9,7 @@ import java.util.*;
 public class DomainConfig {
 
     private boolean isDefined;
+    private String reportTitle = "Validation report";
     private String domain;
     private String domainName;
     private List<String> type;
@@ -27,6 +28,14 @@ public class DomainConfig {
 
     public void setMaximumReportsForDetailedOutput(Long maximumReportsForDetailedOutput) {
         this.maximumReportsForDetailedOutput = maximumReportsForDetailedOutput;
+    }
+
+    public String getReportTitle() {
+        return reportTitle;
+    }
+
+    public void setReportTitle(String reportTitle) {
+        this.reportTitle = reportTitle;
     }
 
     public List<String> getDeclaredType() {

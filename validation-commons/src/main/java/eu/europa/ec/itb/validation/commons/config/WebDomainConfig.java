@@ -6,7 +6,6 @@ public abstract class WebDomainConfig<T extends LabelConfig> extends DomainConfi
 
     private String uploadTitle = "Validator";
     private String webServiceId = "ValidationService";
-    private String reportTitle = "Validation report";
     private Map<String, String> webServiceDescription;
     private Map<String, String> typeLabel;
     private Map<String, Map<String, String>> typeOptionLabel;
@@ -44,14 +43,6 @@ public abstract class WebDomainConfig<T extends LabelConfig> extends DomainConfi
 
     public void setWebServiceId(String webServiceId) {
         this.webServiceId = webServiceId;
-    }
-
-    public String getReportTitle() {
-        return reportTitle;
-    }
-
-    public void setReportTitle(String reportTitle) {
-        this.reportTitle = reportTitle;
     }
 
     public Map<String, String> getWebServiceDescription() {
