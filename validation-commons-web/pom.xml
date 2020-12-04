@@ -39,6 +39,10 @@
             <artifactId>validation-commons</artifactId>
         </dependency>
         <dependency>
+            <groupId>eu.europa.ec.itb.commons</groupId>
+            <artifactId>validation-commons-report</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
@@ -71,8 +75,10 @@
             <artifactId>jquery</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.gitb</groupId>
-            <artifactId>gitb-reports</artifactId>
+            <groupId>eu.europa.ec.itb.commons</groupId>
+            <artifactId>validation-commons-report</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

@@ -13,6 +13,7 @@
         <module>validation-commons</module>
         <module>validation-commons-web</module>
         <module>validation-commons-war</module>
+        <module>validation-commons-report</module>
     </modules>
 
     <properties>
