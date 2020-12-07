@@ -30,6 +30,15 @@ public class LabelConfig {
     private String includeExternalArtefacts;
     private String externalArtefactsTooltip;
     private String maximumReportsExceededForDetailedOutputMessage;
+    private String maximumReportsExceededForXmlOutputMessage;
+
+    public String getMaximumReportsExceededForXmlOutputMessage() {
+        return maximumReportsExceededForXmlOutputMessage;
+    }
+
+    public void setMaximumReportsExceededForXmlOutputMessage(String maximumReportsExceededForXmlOutputMessage) {
+        this.maximumReportsExceededForXmlOutputMessage = maximumReportsExceededForXmlOutputMessage;
+    }
 
     public String getMaximumReportsExceededForDetailedOutputMessage() {
         return maximumReportsExceededForDetailedOutputMessage;
