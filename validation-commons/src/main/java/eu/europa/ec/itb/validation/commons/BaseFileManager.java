@@ -487,16 +487,20 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         return new File(getTempFolder(), "reports");
     }
 
-    public void saveReport(TAR report, String uuid) {
+    public <R extends DomainConfig> void saveReport(TAR report, String uuid, R domainConfig) {
         File outputFile = new File(getReportFolder(), "TAR-"+uuid+".xml");
-        saveReport(report, outputFile);
+        saveReport(report, outputFile, domainConfig);
     }
 
-    public void saveReport(TAR report, File outputFile) {
+    public <R extends DomainConfig> void saveReport(TAR report, File outputFile, R domainConfig) {
         try {
             Marshaller m = REPORT_CONTEXT.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             outputFile.getParentFile().mkdirs();
+
+            // Apply XML report limit for report items
+            if (report.getReports() != null && report.getReports().getInfoOrWarningOrError().size() > domainConfig.getMaximumReportsForXmlOutput()) {
+                report.getReports().getInfoOrWarningOrError().subList(domainConfig.getMaximumReportsForXmlOutput().intValue(), report.getReports().getInfoOrWarningOrError().size()).clear();
+            }
 
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             Document document = docBuilderFactory.newDocumentBuilder().newDocument();

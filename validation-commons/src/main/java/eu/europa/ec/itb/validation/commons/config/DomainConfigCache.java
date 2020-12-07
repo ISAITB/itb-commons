@@ -153,7 +153,21 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setPluginDefaultConfig(parseValueList("validator.defaultPlugins", config, pluginConfigMapper));
                     domainConfig.setPluginPerTypeConfig(parseTypedValueList("validator.plugins", domainConfig.getType(), config, pluginConfigMapper));
                     // Parse plugins - end
-                    domainConfig.setMaximumReportsForDetailedOutput(config.getLong("validator.maximumReportsForDetailedOutput", 5000L));
+                    // Maximum report thresholds - start
+                    long defaultMaximumReportsForDetailsOutput = 5000L;
+                    long defaultMaximumReportsForXmlOutput = 50000L;
+                    domainConfig.setMaximumReportsForDetailedOutput(config.getLong("validator.maximumReportsForDetailedOutput", defaultMaximumReportsForDetailsOutput));
+                    if (domainConfig.getMaximumReportsForDetailedOutput() < 0) {
+                        domainConfig.setMaximumReportsForDetailedOutput(defaultMaximumReportsForDetailsOutput);
+                    }
+                    domainConfig.setMaximumReportsForXmlOutput(config.getLong("validator.maximumReportsForXmlOutput", defaultMaximumReportsForXmlOutput));
+                    if (domainConfig.getMaximumReportsForXmlOutput() < 0) {
+                        domainConfig.setMaximumReportsForXmlOutput(defaultMaximumReportsForXmlOutput);
+                    }
+                    if (domainConfig.getMaximumReportsForXmlOutput() < domainConfig.getMaximumReportsForDetailedOutput()) {
+                        domainConfig.setMaximumReportsForXmlOutput(domainConfig.getMaximumReportsForDetailedOutput());
+                    }
+                    // Maximum report thresholds - end
                     // Allow subclasses to extend the configuration as needed.
                     addDomainConfiguration(domainConfig, config);
                     completeValidationArtifactConfig(domainConfig);

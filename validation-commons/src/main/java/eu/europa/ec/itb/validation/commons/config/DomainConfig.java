@@ -18,9 +18,18 @@ public class DomainConfig {
     private Set<ValidatorChannel> channels = new HashSet<>();
     private Map<String, TypedValidationArtifactInfo> artifactInfo;
     private Long maximumReportsForDetailedOutput;
+    private Long maximumReportsForXmlOutput;
     // Plugin configuration.
     private List<PluginInfo> pluginDefaultConfig;
     private Map<String, List<PluginInfo>> pluginPerTypeConfig;
+
+    public Long getMaximumReportsForXmlOutput() {
+        return maximumReportsForXmlOutput;
+    }
+
+    public void setMaximumReportsForXmlOutput(Long maximumReportsForXmlOutput) {
+        this.maximumReportsForXmlOutput = maximumReportsForXmlOutput;
+    }
 
     public Long getMaximumReportsForDetailedOutput() {
         return maximumReportsForDetailedOutput;
