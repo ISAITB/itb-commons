@@ -3,10 +3,7 @@ package eu.europa.ec.itb.validation.commons.config;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.artifact.*;
 import eu.europa.ec.itb.validation.plugin.PluginInfo;
-import org.apache.commons.configuration2.CompositeConfiguration;
-import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.FileBasedConfiguration;
-import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.*;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -98,6 +95,11 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
             } else {
                 try {
                     CompositeConfiguration config = new CompositeConfiguration();
+                    // 1. Load from system properties.
+                    config.addConfiguration(new SystemConfiguration());
+                    // 2. Load from environment variables.
+                    config.addConfiguration(new EnvironmentConfiguration());
+                    // 3. Load from property file(s).
                     for (String file: files) {
                         Parameters params = new Parameters();
                         FileBasedConfigurationBuilder<FileBasedConfiguration> builder =

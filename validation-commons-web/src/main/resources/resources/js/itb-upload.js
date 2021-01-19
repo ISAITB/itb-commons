@@ -9,6 +9,7 @@ _state.listenerEvents['INPUT_CONTENT_TYPE_CHANGED'] = true;
 _state.listenerEvents['VALIDATION_TYPE_CHANGED'] = true;
 _state.listenerEvents['FORM_READY'] = true;
 _state.listenerEvents['SUBMIT_STATUS_VALIDATED'] = true;
+_state.contentTypeValidators = {}
 
 $(document).ready(function() {
 	prepareControls();
@@ -51,6 +52,10 @@ function configure(config) {
             _config.custom = config.custom;
         }
     }
+}
+
+function addContentTypeValidator(contentType, fn) {
+    _state.contentTypeValidators[contentType] = fn;
 }
 
 function addListener(eventType, fn) {
@@ -471,27 +476,32 @@ function updateSubmitStatus() {
 	    inputTypeOption = $('#validationTypeOption'),
 	    submitDisabled = true,
 	    inputFile, uriInput, stringType, i;
-	$('#inputFileSubmit').prop('disabled', true);	
-	if (type == "fileType") {
-		inputFile = $("#inputFileName");
-		submitDisabled = (inputFile.val() && (!inputType.length || inputType.val()) && (!inputTypeOption.length || inputTypeOption.val()))?false:true
-	} else if (type == "uriType") {
-		uriInput = $("#uri");
-		submitDisabled = (uriInput.val() && (!inputType.length || inputType.val()) && (!inputTypeOption.length || inputTypeOption.val()))?false:true
-	} else if (type == "stringType") {
-		stringType = getCodeMirrorNative('#text-editor').getDoc();
-		submitDisabled = (stringType.getValue() && (!inputType.length || inputType.val()) && (!inputTypeOption.length || inputTypeOption.val()))?false:true
-	}
-	if (!submitDisabled) {
-        for (i=0; i < _config.artifactTypes.length; i++) {
-            if (getExternalArtifactSupport({artifactType: _config.artifactTypes[i]}) == 'required') {
-                submitDisabled = !externalElementHasValue(document.getElementsByName("contentType-external_"+_config.artifactTypes[i]));
-                if (submitDisabled) {
-                    break;
+	$('#inputFileSubmit').prop('disabled', true);
+    submitDisabled = ((!inputType.length || inputType.val()) && (!inputTypeOption.length || inputTypeOption.val()))?false:true
+    if (!submitDisabled) {
+        if (type == "fileType") {
+            inputFile = $("#inputFileName");
+            submitDisabled = inputFile.val()?false:true
+        } else if (type == "uriType") {
+            uriInput = $("#uri");
+            submitDisabled = uriInput.val()?false:true
+        } else if (type == "stringType") {
+            stringType = getCodeMirrorNative('#text-editor').getDoc();
+            submitDisabled = stringType.getValue()?false:true
+        } else if (_state.contentTypeValidators[type]) {
+            submitDisabled = !_state.contentTypeValidators[type]();
+        }
+        if (!submitDisabled) {
+            for (i=0; i < _config.artifactTypes.length; i++) {
+                if (getExternalArtifactSupport({artifactType: _config.artifactTypes[i]}) == 'required') {
+                    submitDisabled = !externalElementHasValue(document.getElementsByName("contentType-external_"+_config.artifactTypes[i]));
+                    if (submitDisabled) {
+                        break;
+                    }
                 }
             }
         }
-	}
+    }
     if (_config.isMinimalUI) {
         $('#inputFileSubmitMinimal').prop('disabled', submitDisabled);
     } else {
