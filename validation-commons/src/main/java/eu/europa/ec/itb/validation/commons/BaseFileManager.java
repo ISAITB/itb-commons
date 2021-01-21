@@ -141,7 +141,12 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             outputFile = getFileFromURL(targetFolder, urlOrBase64, getFileExtension(contentType), null, null, null, artifactType);
         } catch (MalformedURLException e) {
             // Exception means that the text is not a valid URL.
-            outputFile = getFileFromBase64(targetFolder, urlOrBase64, contentType);
+            try {
+                outputFile = getFileFromBase64(targetFolder, urlOrBase64, contentType);
+            } catch (Exception e2) {
+                // This likely means that the is not a valid BASE64 string. Try to get the value as a plain string.
+                outputFile = getFileFromString(targetFolder, urlOrBase64, contentType);
+            }
         }
         return outputFile;
     }
