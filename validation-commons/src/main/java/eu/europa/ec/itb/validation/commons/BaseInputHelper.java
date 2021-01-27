@@ -106,17 +106,42 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
 
     public List<FileContent> toExternalArtifactContents(AnyContent containerContent, String artifactContentInputName, String artifactEmbeddingMethodInputName) {
         List<FileContent> filesContent = new ArrayList<>();
-        FileContent artifactContent = toExternalArtifactContent(containerContent, artifactContentInputName, artifactEmbeddingMethodInputName);
-        if (!StringUtils.isEmpty(artifactContent.getContent())) {
-            filesContent.add(artifactContent);
-        }
-        for (AnyContent content: containerContent.getItem()) {
-            FileContent fileContent = toExternalArtifactContent(content, artifactContentInputName, artifactEmbeddingMethodInputName);
-            if (!StringUtils.isEmpty(fileContent.getContent())) {
-                filesContent.add(fileContent);
+        collectExternalArtifactContents(containerContent.getItem(), artifactContentInputName, artifactEmbeddingMethodInputName, filesContent);
+        return filesContent;
+    }
+
+    private void collectExternalArtifactContents(List<AnyContent> items, String artifactContentInputName, String artifactEmbeddingMethodInputName, List<FileContent> results) {
+        List<AnyContent> contentItems = new ArrayList<>();
+        List<AnyContent> otherItems = new ArrayList<>();
+        ValueEmbeddingEnumeration explicitEmbeddingMethod = null;
+        for (var item: items) {
+            if (!item.getItem().isEmpty()) {
+                collectExternalArtifactContents(item.getItem(), artifactContentInputName, artifactEmbeddingMethodInputName, results);
+            }
+            if (StringUtils.equals(item.getName(), artifactContentInputName)) {
+                contentItems.add(item);
+            } else if (StringUtils.equals(item.getName(), artifactEmbeddingMethodInputName)) {
+                explicitEmbeddingMethod = getEmbeddingMethod(item);
+            } else {
+                otherItems.add(item);
             }
         }
-        return filesContent;
+        for (var contentItem: contentItems) {
+            var fileContent = new FileContent();
+            if (contentItem.getEmbeddingMethod() == ValueEmbeddingEnumeration.BASE_64 && explicitEmbeddingMethod != null && explicitEmbeddingMethod != ValueEmbeddingEnumeration.BASE_64) {
+                // This is a URI or a plain text string encoded as BASE64.
+                fileContent.setContent(new String(java.util.Base64.getDecoder().decode(contentItem.getValue())));
+            } else {
+                fileContent.setContent(contentItem.getValue());
+            }
+            fileContent.setEmbeddingMethod((explicitEmbeddingMethod == null)?contentItem.getEmbeddingMethod():explicitEmbeddingMethod);
+            // Do any additional data extraction needed.
+            for (var otherItem: otherItems) {
+                populateFileContentFromInput(fileContent, otherItem);
+            }
+            // Add to results.
+            results.add(fileContent);
+        }
     }
 
     /*
@@ -157,42 +182,6 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
 
     public void populateFileContentFromInput(FileContent fileContent, AnyContent inputItem) {
         // Nothing by default.
-    }
-
-    private FileContent toExternalArtifactContent(AnyContent content, String artifactContentInputName, String artifactEmbeddingMethodInputName) {
-        FileContent fileContent = new FileContent();
-        ValueEmbeddingEnumeration embeddingMethod = null;
-        ValueEmbeddingEnumeration explicitEmbeddingMethod = null;
-        if (content.getItem() != null && !content.getItem().isEmpty()) {
-            boolean isContent = false;
-            for (AnyContent inputItem : content.getItem()) {
-                if (StringUtils.equals(inputItem.getName(), artifactContentInputName)) {
-                    embeddingMethod = inputItem.getEmbeddingMethod();
-                    fileContent.setContent(inputItem.getValue());
-                    isContent = true;
-                }
-                if (StringUtils.equals(inputItem.getName(), artifactEmbeddingMethodInputName)) {
-                    explicitEmbeddingMethod = getEmbeddingMethod(inputItem);
-                }
-                // Do any additional data extraction needed.
-                populateFileContentFromInput(fileContent, inputItem);
-            }
-            if (isContent) {
-                if (explicitEmbeddingMethod == null) {
-                    explicitEmbeddingMethod = embeddingMethod;
-                }
-                if (explicitEmbeddingMethod == null) {
-                    // Embedding method not provided as input nor as parameter.
-                    throw new ValidatorException(String.format("For user-provided artefacts the embedding method needs to be provided either as a separate input [%s] or as an attribute of the [%s] input.", artifactEmbeddingMethodInputName, artifactContentInputName));
-                }
-                if (embeddingMethod == ValueEmbeddingEnumeration.BASE_64 && explicitEmbeddingMethod != ValueEmbeddingEnumeration.BASE_64) {
-                    // This is a URI or a plain text string encoded as BASE64.
-                    fileContent.setContent(new String(java.util.Base64.getDecoder().decode(fileContent.getContent())));
-                }
-                fileContent.setEmbeddingMethod(explicitEmbeddingMethod);
-            }
-        }
-        return fileContent;
     }
 
     private ValueEmbeddingEnumeration getEmbeddingMethod(AnyContent content) {
