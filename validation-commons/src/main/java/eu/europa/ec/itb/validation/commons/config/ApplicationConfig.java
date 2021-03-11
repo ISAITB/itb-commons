@@ -1,19 +1,24 @@
 package eu.europa.ec.itb.validation.commons.config;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class ApplicationConfig {
 
@@ -30,7 +35,8 @@ public abstract class ApplicationConfig {
     private String startupTimestamp;
     private String resourceUpdateTimestamp;
     private long cleanupWebRate = 300000L;
-
+    private boolean restrictResourcesToDomain = Boolean.TRUE;
+    
     public long getCleanupWebRate() {
         return cleanupWebRate;
     }
@@ -94,6 +100,14 @@ public abstract class ApplicationConfig {
     public void setResourceUpdateTimestamp(String resourceUpdateTimestamp) {
         this.resourceUpdateTimestamp = resourceUpdateTimestamp;
     }
+    
+    public void setRestrictResourcesToDomain(boolean restrictResourcesToDomain) {
+    	this.restrictResourcesToDomain = restrictResourcesToDomain;
+    }
+    
+    public boolean isRestrictResourcesToDomain() {
+    	return this.restrictResourcesToDomain;
+    }
 
     protected void init() {
         if (resourceRoot != null && Files.isDirectory(Paths.get(resourceRoot))) {
@@ -123,5 +137,7 @@ public abstract class ApplicationConfig {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss (XXX)");
         startupTimestamp = dtf.format(ZonedDateTime.now());
         resourceUpdateTimestamp = sdf.format(new Date(Paths.get(resourceRoot).toFile().lastModified()));
+      
     }
+    
 }

@@ -341,7 +341,19 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         if (StringUtils.isNotEmpty(localFolderConfigValue)) {
             String[] localFiles = StringUtils.split(localFolderConfigValue, ',');
             for (String localFile: localFiles) {
-                localFileReferences.add(Paths.get(config.getResourceRoot(), domainConfig.getDomain(), localFile.trim()).toFile());
+            	if(config.isRestrictResourcesToDomain()) {
+            		if((new File(localFile.trim())).isAbsolute() || !domainConfigCache.isInDomainFolder(domainConfig.getDomain(), localFile)) {
+            			throw new ValidatorException(String.format("Resources are restricted to domain. Their paths should be relative to domain folder. Unable to load file %s", localFile));
+            		}else {
+                		localFileReferences.add(Paths.get(config.getResourceRoot(), domainConfig.getDomain(), localFile.trim()).toFile());           			
+            		}
+            	}else {
+             		if(new File(localFile.trim()).isAbsolute()) {
+            			localFileReferences.add(Paths.get(localFile.trim()).toFile());
+            		}else {
+            			localFileReferences.add(Paths.get(config.getResourceRoot(), domainConfig.getDomain(), localFile.trim()).toFile());
+            		}
+            	}
             }
         }
         return localFileReferences;
@@ -366,9 +378,12 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                     }
                 }
             }
+        }else {
+        	throw new ValidatorException("Unable to find validation file " + ((file != null)? file.getPath(): ""));
         }
         return fileInfo;
     }
+    
 
     public List<FileInfo> getRemoteValidationArtifacts(DomainConfig domainConfig, String validationType, String artifactType) {
         File remoteConfigFolder = new File(new File(new File(getRemoteFileCacheFolder(), domainConfig.getDomainName()), validationType), artifactType);
