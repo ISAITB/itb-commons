@@ -2,6 +2,7 @@ package eu.europa.ec.itb.validation.commons.config;
 
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.artifact.*;
+import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import eu.europa.ec.itb.validation.plugin.PluginInfo;
 import org.apache.commons.configuration2.*;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -111,6 +113,8 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                             throw new IllegalStateException("Unable to load property file ["+file+"]", e);
                         }
                     }
+                    importAdditionalProperties(config, domain);
+                    
                     domainConfig = newDomainConfig();
                     domainConfig.setDefined(true);
                     domainConfig.setDomain(domain);
@@ -188,7 +192,47 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
         }
         return domainConfig;
     }
+    
+    protected void importAdditionalProperties(CompositeConfiguration config, String domain) {
+    	String importPropertiesObject = config.getString("validator.importProperties", null);
+    	if(importPropertiesObject == null) {
+    		return;
+    	}
+    	String importPropertiesPath = (String)importPropertiesObject;
+    	if(appConfig.isRestrictResourcesToDomain() && ((new File(importPropertiesPath)).isAbsolute() || !isInDomainFolder(domain, importPropertiesPath))) {
+   			throw new IllegalStateException("Resources are restricted to domain. Their paths should be relative to domain folder. Unable to load property file [" + importPropertiesPath + "]");
+    	}else {
+    		if(!(new File(importPropertiesPath)).isAbsolute()) {
+    			importPropertiesPath = Paths.get(appConfig.getResourceRoot(), domain, importPropertiesPath).toAbsolutePath().toString();
+    		}
+    	}
+    	Parameters params = new Parameters();
+		try {
+			FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
+					PropertiesConfiguration.class)
+							.configure(params.properties().setFile(
+									Paths.get(importPropertiesPath).toFile()));
 
+				config.addConfiguration(builder.getConfiguration());
+			} catch (ConfigurationException e) {
+				throw new IllegalStateException("Unable to load property file [" + importPropertiesPath + "]", e);
+			}
+    }
+    
+    public boolean isInDomainFolder(String domain, String localFile) {
+    	Path domainRootPath = Paths.get(appConfig.getResourceRoot(), domain);
+    	Path localFilePath = Paths.get(appConfig.getResourceRoot(), domain, localFile.trim());
+    	Path domaniRootCanonicalPath;
+    	Path localFileCanonicalPath;
+		try {
+			domaniRootCanonicalPath = domainRootPath.toFile().getCanonicalFile().toPath();
+			localFileCanonicalPath = localFilePath.toFile().getCanonicalFile().toPath();
+			return localFileCanonicalPath.startsWith(domaniRootCanonicalPath);
+		} catch (IOException e) {
+			throw new ValidatorException("Unable to find domain properties file" + localFile, e);
+		}
+    }
+	
     protected void completeValidationArtifactConfig(T domainConfig) {
         if (domainConfig.getArtifactInfo() != null) {
             for (String validationType: domainConfig.getType()) {
