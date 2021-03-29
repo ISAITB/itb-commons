@@ -15,5 +15,8 @@
         </div>
     </div>
 </div>
+<div th:if="${previousPage} == true" class="container">
+	<a  th:href="@{(${minimalUI} ? 'uploadm' : 'upload')}" class="btn btn-primary">Back</a>
+</div>
 </body>
 </html>
