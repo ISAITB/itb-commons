@@ -5,9 +5,8 @@ import eu.europa.ec.itb.validation.commons.artifact.*;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import eu.europa.ec.itb.validation.plugin.PluginInfo;
 import org.apache.commons.configuration2.*;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.FileHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,8 @@ import java.util.stream.Collectors;
 
 public abstract class DomainConfigCache <T extends DomainConfig> {
 
-    private static Logger logger = LoggerFactory.getLogger(DomainConfigCache.class);
+    private static final String DEFAULT_FILE_ENCODING = "UTF-8";
+    private static final Logger logger = LoggerFactory.getLogger(DomainConfigCache.class);
 
     @Autowired
     private ApplicationConfig appConfig = null;
@@ -103,15 +103,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     config.addConfiguration(new EnvironmentConfiguration());
                     // 3. Load from property file(s).
                     for (String file: files) {
-                        Parameters params = new Parameters();
-                        FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
-                                new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
-                                        .configure(params.properties().setFile(Paths.get(appConfig.getResourceRoot(), domain, file).toFile()));
-                        try {
-                            config.addConfiguration(builder.getConfiguration());
-                        } catch (ConfigurationException e) {
-                            throw new IllegalStateException("Unable to load property file ["+file+"]", e);
-                        }
+                        addConfigurationFromFile(Paths.get(appConfig.getResourceRoot(), domain, file), config);
                     }
                     importAdditionalProperties(config, domain);
                     
@@ -192,13 +184,13 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
         }
         return domainConfig;
     }
-    
+
     protected void importAdditionalProperties(CompositeConfiguration config, String domain) {
     	String importPropertiesObject = config.getString("validator.importProperties", null);
     	if(importPropertiesObject == null) {
     		return;
     	}
-    	String importPropertiesPath = (String)importPropertiesObject;
+    	String importPropertiesPath = importPropertiesObject;
     	if(appConfig.isRestrictResourcesToDomain() && ((new File(importPropertiesPath)).isAbsolute() || !isInDomainFolder(domain, importPropertiesPath))) {
    			throw new IllegalStateException("Resources are restricted to domain. Their paths should be relative to domain folder. Unable to load property file [" + importPropertiesPath + "]");
     	}else {
@@ -206,19 +198,22 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
     			importPropertiesPath = Paths.get(appConfig.getResourceRoot(), domain, importPropertiesPath).toAbsolutePath().toString();
     		}
     	}
-    	Parameters params = new Parameters();
-		try {
-			FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
-					PropertiesConfiguration.class)
-							.configure(params.properties().setFile(
-									Paths.get(importPropertiesPath).toFile()));
-
-				config.addConfiguration(builder.getConfiguration());
-			} catch (ConfigurationException e) {
-				throw new IllegalStateException("Unable to load property file [" + importPropertiesPath + "]", e);
-			}
+        addConfigurationFromFile(Paths.get(importPropertiesPath), config);
     }
-    
+
+    private void addConfigurationFromFile(Path fileToAdd, CompositeConfiguration aggregateConfiguration) {
+        PropertiesConfiguration propertiesConfig = new PropertiesConfiguration();
+        FileHandler fileHandler = new FileHandler(propertiesConfig);
+        fileHandler.setFile(fileToAdd.toFile());
+        fileHandler.setEncoding(DEFAULT_FILE_ENCODING);
+        try {
+            fileHandler.load();
+        } catch (ConfigurationException e) {
+            throw new IllegalStateException("Unable to load property file [" + fileToAdd.toFile().getAbsolutePath() + "]", e);
+        }
+        aggregateConfiguration.addConfiguration(propertiesConfig);
+    }
+
     public boolean isInDomainFolder(String domain, String localFile) {
     	Path domainRootPath = Paths.get(appConfig.getResourceRoot(), domain);
     	Path localFilePath = Paths.get(appConfig.getResourceRoot(), domain, localFile.trim());
