@@ -5,7 +5,7 @@
     <groupId>eu.europa.ec.itb.commons</groupId>
     <artifactId>commons</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
     <modules>
         <module>validation-plugins</module>
         <module>validation-commons</module>
@@ -55,7 +55,7 @@
 
     <scm>
         <developerConnection>scm:git:https://webgate.ec.europa.eu/CITnet/stash/scm/itb/itb-commons.git</developerConnection>
-      <tag>1.0.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <build>
