@@ -21,7 +21,7 @@
         <version.springBoot>2.3.3.RELEASE</version.springBoot>
         <version.slf4j>1.7.30</version.slf4j>
         <version.javaxAnnotationApi>1.3.2</version.javaxAnnotationApi>
-        <version.gitbTypes>1.10.0</version.gitbTypes>
+        <version.gitbTypes>1.12.0</version.gitbTypes>
         <version.commonsLang>3.10</version.commonsLang>
         <version.commonsConfiguration>2.7</version.commonsConfiguration>
         <version.commonsIo>2.7</version.commonsIo>
@@ -29,7 +29,7 @@
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.50.0</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.5.1</version.webjarsJQuery>
-        <version.gitbReports>1.0-SNAPSHOT</version.gitbReports>
+        <version.jasperReports>6.16.0</version.jasperReports>
         <version.jaxb>2.3.1</version.jaxb>
     </properties>
 
@@ -66,6 +66,15 @@
                     <target>8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.0.0-M4</version>
+                <configuration>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -77,21 +86,18 @@
                 <version>${version.gitbTypes}</version>
             </dependency>
             <dependency>
-                <groupId>com.gitb</groupId>
-                <artifactId>gitb-reports</artifactId>
-                <version>${version.gitbReports}</version>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports</artifactId>
+                <version>${version.jasperReports}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports-fonts</artifactId>
+                <version>${version.jasperReports}</version>
                 <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-simple</artifactId>
-                    </exclusion>
                     <exclusion>
                         <groupId>org.bouncycastle</groupId>
                         <artifactId>bcprov-jdk15on</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.alexnederlof</groupId>
-                        <artifactId>jasperreports-plugin</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
