@@ -55,6 +55,10 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <scm>
+        <developerConnection>scm:git:https://webgate.ec.europa.eu/CITnet/stash/scm/itb/itb-commons.git</developerConnection>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
