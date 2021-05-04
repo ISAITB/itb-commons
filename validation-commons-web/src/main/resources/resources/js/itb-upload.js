@@ -705,7 +705,13 @@ function getReport(inputID) {
             _state.itbReportData = data;
             $.ajax({
                 url: "input/"+inputID,
-                type: 'DELETE'
+                type: 'DELETE',
+                beforeSend: function(request) {
+                	request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                },
+                error: function(response){
+                	raiseAlert(response.responseJSON.errorMessage)
+                }
             });
             _state.reportLoad.resolve();
             $('#viewInputButtonSpinner').addClass('hidden');
@@ -718,41 +724,63 @@ function getResultReport(inputID) {
         $.ajax({
             url: "report/"+inputID+"/xml",
             type: 'GET',
+            beforeSend: function(request) {
+            	request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            },
             success: function(data) {
                 _state.itbResultReportXML = new Blob([data], { type: 'application/xml' });
                 $('#downloadReportButtonXMLSpinner').addClass('hidden');
                 $('#downloadReportButtonXML').prop('disabled', false);
                 _state.resultLoadXML.resolve();
+            },
+            error: function(response){
+            	raiseAlert(response.responseJSON.errorMessage)
             }
         });
     }
     if ($('#downloadReportButtonPDF').length) {
-        var ajax = new XMLHttpRequest();
-        ajax.open("GET", "report/"+inputID+"/pdf", true);
-        ajax.onreadystatechange = function() {
-            if (this.readyState == 4) {
-                if (this.status == 200) {
-                    _state.itbResultReportPDF = new Blob([this.response], {type: "application/octet-stream"});
-                    $('#downloadReportButtonPDFSpinner').addClass('hidden');
-                    $('#downloadReportButtonPDF').prop('disabled', false);
-                    _state.resultLoadPDF.resolve();
-                }
-            } else if (this.readyState == 2) {
-                if (this.status == 200) {
-                    this.responseType = "blob";
-                } else {
-                    this.responseType = "text";
-                }
-            }
-        };
-        ajax.send(null);
+    	 var ajax = new XMLHttpRequest();
+    	 ajax.open("GET", "report/"+inputID+"/pdf", true);
+    	 ajax.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+         ajax.onreadystatechange = function() {
+             if (this.readyState == 4) {
+                 if (this.status == 200) {
+                     _state.itbResultReportPDF = new Blob([this.response], {type: "application/octet-stream"});
+                     $('#downloadReportButtonPDFSpinner').addClass('hidden');
+                     $('#downloadReportButtonPDF').prop('disabled', false);
+                     _state.resultLoadPDF.resolve();
+                 }else{
+                 	_state.error = JSON.parse(this.responseText).errorMessage;
+                 	raiseAlert(_state.error);
+ 				}
+             } else if (this.readyState == 2) {
+                 if (this.status == 200) {
+                     this.responseType = "blob";
+                 } else {
+                     this.responseType = "text";
+                 }
+             }
+         };
+         ajax.send(null);
     }
 	$.when(_state.resultLoadXML, _state.resultLoadPDF).done(function () {
         $.ajax({
             url: "report/"+inputID,
-            type: 'DELETE'
+            type: 'DELETE',
+            beforeSend: function(request) {
+            	request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            },
+            error: function(response){
+            	raiseAlert(response.responseJSON.errorMessage)
+            }
         });
 	})
+}
+function raiseAlert(errorMessage){
+	$(".alert.alert-danger.ajax-error").remove();
+	const alertDiv = $("<div class='alert alert-danger ajax-error'></div>");
+	alertDiv.text(errorMessage);
+	alertDiv.insertAfter(".view-section-input");
 }
 function downloadReportXML() {
 	_state.resultLoadXML.done(function() {
