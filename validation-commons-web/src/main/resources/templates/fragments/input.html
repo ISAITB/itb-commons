@@ -3,8 +3,8 @@
     <body>
 
         <th:block th:fragment="pageHeader(config, minimalUI)">
-            <h1 class="overall-title" onclick="window.location.href='upload'" th:text="${config.uploadTitle}" th:if="${!minimalUI && config.htmlBanner == ''}">Validator</h1>
-            <div class="view-section-input" th:if="${!minimalUI && config.htmlBanner != ''}">
+            <h1 id="bannerSection" class="overall-title" onclick="window.location.href='upload'" th:text="${config.uploadTitle}" th:if="${!minimalUI && config.htmlBanner == ''}">Validator</h1>
+            <div id="bannerSection" class="view-section-input" th:if="${!minimalUI && config.htmlBanner != ''}">
                 <div th:utext="${config.htmlBanner}">Validator</div>
             </div>
             <div class="alert alert-danger" th:if="${message}" th:text="${message}">A message</div>
