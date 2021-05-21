@@ -3,3 +3,4 @@
 /bin/
 /src/main/**/*.jasper
 .project
+/.settings/

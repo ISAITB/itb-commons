@@ -264,47 +264,6 @@
 				</jr:list>
 			</componentElement>
 		</band>
-		<band height="131">
-			<printWhenExpression><![CDATA[$P{contextItems} != null]]></printWhenExpression>
-			<textField>
-				<reportElement x="20" y="10" width="760" height="30" uuid="29eefc92-1769-4458-bf74-9e79ae6b2fab">
-					<printWhenExpression><![CDATA[$P{contextItems} != null]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Context"]]></textFieldExpression>
-			</textField>
-			<line>
-				<reportElement x="20" y="39" width="752" height="1" uuid="1e2fe0b3-1837-406c-8271-df50dfdce0a8">
-					<printWhenExpression><![CDATA[$P{contextItems} != null]]></printWhenExpression>
-				</reportElement>
-			</line>
-			<componentElement>
-				<reportElement x="20" y="50" width="753" height="70" uuid="46aa9096-7356-4780-8909-8f4158f11a76">
-					<printWhenExpression><![CDATA[$P{contextItems} != null]]></printWhenExpression>
-				</reportElement>
-				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
-					<datasetRun subDataset="Dataset2" uuid="124cbc51-d152-47c6-8068-6bfa46a97b35">
-						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{contextItems})]]></dataSourceExpression>
-					</datasetRun>
-					<jr:listContents height="70" width="753">
-						<textField>
-							<reportElement x="11" y="10" width="729" height="20" uuid="ef0b0f61-210d-4812-8231-349a35ef32b0"/>
-							<textElement verticalAlignment="Middle" markup="html"/>
-							<textFieldExpression><![CDATA["<b>Name:</b> " + $F{key}]]></textFieldExpression>
-						</textField>
-						<textField isStretchWithOverflow="true">
-							<reportElement x="11" y="30" width="728" height="30" uuid="2191a8bb-2231-4575-95e1-fe8e66695395"/>
-							<box>
-								<pen lineWidth="0.5"/>
-							</box>
-							<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
-						</textField>
-					</jr:listContents>
-				</jr:list>
-			</componentElement>
-		</band>
 	</detail>
 	<pageFooter>
 		<band height="51" splitType="Stretch">
