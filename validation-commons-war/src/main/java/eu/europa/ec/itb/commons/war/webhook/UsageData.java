@@ -3,6 +3,8 @@ package eu.europa.ec.itb.commons.war.webhook;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonAppend;
 
 /**
@@ -13,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonAppend;
 @JsonAppend(attrs = {
 	@JsonAppend.Attr(value = "secret")
 })
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UsageData {
 
 	private String validator;
@@ -22,14 +25,21 @@ public class UsageData {
 	private Result result;
 	@JsonFormat(pattern = "yyyy-MM-dd'T'hh:mm:ss")
 	private Date validationTime;
+	@JsonInclude(Include.NON_EMPTY)
+	private String country;
 
 	public UsageData(String validator, String domain, String api, String validationType, Result result) {
+		this(validator, domain, api, validationType, result, null);
+	}
+
+	public UsageData(String validator, String domain, String api, String validationType, Result result, String country){
 		this.validator = validator;
 		this.domain = domain;
 		this.api = api;
 		this.validationType = validationType;
 		this.result = result;
 		this.validationTime = new Date();
+		this.country = country;
 	}
 
 	public String getValidator() {
@@ -54,6 +64,10 @@ public class UsageData {
 
 	public Date getValidationTime() {
 		return this.validationTime;
+	}
+
+	public String getCountry(){
+		return this.country;
 	}
 
 

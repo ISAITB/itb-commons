@@ -161,6 +161,12 @@ public abstract class ApplicationConfig {
     	private String statistics;
     	
     	private String statisticsSecret;
+
+        private boolean statisticsEnableCountryDetection;
+
+        private String statisticsCountryDetectionDbFile;
+
+        private String ipHeader;
     	
     	public void setStatistics(String statistics) {
     		this.statistics = statistics;
@@ -177,7 +183,30 @@ public abstract class ApplicationConfig {
     	public String getStatisticsSecret() {
     		return this.statisticsSecret;
     	}
+
+        public void setStatisticsEnableCountryDetection(boolean statisticsEnableCountryDetection){
+            this.statisticsEnableCountryDetection = statisticsEnableCountryDetection;
+        }
+
+        public boolean isStatisticsEnableCountryDetection(){
+            return this.statisticsEnableCountryDetection;
+        }
+
+        public void setStatisticsCountryDetectionDbFile(String statisticsCountryDetectionDbFile){
+            this.statisticsCountryDetectionDbFile = statisticsCountryDetectionDbFile;
+        }
+
+        public String getStatisticsCountryDetectionDbFile(){
+            return this.statisticsCountryDetectionDbFile;
+        }
     	
+        public String getIpHeader(){
+            return this.ipHeader;
+        }
+    
+        public void setIpHeader(String ipHeader){
+            this.ipHeader = ipHeader;
+        }
     }
     
 }
