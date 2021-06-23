@@ -2,7 +2,6 @@ package eu.europa.ec.itb.validation.commons.config;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
@@ -36,6 +35,8 @@ public abstract class ApplicationConfig {
     private String resourceUpdateTimestamp;
     private long cleanupWebRate = 300000L;
     private boolean restrictResourcesToDomain = Boolean.TRUE;
+    private final Webhook webhook = new Webhook();
+    private String identifier;
     
     public long getCleanupWebRate() {
         return cleanupWebRate;
@@ -108,6 +109,18 @@ public abstract class ApplicationConfig {
     public boolean isRestrictResourcesToDomain() {
     	return this.restrictResourcesToDomain;
     }
+    
+    public Webhook getWebhook() {
+    	return this.webhook;
+    }
+    
+    public String getIdentifier() {
+    	return this.identifier;
+    }
+    
+    public void setIdentifier(String identifier) {
+    	this.identifier = identifier;
+    }
 
     protected void init() {
         if (resourceRoot != null && Files.isDirectory(Paths.get(resourceRoot))) {
@@ -138,6 +151,62 @@ public abstract class ApplicationConfig {
         startupTimestamp = dtf.format(ZonedDateTime.now());
         resourceUpdateTimestamp = sdf.format(new Date(Paths.get(resourceRoot).toFile().lastModified()));
       
+    }
+    
+    /**
+     * Private class for the webhook config properties
+     * */
+    public static class Webhook{
+    	
+    	private String statistics;
+    	
+    	private String statisticsSecret;
+
+        private boolean statisticsEnableCountryDetection;
+
+        private String statisticsCountryDetectionDbFile;
+
+        private String ipHeader;
+    	
+    	public void setStatistics(String statistics) {
+    		this.statistics = statistics;
+    	}
+    	
+    	public String getStatistics() {
+    		return this.statistics;
+    	}
+    	
+    	public void setStatisticsSecret(String statisticsSecret) {
+    		this.statisticsSecret = statisticsSecret;
+    	}
+    	
+    	public String getStatisticsSecret() {
+    		return this.statisticsSecret;
+    	}
+
+        public void setStatisticsEnableCountryDetection(boolean statisticsEnableCountryDetection){
+            this.statisticsEnableCountryDetection = statisticsEnableCountryDetection;
+        }
+
+        public boolean isStatisticsEnableCountryDetection(){
+            return this.statisticsEnableCountryDetection;
+        }
+
+        public void setStatisticsCountryDetectionDbFile(String statisticsCountryDetectionDbFile){
+            this.statisticsCountryDetectionDbFile = statisticsCountryDetectionDbFile;
+        }
+
+        public String getStatisticsCountryDetectionDbFile(){
+            return this.statisticsCountryDetectionDbFile;
+        }
+    	
+        public String getIpHeader(){
+            return this.ipHeader;
+        }
+    
+        public void setIpHeader(String ipHeader){
+            this.ipHeader = ipHeader;
+        }
     }
     
 }
