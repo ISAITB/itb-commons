@@ -18,6 +18,18 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <dependency>
+        	<groupId>eu.europa.ec.itb.commons</groupId>
+        	<artifactId>validation-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.maxmind.geoip2</groupId>
+            <artifactId>geoip2</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

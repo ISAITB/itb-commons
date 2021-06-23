@@ -29,6 +29,8 @@
         <version.webjarsJQuery>3.5.1</version.webjarsJQuery>
         <version.jasperReports>6.16.0</version.jasperReports>
         <version.jaxb>2.3.1</version.jaxb>
+        <version.geoip2>2.15.0</version.geoip2>
+        <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
     </properties>
 
     <repositories>
@@ -198,6 +200,16 @@
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
                 <version>${version.jaxb}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.maxmind.geoip2</groupId>
+                <artifactId>geoip2</artifactId>
+                <version>${version.geoip2}</version>
+            </dependency>
+            <dependency>
+            	<groupId>org.aspectj</groupId>
+            	<artifactId>aspectjweaver</artifactId>
+            	<version>${version.aspectjWeaver}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
