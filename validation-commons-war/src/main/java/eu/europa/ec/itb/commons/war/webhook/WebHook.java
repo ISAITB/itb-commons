@@ -27,11 +27,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 
 /**
- * @version 1.0.0-SNAPSHOT
- * 
- *          Singleton class that sends usage data for statistical purposes
- *          during every validation. It will only be instantiated if the URL
- *          property is declared.
+ * Singleton class that sends usage data for statistical purposes during every validation. It will only be instantiated
+ * if the URL property is declared.
  */
 @Component
 @EnableAsync
@@ -55,7 +52,9 @@ public class WebHook {
 	private String secret;
 
 	/**
-	 * Method called to initialize the webhook attributes
+	 * Method called to initialize the webhook attributes.
+	 *
+	 * @throws MalformedURLException If the webhook URL is invalid.
 	 */
 	@PostConstruct
 	public void initializeAttributes() throws MalformedURLException {
@@ -82,9 +81,9 @@ public class WebHook {
 
 	/**
 	 * Method that posts the current validation details to the usage statistics
-	 * service
+	 * service. This method is called asynchronously to not block the validation result.
 	 * 
-	 * @param data
+	 * @param data The data to post.
 	 */
 	@Async
 	public void sendUsageData(UsageData data) {

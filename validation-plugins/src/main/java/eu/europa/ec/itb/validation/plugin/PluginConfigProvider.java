@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Provider of the configuration needed to load plugins.
  *
- * The configuration currently provided in a map of unique classifiers that point to
+ * The configuration is currently provided in a map of unique classifiers that point to
  * an array of PluginInfo objects. These represent the plugin JAR and classes to load implementations
  * from.
  */

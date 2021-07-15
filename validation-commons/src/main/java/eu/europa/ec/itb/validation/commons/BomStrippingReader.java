@@ -4,7 +4,7 @@ import java.io.*;
 
 /**
  * BOM stripping reader class.
- * <p>
+
  * This reader ensures that the BOM information is correctly handled in unicode files.
  *
  * @author simatosc.

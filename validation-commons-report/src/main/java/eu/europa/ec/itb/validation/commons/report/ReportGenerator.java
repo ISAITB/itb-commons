@@ -21,16 +21,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
+/**
+ * Class used to prepare and create PDF reports.
+ */
 public class ReportGenerator {
 
     private final static Logger LOG = LoggerFactory.getLogger(ReportGenerator.class);
     private final JAXBContext jaxbContext;
 
+    /**
+     * Constructor.
+     */
     public ReportGenerator() {
         try {
             jaxbContext = JAXBContext.newInstance(
@@ -42,6 +45,14 @@ public class ReportGenerator {
         }
     }
 
+    /**
+     * Use the provided report file stream to generate the report's output.
+     *
+     * @param reportStream The stream for the report template to use.
+     * @param parameters The parameters to use for the report population.
+     * @param outputStream The stream on which to write the generated report.
+     * @throws JRException If the PDF file failed generation.
+     */
     private void writeReport(InputStream reportStream, Map<String, Object> parameters, OutputStream outputStream) throws JRException {
         JasperPrint jasperPrint = JasperFillManager.fillReport(reportStream, parameters, new JREmptyDataSource());
         try {
@@ -57,22 +68,60 @@ public class ReportGenerator {
         }
     }
 
+    /**
+     * Create a report based on a provided classpath location for the report template to use.
+     *
+     * @param reportPath The classpath of the report template to use.
+     * @param parameters The parameters for the report's population.
+     * @param outputStream The stream on which to write the report.
+     * @throws JRException If the PDF file failed generation.
+     */
     private void writeClasspathReport(String reportPath, Map<String, Object> parameters, OutputStream outputStream) throws JRException {
         writeReport(Thread.currentThread().getContextClassLoader().getResourceAsStream(reportPath), parameters, outputStream);
     }
 
+    /**
+     * Create a TAR PDF report. This also adds the context information to the report.
+     *
+     * @param inputStream The stream for the TAR XML report to use as input.
+     * @param title The title to use in the PDF document.
+     * @param outputStream The stream on which to write the generated report.
+     */
     public void writeTARReport(InputStream inputStream, String title, OutputStream outputStream) {
         writeTARReport(inputStream, title, outputStream, true);
     }
 
+    /**
+     * Create a TAR PDF report. This also adds the context information to the report.
+     *
+     * @param reportType The TAR report to use as input.
+     * @param title The title to use in the PDF document.
+     * @param outputStream The stream on which to write the generated report.
+     */
     public void writeTARReport(TAR reportType, String title, OutputStream outputStream) {
         writeTARReport(reportType, title, outputStream, true);
     }
 
+    /**
+     * Create a TAR PDF report.
+     *
+     * @param reportType The TAR report to use as input.
+     * @param title The title to use in the PDF document.
+     * @param outputStream The stream on which to write the generated report.
+     * @param addContext True if the context information from the TAR object should also be added to the PDF output.
+     */
     public void writeTARReport(TAR reportType, String title, OutputStream outputStream, boolean addContext) {
         writeTestStepReport(reportType, title, outputStream, addContext);
     }
 
+    /**
+     * Create a TAR PDF report.
+     *
+     * @param inputStream The stream to read the TAR XML report as input.
+     * @param title The title to use in the PDF document.
+     * @param outputStream The stream on which to write the generated report.
+     * @param addContext True if the context information from the TAR object should also be added to the PDF output.
+     */
     public void writeTARReport(InputStream inputStream, String title, OutputStream outputStream, boolean addContext) {
         try {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -83,6 +132,14 @@ public class ReportGenerator {
         }
     }
 
+    /**
+     * Write the report of an abstract report.
+     *
+     * @param reportType The input for the specific report type.
+     * @param title The title to use in the PDF document.
+     * @param outputStream The stream on which to write the generated report.
+     * @param addContext True if the context information from the TAR object should also be added to the PDF output.
+     */
     private void writeTestStepReport(TestStepReportType reportType, String title, OutputStream outputStream, boolean addContext) {
         try {
             Report report = fromTestStepReportType(reportType, title, addContext);
@@ -105,6 +162,13 @@ public class ReportGenerator {
         }
     }
 
+    /**
+     * Add a context item to the list of DTOs to process.
+     *
+     * @param context The TAR report's context map.
+     * @param items The collected DTOs.
+     * @param keyPath The path to the context item to lookup.
+     */
     private void addContextItem(AnyContent context, List<ContextItem> items, String keyPath) {
         if ("map".equals(context.getType()) || "list".equals(context.getType())) {
             if (context.getItem() != null) {
@@ -134,6 +198,15 @@ public class ReportGenerator {
         }
     }
 
+    /**
+     * Create a report DTO from the provided report information.
+     *
+     * @param reportType The report's information.
+     * @param title The title to use in the PDF document.
+     * @param addContext True if the context information from the TAR object should also be added to the PDF output.
+     * @param <T> The specific report class.
+     * @return The report DTO.
+     */
     private <T extends TestStepReportType> Report fromTestStepReportType(T reportType, String title, boolean addContext) {
         Report report = new Report();
         if (reportType.getDate() != null) {
@@ -142,11 +215,7 @@ public class ReportGenerator {
             report.setReportDate(sdf.format(reportType.getDate().toGregorianCalendar().getTime()));
         }
         report.setReportResult(reportType.getResult().value());
-        if (title == null) {
-            report.setTitle("Report");
-        } else {
-            report.setTitle(title);
-        }
+        report.setTitle(Objects.requireNonNullElse(title, "Report"));
         if (reportType instanceof TAR) {
             TAR tarReport = (TAR)reportType;
             if (addContext) {
