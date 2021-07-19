@@ -1,3 +1,7 @@
+![BuildStatus](https://github.com/ISAITB/itb-commons/actions/workflows/main.yml/badge.svg)
+![Coverage](.github/badges/jacoco.svg)
+[![licence](https://img.shields.io/github/license/ISAITB/itb-commons.svg)](https://github.com/ISAITB/itb-commons/blob/master/LICENCE.txt)
+
 # ITB commons
 
 This project includes the modules used to define common libraries shared across ITB validators. Each module is set to 

@@ -60,6 +60,14 @@
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <repository>
+            <id>jasperreports</id>
+            <url>https://jaspersoft.jfrog.io/artifactory/jrs-ce-releases/</url>
+        </repository>
+        <repository>
+            <id>jaspersoft-third-party</id>
+            <url>https://jaspersoft.jfrog.io/artifactory/third-party-ce-artifacts/</url>
+        </repository>
+        <repository>
             <id>itbRepoRead</id>
             <url>${itbRepoReadUrl}</url>
         </repository>
@@ -94,6 +102,35 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>com.alexnederlof</groupId>
+                    <artifactId>jasperreports-plugin</artifactId>
+                    <version>2.8</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>net.sf.jasperreports</groupId>
+                            <artifactId>jasperreports-fonts</artifactId>
+                            <version>6.15.0</version>
+                            <exclusions>
+                                <exclusion>
+                                    <groupId>com.lowagie</groupId>
+                                    <artifactId>itext</artifactId>
+                                </exclusion>
+                            </exclusions>
+                        </dependency>
+                        <dependency>
+                            <groupId>net.sf.jasperreports</groupId>
+                            <artifactId>jasperreports</artifactId>
+                            <version>6.15.0</version>
+                            <exclusions>
+                                <exclusion>
+                                    <groupId>com.lowagie</groupId>
+                                    <artifactId>itext</artifactId>
+                                </exclusion>
+                            </exclusions>
+                        </dependency>
+                    </dependencies>
                 </plugin>
             </plugins>
         </pluginManagement>
