@@ -34,6 +34,9 @@ public class DomainPluginConfigProvider<T extends DomainConfig> implements Plugi
         return domainConfig.getDomainName()+"|"+validationType;
     }
 
+    /**
+     * @return A map listing the plugin information classes per domain and validation type combination.
+     */
     @Override
     public Map<String, List<PluginInfo>> getPluginInfoPerType() {
         Map<String, List<PluginInfo>> pluginInfoPerDomain = new HashMap<>();

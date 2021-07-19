@@ -6,23 +6,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Base class for the loading and storing of domain configuration for validators that are web applications.
+ *
+ * @param <T> The specific domain configuration class of the validator.
+ */
 public abstract class WebDomainConfigCache <T extends WebDomainConfig<?>> extends DomainConfigCache<T> {
 
+    /**
+     * @param domainName The domain's name.
+     * @return The domain configuration.
+     */
     @Override
     public T getConfigForDomainName(String domainName) {
         return super.getConfigForDomainName(domainName);
     }
 
+    /**
+     * @param domain The domain identifier.
+     * @return The domain configuration.
+     */
     @Override
     public T getConfigForDomain(String domain) {
         return super.getConfigForDomain(domain);
     }
 
+    /**
+     * Initialise (once) and return all domain configurations.
+     *
+     * @return The domain configurations.
+     */
     @Override
     public List<T> getAllDomainConfigurations() {
         return super.getAllDomainConfigurations();
     }
 
+    /**
+     * Enrich the domain configuration using the provided properties (for web-related information).
+     *
+     * @param domainConfig The domain configuration to enrich.
+     * @param config The configuration properties to consider.
+     */
     @Override
     protected void addDomainConfiguration(T domainConfig, Configuration config) {
         super.addDomainConfiguration(domainConfig, config);
@@ -69,6 +93,12 @@ public abstract class WebDomainConfigCache <T extends WebDomainConfig<?>> extend
         setLabels(domainConfig, config);
     }
 
+    /**
+     * Load the label configuration for the given domain.
+     *
+     * @param domainConfig The domain configuration to enrich.
+     * @param config The configuration properties.
+     */
     protected void setLabels(T domainConfig, Configuration config) {
         domainConfig.getLabel().setResultSectionTitle(config.getString("validator.label.resultSectionTitle", "Validation result"));
         domainConfig.getLabel().setFileInputLabel(config.getString("validator.label.fileInputLabel", "Content to validate"));

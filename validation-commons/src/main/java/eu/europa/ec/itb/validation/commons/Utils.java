@@ -30,10 +30,21 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.*;
 
+/**
+ * Class holding utility methods for common operations.
+ */
 public class Utils {
 
+    /**
+     * A key used to record line numbers in parsed XML content.
+     */
     public static String LINE_NUMBER_KEY_NAME = "lineNumber";
 
+    /**
+     * Create a calendar for the current time.
+     *
+     * @return The calendar.
+     */
     public static XMLGregorianCalendar getXMLGregorianCalendarDateTime() {
         GregorianCalendar calendar = new GregorianCalendar();
         try {
@@ -43,6 +54,12 @@ public class Utils {
         }
     }
 
+    /**
+     * Serialise the provided node to a byte array.
+     *
+     * @param content The content.
+     * @return the node's bytes.
+     */
     public static byte[] serialize(Node content) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
@@ -57,6 +74,11 @@ public class Utils {
         return baos.toByteArray();
     }
 
+    /**
+     * Create an empty XML DOM document.
+     *
+     * @return The document.
+     */
     public static Document emptyDocument() {
         try {
             return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
@@ -65,6 +87,15 @@ public class Utils {
         }
     }
 
+    /**
+     * Read an XML file from the provided stream and record on each node the its line number for
+     * subsequent user as user data.
+     *
+     * @param is The input stream.
+     * @return The parsed document. The nodes of this each define user data with their relevant line number.
+     * @throws IOException If a general processing error occurs.
+     * @throws SAXException If an error occurs when parsing the XML.
+     */
     public static Document readXMLWithLineNumbers(InputStream is) throws IOException, SAXException {
         final Document doc;
         SAXParser parser;
@@ -83,11 +114,19 @@ public class Utils {
         final DefaultHandler handler = new DefaultHandler() {
             private Locator locator;
 
+            /**
+             * @see DefaultHandler#setDocumentLocator(Locator)
+             */
             @Override
             public void setDocumentLocator(final Locator locator) {
                 this.locator = locator; // Save the locator, so that it can be used later for line tracking when traversing nodes.
             }
 
+            /**
+             * Adds the line number as node user data.
+             *
+             * @see DefaultHandler#startElement(String, String, String, Attributes)
+             */
             @Override
             public void startElement(final String uri, final String localName, final String qName, final Attributes attributes)
                     throws SAXException {
@@ -100,6 +139,9 @@ public class Utils {
                 elementStack.push(el);
             }
 
+            /**
+             * @see DefaultHandler#endElement(String, String, String)
+             */
             @Override
             public void endElement(final String uri, final String localName, final String qName) {
                 addTextIfNeeded();
@@ -112,12 +154,17 @@ public class Utils {
                 }
             }
 
+            /**
+             * @see DefaultHandler#characters(char[], int, int)
+             */
             @Override
             public void characters(final char ch[], final int start, final int length) throws SAXException {
                 textBuffer.append(ch, start, length);
             }
 
-            // Outputs text accumulated under the current node
+            /**
+             * Add text under the current node.
+             */
             private void addTextIfNeeded() {
                 if (textBuffer.length() > 0) {
                     final org.w3c.dom.Element el = elementStack.peek();
@@ -151,6 +198,15 @@ public class Utils {
         return parameter;
     }
 
+    /**
+     * Create a simple parameter definition.
+     *
+     * @param name The name of the parameter.
+     * @param type The type of the parameter. This needs to match one of the GITB types.
+     * @param use The use (required or optional).
+     * @param description The description of the parameter.
+     * @return The created parameter.
+     */
     public static TypedParameter createParameter(String name, String type, UsageEnumeration use, String description) {
         TypedParameter parameter =  new TypedParameter();
         parameter.setName(name);
@@ -161,20 +217,30 @@ public class Utils {
         return parameter;
     }
 
+    /**
+     * Get the input(s) for the provided name from the provided validation parameters.
+     *
+     * @param validateRequest The request parameters to look into.
+     * @param name The input name to look for.
+     * @return The list of matched inputs (never null).
+     */
     public static List<AnyContent> getInputFor(ValidateRequest validateRequest, String name) {
         List<AnyContent> inputs = new ArrayList<>();
         if (validateRequest != null) {
             if (validateRequest.getInput() != null) {
-                for (AnyContent anInput: validateRequest.getInput()) {
-                    if (name.equals(anInput.getName())) {
-                        inputs.add(anInput);
-                    }
-                }
+                inputs.addAll(getInputFor(validateRequest.getInput(), name));
             }
         }
         return inputs;
     }
 
+    /**
+     * Get the input(s) for the provided name from the provided validation parameters.
+     *
+     * @param inputsToConsider The inputs to look into.
+     * @param name The input name to look for.
+     * @return The list of matched inputs (never null).
+     */
     public static List<AnyContent> getInputFor(List<AnyContent> inputsToConsider, String name) {
         List<AnyContent> inputs = new ArrayList<>();
         if (inputsToConsider != null) {
@@ -187,10 +253,22 @@ public class Utils {
         return inputs;
     }
 
+    /**
+     * Merge the provided TAR reports into a single one.
+     *
+     * @param reports The reports to merge.
+     * @return The merged report.
+     */
     public static TAR mergeReports(List<TAR> reports) {
         return mergeReports(reports.toArray(new TAR[0]));
     }
 
+    /**
+     * Merge the provided TAR reports into a single one.
+     *
+     * @param reports The reports to merge.
+     * @return The merged report.
+     */
     public static TAR mergeReports(TAR[] reports) {
         TAR mergedReport = reports[0];
         if (reports.length > 1) {
@@ -252,18 +330,52 @@ public class Utils {
         return mergedReport;
     }
 
+    /**
+     * Create an input item of type string for the provided information.
+     *
+     * @param name The input's name.
+     * @param value The input's value considered as a string.
+     * @return The input.
+     */
     public static AnyContent createInputItem(String name, String value) {
         return createInputItem(name, value, ValueEmbeddingEnumeration.STRING);
     }
 
+    /**
+     * Create an input item of type string for the provided information.
+     *
+     * @param name The input's name.
+     * @param value The input's value.
+     * @param embeddingType The embedding method to use for the input's content.
+     * @return The input.
+     */
     public static AnyContent createInputItem(String name, String value, ValueEmbeddingEnumeration embeddingType) {
         return createInputItem(name, value, embeddingType, "string");
     }
 
+    /**
+     * Create an input item of for the provided information.
+     *
+     * @param name The input's name.
+     * @param value The input's value.
+     * @param embeddingType The embedding method to use for the input's content.
+     * @param type The data type of the resulting input (by default string).
+     * @return The input.
+     */
     public static AnyContent createInputItem(String name, String value, ValueEmbeddingEnumeration embeddingType, String type) {
         return createInputItem(name, value, embeddingType, type, null);
     }
 
+    /**
+     * Create an input item of for the provided information.
+     *
+     * @param name The input's name.
+     * @param value The input's value.
+     * @param embeddingType The embedding method to use for the input's content.
+     * @param type The data type of the resulting input (by default string).
+     * @param encoding The encoding to use (in case of character streams).
+     * @return The input.
+     */
     public static AnyContent createInputItem(String name, String value, ValueEmbeddingEnumeration embeddingType, String type, String encoding) {
         AnyContent input = new AnyContent();
         input.setName(name);

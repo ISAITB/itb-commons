@@ -9,7 +9,9 @@ import com.gitb.vs.ValidationService;
 public interface ValidationPlugin extends ValidationService {
 
     /**
-     * Get the name of the current plugin.
+     * Get the name of the current plugin. The name is looked up first from the
+     * module ID and then from the metadata name. If no information is found an empty name
+     * is considered and returned.
      *
      * @return The plugin name.
      */

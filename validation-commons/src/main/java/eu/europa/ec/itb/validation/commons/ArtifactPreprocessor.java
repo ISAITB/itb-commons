@@ -2,6 +2,9 @@ package eu.europa.ec.itb.validation.commons;
 
 import java.io.File;
 
+/**
+ * Class that can preprocess validation artifacts before these are used for validation.
+ */
 public interface ArtifactPreprocessor {
 
     /**
