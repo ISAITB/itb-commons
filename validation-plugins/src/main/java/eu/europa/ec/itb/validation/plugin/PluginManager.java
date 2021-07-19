@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
@@ -27,11 +29,15 @@ public class PluginManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginManager.class);
 
-    private ConcurrentHashMap<String, ValidationPlugin[]> pluginCache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ValidationPlugin[]> pluginCache = new ConcurrentHashMap<>();
+    private final List<URLClassLoader> classLoaders = new ArrayList<>();
 
     @Autowired
     private PluginConfigProvider configProvider = null;
 
+    /**
+     * Load the plugins configured for the validator.
+     */
     @PostConstruct
     private void loadPlugins() {
         boolean pluginsFound = false;
@@ -75,10 +81,19 @@ public class PluginManager {
         return plugins;
     }
 
+    /**
+     * Get the plugins from the provided JAR file.
+     *
+     * @param jarFile The path to the JAR file to read.
+     * @param classes The set of fully qualified plugin classes.
+     * @return The list of loaded plugins.
+     * @throws IllegalStateException If an error occurs when loading plugin classes.
+     */
     private List<ValidationPlugin> getValidatorsFromJar(Path jarFile, String[] classes) {
         try {
             List<ValidationPlugin> instances = new ArrayList<>();
             URLClassLoader loader = new URLClassLoader(new URL[] {jarFile.toUri().toURL()}, null);
+            classLoaders.add(loader);
             for (String clazz: classes) {
                 Class pluginClass = loader.loadClass(clazz);
                 instances.add(new PluginAdapter(pluginClass.getConstructor().newInstance(), loader));
@@ -89,4 +104,17 @@ public class PluginManager {
         }
     }
 
+    /**
+     * Cleanup method to explicitly close plugins' classloaders.
+     */
+    @PreDestroy
+    private void destroy() {
+        classLoaders.forEach((loader) -> {
+            try {
+                loader.close();
+            } catch (IOException e) {
+                // Ignore.
+            }
+        });
+    }
 }

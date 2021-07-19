@@ -33,6 +33,10 @@ public abstract class StatisticReporting {
 	@Autowired
 	private WebHook webHook;
 
+    /**
+     * If enabled to do so, initialise the IP to country database reader. If any issue occurs while doing so
+     * the country extraction will be disabled.
+     */
     @PostConstruct
     public void init(){
         if(config.getWebhook().isStatisticsEnableCountryDetection()){
@@ -49,9 +53,10 @@ public abstract class StatisticReporting {
     }
 
     /**
-     * Method that extracts the IP address from the HTTP request
-     * @param ip
-     * @return
+     * Method that extracts the IP address from the HTTP request.
+     *
+     * @param request The HTTP request.
+     * @return The IP address
      */
     public String extractIpAddress(HttpServletRequest request){
         String proxyIpHeader = config.getWebhook().getIpHeader();
@@ -63,8 +68,11 @@ public abstract class StatisticReporting {
     }
 
     /**
-     * Method that obtains the country ISO 
-    */
+     * Method that obtains the country ISO.
+     *
+     * @param ip The IP address.
+     * @return The ISO country code.
+     */
     public String getCountryISO(String ip){
         String countryISO = "";
         try{
@@ -78,8 +86,15 @@ public abstract class StatisticReporting {
     }
 
     /**
-     * Method that sends the usage data using the webhook
-    */
+     * Method that sends the usage data using the webhook.
+     *
+     * @param validatorId The identifier of the validator.
+     * @param domain The domain name.
+     * @param api The API used.
+     * @param validationType The validation type.
+     * @param result The validation result.
+     * @param ip The IP address.
+     */
     public void sendUsageData(String validatorId, String domain, String api, String validationType, UsageData.Result result, String ip){
         String countryISO = null;
         if(config.getWebhook().isStatisticsEnableCountryDetection() && ip != null){
@@ -88,11 +103,14 @@ public abstract class StatisticReporting {
         webHook.sendUsageData(new UsageData(validatorId, domain, api, validationType, result, countryISO));
     }
 
-    	/**
-	 * Method that extracts the HttpServletRequest from the REST and WEB requests
-	*/
+    /**
+	 * Method that extracts the HttpServletRequest from the REST and WEB requests. This is used as support to AOP advice
+     * methods.
+     *
+     * @param joinPoint The JoinPoint to process.
+     * @return The HTTP request.
+	 */
 	protected HttpServletRequest getHttpRequest(JoinPoint joinPoint){
-		HttpServletRequest request = null;
 		MethodSignature signature = (MethodSignature)joinPoint.getSignature();
 		Class[] paramTypes = signature.getParameterTypes();
 		for(int i = 0; i < paramTypes.length; i++){
@@ -102,7 +120,7 @@ public abstract class StatisticReporting {
 			}
 		}
 		logger.warn("Unexpected execution point reached: HttpServletRequest object not found among API arguments.");
-		return request;
+		return null;
 	}
     
 }

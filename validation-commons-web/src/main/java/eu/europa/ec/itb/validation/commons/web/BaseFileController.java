@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
 /**
- * Created by simatosc on 08/03/2016.
+ * Base class for web controllers managing access to the validator's reports.
  */
 public abstract class BaseFileController<T extends BaseFileManager, R extends ApplicationConfig, Z extends WebDomainConfigCache> {
 
@@ -34,10 +34,37 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
     @Autowired
     protected ReportGeneratorBean reportGenerator;
 
+    /**
+     * Get the input file name for a given file ID part.
+     *
+     * @param uuid The variable ID part.
+     * @return The file name.
+     */
     public abstract String getInputFileName(String uuid);
+
+    /**
+     * Get the XML report file name for a given file ID part.
+     *
+     * @param uuid The variable ID part.
+     * @return The file name.
+     */
     public abstract String getReportFileNameXml(String uuid);
+
+    /**
+     * Get the PDF report file name for a given file ID part.
+     *
+     * @param uuid The variable ID part.
+     * @return The file name.
+     */
     public abstract String getReportFileNamePdf(String uuid);
 
+    /**
+     * Get the input file that was used for the validation.
+     *
+     * @param domain The domain name.
+     * @param id The unique ID for the input file.
+     * @return The file.
+     */
     @RequestMapping(value = "/{domain}/input/{id}", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public FileSystemResource getInput(@PathVariable String domain, @PathVariable String id) {
@@ -54,6 +81,14 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
         }
     }
 
+    /**
+     * Get the XML validation report file that was generated from the validation.
+     *
+     * @param domain The domain name.
+     * @param id The unique ID for the input file.
+     * @param response the HTTP response.
+     * @return The file.
+     */
     @RequestMapping(value = "/{domain}/report/{id}/xml", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
     public FileSystemResource getReportXml(@PathVariable String domain, @PathVariable String id, HttpServletResponse response) {
@@ -73,6 +108,14 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
         }
     }
 
+    /**
+     * Get the XML validation report file that was generated from the validation.
+     *
+     * @param domain The domain name.
+     * @param id The unique ID for the input file.
+     * @param response the HTTP response.
+     * @return The file.
+     */
     @RequestMapping(value = "/{domain}/report/{id}/pdf", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
     public FileSystemResource getReportPdf(@PathVariable String domain, @PathVariable String id, HttpServletResponse response) {
@@ -97,6 +140,12 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
         return new FileSystemResource(reportFile);
     }
 
+    /**
+     * Delete the XML and PDF validation reports matching a specific ID.
+     *
+     * @param domain The domain name.
+     * @param id The report files' ID.
+     */
     @RequestMapping(value = "/{domain}/report/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public void deleteReport(@PathVariable String domain, @PathVariable String id) {
@@ -115,6 +164,12 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
         }
     }
 
+    /**
+     * Delete the input file used for the validation.
+     *
+     * @param domain The domain name.
+     * @param id The input file ID.
+     */
     @RequestMapping(value = "/{domain}/input/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public void deleteInput(@PathVariable String domain, @PathVariable String id) {

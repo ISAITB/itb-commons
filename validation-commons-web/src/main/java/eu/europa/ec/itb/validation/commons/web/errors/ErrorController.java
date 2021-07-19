@@ -21,11 +21,22 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Error handling for the validator's web application.
+ */
 @Controller
 public class ErrorController implements org.springframework.boot.web.servlet.error.ErrorController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ErrorController.class);
-	
+
+    /**
+     * Handle a web error. The handling here forwards to a common error page or, in case of errors
+     * in ajax calls, returns a JSON error payload.
+     *
+     * @param request The HTTP request.
+     * @param response The HTTP response.
+     * @return The model data.
+     */
     @RequestMapping("/error")
     public ModelAndView handleError(HttpServletRequest request, HttpServletResponse response) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
@@ -44,11 +55,17 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
         attributes.put("errorMessage", getErrorMessage(status));
         return new ModelAndView("errorPage", attributes);
     }
-    
+
+    /**
+     * Extract the error message depending on the type of error.
+     *
+     * @param status The received error status.
+     * @return The message to display.
+     */
     private String getErrorMessage(Object status){
     	String errorMessage = "-";
     	if (status != null) {
-            Integer statusCode = Integer.valueOf(status.toString());
+            int statusCode = Integer.parseInt(status.toString());
             if(statusCode == HttpStatus.NOT_FOUND.value()) {
             	errorMessage = "The requested path or resource does not exist.";
             } else {
@@ -57,7 +74,14 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
         } 
     	return errorMessage;
     }
-    
+
+    /**
+     * Handle an error for an ajax call.
+     *
+     * @param status The error information.
+     * @param response The HTTP response.
+     * @return The model data.
+     */
     private ModelAndView ajaxError(Object status, HttpServletResponse response) {
     	MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
     	MediaType jsonMimeType = MediaType.APPLICATION_JSON;
@@ -71,6 +95,9 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
     	return null;
     }
 
+    /**
+     * @see ErrorController#getErrorPath()
+     */
     @Override
     public String getErrorPath() {
         return "/error";

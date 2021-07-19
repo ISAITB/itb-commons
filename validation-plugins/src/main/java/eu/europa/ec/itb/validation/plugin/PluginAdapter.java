@@ -32,10 +32,10 @@ public class PluginAdapter implements ValidationPlugin {
     private final static ObjectFactory TR_OBJECT_FACTORY = new ObjectFactory();
 
     private final Object internalValidator;
-    private final Class classOf_ValidateRequest;
-    private final Class classOf_AnyContent;
-    private final Class classOf_ValueEmbeddingEnumeration;
-    private final Class classOf_Void;
+    private final Class<?> classOf_ValidateRequest;
+    private final Class<?> classOf_AnyContent;
+    private final Class<?> classOf_ValueEmbeddingEnumeration;
+    private final Class<?> classOf_Void;
 
     /**
      * Constructor.
@@ -43,7 +43,7 @@ public class PluginAdapter implements ValidationPlugin {
      * @param internalValidator The ValidationService instance loaded as a plugin.
      * @param pluginClassLoader The classloader linked to the plugin's JAR file.
      */
-    PluginAdapter(Object internalValidator, ClassLoader pluginClassLoader) {
+    protected PluginAdapter(Object internalValidator, ClassLoader pluginClassLoader) {
         this.internalValidator = internalValidator;
         try {
             classOf_ValidateRequest = pluginClassLoader.loadClass("com.gitb.vs.ValidateRequest");
@@ -55,6 +55,11 @@ public class PluginAdapter implements ValidationPlugin {
         }
     }
 
+    /**
+     * Returns the name of the plugin. This is returned as the module's ID or as the name from the module's metadata.
+     *
+     * @see ValidationPlugin#getModuleDefinition(Void)
+     */
     @Override
     public GetModuleDefinitionResponse getModuleDefinition(Void aVoid) {
         try {
@@ -83,6 +88,12 @@ public class PluginAdapter implements ValidationPlugin {
         }
     }
 
+    /**
+     * Extract the root error message from the provided throwable.
+     *
+     * @param e The error.
+     * @return The error message.
+     */
     private String extractRootErrorMessage(Throwable e) {
         if (e.getCause() != null) {
             return extractRootErrorMessage(e.getCause());
@@ -91,10 +102,29 @@ public class PluginAdapter implements ValidationPlugin {
         }
     }
 
+    /**
+     * Convert the value embedding enumeration to prepare it for the plugin call.
+     *
+     * @param value The value to convert.
+     * @return The converted value.
+     * @throws NoSuchMethodException For missing methods.
+     * @throws InvocationTargetException For errors calling adapted methods.
+     * @throws IllegalAccessException The security access issues.
+     */
     private Object getAdaptedValueEmbeddingEnumeration(ValueEmbeddingEnumeration value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         return classOf_ValueEmbeddingEnumeration.getMethod("fromValue", String.class).invoke(null, value.value());
     }
 
+    /**
+     * Convert the provided any content instance to prepare it for the plugin call.
+     *
+     * @param anyContent The any content value to convert.
+     * @return The converted object.
+     * @throws NoSuchMethodException For missing methods.
+     * @throws InvocationTargetException For errors calling adapted methods.
+     * @throws IllegalAccessException The security access issues.
+     * @throws InstantiationException For errors creating new instances.
+     */
     private Object getAdaptedAnyContent(AnyContent anyContent) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Object _anyContent = null;
         if (anyContent != null) {
@@ -114,6 +144,16 @@ public class PluginAdapter implements ValidationPlugin {
         return _anyContent;
     }
 
+    /**
+     * Convert the provided validation request to be used for the plugin call.
+     *
+     * @param validateRequest The request to convert.
+     * @return The converted object.
+     * @throws NoSuchMethodException For missing methods.
+     * @throws InvocationTargetException For errors calling adapted methods.
+     * @throws IllegalAccessException The security access issues.
+     * @throws InstantiationException For errors creating new instances.
+     */
     private Object getAdaptedValidateRequest(ValidateRequest validateRequest) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Object _validateRequest = classOf_ValidateRequest.getConstructor().newInstance();
         List inputs = (List)classOf_ValidateRequest.getMethod("getInput").invoke(_validateRequest);
@@ -123,6 +163,12 @@ public class PluginAdapter implements ValidationPlugin {
         return _validateRequest;
     }
 
+    /**
+     * Call the plugin's validate method.
+     *
+     * @param validateRequest The validation request.
+     * @return The response.
+     */
     @Override
     public ValidationResponse validate(ValidateRequest validateRequest) {
         try {
@@ -138,6 +184,15 @@ public class PluginAdapter implements ValidationPlugin {
         }
     }
 
+    /**
+     * Convert the provided validation response from the plugin to return for use in the validator.
+     *
+     * @param internalResult The plugin result.
+     * @return The converted object.
+     * @throws NoSuchMethodException For missing methods.
+     * @throws InvocationTargetException For errors calling adapted methods.
+     * @throws IllegalAccessException The security access issues.
+     */
     private ValidationResponse toValidationResponse(Object internalResult) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         ValidationResponse response = new ValidationResponse();
         if (internalResult != null) {

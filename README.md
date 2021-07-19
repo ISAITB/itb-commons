@@ -1,13 +1,11 @@
 # ITB commons
 
-This project includes the modules used to define common libraries shared across ITB projects. Each module is set to 
+This project includes the modules used to define common libraries shared across ITB validators. Each module is set to 
 produce a separate JAR that can be included as a dependency via maven.
 
 # Library use
 
-The defines modules (libraries) are listed in the following sections. Specific releases are not currently produced
-given that validators are operated with a "always latest" approach. As such all version of included libraries are
-set to `1.0.0-SNAPSHOT`.
+The defined modules (libraries) are listed in the following sections.
 
 ## validation-commons
 
@@ -19,7 +17,7 @@ your `pom.xml` the following dependency:
 <dependency>
     <groupId>eu.europa.ec.itb.commons</groupId>
     <artifactId>validation-commons</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>VERSION</version>
 </dependency>
 ```
 
@@ -32,7 +30,7 @@ the following dependency:
 <dependency>
     <groupId>eu.europa.ec.itb.commons</groupId>
     <artifactId>validation-commons-war</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>VERSION</version>
 </dependency>
 ```
 
@@ -46,7 +44,7 @@ the following dependency:
 <dependency>
     <groupId>eu.europa.ec.itb.commons</groupId>
     <artifactId>validation-commons-web</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>VERSION</version>
 </dependency>
 ```
 
@@ -58,7 +56,7 @@ Provides custom plugin support for validators. To include define in your `pom.xm
 <dependency>
     <groupId>eu.europa.ec.itb.commons</groupId>
     <artifactId>validation-plugins</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>VERSION</version>
 </dependency>
 ```
 
@@ -69,9 +67,3 @@ you need to do the following:
 2. As part of the validator's specific validation process, use the `PluginManager` to load the plugins to execute and call them.
 
 The approach to pass input and the expected output from the plugin are specific to the type of validator. These need to be documented in the specific validator's README file.
-
-# Library development
-
-Development of the library requires eventually publishing built artifacts to the ITB development repository. For 
-information on the configuration needed to do this (i.e. the distribution repository) check the project's Confluence 
-space (https://citnet.tech.ec.europa.eu/CITnet/confluence/display/ITB).
