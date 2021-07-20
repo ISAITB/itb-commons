@@ -230,6 +230,24 @@ public class UtilsTest {
     }
 
     @Test
+    void testMergeReportsAsListEmpty() {
+        var report1 = new TAR();
+        var report2 = new TAR();
+        report2.setCounters(new ValidationCounters());
+        report2.setReports(new TestAssertionGroupReportsType());
+        report2.setContext(new AnyContent());
+        var result = Utils.mergeReports(List.of(report1, report2));
+        assertNotNull(result);
+        assertNotNull(result.getCounters());
+        assertEquals(BigInteger.ZERO, result.getCounters().getNrOfErrors());
+        assertEquals(BigInteger.ZERO, result.getCounters().getNrOfWarnings());
+        assertEquals(BigInteger.ZERO, result.getCounters().getNrOfAssertions());
+        assertNotNull(result.getReports());
+        assertEquals(0, result.getReports().getInfoOrWarningOrError().size());
+        assertNotNull(result.getContext());
+    }
+
+    @Test
     void testMergeReportsAsArray() {
         validateMergedReport(Utils.mergeReports(createReportsToTest().toArray(new TAR[0])));
     }

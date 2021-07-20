@@ -457,8 +457,8 @@ public class BaseFileManagerTest extends BaseSpringTest {
         var result = fileManager.getPreconfiguredValidationArtifacts(domainConfig, "type1", "artifact1");
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertEquals("DATA1", Files.readString(result.get(0).getFile().toPath()));
-        assertEquals("DATA2", Files.readString(result.get(1).getFile().toPath()));
+        assertEquals("DATA1", Files.readString(result.get(0).getFile().toPath().toRealPath()));
+        assertEquals("DATA2", Files.readString(result.get(1).getFile().toPath().toRealPath()));
     }
 
     @Test
