@@ -13,7 +13,7 @@ The following validator implementations currently make use this library:
 * The [JSON validator](https://hub.docker.com/r/isaitb/json-validator), for the validation of JSON data using [JSON Schema](https://json-schema.org/).
 * The [CSV validator](https://hub.docker.com/r/isaitb/csv-validator), for the validation of CSV data using [Table Schema](https://specs.frictionlessdata.io/table-schema/).
 
-This library is maintained by the **European Commission's DIGIT** and specifically the Interoperability Test Bed,
+This library is maintained by the **European Commission's DIGIT** and specifically the **Interoperability Test Bed**,
 a conformance testing service for projects involved in the delivery of cross-border public services. Find out more 
 [here](https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/interoperability-test-bed).
 
@@ -53,7 +53,7 @@ the following dependency:
 ## validation-commons-web
 
 Common beans, base classes and utilities for the web layer of validators. This library also includes the web resources
-(JS, CSS) and Thymeleaf templates (plus reusable fragments) for the validators UI. To include define in your `pom.xml`
+(JS, CSS) and Thymeleaf templates (plus reusable fragments) for the validators' UI. To include define in your `pom.xml`
 the following dependency:
 
 ```
@@ -96,7 +96,7 @@ To build this project's libraries you require:
 * A JDK installation (11+).
 * Maven (3+)
 
-## Useful maven commands
+## Useful Maven commands
 
 Use the following Maven commands to carry out typical actions:
 * Build and install all libraries: `mvn install -DskipTests=true`
