@@ -22,11 +22,7 @@ public class URLReader {
      * @throws ValidatorException If the URL cannot be read.
      */
     InputStream stream(URI uri) {
-        Proxy proxy = null;
-        List<Proxy> proxies = ProxySelector.getDefault().select(uri);
-        if (proxies != null && !proxies.isEmpty()) {
-            proxy = proxies.get(0);
-        }
+        Proxy proxy = getProxy(uri);
         try {
             URLConnection connection;
             if (proxy == null) {
@@ -38,6 +34,21 @@ public class URLReader {
         } catch (IOException e) {
             throw new ValidatorException("Unable to read provided URI", e);
         }
+    }
+
+    /**
+     * Get the proxy for the given URI.
+     *
+     * @param uri The URI.
+     * @return The proxy (or null).
+     */
+    Proxy getProxy(URI uri) {
+        Proxy proxy = null;
+        List<Proxy> proxies = ProxySelector.getDefault().select(uri);
+        if (proxies != null && !proxies.isEmpty()) {
+            proxy = proxies.get(0);
+        }
+        return proxy;
     }
 
 }

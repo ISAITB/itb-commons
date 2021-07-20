@@ -8,6 +8,7 @@ import eu.europa.ec.itb.validation.commons.artifact.ValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
+import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import eu.europa.ec.itb.validation.commons.test.BaseSpringTest;
 import eu.europa.ec.itb.validation.commons.test.BaseTestConfiguration;
 import org.apache.commons.lang3.StringUtils;
@@ -407,6 +408,8 @@ public class BaseFileManagerTest extends BaseSpringTest {
 
     @Test
     void testGetPreconfiguredValidationArtifacts() throws IOException {
+        when(appConfig.isRestrictResourcesToDomain()).thenReturn(true);
+        when(domainConfigCache.isInDomainFolder(any(), any())).thenCallRealMethod();
         DomainConfig domainConfig = new DomainConfig();
         domainConfig.setDomain("domain1");
         domainConfig.setDomainName("domain1");
@@ -419,6 +422,62 @@ public class BaseFileManagerTest extends BaseSpringTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("DATA", Files.readString(result.get(0).getFile().toPath()));
+    }
+
+    @Test
+    void testGetPreconfiguredValidationArtifactsNonExistentFile() {
+        when(appConfig.isRestrictResourcesToDomain()).thenReturn(true);
+        when(domainConfigCache.isInDomainFolder(any(), any())).thenCallRealMethod();
+        DomainConfig domainConfig = new DomainConfig();
+        domainConfig.setDomain("domain1");
+        domainConfig.setDomainName("domain1");
+        domainConfig.setArtifactInfo(new HashMap<>());
+        domainConfig.getArtifactInfo().put("type1", new TypedValidationArtifactInfo());
+        domainConfig.getArtifactInfo().get("type1").add("artifact1", new ValidationArtifactInfo());
+        domainConfig.getArtifactInfo().get("type1").get("artifact1").setLocalPath("filesX");
+        assertThrows(ValidatorException.class, () -> fileManager.getPreconfiguredValidationArtifacts(domainConfig, "type1", "artifact1"));
+    }
+
+    @Test
+    void testGetPreconfiguredValidationArtifactsFromOtherDomainsAllowed() throws IOException {
+        when(appConfig.isRestrictResourcesToDomain()).thenReturn(false);
+        when(domainConfigCache.isInDomainFolder(any(), any())).thenCallRealMethod();
+
+        createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain2", "files", "file1.txt"), "DATA1");
+        createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain2", "files", "file2.txt"), "DATA2");
+
+        DomainConfig domainConfig = new DomainConfig();
+        domainConfig.setDomain("domain1");
+        domainConfig.setDomainName("domain1");
+        domainConfig.setArtifactInfo(new HashMap<>());
+        domainConfig.getArtifactInfo().put("type1", new TypedValidationArtifactInfo());
+        domainConfig.getArtifactInfo().get("type1").add("artifact1", new ValidationArtifactInfo());
+        domainConfig.getArtifactInfo().get("type1").get("artifact1").setLocalPath("../domain2/files/file1.txt, "+Path.of(appConfig.getResourceRoot(), "domain2/files/file2.txt"));
+
+        var result = fileManager.getPreconfiguredValidationArtifacts(domainConfig, "type1", "artifact1");
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("DATA1", Files.readString(result.get(0).getFile().toPath()));
+        assertEquals("DATA2", Files.readString(result.get(1).getFile().toPath()));
+    }
+
+    @Test
+    void testGetPreconfiguredValidationArtifactsFromOtherDomainsNotAllowed() throws IOException {
+        when(appConfig.isRestrictResourcesToDomain()).thenReturn(true);
+        when(domainConfigCache.isInDomainFolder(any(), any())).thenCallRealMethod();
+
+        DomainConfig domainConfig = new DomainConfig();
+        domainConfig.setDomain("domain1");
+        domainConfig.setDomainName("domain1");
+        domainConfig.setArtifactInfo(new HashMap<>());
+        domainConfig.getArtifactInfo().put("type1", new TypedValidationArtifactInfo());
+        domainConfig.getArtifactInfo().get("type1").add("artifact1", new ValidationArtifactInfo());
+        // Test relative path.
+        domainConfig.getArtifactInfo().get("type1").get("artifact1").setLocalPath("../domain2/files/file1.txt");
+        assertThrows(ValidatorException.class, () -> fileManager.getPreconfiguredValidationArtifacts(domainConfig, "type1", "artifact1"));
+        // Test absolute path.
+        domainConfig.getArtifactInfo().get("type1").get("artifact1").setLocalPath(Path.of(appConfig.getResourceRoot(), "domain2/files/file2.txt").toString());
+        assertThrows(ValidatorException.class, () -> fileManager.getPreconfiguredValidationArtifacts(domainConfig, "type1", "artifact1"));
     }
 
     @Test
@@ -582,6 +641,18 @@ public class BaseFileManagerTest extends BaseSpringTest {
         assertEquals(1, fileManager.getExternalDomainFileCacheLock("domain1").getReadLockCount());
         fileManager.signalValidationEnd("domain1");
         assertEquals(0, fileManager.getExternalDomainFileCacheLock("domain1").getReadLockCount());
+    }
+
+    @Test
+    void testInit() throws IOException {
+        var existingFile = createFileWithContents(Path.of(tmpFolder.toString(), "existingFile.txt"), "DATA");
+        var fileManager = mock(BaseFileManager.class);
+        fileManager.domainConfigCache = domainConfigCache;
+        doReturn(tmpFolder.toFile()).when(fileManager).getTempFolder();
+        doCallRealMethod().when(fileManager).init();
+        fileManager.init();
+        assertTrue(Files.notExists(existingFile));
+        verify(fileManager, times(1)).resetRemoteFileCache();
     }
 
     static class TestPreprocessor implements ArtifactPreprocessor {
