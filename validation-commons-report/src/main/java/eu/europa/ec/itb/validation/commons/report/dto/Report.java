@@ -20,7 +20,9 @@ public class Report {
     /**
      * Constructor.
      */
-    public Report() {}
+    public Report() {
+        this(null, null, null, null, null, null);
+    }
 
     /**
      * Constructor.
