@@ -8,10 +8,10 @@ The **ITB commons** project includes the modules used to define common libraries
 produce a separate JAR that can be included as a dependency via Maven.
 
 The following validator implementations currently make use this library:
-* The [RDF validator](https://hub.docker.com/r/isaitb/shacl-validator), for the validation of RDF data using [SHACL](https://www.w3.org/TR/shacl/).
-* The [XML validator](https://hub.docker.com/r/isaitb/xml-validator), for the validation of XML data using [XML Schema](https://www.w3.org/standards/xml/schema.html) and [Schematron](https://schematron.com/).
-* The [JSON validator](https://hub.docker.com/r/isaitb/json-validator), for the validation of JSON data using [JSON Schema](https://json-schema.org/).
-* The [CSV validator](https://hub.docker.com/r/isaitb/csv-validator), for the validation of CSV data using [Table Schema](https://specs.frictionlessdata.io/table-schema/).
+* The [RDF validator](https://github.com/ISAITB/shacl-validator), for the validation of RDF data using [SHACL](https://www.w3.org/TR/shacl/).
+* The [XML validator](https://github.com/ISAITB/xml-validator), for the validation of XML data using [XML Schema](https://www.w3.org/standards/xml/schema.html) and [Schematron](https://schematron.com/).
+* The [JSON validator](https://github.com/ISAITB/json-validator), for the validation of JSON data using [JSON Schema](https://json-schema.org/).
+* The [CSV validator](https://github.com/ISAITB/csv-validator), for the validation of CSV data using [Table Schema](https://specs.frictionlessdata.io/table-schema/).
 
 This library is maintained by the **European Commission's DIGIT** and specifically the **Interoperability Test Bed**,
 a conformance testing service for projects involved in the delivery of cross-border public services. Find out more 
@@ -121,7 +121,7 @@ feel free to contact the Test Bed team via email at [DIGIT-ITB@ec.europa.eu](mai
 
 The ITB commons libraries are used in the Test Bed's validators. Check these out for more
 information:
-* The **RDF validator**: see [overview](https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/rdf-validator), [detailed guide](https://www.itb.ec.europa.eu/docs/guides/latest/validatingRDF/) and [Docker Hub image](https://hub.docker.com/r/isaitb/shacl-validator).
-* The **XML validator**: see [overview](https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/xml-validator), [detailed guide](https://www.itb.ec.europa.eu/docs/guides/latest/validatingXML/) and [Docker Hub image](https://hub.docker.com/r/isaitb/xml-validator).
-* The **JSON validator**: see [overview](https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/json-validator), [detailed guide](https://www.itb.ec.europa.eu/docs/guides/latest/validatingJSON/) and [Docker Hub image](https://hub.docker.com/r/isaitb/json-validator).
-* The **CSV validator**: see [overview](https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/csv-validator), [detailed guide](https://www.itb.ec.europa.eu/docs/guides/latest/validatingCSV/) and [Docker Hub image](https://hub.docker.com/r/isaitb/csv-validator).
+* The **RDF validator**: see [overview](https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/rdf-validator), [source](https://github.com/ISAITB/shacl-validator), [detailed guide](https://www.itb.ec.europa.eu/docs/guides/latest/validatingRDF/) and [Docker Hub image](https://hub.docker.com/r/isaitb/shacl-validator).
+* The **XML validator**: see [overview](https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/xml-validator), [source](https://github.com/ISAITB/xml-validator), [detailed guide](https://www.itb.ec.europa.eu/docs/guides/latest/validatingXML/) and [Docker Hub image](https://hub.docker.com/r/isaitb/xml-validator).
+* The **JSON validator**: see [overview](https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/json-validator), [source](https://github.com/ISAITB/json-validator), [detailed guide](https://www.itb.ec.europa.eu/docs/guides/latest/validatingJSON/) and [Docker Hub image](https://hub.docker.com/r/isaitb/json-validator).
+* The **CSV validator**: see [overview](https://joinup.ec.europa.eu/collection/interoperability-test-bed-repository/solution/csv-validator), [source](https://github.com/ISAITB/csv-validator), [detailed guide](https://www.itb.ec.europa.eu/docs/guides/latest/validatingCSV/) and [Docker Hub image](https://hub.docker.com/r/isaitb/csv-validator).
