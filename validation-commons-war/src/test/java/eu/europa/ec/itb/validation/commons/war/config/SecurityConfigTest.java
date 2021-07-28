@@ -1,4 +1,4 @@
-package eu.europa.ec.itb.commons.war.config;
+package eu.europa.ec.itb.validation.commons.war.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

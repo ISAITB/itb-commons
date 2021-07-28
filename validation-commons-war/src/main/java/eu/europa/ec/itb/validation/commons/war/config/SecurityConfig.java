@@ -1,4 +1,4 @@
-package eu.europa.ec.itb.commons.war.config;
+package eu.europa.ec.itb.validation.commons.war.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

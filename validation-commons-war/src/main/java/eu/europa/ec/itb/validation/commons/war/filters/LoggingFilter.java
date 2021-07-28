@@ -1,4 +1,4 @@
-package eu.europa.ec.itb.commons.war.filters;
+package eu.europa.ec.itb.validation.commons.war.filters;
 
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
