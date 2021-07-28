@@ -100,8 +100,8 @@ public class WebHook {
             HttpEntity<String> entity = new HttpEntity<>(jsonData, headers);
             try{
                 ResponseEntity<String> response = restTemplate.postForEntity(this.url, entity, String.class, urlParams);
-                if(response.getStatusCodeValue() != 200) {
-                    logger.warn("Statistics reporting received response " + response.getStatusCodeValue() + "and message " + response.getBody());
+                if (response.getStatusCodeValue() >= 300) { // Unexpected response codes
+                    logger.warn("Statistics reporting received response " + response.getStatusCodeValue() + " and message " + response.getBody());
                 }
             }catch(Exception ex){
                 logger.warn("Error during statistics reporting", ex);

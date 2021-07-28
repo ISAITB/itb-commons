@@ -21,7 +21,7 @@ public class UsageData {
     private final String api;
     private final String validationType;
     private final Result result;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private final Date validationTime;
     @JsonInclude(Include.NON_EMPTY)
     private final String country;
