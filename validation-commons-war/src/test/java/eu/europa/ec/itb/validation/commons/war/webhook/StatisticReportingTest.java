@@ -1,10 +1,13 @@
-package eu.europa.ec.itb.commons.war.webhook;
+package eu.europa.ec.itb.validation.commons.war.webhook;
 
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.model.CountryResponse;
 import com.maxmind.geoip2.record.Country;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.test.BaseTest;
+import eu.europa.ec.itb.validation.commons.war.webhook.StatisticReporting;
+import eu.europa.ec.itb.validation.commons.war.webhook.UsageData;
+import eu.europa.ec.itb.validation.commons.war.webhook.WebHook;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.junit.jupiter.api.AfterEach;
@@ -15,8 +18,6 @@ import org.mockito.stubbing.Answer;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 

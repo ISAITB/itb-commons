@@ -1,7 +1,9 @@
-package eu.europa.ec.itb.commons.war.webhook;
+package eu.europa.ec.itb.validation.commons.war.webhook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
+import eu.europa.ec.itb.validation.commons.war.webhook.UsageData;
+import eu.europa.ec.itb.validation.commons.war.webhook.WebHook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;

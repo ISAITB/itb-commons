@@ -1,4 +1,4 @@
-package eu.europa.ec.itb.commons.war.webhook;
+package eu.europa.ec.itb.validation.commons.war.webhook;
 
 import java.io.File;
 import java.net.InetAddress;
