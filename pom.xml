@@ -14,6 +14,7 @@
         <module>validation-commons-web</module>
         <module>validation-commons-war</module>
         <module>validation-commons-report</module>
+        <module>validation-commons-jar</module>
     </modules>
 
     <licenses>
@@ -281,6 +282,11 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-thymeleaf</artifactId>
+                <version>${version.springBoot}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
                 <version>${version.springBoot}</version>
             </dependency>
             <dependency>
