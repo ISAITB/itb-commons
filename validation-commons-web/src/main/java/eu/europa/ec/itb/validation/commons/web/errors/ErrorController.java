@@ -3,7 +3,6 @@ package eu.europa.ec.itb.validation.commons.web.errors;
 import eu.europa.ec.itb.validation.commons.web.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -95,11 +94,4 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
     	return null;
     }
 
-    /**
-     * @see ErrorController#getErrorPath()
-     */
-    @Override
-    public String getErrorPath() {
-        return "/error";
-    }
 }
