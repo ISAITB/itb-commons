@@ -69,9 +69,4 @@ public class ErrorControllerTest {
         assertNotNull(node.get("errorMessage").asText());
     }
 
-    @Test
-    void testGetErrorPath() {
-        assertEquals("/error", new ErrorController().getErrorPath());
-    }
-
 }

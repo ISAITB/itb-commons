@@ -35,22 +35,24 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.springBoot>2.3.3.RELEASE</version.springBoot>
-        <version.springSecurityTest>5.3.4.RELEASE</version.springSecurityTest>
-        <version.slf4j>1.7.30</version.slf4j>
+        <version.springBoot>2.5.5</version.springBoot>
+        <version.springSecurityTest>5.5.2</version.springSecurityTest>
+        <version.slf4j>1.7.32</version.slf4j>
         <version.javaxAnnotationApi>1.3.2</version.javaxAnnotationApi>
-        <version.gitbTypes>1.12.0</version.gitbTypes>
+        <version.gitbTypes>1.14.1</version.gitbTypes>
         <version.commonsLang>3.10</version.commonsLang>
         <version.commonsConfiguration>2.7</version.commonsConfiguration>
         <version.commonsIo>2.7</version.commonsIo>
         <version.webjarsBootstrap>3.4.1</version.webjarsBootstrap>
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
-        <version.webjarsCodeMirror>5.50.0</version.webjarsCodeMirror>
+        <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.5.1</version.webjarsJQuery>
         <version.jasperReports>6.16.0</version.jasperReports>
         <version.jaxb>2.3.1</version.jaxb>
         <version.geoip2>2.15.0</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
+        <version.bouncycastle>1.69</version.bouncycastle>
+        <version.jackson>2.12.5</version.jackson>
     </properties>
 
     <repositories>
@@ -91,6 +93,21 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>6.3.1</version>
+                    <configuration>
+                        <failBuildOnCVSS>0</failBuildOnCVSS>
+                        <suppressionFile>etc/owasp-suppressions.xml</suppressionFile>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>none</phase>
+                            <!-- Run manually with mvn dependency-check:aggregate -->
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
@@ -353,6 +370,26 @@
             	<groupId>org.aspectj</groupId>
             	<artifactId>aspectjweaver</artifactId>
             	<version>${version.aspectjWeaver}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${version.bouncycastle}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${version.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
