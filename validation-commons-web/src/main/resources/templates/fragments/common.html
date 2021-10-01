@@ -3,7 +3,7 @@
     <head>
 
         <th:block th:fragment="header">
-            <title th:text="${config.uploadTitle}">Validator</title>
+            <title th:text="${localiser.localise('validator.uploadTitle')}">Validator</title>
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
             <link rel="stylesheet" th:href="@{/webjars/font-awesome/5.13.0/css/all.min.css}"/>
             <link rel="stylesheet" th:href="@{/webjars/bootstrap/3.4.1/css/bootstrap.min.css}"/>
@@ -48,8 +48,21 @@
         </th:block>
 
         <div th:fragment="footer(config, minimalUI)" th:if="${not minimalUI}">
-            <div th:if="${config.htmlFooter!=''}">
-                <div th:utext="${config.htmlFooter}">Footer</div>
+            <div th:if="${localiser.propertyExists('validator.htmlFooter')}">
+                <div th:utext="${localiser.localise('validator.htmlFooter')}">Footer</div>
+            </div>
+        </div>
+
+        <div th:fragment="localeSelector(config)" class="container">
+            <div class="form-row justify-content-end">
+                <div class="col-sm-10"></div>
+                <div class="col-sm-2">
+                    <label for="availableLocales" th:text="${localiser.localise('validator.label.availableLocales')}">Available locales:</label>
+                    <select class="form-control form-control-sm" id="availableLocales" name="availableLocales" onchange="localeChanged()">
+                        <option value="empty" selected="true" th:text="${localiser.localise('validator.label.selectedLocale')}">Selected locale</option>
+                        <option th:each="locale : ${config.availableLocales}" th:text="${locale}" th:attr="value=${locale}">Locale</option>
+                    </select>
+                </div>
             </div>
         </div>
 

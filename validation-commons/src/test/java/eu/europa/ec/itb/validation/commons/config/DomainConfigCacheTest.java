@@ -14,8 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.util.ReflectionUtils;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -197,4 +200,69 @@ public class DomainConfigCacheTest extends BaseSpringTest {
         assertTrue(config.getArtifactInfo().get("type3").hasPreconfiguredArtifacts());
     }
 
+    @Test
+    void testObtainBundleNames() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        // The common name is 'labels'
+        List<String> fileNames_1 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "labels_en_UK");
+        // The common name is 'labels'
+        List<String> fileNames_2 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "labels");
+        // It should not find a correct match and return null.
+        List<String> fileNames_3 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "_labels_en_UK");
+        // It should not find a correct match and return null.
+        List<String> fileNames_4 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "labelsof_en_UK", "wrongName");
+        // The common name is 'labels'.
+        List<String> fileNames_5 = List.of("labels_en_US", "labels", "labels_es_ES");
+        // The common name is 'labels'.
+        List<String> fileNames_6 = List.of("labels_en", "labels_fr_FR", "labels_es_ES", "labels_en_US");
+        // The common name is 'my_labels'.
+        List<String> fileNames_7 = List.of("my_labels_en_US", "my_labels_fr_FR", "my_labels_es_ES");
+        // The common name is '_labels'.
+        List<String> fileNames_8 = List.of("_labels_en_US", "_labels_fr", "_labels_es_ES");
+        // The common name is 'labels'.
+        List<String> fileNames_9 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES");
+        // The common name is '_my__labels'
+        List<String> fileNames_10 = List.of("_my__labels_en_US", "_my__labels_fr_FR", "_my__labels_es_ES", "_my__labels_es");
+        DomainConfigCache configCache = createDomainConfigCache();
+        Method obtainBundleNamesMethod = ReflectionUtils.findMethod(configCache.getClass(), "obtainBundleName", List.class);
+        assertNotNull(obtainBundleNamesMethod);
+        obtainBundleNamesMethod.setAccessible(Boolean.TRUE);
+        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_1)));
+        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_2)));
+        assertNull(obtainBundleNamesMethod.invoke(configCache, fileNames_3));
+        assertNull(obtainBundleNamesMethod.invoke(configCache, fileNames_4));
+        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_5)));
+        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_6)));
+        assertTrue("my_labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_7)));
+        assertTrue("_labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_8)));
+        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_9)));
+        assertTrue("_my__labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_10)));
+    }
+
+    @Test
+    void testResolvePathForDomain() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        DomainConfigCache configCache = createDomainConfigCache();
+        Method resolvePathMethod = ReflectionUtils.findMethod(configCache.getClass(), "resolveFilePathForDomain", String.class, String.class);
+        assertNotNull(resolvePathMethod);
+        resolvePathMethod.setAccessible(Boolean.TRUE);
+        String domain = "domain1";
+        when(appConfig.isRestrictResourcesToDomain()).thenReturn(Boolean.TRUE);
+        String absolutePath = Path.of(appConfig.getResourceRoot(), domain, "file1.properties").toString();
+        String relativePath = Path.of(".", "file1.properties").toString();
+        // The path is relative to the domain root folder. It should return a path.
+        Object test1Object = resolvePathMethod.invoke(configCache, domain, relativePath);
+        assertNotNull(test1Object);
+        assert(((Path)test1Object).startsWith(Path.of(appConfig.getResourceRoot(), domain)));        
+        // The path is absolute. It should return null.
+        Object test2Object = resolvePathMethod.invoke(configCache, domain, absolutePath);
+        assertNull(test2Object);
+        when(appConfig.isRestrictResourcesToDomain()).thenReturn(Boolean.FALSE);
+        // The path is absolute. It should return the path.
+        Object test3Object = resolvePathMethod.invoke(configCache, domain, relativePath);
+        assertNotNull(test3Object);
+        assert(((Path)test3Object).startsWith(Path.of(appConfig.getResourceRoot(), domain)));
+        // The path is relative to the domain folder. It should return a path.
+        Object test4Object = resolvePathMethod.invoke(configCache, domain, relativePath);
+        assertNotNull(test4Object);
+        assert(((Path)test4Object).startsWith(Path.of(appConfig.getResourceRoot(), domain)));
+    }
 }

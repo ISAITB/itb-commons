@@ -865,3 +865,15 @@ function setCode(reportItemElement) {
 		});
 	});
 }
+function localeChanged() {
+    var selectedLocale = $('select#availableLocales option:checked').val();
+    $('select#availableLocales [selected=true]').attr("selected", "false");
+    $('select#availableLocales option:checked').attr("selected", "true");
+    // document.cookie = "locale="+selectedLocale;
+    var url = window.location.href;    
+    if (url.indexOf('?') > -1){
+        url = url.split('?')[0];
+    }
+    url += '?lang=' + selectedLocale; 
+    window.location.href = url;
+}

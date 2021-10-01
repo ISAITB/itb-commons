@@ -2,6 +2,7 @@ package eu.europa.ec.itb.validation.commons.config;
 
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import org.apache.commons.configuration2.MapConfiguration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class WebDomainConfigCacheTest {
     }
 
     @Test
-    void testAddDomainConfiguration() {
+    void testAddDomainConfiguration() throws ConfigurationException{
         var cache = createWebDomainConfigCache();
         var config = createWebDomainConfig();
         config.setDeclaredType(List.of("type1"));
@@ -53,7 +54,9 @@ public class WebDomainConfigCacheTest {
                 Map.entry("validator.showAbout", false),
                 Map.entry("validator.supportMinimalUserInterface", true),
                 Map.entry("validator.bannerHtml", "banner"),
-                Map.entry("validator.footerHtml", "footer")
+                Map.entry("validator.footerHtml", "footer"),
+                Map.entry("validator.locale.default", "en"),
+                Map.entry("validator.locale.available","en,es,fr")
         ));
         cache.addDomainConfiguration(config, configProperties);
         assertEquals("title", config.getUploadTitle());

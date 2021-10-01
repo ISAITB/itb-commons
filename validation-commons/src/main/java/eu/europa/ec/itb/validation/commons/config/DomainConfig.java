@@ -4,6 +4,7 @@ import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
 import eu.europa.ec.itb.validation.plugin.PluginInfo;
 
+import java.net.URLClassLoader;
 import java.util.*;
 
 /**
@@ -22,6 +23,13 @@ public class DomainConfig {
     private Map<String, TypedValidationArtifactInfo> artifactInfo;
     private Long maximumReportsForDetailedOutput;
     private Long maximumReportsForXmlOutput;
+    private String defaultLocale; 
+    private Set<String> availableLocales; 
+    private String pathToLocaleTranslations;
+    private URLClassLoader localeTranslationsLoader;
+    private String localeTranslationsBundle;
+    private Map<String, String> domainProperties;
+    private String domainRoot;
     // Plugin configuration.
     private List<PluginInfo> pluginDefaultConfig;
     private Map<String, List<PluginInfo>> pluginPerTypeConfig;
@@ -223,6 +231,104 @@ public class DomainConfig {
      */
     public void setDomainName(String domainName) {
         this.domainName = domainName;
+    }
+
+    /**
+     * @return The absolute path to the domain root folder.
+     */
+    public String getDomainRoot() {
+        return this.domainRoot;
+    }
+
+    /**
+     * @param domainRoot The absolute path to the domain root folder.
+     */
+    public void setDomainRoot(String domainRoot) {
+        this.domainRoot = domainRoot;
+    }
+
+    /**
+     * @return The default locale.
+     */
+    public String getDefaultLocale() {
+        return this.defaultLocale;
+    }
+
+    /**
+     * @param defaultLocale The default locale.
+     */
+    public void setDefaultLocale(String defaultLocale) {
+        this.defaultLocale = defaultLocale;
+    }
+
+    /**
+     * @param availableLocales The available locales. 
+     */
+    public void setAvailableLocales(Set<String> availableLocales) {
+        this.availableLocales = availableLocales;
+    }
+
+    /**
+     * @return The available locales.
+     */
+    public Set<String> getAvailableLocales() {
+        return this.availableLocales;
+    }
+
+    /**
+     * @return The path to the file with locale translations.
+     */
+    public String getPathToLocaleTranslations() {
+        return this.pathToLocaleTranslations;
+    }
+
+    /**
+     * @param pathToLocaleTranslations The path to a file with locale translations.
+     */
+    public void setPathToLocaleTranslations(String pathToLocaleTranslations) {
+        this.pathToLocaleTranslations = pathToLocaleTranslations;
+    }
+
+    /**
+     * @return The URLClassLoader instance to load the locale translations.
+     */
+    public URLClassLoader getLocaleTranslationsLoader() {
+        return this.localeTranslationsLoader;
+    }
+
+    /**
+     * @param localeTranslationsLoader The locale translations loader.
+     */
+    public void setLocaleTranslationsLoader(URLClassLoader localeTranslationsLoader) {
+        this.localeTranslationsLoader = localeTranslationsLoader;
+    }
+
+    /**
+     * @return The bundle name for the locale translations.
+     */
+    public String getLocaleTranslationsBundle() {
+        return this.localeTranslationsBundle;
+    }
+
+    /**
+     * @param localeTranslationsBundle The locale translations bundle name.
+     */
+    public void setLocaleTranslationsBundle(String localeTranslationsBundle) {
+        this.localeTranslationsBundle = localeTranslationsBundle;
+    }
+
+    /**
+     * @return The domain properties map.
+     */
+    public Map<String, String> getDomainProperties() {
+        return this.domainProperties;
+    }
+
+    /**
+     * @param domainProperties The domain properties map.
+     */
+    public void setDomainProperties(Map<String, String> domainProperties) {
+        this.domainProperties = domainProperties;
     }
 
     /**

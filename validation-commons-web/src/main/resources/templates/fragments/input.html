@@ -3,30 +3,30 @@
     <body>
 
         <th:block th:fragment="pageHeader(config, minimalUI)">
-            <h1 id="bannerSection" class="overall-title" onclick="window.location.href='upload'" th:text="${config.uploadTitle}" th:if="${!minimalUI && config.htmlBanner == ''}">Validator</h1>
-            <div id="bannerSection" class="view-section-input" th:if="${!minimalUI && config.htmlBanner != ''}">
-                <div th:utext="${config.htmlBanner}">Validator</div>
+            <h1 id="bannerSection" class="overall-title" onclick="window.location.href='upload'" th:text="${localiser.localise('validator.uploadTitle')}" th:if="${!minimalUI && !htmlBannerExists}">Validator</h1>
+            <div id="bannerSection" class="view-section-input" th:if="${!minimalUI && htmlBannerExists}">
+                <div th:utext="${localiser.localise('validator.htmlBanner')}">Validator</div>
             </div>
             <div class="alert alert-danger" th:if="${message}" th:text="${message}">A message</div>
         </th:block>
 
         <div th:fragment="formHeader(config, minimalUI)" class="panel-heading panel-heading-ui" th:if="${minimalUI}">
-            <h1 class="panel-title col-xs-5 minimal-title panel-title-ui">Validation input</h1>
+            <h1 class="panel-title col-xs-5 minimal-title panel-title-ui" th:text="${localiser.localise('validator.label.validationInputPanel')}">Validation input</h1>
             <div th:align="right">
-                <button type="submit" id="inputFileSubmitMinimal" class="btn btn-default" disabled="true" onclick="uploadFile()" th:text="${config.label.uploadButton}">Upload</button>
+                <button type="submit" id="inputFileSubmitMinimal" class="btn btn-default" disabled="true" onclick="uploadFile()" th:text="${localiser.localise('validator.label.uploadButton')}">Upload</button>
                 <input type="hidden" id="validationTypeToUse" name="validationType"/>
             </div>
         </div>
 
         <div th:fragment="mainFormInput(config)" class="form-group">
-            <label for="fileToValidate" class="col-sm-2 control-label" th:text="${config.label.fileInputLabel}">File to validate</label>
+            <label for="fileToValidate" class="col-sm-2 control-label" th:text="${localiser.localise('validator.label.fileInputLabel')}">File to validate</label>
             <div class="col-sm-10">
                 <div class="row">
                     <div class="col-sm-2">
                         <select class="form-control" id="contentType" name="contentType" onchange="contentTypeChanged()">
-                            <option th:text="${config.label.optionContentFile}" value="fileType">Type</option>
-                            <option th:text="${config.label.optionContentURI}" value="uriType">Type</option>
-                            <option th:text="${config.label.optionContentDirectInput}" value="stringType">Type</option>
+                            <option th:text="${localiser.localise('validator.label.optionContentFile')}" value="fileType">Type</option>
+                            <option th:text="${localiser.localise('validator.label.optionContentURI')}" value="uriType">Type</option>
+                            <option th:text="${localiser.localise('validator.label.optionContentDirectInput')}" value="stringType">Type</option>
                         </select>
                     </div>
                     <div class="col-sm-10">
@@ -36,7 +36,7 @@
                                     <div class="input-group-btn">
                                         <button class="btn btn-default" type="button" onclick="triggerFileUpload()"><i class="far fa-folder-open"></i></button>
                                     </div>
-                                    <input type="text" id="inputFileName" class="form-control" th:placeholder="${config.label.fileInputPlaceholder}" onclick="triggerFileUpload()" readonly="readonly"/>
+                                    <input type="text" id="inputFileName" class="form-control" th:placeholder="${localiser.localise('validator.label.fileInputPlaceholder')}" onclick="triggerFileUpload()" readonly="readonly"/>
                                 </div>
                             </div>
                             <input type="file" class="inputFile" id="inputFile" name="file" onchange="fileInputChanged()"/>
@@ -53,16 +53,16 @@
         </div>
 
         <div th:fragment="mainFormValidationType(config)" class="form-group" th:if="${config.hasMultipleValidationTypes()}">
-            <label for="validationType" class="col-sm-2 control-label" th:text="${config.label.typeLabel}">Validate as</label>
+            <label for="validationType" class="col-sm-2 control-label" th:text="${localiser.localise('validator.label.typeLabel')}">Validate as</label>
             <div th:class="${config.hasValidationTypeOptions()}? col-sm-5 : col-sm-10">
                 <select class="form-control" id="validationType" onchange="validationTypeChanged()" name="validationTypeInternal">
                     <option value="" selected="true" disabled="true"></option>
-                    <option th:each="type : ${config.declaredType}" th:text="${config.typeLabel.get(type)}" th:attr="value=${type}">Type</option>
+                    <option th:each="type : ${config.declaredType}" th:text="${localiser.localise(localiser.buildMessageName('validator.typeLabel', type))}" th:attr="value=${type}">Type</option>
                 </select>
             </div>
             <div id="validationTypeOptionDiv" th:if="${config.hasValidationTypeOptions()}" class="col-sm-5 hidden">
                 <div id="validationTypeOptionLabelDiv" style="float:left; width:auto; padding-right:30px;">
-                    <label for="validationTypeOption" class="control-label" th:text="${config.label.optionLabel}">Option</label>
+                    <label for="validationTypeOption" class="control-label" th:text="${localiser.localise('validator.label.optionLabel')}">Option</label>
                 </div>
                 <div id="validationTypeOptionSelectDiv" style="overflow:hidden; width:auto;">
                     <select class="form-control" id="validationTypeOption" onchange="validationTypeOptionChanged()" name="validationTypeOptionInternal">
@@ -96,7 +96,7 @@
 
         <div th:fragment="submit(config, minimalUI)" class="form-group" th:if="${not minimalUI}">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" id="inputFileSubmit" class="btn btn-primary" disabled="true" onclick="uploadFile()" th:text="${config.label.uploadButton}">Upload</button>
+                <button type="submit" id="inputFileSubmit" class="btn btn-primary" disabled="true" onclick="uploadFile()" th:text="${localiser.localise('validator.label.uploadButton')}">Upload</button>
                 <input type="hidden" id="validationTypeToUse" name="validationType"/>
             </div>
         </div>
