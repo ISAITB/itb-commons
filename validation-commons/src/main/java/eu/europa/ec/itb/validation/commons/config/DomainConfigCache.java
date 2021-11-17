@@ -376,34 +376,35 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      *
      * @param domainConfig The domain configuration to enrich.
      * @param config The configuration properties to consider.
-     * @throws javax.naming.ConfigurationException
-     * @throws IllegalStateException
+     * @throws ConfigurationException In case a configuration problem arises.
      */
     protected void addDomainConfiguration(T domainConfig, Configuration config) throws ConfigurationException {
         // Do nothing by default.
     }
 
     /**
-     * 
-     * @param fileNames
-     * @return
+     * Add to a domain configuration object information on configured translation resource bundles.
+     *
+     * @param domainConfig The domain configuration object to consider.
+     * @param config The validator configuration.
      */
     private void addResourceBundlesConfiguration(T domainConfig, Configuration config) throws ConfigurationException, IllegalStateException {
         domainConfig.setDefaultLocale(config.getString("validator.locale.default", ""));
-        String[] availableLocales = config.getString("validator.locale.available", "").split(","); 
-        LinkedHashSet<String> availableLocalesSet = new LinkedHashSet<String>();
-        availableLocalesSet.addAll((availableLocales != null && availableLocales.length > 0 && !availableLocales[0].isEmpty()) ?  
-            Arrays.stream(availableLocales).map(s -> s.trim()).collect(Collectors.toList()) : new ArrayList<String>());
+        String[] availableLocales = config.getString("validator.locale.available", "").split(",");
+        LinkedHashSet<String> availableLocalesSet = new LinkedHashSet<>();
+        if (availableLocales.length > 0 && !availableLocales[0].isEmpty()) {
+            availableLocalesSet.addAll(Arrays.stream(availableLocales).map(String::trim).collect(Collectors.toList()));
+        }
         domainConfig.setAvailableLocales(availableLocalesSet);
         if (!domainConfig.getAvailableLocales().isEmpty()) {
             if (domainConfig.getDefaultLocale().isEmpty()) {
                 domainConfig.setDefaultLocale(availableLocales[0]);
-            }else{
+            } else {
                 if (!domainConfig.getAvailableLocales().contains(domainConfig.getDefaultLocale())) {
                     throw new ConfigurationException("The default locale " + domainConfig.getDefaultLocale() + " is not among the available locales  for domain " + domainConfig.getDomainName());
                 }
             }
-        }else{
+        } else {
             if (domainConfig.getDefaultLocale().isEmpty()) {
                 domainConfig.setDefaultLocale("en");
             }
@@ -434,11 +435,14 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                 try {
                     if (file.isDirectory()) {
                         translationsFolder = file;
-                        List<String> propFileNames = Arrays.stream(file.listFiles()).filter( f -> f.isFile())
-                            .filter( f -> f.getName().contains(".properties"))
-                            .map( f -> f.getName().substring(0, f.getName().lastIndexOf(".properties")))
-                            .collect(Collectors.toList()); 
-                        bundleName = obtainBundleName(propFileNames);
+                        var files = file.listFiles();
+                        if (files != null) {
+                            List<String> propFileNames = Arrays.stream(files).filter(File::isFile)
+                                    .filter( f -> f.getName().contains(".properties"))
+                                    .map( f -> f.getName().substring(0, f.getName().lastIndexOf(".properties")))
+                                    .collect(Collectors.toList());
+                            bundleName = obtainBundleName(propFileNames);
+                        }
                     } else {
                         translationsFolder = file.getParentFile();
                         String fileName =  file.getName();
@@ -470,7 +474,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      * @return The list of bundle names.
      */
     private String obtainBundleName(List<String> fileNames) {
-        String commonName = StringUtils.getCommonPrefix(fileNames.toArray(new String[fileNames.size()]));
+        String commonName = StringUtils.getCommonPrefix(fileNames.toArray(new String[0]));
         if (commonName == null || commonName.isEmpty()) {
             return null;
         } else {
