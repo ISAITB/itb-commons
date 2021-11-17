@@ -13,9 +13,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -68,6 +73,23 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
     public void initBase() {
         getAllDomainConfigurations();
         init();
+    }
+
+    /**
+     * Actions to be performed before destroying the instance.
+     */
+    @PreDestroy
+    public void close() {
+        for(T config: domainConfigs.values()) {
+            try{
+                URLClassLoader loader = config.getLocaleTranslationsLoader();
+                if(loader != null) {
+                    loader.close();
+                }
+            } catch (Exception ex) {
+                // Do nothing. Only try to prevent the method from crashing if an exceptio is thrown. 
+            }
+        }
     }
 
     /**
@@ -157,6 +179,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setDefined(true);
                     domainConfig.setDomain(domain);
                     domainConfig.setDomainName(appConfig.getDomainIdToDomainName().get(domain));
+                    domainConfig.setDomainRoot(Paths.get(appConfig.getResourceRoot(), domain).toString());
 
                     List<String> declaredValidationTypes = Arrays.stream(StringUtils.split(config.getString("validator.type"), ',')).map(String::trim).collect(Collectors.toList());
                     Map<String, List<String>> validationTypeOptions = new HashMap<>();
@@ -215,6 +238,8 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     // Allow subclasses to extend the configuration as needed.
                     addDomainConfiguration(domainConfig, config);
                     completeValidationArtifactConfig(domainConfig);
+                    // Add resource bundles to the domain configuration.
+                    addResourceBundlesConfiguration(domainConfig, config);
                     logger.info("Loaded configuration for domain ["+domain+"]");
                 } catch (Exception e) {
                     // Make sure a domain's invalid configuration never fails the overall startup of the validator.
@@ -238,19 +263,16 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      * @param domain The current domain's identifier.
      */
     protected void importAdditionalProperties(CompositeConfiguration config, String domain) {
-    	String importPropertiesObject = config.getString("validator.importProperties", null);
-    	if(importPropertiesObject == null) {
+    	String importPropertiesStringPath = config.getString("validator.importProperties", null);
+    	if(importPropertiesStringPath == null) {
     		return;
     	}
-    	String importPropertiesPath = importPropertiesObject;
-    	if(appConfig.isRestrictResourcesToDomain() && ((new File(importPropertiesPath)).isAbsolute() || !isInDomainFolder(domain, importPropertiesPath))) {
-   			throw new IllegalStateException("Resources are restricted to domain. Their paths should be relative to domain folder. Unable to load property file [" + importPropertiesPath + "]");
-    	}else {
-    		if(!(new File(importPropertiesPath)).isAbsolute()) {
-    			importPropertiesPath = Paths.get(appConfig.getResourceRoot(), domain, importPropertiesPath).toAbsolutePath().toString();
-    		}
-    	}
-        addConfigurationFromFile(Paths.get(importPropertiesPath), config);
+        Path importPropertiesPath;
+        if ((importPropertiesPath = resolveFilePathForDomain(domain, importPropertiesStringPath)) != null) {
+            addConfigurationFromFile(importPropertiesPath, config);
+        } else {
+            throw new IllegalStateException("Resources are restricted to domain. Their paths should be relative to domain folder. Unable to load property file [" + importPropertiesPath + "]");
+        }
     }
 
     /**
@@ -299,6 +321,31 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
     }
 
     /**
+     * Check to see if the provided file path (relative or absolute) is within the given domain's folder and return the absolute path.
+     *
+     * @param domain The domain's identifier (folder name).
+     * @param localFile The file path to check.
+     * @return The absolute, cannonical file path if it is allowed, null otherwise.
+     */
+    private Path resolveFilePathForDomain(String domain, String localFile) {
+        Path localFilePath;
+        if (appConfig.isRestrictResourcesToDomain() && Path.of(localFile).isAbsolute()) {
+            return null;
+        } else if (Path.of(localFile).isAbsolute()) {
+            localFilePath = Path.of(localFile);
+        } else {
+            localFilePath = Paths.get(appConfig.getResourceRoot(), domain, localFile.trim());
+        }        
+    	Path localFileCanonicalPath;
+        try {
+            localFileCanonicalPath = localFilePath.toFile().getCanonicalFile().toPath();
+        } catch (IOException e) {
+            throw new ValidatorException("Unable to resolve file with path " + localFile, e);
+        }
+        return localFileCanonicalPath;
+    }
+
+    /**
      * Complete the configuration of validation artifacts (aggregate flags) based on the loaded configuration.
      *
      * @param domainConfig The domain's configuration.
@@ -329,9 +376,106 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      *
      * @param domainConfig The domain configuration to enrich.
      * @param config The configuration properties to consider.
+     * @throws javax.naming.ConfigurationException
+     * @throws IllegalStateException
      */
-    protected void addDomainConfiguration(T domainConfig, Configuration config) {
+    protected void addDomainConfiguration(T domainConfig, Configuration config) throws ConfigurationException {
         // Do nothing by default.
+    }
+
+    /**
+     * 
+     * @param fileNames
+     * @return
+     */
+    private void addResourceBundlesConfiguration(T domainConfig, Configuration config) throws ConfigurationException, IllegalStateException {
+        domainConfig.setDefaultLocale(config.getString("validator.locale.default", ""));
+        String[] availableLocales = config.getString("validator.locale.available", "").split(","); 
+        LinkedHashSet<String> availableLocalesSet = new LinkedHashSet<String>();
+        availableLocalesSet.addAll((availableLocales != null && availableLocales.length > 0 && !availableLocales[0].isEmpty()) ?  
+            Arrays.stream(availableLocales).map(s -> s.trim()).collect(Collectors.toList()) : new ArrayList<String>());
+        domainConfig.setAvailableLocales(availableLocalesSet);
+        if (!domainConfig.getAvailableLocales().isEmpty()) {
+            if (domainConfig.getDefaultLocale().isEmpty()) {
+                domainConfig.setDefaultLocale(availableLocales[0]);
+            }else{
+                if (!domainConfig.getAvailableLocales().contains(domainConfig.getDefaultLocale())) {
+                    throw new ConfigurationException("The default locale " + domainConfig.getDefaultLocale() + " is not among the available locales  for domain " + domainConfig.getDomainName());
+                }
+            }
+        }else{
+            if (domainConfig.getDefaultLocale().isEmpty()) {
+                domainConfig.setDefaultLocale("en");
+            }
+            domainConfig.setAvailableLocales(Set.of(new String[] { domainConfig.getDefaultLocale() } ));
+        }
+        domainConfig.setPathToLocaleTranslations(config.getString("validator.locale.translations", null));
+        // loading the domain properties for localisation
+        Map<String, String> domainProperties = new HashMap<>();
+        Iterator<String> propsIterator = config.getKeys();
+        while(propsIterator.hasNext()) {
+            String key = propsIterator.next();
+            String prop = config.getString(key);
+            if(prop != null && !prop.isEmpty()) {
+                domainProperties.put(key, prop);
+            }
+        }
+        domainConfig.setDomainProperties(domainProperties);
+        // load the local translations
+        String pathToLocaleTranslations = domainConfig.getPathToLocaleTranslations(); 
+        if (pathToLocaleTranslations != null && !pathToLocaleTranslations.isEmpty()) {
+            // check if the property file folder is within the domain folder
+            Path filePath;
+            if ((filePath = resolveFilePathForDomain(domainConfig.getDefaultLocale(), pathToLocaleTranslations)) != null) {
+                // obtain the translations folder and bundle name 
+                File file = filePath.toFile();
+                File translationsFolder;
+                String bundleName = null;
+                try {
+                    if (file.isDirectory()) {
+                        translationsFolder = file;
+                        List<String> propFileNames = Arrays.stream(file.listFiles()).filter( f -> f.isFile())
+                            .filter( f -> f.getName().contains(".properties"))
+                            .map( f -> f.getName().substring(0, f.getName().lastIndexOf(".properties")))
+                            .collect(Collectors.toList()); 
+                        bundleName = obtainBundleName(propFileNames);
+                    } else {
+                        translationsFolder = file.getParentFile();
+                        String fileName =  file.getName();
+                        if (fileName.endsWith(".properties")) {
+                            bundleName = fileName.substring(0, fileName.lastIndexOf(".properties"));
+                        } else {
+                            bundleName = fileName;
+                        }
+                    }
+                    // create class loader and set up domainConfig
+                    if (translationsFolder.exists()) {
+                        domainConfig.setLocaleTranslationsBundle(bundleName);
+                        domainConfig.setLocaleTranslationsLoader(new URLClassLoader(new URL[] { translationsFolder.toURI().toURL() }));
+                    }
+                } catch (MalformedURLException ex) {
+                    throw new IllegalStateException("Unexpected error while processing configured translation files", ex);
+                }
+            } else {
+                throw new IllegalStateException("Resources are restricted to domain. Their paths should be relative to domain folder. Unable to access translations file/directory [" + pathToLocaleTranslations+ "]");
+            }
+            
+        }
+    }
+
+    /**
+     * Method that obtains the common names of the groups of files. 
+     * 
+     * @param fileNames The list of file names.
+     * @return The list of bundle names.
+     */
+    private String obtainBundleName(List<String> fileNames) {
+        String commonName = StringUtils.getCommonPrefix(fileNames.toArray(new String[fileNames.size()]));
+        if (commonName == null || commonName.isEmpty()) {
+            return null;
+        } else {
+            return (commonName.endsWith("_")) ? commonName.substring(0, commonName.length() - 1) : commonName;
+        }
     }
 
     /**
