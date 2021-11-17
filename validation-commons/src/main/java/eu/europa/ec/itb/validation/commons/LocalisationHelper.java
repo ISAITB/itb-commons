@@ -17,8 +17,8 @@ public class LocalisationHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalisationHelper.class);
 
-    private Locale locale;
-    private DomainConfig config;
+    private final Locale locale;
+    private final DomainConfig config;
 
     /**
      * Constructor.
@@ -36,7 +36,6 @@ public class LocalisationHelper {
      * Method that localises a given property.
      * 
      * @param property The label to resolve.
-     * @param locale   The locale set in the browser.
      * @return The value of the property for a given Locale.
      */
     public String localise(String property) {
@@ -53,7 +52,7 @@ public class LocalisationHelper {
      * 
      * @param property The property to be localised.
      * @param param The parameter to substitute.
-     * @return
+     * @return The resulting message.
      */
     public String localiseParameterised(String property, Object ... param){
         String labelValue = findTranslation(property);
