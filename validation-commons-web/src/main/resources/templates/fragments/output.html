@@ -2,11 +2,11 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
     <body>
 
-        <h2 th:fragment="reportTitle(config, minimalUI)" class="view-section-title" th:if="${not minimalUI}" th:text="${config.label.resultSectionTitle}">Validation result</h2>
+        <h2 th:fragment="reportTitle(config, minimalUI)" class="view-section-title" th:if="${not minimalUI}" th:text="${localiser.localise('validator.label.resultSectionTitle')}">Validation result</h2>
 
         <th:block th:fragment="reportHeader(config, minimalUI)">
             <div class="panel-heading"  th:if="${not minimalUI}">
-                <h3 class="panel-title" th:text="${config.label.resultSubSectionOverviewTitle}">Overview</h3>
+                <h3 class="panel-title" th:text="${localiser.localise('validator.label.resultSubSectionOverviewTitle')}">Overview</h3>
             </div>
             <div class="panel-heading panel-heading-ui" th:if="${minimalUI}">
                 <h1 class="panel-title col-xs-5 report-item panel-title-ui">Validation result</h1>
@@ -18,43 +18,43 @@
 
         <div th:fragment="reportSummary(config, withControls)" class="panel-body">
             <div class="row">
-                <label class="col-sm-2 col-xs-3 control-label" th:text="${config.label.resultDateLabel}">Date:</label>
+                <label class="col-sm-2 col-xs-3 control-label" th:text="${localiser.localise('validator.label.resultDateLabel')}">Date:</label>
                 <div><span class="form-control-static" th:text="${report.date}">17/12/2016</span></div>
             </div>
             <div class="row">
-                <label class="col-sm-2 col-xs-3 control-label" th:text="${config.label.resultFileNameLabel}">File name:</label>
+                <label class="col-sm-2 col-xs-3 control-label" th:text="${localiser.localise('validator.label.resultFileNameLabel')}">File name:</label>
                 <div><span class="form-control-static" th:text="${fileName}">file.rdf</span></div>
             </div>
             <div class="row" th:if="${validationTypeLabel}">
-                <label class="col-sm-2 col-xs-3 control-label" th:text="${config.label.resultValidationTypeLabel}">Validation type:</label>
+                <label class="col-sm-2 col-xs-3 control-label" th:text="${localiser.localise('validator.label.resultValidationTypeLabel')}">Validation type:</label>
                 <div><span class="form-control-static" th:text="${validationTypeLabel}">Type</span></div>
             </div>
             <div class="row">
-                <label class="col-sm-2 col-xs-3 control-label" th:text="${config.label.resultResultLabel}">Result:</label>
+                <label class="col-sm-2 col-xs-3 control-label" th:text="${localiser.localise('validator.label.resultResultLabel')}">Result:</label>
                 <div><span class="form-control-static" th:text="${report.result}">Success</span></div>
             </div>
             <div class="row">
-                <label class="col-sm-2 col-xs-3 control-label" th:text="${config.label.resultErrorsLabel}">Errors:</label>
+                <label class="col-sm-2 col-xs-3 control-label" th:text="${localiser.localise('validator.label.resultErrorsLabel')}">Errors:</label>
                 <div><span class="form-control-static" th:text="${report.counters.nrOfErrors}">0</span></div>
             </div>
             <div class="row">
-                <label class="col-sm-2 col-xs-3 control-label" th:text="${config.label.resultWarningsLabel}">Warnings:</label>
+                <label class="col-sm-2 col-xs-3 control-label" th:text="${localiser.localise('validator.label.resultWarningsLabel')}">Warnings:</label>
                 <div><span class="form-control-static" th:text="${report.counters.nrOfWarnings}">0</span></div>
             </div>
             <div class="row">
-                <label class="col-sm-2 col-xs-3 control-label" th:text="${config.label.resultMessagesLabel}">Messages:</label>
+                <label class="col-sm-2 col-xs-3 control-label" th:text="${localiser.localise('validator.label.resultMessagesLabel')}">Messages:</label>
                 <div><span class="form-control-static" th:text="${report.counters.nrOfAssertions}">0</span></div>
             </div>
             <div th:if="${withControls}" class="row overview-button-row">
                 <div class="col-xs-12">
                     <div class="btn-group">
-                        <button th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" type="button" class="btn btn-default" id="viewInputButton" onclick="setCode()" disabled="true"><span th:text="${config.label.viewAnnotatedInputButton}">View annotated input</span><span id="viewInputButtonSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
+                        <button th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" type="button" class="btn btn-default" id="viewInputButton" onclick="setCode()" disabled="true"><span th:text="${localiser.localise('validator.label.viewAnnotatedInputButton')}">View annotated input</span><span id="viewInputButtonSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
                         <button type="button" class="btn btn-default" id="downloadReportButtonXML" onclick="downloadReportXML()" disabled="true">
-                            <span th:text="${config.label.downloadXMLReportButton}">Download XML report</span>
-                            <span th:if="${report.counters != null && (report.counters.nrOfAssertions.longValue() + report.counters.nrOfErrors.longValue() + report.counters.nrOfWarnings.longValue()) > config.maximumReportsForXmlOutput}" data-toggle="tooltip" data-container="body" data-placement="top" th:attr="title=${config.label.maximumReportsExceededForXmlOutputMessage}"> <i class="far fa-question-circle"></i></span>
+                            <span th:text="${localiser.localise('validator.label.downloadXMLReportButton')}">Download XML report</span>
+                            <span th:if="${report.counters != null && (report.counters.nrOfAssertions.longValue() + report.counters.nrOfErrors.longValue() + report.counters.nrOfWarnings.longValue()) > config.maximumReportsForXmlOutput}" data-toggle="tooltip" data-container="body" data-placement="top" th:attr="title=${localiser.localiseParameterised('validator.label.maximumReportsExceededForXmlOutputMessage', config.getMaximumReportsForXmlOutput())}"> <i class="far fa-question-circle"></i></span>
                             <span id="downloadReportButtonXMLSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span>
                         </button>
-                        <button th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" type="button" class="btn btn-default" id="downloadReportButtonPDF" onclick="downloadReportPDF()" disabled="true"><span th:text="${config.label.downloadPDFReportButton}">Download PDF report</span><span id="downloadReportButtonPDFSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
+                        <button th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" type="button" class="btn btn-default" id="downloadReportButtonPDF" onclick="downloadReportPDF()" disabled="true"><span th:text="${localiser.localise('validator.label.downloadPDFReportButton')}">Download PDF report</span><span id="downloadReportButtonPDFSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
         <div th:fragment="reportDetails(config, minimalUI, clickableItems)">
             <div class="panel panel-default" th:style="${minimalUI}?'display:none':''" th:classappend="${minimalUI} ? remove : ''" th:if="${report.reports != null && report.reports.infoOrWarningOrError != null && report.reports.infoOrWarningOrError.size() > 0}">
                 <div class="panel-heading">
-                    <h3 class="panel-title" th:text="${config.label.resultSubSectionDetailsTitle}">Details</h3>
+                    <h3 class="panel-title" th:text="${localiser.localise('validator.label.resultSubSectionDetailsTitle')}">Details</h3>
                 </div>
                 <div class="panel-body result-details-panel">
                     <div th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" class="report-item-container">
@@ -77,13 +77,13 @@
                                     <span th:if="${clickableItems}" style="display: none" th:text="${item.value.location}" class="item-info-location">INPUT:0:0</span>
                                 </div>
                             </div>
-                            <div th:if="${!clickableItems && item.value.location != null}" class="col-xs-12 report-item-test"><span class="report-item-test-label" th:text="${config.label.resultLocationLabel}">Location:</span><span th:text="${item.value.location}">Location</span></div>
-                            <div class="col-xs-12 report-item-test" th:if="${item.value.test != null}"><span class="report-item-test-label" th:text="${config.label.resultTestLabel}">Test:</span><span th:text="${item.value.test}">Test</span></div>
+                            <div th:if="${!clickableItems && item.value.location != null}" class="col-xs-12 report-item-test"><span class="report-item-test-label" th:text="${localiser.localise('validator.label.resultLocationLabel')}">Location:</span><span th:text="${item.value.location}">Location</span></div>
+                            <div class="col-xs-12 report-item-test" th:if="${item.value.test != null}"><span class="report-item-test-label" th:text="${localiser.localise('validator.label.resultTestLabel')}">Test:</span><span th:text="${item.value.test}">Test</span></div>
                         </div>
                     </div>
                     <div th:unless="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}">
                         <div style="padding-top:15px;padding-bottom:15px;">
-                            <div class="alert alert-warning" style="margin-bottom:0px;" th:text="${config.label.maximumReportsExceededForDetailedOutputMessage}">
+                            <div class="alert alert-warning" style="margin-bottom:0px;" th:text="${localiser.localise('validator.label.maximumReportsExceededForDetailedOutputMessage')}">
                                 Maximum results exceeded for detailed display.
                             </div>
                         </div>
@@ -94,8 +94,8 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="btn btn-primary popup-close" data-dismiss="modal" aria-label="Close" th:text="${config.label.popupCloseButton}">Close</button>
-                            <h4 class="modal-title" id="inputContentTitle" th:text="${config.label.popupTitle}">Input content</h4>
+                            <button type="button" class="btn btn-primary popup-close" data-dismiss="modal" aria-label="Close" th:text="${localiser.localise('validator.label.popupCloseButton')}">Close</button>
+                            <h4 class="modal-title" id="inputContentTitle" th:text="${localiser.localise('validator.label.popupTitle')}">Input content</h4>
                         </div>
                         <div id="input-content-pane" class="modal-body">
                         </div>

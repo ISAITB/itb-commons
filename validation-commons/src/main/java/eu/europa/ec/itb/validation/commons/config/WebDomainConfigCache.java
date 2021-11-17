@@ -1,10 +1,12 @@
 package eu.europa.ec.itb.validation.commons.config;
 
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * Base class for the loading and storing of domain configuration for validators that are web applications.
@@ -46,9 +48,10 @@ public abstract class WebDomainConfigCache <T extends WebDomainConfig<?>> extend
      *
      * @param domainConfig The domain configuration to enrich.
      * @param config The configuration properties to consider.
+     * @throws ConfigurationException
      */
     @Override
-    protected void addDomainConfiguration(T domainConfig, Configuration config) {
+    protected void addDomainConfiguration(T domainConfig, Configuration config) throws ConfigurationException {
         super.addDomainConfiguration(domainConfig, config);
         domainConfig.setUploadTitle(config.getString("validator.uploadTitle", "Validator"));
         domainConfig.setReportTitle(config.getString("validator.reportTitle", "Validation report"));
