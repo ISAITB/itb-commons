@@ -48,7 +48,7 @@ public abstract class WebDomainConfigCache <T extends WebDomainConfig<?>> extend
      *
      * @param domainConfig The domain configuration to enrich.
      * @param config The configuration properties to consider.
-     * @throws ConfigurationException
+     * @throws ConfigurationException If a configuration error occurs.
      */
     @Override
     protected void addDomainConfiguration(T domainConfig, Configuration config) throws ConfigurationException {
