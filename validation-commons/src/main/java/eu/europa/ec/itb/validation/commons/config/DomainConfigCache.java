@@ -376,9 +376,8 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      *
      * @param domainConfig The domain configuration to enrich.
      * @param config The configuration properties to consider.
-     * @throws ConfigurationException In case a configuration problem arises.
      */
-    protected void addDomainConfiguration(T domainConfig, Configuration config) throws ConfigurationException {
+    protected void addDomainConfiguration(T domainConfig, Configuration config) {
         // Do nothing by default.
     }
 
