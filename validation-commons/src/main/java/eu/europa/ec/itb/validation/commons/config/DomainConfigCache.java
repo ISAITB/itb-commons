@@ -7,6 +7,7 @@ import eu.europa.ec.itb.validation.plugin.PluginInfo;
 import org.apache.commons.configuration2.*;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -316,7 +317,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
 			localFileCanonicalPath = localFilePath.toFile().getCanonicalFile().toPath();
 			return localFileCanonicalPath.startsWith(domainRootCanonicalPath);
 		} catch (IOException e) {
-			throw new ValidatorException("Unable to find domain properties file" + localFile, e);
+			throw new IllegalStateException("Unable to find domain properties file" + localFile, e);
 		}
     }
 
@@ -340,7 +341,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
         try {
             localFileCanonicalPath = localFilePath.toFile().getCanonicalFile().toPath();
         } catch (IOException e) {
-            throw new ValidatorException("Unable to resolve file with path " + localFile, e);
+            throw new IllegalStateException("Unable to resolve file with path " + localFile, e);
         }
         return localFileCanonicalPath;
     }
@@ -387,46 +388,48 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      * @param domainConfig The domain configuration object to consider.
      * @param config The validator configuration.
      */
-    private void addResourceBundlesConfiguration(T domainConfig, Configuration config) throws ConfigurationException, IllegalStateException {
-        domainConfig.setDefaultLocale(config.getString("validator.locale.default", ""));
+    protected void addResourceBundlesConfiguration(T domainConfig, Configuration config) {
+        var defaultLocaleStr = config.getString("validator.locale.default", "");
         String[] availableLocales = config.getString("validator.locale.available", "").split(",");
-        LinkedHashSet<String> availableLocalesSet = new LinkedHashSet<>();
+        LinkedHashSet<Locale> availableLocalesSet = new LinkedHashSet<>();
         if (availableLocales.length > 0 && !availableLocales[0].isEmpty()) {
-            availableLocalesSet.addAll(Arrays.stream(availableLocales).map(String::trim).collect(Collectors.toList()));
+            availableLocalesSet.addAll(Arrays.stream(availableLocales).map(String::trim).map(LocaleUtils::toLocale).collect(Collectors.toList()));
         }
         domainConfig.setAvailableLocales(availableLocalesSet);
         if (!domainConfig.getAvailableLocales().isEmpty()) {
-            if (domainConfig.getDefaultLocale().isEmpty()) {
-                domainConfig.setDefaultLocale(availableLocales[0]);
+            if (defaultLocaleStr.isBlank()) {
+                domainConfig.setDefaultLocale(domainConfig.getAvailableLocales().iterator().next());
             } else {
+                domainConfig.setDefaultLocale(LocaleUtils.toLocale(defaultLocaleStr));
                 if (!domainConfig.getAvailableLocales().contains(domainConfig.getDefaultLocale())) {
-                    throw new ConfigurationException("The default locale " + domainConfig.getDefaultLocale() + " is not among the available locales  for domain " + domainConfig.getDomainName());
+                    throw new IllegalStateException("The default locale " + domainConfig.getDefaultLocale() + " is not among the available locales  for domain " + domainConfig.getDomainName());
                 }
             }
         } else {
-            if (domainConfig.getDefaultLocale().isEmpty()) {
-                domainConfig.setDefaultLocale("en");
+            if (defaultLocaleStr.isBlank()) {
+                domainConfig.setDefaultLocale(Locale.ENGLISH);
+            } else {
+                domainConfig.setDefaultLocale(LocaleUtils.toLocale(defaultLocaleStr));
             }
-            domainConfig.setAvailableLocales(Set.of(new String[] { domainConfig.getDefaultLocale() } ));
+            domainConfig.setAvailableLocales(Set.of(domainConfig.getDefaultLocale()));
         }
-        domainConfig.setPathToLocaleTranslations(config.getString("validator.locale.translations", null));
+        var pathToTranslations = config.getString("validator.locale.translations", null);
         // loading the domain properties for localisation
         Map<String, String> domainProperties = new HashMap<>();
         Iterator<String> propsIterator = config.getKeys();
-        while(propsIterator.hasNext()) {
+        while (propsIterator.hasNext()) {
             String key = propsIterator.next();
             String prop = config.getString(key);
-            if(prop != null && !prop.isEmpty()) {
+            if (prop != null && !prop.isEmpty()) {
                 domainProperties.put(key, prop);
             }
         }
         domainConfig.setDomainProperties(domainProperties);
         // load the local translations
-        String pathToLocaleTranslations = domainConfig.getPathToLocaleTranslations(); 
-        if (pathToLocaleTranslations != null && !pathToLocaleTranslations.isEmpty()) {
+        if (pathToTranslations != null && !pathToTranslations.isEmpty()) {
             // check if the property file folder is within the domain folder
-            Path filePath;
-            if ((filePath = resolveFilePathForDomain(domainConfig.getDefaultLocale(), pathToLocaleTranslations)) != null) {
+            Path filePath = resolveFilePathForDomain(domainConfig.getDomain(), pathToTranslations);
+            if (filePath != null) {
                 // obtain the translations folder and bundle name 
                 File file = filePath.toFile();
                 File translationsFolder;
@@ -460,7 +463,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     throw new IllegalStateException("Unexpected error while processing configured translation files", ex);
                 }
             } else {
-                throw new IllegalStateException("Resources are restricted to domain. Their paths should be relative to domain folder. Unable to access translations file/directory [" + pathToLocaleTranslations+ "]");
+                throw new IllegalStateException("Resources are restricted to domain. Their paths should be relative to domain folder. Unable to access translations file/directory [" + pathToTranslations+ "]");
             }
             
         }

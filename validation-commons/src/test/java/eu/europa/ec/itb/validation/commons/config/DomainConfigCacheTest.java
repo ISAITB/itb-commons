@@ -7,6 +7,7 @@ import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.artifact.ValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.test.BaseSpringTest;
 import eu.europa.ec.itb.validation.commons.test.BaseTestConfiguration;
+import org.apache.commons.configuration2.MapConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,16 +21,14 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { BaseTestConfiguration.class })
@@ -239,6 +238,68 @@ public class DomainConfigCacheTest extends BaseSpringTest {
     }
 
     @Test
+    void testAddResourceBundlesConfiguration() throws IOException {
+        var props = new HashMap<String, String>();
+        props.put("validator.locale.default", "fr");
+        props.put("validator.locale.available", "en,fr");
+        props.put("validator.locale.translations", "translations");
+        createFileWithContents(Path.of(appConfig.getResourceRoot(), "domainX", "translations", "labels.properties"), "key1=value1\nkey2=value2");
+        var domainConfig = new DomainConfig();
+        domainConfig.setDomain("domainX");
+        DomainConfigCache configCache = createDomainConfigCache();
+        configCache.addResourceBundlesConfiguration(domainConfig, new MapConfiguration(props));
+        assertNotNull(domainConfig.getAvailableLocales());
+        assertEquals(2, domainConfig.getAvailableLocales().size());
+        assertEquals(Locale.ENGLISH, new ArrayList<>(domainConfig.getAvailableLocales()).get(0));
+        assertEquals(Locale.FRENCH, new ArrayList<>(domainConfig.getAvailableLocales()).get(1));
+        assertEquals(Locale.FRENCH, domainConfig.getDefaultLocale());
+        assertEquals("labels", domainConfig.getLocaleTranslationsBundle());
+
+        var props1 = new HashMap<String, String>();
+        props1.put("validator.locale.default", "fr");
+        props1.put("validator.locale.available", "en,fr");
+        props1.put("validator.locale.translations", "translations/labels.properties");
+        createFileWithContents(Path.of(appConfig.getResourceRoot(), "domainY", "translations", "labels.properties"), "key1=value1\nkey2=value2");
+        var domainConfig1 = new DomainConfig();
+        domainConfig1.setDomain("domainY");
+        DomainConfigCache configCache1 = createDomainConfigCache();
+        configCache1.addResourceBundlesConfiguration(domainConfig1, new MapConfiguration(props1));
+        assertEquals("labels", domainConfig1.getLocaleTranslationsBundle());
+
+        var props1b = new HashMap<String, String>();
+        props1b.put("validator.locale.default", "fr");
+        props1b.put("validator.locale.available", "en,fr");
+        props1b.put("validator.locale.translations", "translations/labels");
+        createFileWithContents(Path.of(appConfig.getResourceRoot(), "domainZ", "translations", "labels.properties"), "key1=value1\nkey2=value2");
+        var domainConfig1b = new DomainConfig();
+        domainConfig1b.setDomain("domainZ");
+        DomainConfigCache configCache1b = createDomainConfigCache();
+        configCache1b.addResourceBundlesConfiguration(domainConfig1b, new MapConfiguration(props1b));
+        assertEquals("labels", domainConfig1b.getLocaleTranslationsBundle());
+
+        var props2 = new HashMap<String, String>();
+        props2.put("validator.locale.available", "en,fr");
+        var domainConfig2 = new DomainConfig();
+        DomainConfigCache configCache2 = createDomainConfigCache();
+        configCache2.addResourceBundlesConfiguration(domainConfig2, new MapConfiguration(props2));
+        assertEquals(Locale.ENGLISH, domainConfig2.getDefaultLocale());
+
+        var props3 = new HashMap<String, String>();
+        props3.put("validator.locale.default", "es");
+        props3.put("validator.locale.available", "en,fr");
+        var domainConfig3 = new DomainConfig();
+        DomainConfigCache configCache3 = createDomainConfigCache();
+        assertThrows(IllegalStateException.class, () -> configCache3.addResourceBundlesConfiguration(domainConfig3, new MapConfiguration(props3)));
+
+        var props4 = new HashMap<String, String>();
+        props4.put("validator.locale.default", "de");
+        var domainConfig4 = new DomainConfig();
+        DomainConfigCache configCache4 = createDomainConfigCache();
+        configCache4.addResourceBundlesConfiguration(domainConfig4, new MapConfiguration(props4));
+        assertEquals(Locale.GERMAN, domainConfig4.getDefaultLocale());
+    }
+
+    @Test
     void testResolvePathForDomain() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         DomainConfigCache configCache = createDomainConfigCache();
         Method resolvePathMethod = ReflectionUtils.findMethod(configCache.getClass(), "resolveFilePathForDomain", String.class, String.class);
@@ -264,5 +325,20 @@ public class DomainConfigCacheTest extends BaseSpringTest {
         Object test4Object = resolvePathMethod.invoke(configCache, domain, relativePath);
         assertNotNull(test4Object);
         assert(((Path)test4Object).startsWith(Path.of(appConfig.getResourceRoot(), domain)));
+    }
+
+    @Test
+    void testClose() throws IOException {
+        when(appConfig.getDomain()).thenReturn(Set.of("domain1"));
+        when(appConfig.getDomainNameToDomainId()).thenReturn(Map.of("domain1", "domain1"));
+        when(appConfig.getDomainIdToDomainName()).thenReturn(Map.of("domain1", "domain1"));
+        var cache = createDomainConfigCache();
+        cache.initBase();
+        var domain = cache.getConfigForDomainName("domain1");
+        assertNotNull(domain);
+        var loader = mock(URLClassLoader.class);
+        domain.setLocaleTranslationsLoader(loader);
+        assertDoesNotThrow(cache::close);
+        verify(loader, times(1)).close();
     }
 }

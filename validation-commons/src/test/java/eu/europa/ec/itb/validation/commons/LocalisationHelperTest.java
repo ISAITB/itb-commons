@@ -1,30 +1,21 @@
 package eu.europa.ec.itb.validation.commons;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
-
+import eu.europa.ec.itb.validation.commons.config.DomainConfig;
+import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
-import eu.europa.ec.itb.validation.commons.config.DomainConfig;
-import eu.europa.ec.itb.validation.commons.config.LabelConfig;
-import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class LocalisationHelperTest {
@@ -46,12 +37,7 @@ public class LocalisationHelperTest {
         if (!tmpDirExisted) {
             tmpWd.mkdir();
         }
-        this.config = new WebDomainConfig<LabelConfig>() {
-            @Override
-            protected LabelConfig newLabelConfig() {
-                return null;
-            }
-        };
+        this.config = new WebDomainConfig();
         Map<String, String> domainProperties = new HashMap<>();
         domainProperties.put("test", "testDefaultDomain");
         domainProperties.put("testParameterised1", "Test1 {0}");
@@ -84,24 +70,25 @@ public class LocalisationHelperTest {
 
     @Test
     void testInitializeLocaliser() throws IllegalArgumentException, IllegalAccessException {
-        LocalisationHelper localiser = new LocalisationHelper(this.config, new Locale("en"));
+        LocalisationHelper localiser = new LocalisationHelper(this.config, Locale.ENGLISH);
         assertNotNull(localiser);
-        DomainConfig configWithoutLocaleTranslations = new WebDomainConfig<LabelConfig>() {
-            @Override
-            protected LabelConfig newLabelConfig() {
-                return null;
-            }
-        };
+        DomainConfig configWithoutLocaleTranslations = new WebDomainConfig();
         Map<String, String> domainProperties = new HashMap<String, String>();
         configWithoutLocaleTranslations.setDomainProperties(domainProperties);
-        LocalisationHelper localiserWithoutLocaleTranslations = new LocalisationHelper(configWithoutLocaleTranslations, new Locale("en"));
+        LocalisationHelper localiserWithoutLocaleTranslations = new LocalisationHelper(configWithoutLocaleTranslations, Locale.ENGLISH);
         assertNotNull(localiserWithoutLocaleTranslations);
     }
 
+    @Test
+    void testInitializeLocaliserForLocale() throws IllegalArgumentException {
+        LocalisationHelper localiser = new LocalisationHelper(Locale.ENGLISH);
+        assertNotNull(localiser);
+        assertEquals(Locale.ENGLISH, localiser.getLocale());
+    }
 
     @Test
     void testPropertyExists() {
-        LocalisationHelper localiser = new LocalisationHelper(this.config, new Locale("en"));
+        LocalisationHelper localiser = new LocalisationHelper(this.config, Locale.ENGLISH);
         assertTrue(localiser.propertyExists("test"));
         assertTrue(localiser.propertyExists("testLocal"));
         assertFalse(localiser.propertyExists("nonExistingProperty"));
@@ -109,16 +96,16 @@ public class LocalisationHelperTest {
 
     @Test
     void testLocaliseParameterised() {
-        LocalisationHelper localiser = new LocalisationHelper(this.config, new Locale("en"));
-        assertEquals("Test1 5", localiser.localiseParameterised("testParameterised1", "5"));    
-        assertEquals("Test2 6", localiser.localiseParameterised("testParameterised2", "6"));
-        assertEquals("Test1 5", localiser.localiseParameterised("testParameterised1", Long.valueOf(5)));    
-        assertEquals("Test2 6", localiser.localiseParameterised("testParameterised2", Long.valueOf(6)));   
+        LocalisationHelper localiser = new LocalisationHelper(this.config, Locale.ENGLISH);
+        assertEquals("Test1 5", localiser.localise("testParameterised1", "5"));
+        assertEquals("Test2 6", localiser.localise("testParameterised2", "6"));
+        assertEquals("Test1 5", localiser.localise("testParameterised1", 5L));
+        assertEquals("Test2 6", localiser.localise("testParameterised2", 6L));
     }
 
     @Test
     void testLocalisationExistingLocale() {
-        LocalisationHelper localiser = new LocalisationHelper(this.config, new Locale("en"));
+        LocalisationHelper localiser = new LocalisationHelper(this.config, Locale.ENGLISH);
         assertEquals("testDefault", localiser.localise("testDefault"));
         assertEquals("testValidator", localiser.localise("testValidator"));
         assertEquals("testDefaultDomain", localiser.localise("test"));
@@ -127,7 +114,7 @@ public class LocalisationHelperTest {
 
     @Test
     void testLocalisationDefaultValues() {
-        LocalisationHelper localiser = new LocalisationHelper(this.config, new Locale("de"));
+        LocalisationHelper localiser = new LocalisationHelper(this.config, Locale.GERMAN);
         assertEquals("testDefault", localiser.localise("testDefault"));
         assertEquals("testValidator", localiser.localise("testValidator"));
         assertEquals("testDefaultDomain", localiser.localise("test"));
@@ -135,30 +122,23 @@ public class LocalisationHelperTest {
     }
 
     @Test
+    void testLocalisationUnknownProperty() {
+        LocalisationHelper localiser = new LocalisationHelper(this.config, Locale.GERMAN);
+        assertEquals("[INVALID_KEY]", localiser.localise("INVALID_KEY"));
+    }
+
+    @Test
     void testWithoutLocalTranslations() {
-        DomainConfig configWithoutLocaleTranslations = new WebDomainConfig<LabelConfig>() {
-            @Override
-            protected LabelConfig newLabelConfig() {
-                return null;
-            }
-        };
+        DomainConfig configWithoutLocaleTranslations = new WebDomainConfig();
         Map<String, String> domainProperties = new HashMap<String, String>();
         domainProperties.put("test", "testDefaultDomain");
         domainProperties.put("testParameterised1", "Test1 %d");
         configWithoutLocaleTranslations.setDomainProperties(domainProperties);
-        LocalisationHelper localiser = new LocalisationHelper(configWithoutLocaleTranslations, new Locale("en"));
+        LocalisationHelper localiser = new LocalisationHelper(configWithoutLocaleTranslations, Locale.ENGLISH);
         assertEquals(localiser.localise("testDefault"), "testDefault");
         assertEquals(localiser.localise("testValidator"), "testValidator");
         assertEquals(localiser.localise("test"), "testDefaultDomain");
         assertEquals(localiser.localise("testLocal"), "NonExisting");
-    }
-
-    @Test
-    void testBuildMessageName() {
-        LocalisationHelper localiser = new LocalisationHelper(this.config, new Locale("en"));
-        assertEquals("basename.suffix1.suffix2", localiser.buildMessageName("basename", "suffix1", "suffix2"));
-        assertEquals("basename.suffix1.suffix2.suffix3", localiser.buildMessageName("basename", "suffix1", "suffix2", "suffix3"));
-        assertEquals("basename", localiser.buildMessageName("basename"));
     }
 
     @AfterAll
@@ -174,7 +154,8 @@ public class LocalisationHelperTest {
 
     private boolean deleteDirectory(File fileOrDir) {
         if (fileOrDir.isDirectory()) {
-            for (File child : fileOrDir.listFiles()) {
+            var files = fileOrDir.listFiles();
+            for (File child : files) {
                 deleteDirectory(child);
             }
             return fileOrDir.delete();

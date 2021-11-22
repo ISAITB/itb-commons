@@ -7,6 +7,7 @@ import com.gitb.tr.*;
 import eu.europa.ec.itb.validation.commons.report.dto.ContextItem;
 import eu.europa.ec.itb.validation.commons.report.dto.Report;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportItem;
+import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
 import net.sf.jasperreports.engine.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Class used to prepare and create PDF reports.
@@ -84,49 +86,49 @@ public class ReportGenerator {
      * Create a TAR PDF report. This also adds the context information to the report.
      *
      * @param inputStream The stream for the TAR XML report to use as input.
-     * @param title The title to use in the PDF document.
      * @param outputStream The stream on which to write the generated report.
+     * @param labelProvider A function to provide the labels to use in the report.
      */
-    public void writeTARReport(InputStream inputStream, String title, OutputStream outputStream) {
-        writeTARReport(inputStream, title, outputStream, true);
+    public void writeTARReport(InputStream inputStream, OutputStream outputStream, Function<TAR, ReportLabels> labelProvider) {
+        writeTARReport(inputStream, outputStream, true, labelProvider);
     }
 
     /**
      * Create a TAR PDF report. This also adds the context information to the report.
      *
      * @param reportType The TAR report to use as input.
-     * @param title The title to use in the PDF document.
      * @param outputStream The stream on which to write the generated report.
+     * @param labelProvider A function to provide the labels to use in the report.
      */
-    public void writeTARReport(TAR reportType, String title, OutputStream outputStream) {
-        writeTARReport(reportType, title, outputStream, true);
+    public void writeTARReport(TAR reportType, OutputStream outputStream, Function<TAR, ReportLabels> labelProvider) {
+        writeTARReport(reportType, outputStream, true, labelProvider);
     }
 
     /**
      * Create a TAR PDF report.
      *
      * @param reportType The TAR report to use as input.
-     * @param title The title to use in the PDF document.
      * @param outputStream The stream on which to write the generated report.
      * @param addContext True if the context information from the TAR object should also be added to the PDF output.
+     * @param labelProvider A function to provide the labels to use in the report.
      */
-    public void writeTARReport(TAR reportType, String title, OutputStream outputStream, boolean addContext) {
-        writeTestStepReport(reportType, title, outputStream, addContext);
+    public void writeTARReport(TAR reportType, OutputStream outputStream, boolean addContext, Function<TAR, ReportLabels> labelProvider) {
+        writeTestStepReport(reportType, outputStream, addContext, labelProvider);
     }
 
     /**
      * Create a TAR PDF report.
      *
      * @param inputStream The stream to read the TAR XML report as input.
-     * @param title The title to use in the PDF document.
      * @param outputStream The stream on which to write the generated report.
      * @param addContext True if the context information from the TAR object should also be added to the PDF output.
+     * @param labelProvider A function to provide the labels to use in the report.
      */
-    public void writeTARReport(InputStream inputStream, String title, OutputStream outputStream, boolean addContext) {
+    public void writeTARReport(InputStream inputStream, OutputStream outputStream, boolean addContext, Function<TAR, ReportLabels> labelProvider) {
         try {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             JAXBElement<TAR> tar = unmarshaller.unmarshal(new StreamSource(inputStream), TAR.class);
-            writeTARReport(tar.getValue(), title, outputStream, addContext);
+            writeTARReport(tar.getValue(), outputStream, addContext, labelProvider);
         } catch(Exception e) {
             throw new IllegalStateException(e);
         }
@@ -136,13 +138,14 @@ public class ReportGenerator {
      * Write the report of an abstract report.
      *
      * @param reportType The input for the specific report type.
-     * @param title The title to use in the PDF document.
      * @param outputStream The stream on which to write the generated report.
      * @param addContext True if the context information from the TAR object should also be added to the PDF output.
+     * @param labelProvider A function to provide the labels to use in the report.
      */
-    private void writeTestStepReport(TestStepReportType reportType, String title, OutputStream outputStream, boolean addContext) {
+    private <T extends TestStepReportType> void writeTestStepReport(T reportType, OutputStream outputStream, boolean addContext, Function<T, ReportLabels> labelProvider) {
         try {
-            Report report = fromTestStepReportType(reportType, title, addContext);
+            var labels = labelProvider.apply(reportType);
+            Report report = fromTestStepReportType(reportType, labels.getTitle(), addContext);
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("title", report.getTitle());
             parameters.put("reportDate", report.getReportDate());
@@ -150,6 +153,19 @@ public class ReportGenerator {
             parameters.put("errorCount", report.getErrorCount());
             parameters.put("warningCount", report.getWarningCount());
             parameters.put("messageCount", report.getMessageCount());
+            parameters.put("overviewLabel", labels.getOverview());
+            parameters.put("detailsLabel", labels.getDetails());
+            parameters.put("resultLabel", labels.getResult());
+            parameters.put("resultTypeLabel", labels.getResultType());
+            parameters.put("dateLabel", labels.getDate());
+            parameters.put("fileNameLabel", labels.getFileName());
+            parameters.put("errorsLabel", labels.getErrors());
+            parameters.put("warningsLabel", labels.getWarnings());
+            parameters.put("messagesLabel", labels.getMessages());
+            parameters.put("testLabel", labels.getTest());
+            parameters.put("locationLabel", labels.getLocation());
+            parameters.put("pageLabel", labels.getPage());
+            parameters.put("ofLabel", labels.getOf());
             if (report.getReportItems() != null && !report.getReportItems().isEmpty()) {
                 parameters.put("reportItems", report.getReportItems());
             }

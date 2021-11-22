@@ -31,7 +31,7 @@
             </div>
             <div class="row">
                 <label class="col-sm-2 col-xs-3 control-label" th:text="${localiser.localise('validator.label.resultResultLabel')}">Result:</label>
-                <div><span class="form-control-static" th:text="${report.result}">Success</span></div>
+                <div><span class="form-control-static" th:text="${localiser.localise('validator.label.result.'+report.result.value().toLowerCase())}">Success</span></div>
             </div>
             <div class="row">
                 <label class="col-sm-2 col-xs-3 control-label" th:text="${localiser.localise('validator.label.resultErrorsLabel')}">Errors:</label>
@@ -51,7 +51,7 @@
                         <button th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" type="button" class="btn btn-default" id="viewInputButton" onclick="setCode()" disabled="true"><span th:text="${localiser.localise('validator.label.viewAnnotatedInputButton')}">View annotated input</span><span id="viewInputButtonSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
                         <button type="button" class="btn btn-default" id="downloadReportButtonXML" onclick="downloadReportXML()" disabled="true">
                             <span th:text="${localiser.localise('validator.label.downloadXMLReportButton')}">Download XML report</span>
-                            <span th:if="${report.counters != null && (report.counters.nrOfAssertions.longValue() + report.counters.nrOfErrors.longValue() + report.counters.nrOfWarnings.longValue()) > config.maximumReportsForXmlOutput}" data-toggle="tooltip" data-container="body" data-placement="top" th:attr="title=${localiser.localiseParameterised('validator.label.maximumReportsExceededForXmlOutputMessage', config.getMaximumReportsForXmlOutput())}"> <i class="far fa-question-circle"></i></span>
+                            <span th:if="${report.counters != null && (report.counters.nrOfAssertions.longValue() + report.counters.nrOfErrors.longValue() + report.counters.nrOfWarnings.longValue()) > config.maximumReportsForXmlOutput}" data-toggle="tooltip" data-container="body" data-placement="top" th:attr="title=${localiser.localise('validator.label.maximumReportsExceededForXmlOutputMessage', config.getMaximumReportsForXmlOutput())}"> <i class="far fa-question-circle"></i></span>
                             <span id="downloadReportButtonXMLSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span>
                         </button>
                         <button th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" type="button" class="btn btn-default" id="downloadReportButtonPDF" onclick="downloadReportPDF()" disabled="true"><span th:text="${localiser.localise('validator.label.downloadPDFReportButton')}">Download PDF report</span><span id="downloadReportButtonPDFSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>

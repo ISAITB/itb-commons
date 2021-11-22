@@ -1,14 +1,13 @@
 package eu.europa.ec.itb.validation.commons;
 
+import eu.europa.ec.itb.validation.commons.config.DomainConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 
 /**
  * Class for the loading of internationalized UI messages.
@@ -19,6 +18,15 @@ public class LocalisationHelper {
 
     private final Locale locale;
     private final DomainConfig config;
+
+    /**
+     * Constructor (to ignore domain configuration).
+     *
+     * @param locale The Locale of the messages that should be fetched.
+     */
+    public LocalisationHelper(Locale locale) {
+        this(null, locale);
+    }
 
     /**
      * Constructor.
@@ -39,30 +47,34 @@ public class LocalisationHelper {
      * @return The value of the property for a given Locale.
      */
     public String localise(String property) {
+        return localise(property, (Object[]) null);
+    }
+
+    /**
+     * Method that localises a parameterised message.
+     *
+     * @param property The property to be localised.
+     * @param param The parameter to substitute.
+     * @return The resulting message.
+     */
+    public String localise(String property, Object ... param) {
         String labelValue = findTranslation(property);
         if (labelValue == null) {
             logger.warn("Value for label " + property + " and locale " + this.locale + " not found.");
             labelValue = "[" + property + "]";
+        } else if (param != null) {
+            labelValue = MessageFormat.format(labelValue, param);
         }
         return labelValue;
     }
 
     /**
-     * Method that localises a parameterised message.
-     * 
-     * @param property The property to be localised.
-     * @param param The parameter to substitute.
-     * @return The resulting message.
+     * Get the locale that applies to this instance.
+     *
+     * @return The locale.
      */
-    public String localiseParameterised(String property, Object ... param){
-        String labelValue = findTranslation(property);
-        if (labelValue == null) {
-            logger.warn("Value for label " + property + " and locale " + this.locale + " not found.");
-            labelValue = "[" + property + "]";
-            return labelValue;
-         } else {
-            return MessageFormat.format(labelValue, param);
-        }
+    public Locale getLocale() {
+        return locale;
     }
 
     /**
@@ -72,16 +84,18 @@ public class LocalisationHelper {
      * @return the translation
      */
     private String findTranslation(String property) {
-        URLClassLoader translationsLoader = this.config.getLocaleTranslationsLoader();
-        if (translationsLoader != null) {
-            ResourceBundle translationsBundle = ResourceBundle.getBundle(config.getLocaleTranslationsBundle(),
-                    this.locale, translationsLoader);
-            if (translationsBundle.containsKey(property)) {
-                return translationsBundle.getString(property);
+        if (this.config != null) {
+            URLClassLoader translationsLoader = this.config.getLocaleTranslationsLoader();
+            if (translationsLoader != null) {
+                ResourceBundle translationsBundle = ResourceBundle.getBundle(config.getLocaleTranslationsBundle(),
+                        this.locale, translationsLoader);
+                if (translationsBundle.containsKey(property)) {
+                    return translationsBundle.getString(property);
+                }
             }
-        }
-        if (config.getDomainProperties().containsKey(property)) {
-            return config.getDomainProperties().get(property);
+            if (config.getDomainProperties().containsKey(property)) {
+                return config.getDomainProperties().get(property);
+            }
         }
         ResourceBundle validatorBundle = ResourceBundle.getBundle("i18n.validator", this.locale);
         if (validatorBundle.containsKey(property)) {
@@ -104,18 +118,4 @@ public class LocalisationHelper {
         return findTranslation(property) != null;
     }
 
-    /**
-     * Method that builds the string property name.
-     * 
-     * @param basename The base name of the property.
-     * @param suffixes The specific subpart of the property.
-     * @return The name of the property.
-     */
-    public String buildMessageName(String basename, String... suffixes) {
-        String property = basename;
-        for (int i = 0; i < suffixes.length; i++) {
-            property = property + "." + suffixes[i];
-        }
-        return property;
-    }
 }

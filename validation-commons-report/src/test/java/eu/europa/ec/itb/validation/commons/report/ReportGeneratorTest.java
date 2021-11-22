@@ -4,6 +4,7 @@ import com.gitb.core.AnyContent;
 import com.gitb.core.ValueEmbeddingEnumeration;
 import com.gitb.tbs.TestStepStatus;
 import com.gitb.tr.*;
+import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -95,7 +96,7 @@ public class ReportGeneratorTest {
     @Test
     void testWriteTARReportFromObject() {
         var pdfPath = Path.of(tmpPath.toString(), "report.pdf");
-        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(createTAR(), "Title1", Files.newOutputStream(pdfPath)));
+        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(createTAR(), Files.newOutputStream(pdfPath), (report) -> new ReportLabels()));
         assertTrue(Files.exists(pdfPath));
         assertTrue(Files.isRegularFile(pdfPath));
     }
@@ -107,7 +108,7 @@ public class ReportGeneratorTest {
         var jaxbContext = JAXBContext.newInstance(TAR.class, TestCaseReportType.class, TestStepStatus.class);
         jaxbContext.createMarshaller().marshal(new JAXBElement<>(new QName("http://www.gitb.com/tr/v1/", "TestCaseReport"), TAR.class, report), Files.newOutputStream(xmlPath));
         var pdfPath = Path.of(tmpPath.toString(), "report.pdf");
-        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(Files.newInputStream(xmlPath), "Title1", Files.newOutputStream(pdfPath)));
+        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(Files.newInputStream(xmlPath), Files.newOutputStream(pdfPath), (r) -> new ReportLabels()));
         assertTrue(Files.exists(pdfPath));
         assertTrue(Files.isRegularFile(pdfPath));
     }
