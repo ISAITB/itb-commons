@@ -1,12 +1,16 @@
 package eu.europa.ec.itb.validation.commons.web;
 
+import com.gitb.tr.TestResultType;
 import eu.europa.ec.itb.validation.commons.BaseFileManager;
+import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
 import eu.europa.ec.itb.validation.commons.report.ReportGeneratorBean;
+import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
+import eu.europa.ec.itb.validation.commons.web.locale.CustomLocaleResolver;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.util.Locale;
 
 /**
  * Base class for web controllers managing access to the validator's reports.
@@ -33,6 +39,10 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
     protected Z domainConfigCache;
     @Autowired
     protected ReportGeneratorBean reportGenerator;
+    @Autowired
+    protected CustomLocaleResolver localeResolver;
+    @Autowired
+    protected ApplicationConfig appConfig;
 
     /**
      * Get the input file name for a given file ID part.
@@ -113,12 +123,13 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
      *
      * @param domain The domain name.
      * @param id The unique ID for the input file.
+     * @param request the HTTP request.
      * @param response the HTTP response.
      * @return The file.
      */
     @RequestMapping(value = "/{domain}/report/{id}/pdf", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
-    public FileSystemResource getReportPdf(@PathVariable String domain, @PathVariable String id, HttpServletResponse response) {
+    public FileSystemResource getReportPdf(@PathVariable String domain, @PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
         WebDomainConfig domainConfig = domainConfigCache.getConfigForDomainName(domain);
         if (domainConfig == null || !domainConfig.getChannels().contains(ValidatorChannel.FORM)) {
             throw new NotFoundException();
@@ -129,7 +140,11 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             // Generate the PDF.
             File reportFileXml = new File(fileManager.getReportFolder(), getReportFileNameXml(id));
             if (reportFileXml.exists() && reportFileXml.isFile()) {
-                reportGenerator.writeReport(domainConfig, reportFileXml, reportFile);
+                reportGenerator.writeReport(
+                        reportFileXml,
+                        reportFile,
+                        (report) -> getReportLabels(new LocalisationHelper(domainConfig, localeResolver.resolveLocale(request, response, domainConfig, appConfig)), report.getResult())
+                );
             } else {
                 throw new NotFoundException();
             }
@@ -138,6 +153,32 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             response.setHeader("Content-Disposition", "attachment; filename=report_"+id+".pdf");
         }
         return new FileSystemResource(reportFile);
+    }
+
+    /**
+     * Get the labels to use in PDF reports.
+     *
+     * @param helper The localisation helper.
+     * @param resultType The report's result to consider.
+     * @return The labels.
+     */
+    private ReportLabels getReportLabels(LocalisationHelper helper, TestResultType resultType) {
+        var reportLabels = new ReportLabels();
+        reportLabels.setTitle(helper.localise("validator.reportTitle"));
+        reportLabels.setOverview(helper.localise("validator.label.resultSubSectionOverviewTitle"));
+        reportLabels.setDetails(helper.localise("validator.label.resultSubSectionDetailsTitle"));
+        reportLabels.setDate(helper.localise("validator.label.resultDateLabel"));
+        reportLabels.setResult(helper.localise("validator.label.resultResultLabel"));
+        reportLabels.setFileName(helper.localise("validator.label.resultFileNameLabel"));
+        reportLabels.setErrors(helper.localise("validator.label.resultErrorsLabel"));
+        reportLabels.setWarnings(helper.localise("validator.label.resultWarningsLabel"));
+        reportLabels.setMessages(helper.localise("validator.label.resultMessagesLabel"));
+        reportLabels.setTest(helper.localise("validator.label.resultTestLabel"));
+        reportLabels.setLocation(helper.localise("validator.label.resultLocationLabel"));
+        reportLabels.setPage(helper.localise("validator.label.pageLabel"));
+        reportLabels.setOf(helper.localise("validator.label.ofLabel"));
+        reportLabels.setResultType(helper.localise("validator.label.result."+resultType.value().toLowerCase(Locale.ROOT)));
+        return reportLabels;
     }
 
     /**

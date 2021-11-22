@@ -15,13 +15,14 @@
             <script th:src="@{/js/lib/busy-min.js}"></script>
             <script th:src="@{/js/itb-upload-min.js}"></script>
             <script th:inline="javascript">
+                var validatingInputMessage = [[${localiser.localise('validator.label.validatingInputMessage')}]];
                 var validationTypeOptions = {};
                 [# th:each="type : ${config.getDeclaredType()}"]
                     validationTypeOptions[[# th:text="${type}" /]] = [];
                     [# th:each="option : ${config.getValidationTypeOptions().get(type)}"]
                         validationTypeOptions[[# th:text="${type}" /]].push({
                             option: [# th:text="${option}" /],
-                            label: [# th:text="${config.getValidationTypeOptionLabel(type, option)}" /]
+                            label: [# th:text="${config.getValidationTypeOptionLabel(type, option, localiser)}" /]
                         });
                     [/]
                 [/]
@@ -32,14 +33,11 @@
     <body>
 
         <th:block th:fragment="about">
-            <div class="container about-section" th:if="${config.showAbout} and ${not minimalUI}">
-                This service is powered by the ISA&sup2; Interoperability Test Bed, a conformance testing service offered by the European Commission's DG DIGIT for projects
-                involved in the delivery of cross-border public services. Find out more <a href="https://joinup.ec.europa.eu/solution/interoperability-test-bed" target="_blank">here</a>.
-            </div>
+            <div class="container about-section" th:if="${config.showAbout} and ${not minimalUI}" th:utext="${localiser.localise('validator.about', 'https://joinup.ec.europa.eu/solution/interoperability-test-bed')}">About Interoperability Test Bed.</div>
         </th:block>
 
         <th:block th:fragment="buildInfo">
-            <div style="display: none;">
+            <div class="no-display">
                 <div id="build.version" th:text="${@environment.getProperty('validator.buildVersion')}">buildVersion</div>
                 <div id="build.timestamp" th:text="${@environment.getProperty('validator.buildTimestamp')}">buildTimestamp</div>
                 <div id="startup.timestamp" th:text="${appConfig.startupTimestamp}">startupTimestamp</div>
@@ -48,19 +46,22 @@
         </th:block>
 
         <div th:fragment="footer(config, minimalUI)" th:if="${not minimalUI}">
-            <div th:if="${localiser.propertyExists('validator.htmlFooter')}">
-                <div th:utext="${localiser.localise('validator.htmlFooter')}">Footer</div>
+            <div th:if="${localiser.propertyExists('validator.footerHtml')}">
+                <div th:utext="${localiser.localise('validator.footerHtml')}">Footer</div>
             </div>
         </div>
 
-        <div th:fragment="localeSelector(config)" class="container">
-            <div class="form-row justify-content-end">
-                <div class="col-sm-10"></div>
-                <div class="col-sm-2">
-                    <label for="availableLocales" th:text="${localiser.localise('validator.label.availableLocales')}">Available locales:</label>
-                    <select class="form-control form-control-sm" id="availableLocales" name="availableLocales" onchange="localeChanged()">
-                        <option value="empty" selected="true" th:text="${localiser.localise('validator.label.selectedLocale')}">Selected locale</option>
-                        <option th:each="locale : ${config.availableLocales}" th:text="${locale}" th:attr="value=${locale}">Locale</option>
+        <div th:fragment="localeSelector(config, currentLocale)" th:if="${config.availableLocales.size() > 1}">
+            <div class="locale-div">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-globe" aria-hidden="true"></i></span>
+                    <select class="form-control input-sm" id="availableLocales" name="availableLocales" onchange="localeChanged()">
+                        <th:block th:each="locale : ${config.availableLocales}">
+                            <th:block th:switch="${locale.getDisplayCountry(locale).isBlank()}">
+                                <option th:case="true" th:value="${locale.toString()}" th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(locale.getDisplayLanguage(locale))}" th:selected="${locale == currentLocale}">Locale</option>
+                                <option th:case="false" th:value="${locale.toString()}" th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(locale.getDisplayLanguage(locale)+' ('+locale.getDisplayCountry(locale)+')')}" th:selected="${locale == currentLocale}">Locale</option>
+                            </th:block>
+                        </th:block>
                     </select>
                 </div>
             </div>

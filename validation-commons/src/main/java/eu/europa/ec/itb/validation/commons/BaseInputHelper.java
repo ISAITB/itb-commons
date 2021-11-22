@@ -67,7 +67,7 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
             }
             if (explicitEmbeddingMethod == null) {
                 // Embedding method not provided as input nor as parameter.
-                throw new ValidatorException(String.format("The embedding method needs to be provided either as input parameter or be set as an attribute on the [%s] input.", inputName));
+                throw new ValidatorException("validator.label.exception.embeddingMethodEitherAsInputOrAttribute", inputName);
             }
             String valueToProcess = content.getValue();
             if (content.getEmbeddingMethod() == ValueEmbeddingEnumeration.BASE_64 && explicitEmbeddingMethod != ValueEmbeddingEnumeration.BASE_64) {
@@ -76,7 +76,7 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
             }
             return validateContentToValidate(valueToProcess, explicitEmbeddingMethod, parentFolder);
         } else {
-            throw new ValidatorException(String.format("No content was provided for validation (input parameter [%s]).", inputName));
+            throw new ValidatorException("validator.label.exception.noContentProvided", inputName);
         }
     }
 
@@ -108,7 +108,7 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
             if (content.getEmbeddingMethod() == ValueEmbeddingEnumeration.STRING) {
                 validationType = content.getValue();
             } else {
-                throw new ValidatorException(String.format("The validation type to perform must be provided with a [STRING] embeddingMethod. This was provided as [%s].", content.getEmbeddingMethod()));
+                throw new ValidatorException("validator.label.exception.stringEmbeddingMethodForValidationType", content.getEmbeddingMethod());
             }
         }
         return validateValidationType(domainConfig, validationType);
@@ -123,9 +123,9 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
      */
     public String validateValidationType(R domainConfig, String validationType) {
         if (validationType != null && !domainConfig.getType().contains(validationType)) {
-            throw new ValidatorException(String.format("The provided validation type [%s] is not valid for domain [%s]. Available types are [%s].", validationType, domainConfig.getDomainName(), String.join(", ", domainConfig.getType())));
+            throw new ValidatorException("validator.label.exception.validationTypeInvalid", validationType, domainConfig.getDomainName(), String.join(", ", domainConfig.getType()));
         } else if (validationType == null && domainConfig.getType().size() != 1) {
-            throw new ValidatorException(String.format("A validation type must be provided for domain [%s]. Available types are [%s].", domainConfig.getDomainName(), String.join(", ", domainConfig.getType())));
+            throw new ValidatorException("validator.label.exception.validationTypeMissing", domainConfig.getDomainName(), String.join(", ", domainConfig.getType()));
         }
         return validationType==null ? domainConfig.getType().get(0) : validationType;
     }
@@ -238,17 +238,17 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
         if (externalArtifacts == null || externalArtifacts.isEmpty()) {
             if (support == ExternalArtifactSupport.REQUIRED) {
                 if (artifactType == null) {
-                    throw new ValidatorException(String.format("Validation type [%s] expects user-provided artifacts.", validationType));
+                    throw new ValidatorException("validator.label.exception.validationTypeExpectsUserArtefacts", validationType);
                 } else {
-                    throw new ValidatorException(String.format("Validation type [%s] expects user-provided artifacts (%s).", validationType, artifactType));
+                    throw new ValidatorException("validator.label.exception.validationTypeExpectsUserArtefactsWithParam", validationType, artifactType);
                 }
             }
         } else {
             if (support == ExternalArtifactSupport.NONE) {
                 if (artifactType == null) {
-                    throw new ValidatorException(String.format("Validation type [%s] does not expect user-provided artifacts.", validationType));
+                    throw new ValidatorException("validator.label.exception.validationTypeDoesNotExpectUserArtefacts", validationType);
                 } else {
-                    throw new ValidatorException(String.format("Validation type [%s] does not expect user-provided artifacts (%s).", validationType, artifactType));
+                    throw new ValidatorException("validator.label.exception.validationTypeDoesNotExpectUserArtefactsWithParam", validationType, artifactType);
                 }
             }
             artifacts = fileManager.getExternalValidationArtifacts(domainConfig, validationType, artifactType, parentFolder, externalArtifacts);

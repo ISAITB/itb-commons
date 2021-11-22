@@ -527,7 +527,7 @@ function triggerFileUpload() {
 	$('#inputFile').click();
 }
 function uploadFile() {
-	waitingDialog.show('Validating input', {dialogSize: 'm'}, _config.isMinimalUI?'busy-modal-minimal':'busy-modal');
+	waitingDialog.show(validatingInputMessage, {dialogSize: 'm'}, _config.isMinimalUI?'busy-modal-minimal':'busy-modal');
 	return true;
 }
 
@@ -869,8 +869,7 @@ function localeChanged() {
     var selectedLocale = $('select#availableLocales option:checked').val();
     $('select#availableLocales [selected=true]').attr("selected", "false");
     $('select#availableLocales option:checked').attr("selected", "true");
-    // document.cookie = "locale="+selectedLocale;
-    var url = window.location.href;    
+    var url = window.location.href;
     if (url.indexOf('?') > -1){
         url = url.split('?')[0];
     }

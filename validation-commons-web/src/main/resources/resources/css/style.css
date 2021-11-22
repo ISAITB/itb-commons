@@ -156,3 +156,12 @@ body {
 .hidden {
     visibility: hidden;
 }
+.no-display {
+    display: none
+}
+.locale-div {
+    display: flex;
+}
+.locale-div div.input-group {
+    margin-left: auto;
+}

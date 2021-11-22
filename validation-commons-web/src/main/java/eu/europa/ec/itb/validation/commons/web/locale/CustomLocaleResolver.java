@@ -9,6 +9,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.springframework.stereotype.Component;
 
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
@@ -31,27 +32,29 @@ public class CustomLocaleResolver {
      *                  the validator, used in the setting of the http only cookie.
      * @return The locale.
      */
-    public Locale resolveLocale(HttpServletRequest request, HttpServletResponse response, DomainConfig config,
-            ApplicationConfig appConfig) {
-        String cookieName = appConfig.getIdentifier() + "." + config.getDomainName() +  "." + "locale";
-        String requestedLanguage = request.getParameter("lang"); 
-        if (requestedLanguage != null && !requestedLanguage.isEmpty() && !requestedLanguage.isBlank()) { 
-            // case in which the locale has been inserted in the request.
-            if (config.getAvailableLocales().contains(requestedLanguage)) {
-                Cookie cookie = new Cookie(cookieName, requestedLanguage);
-                cookie.setHttpOnly(true);
-                response.addCookie(cookie);
-                return new Locale(requestedLanguage);
+    public Locale resolveLocale(HttpServletRequest request, HttpServletResponse response, DomainConfig config, ApplicationConfig appConfig) {
+        if (config.getAvailableLocales().size() > 1) {
+            String cookieName = appConfig.getIdentifier() + "." + config.getDomainName() +  "." + "locale";
+            String requestedLanguage = request.getParameter("lang");
+            if (requestedLanguage != null && !requestedLanguage.isEmpty() && !requestedLanguage.isBlank()) {
+                // case in which the locale has been inserted in the request.
+                var requestedLocale = LocaleUtils.toLocale(requestedLanguage);
+                if (config.getAvailableLocales().contains(requestedLocale)) {
+                    Cookie cookie = new Cookie(cookieName, requestedLanguage);
+                    cookie.setHttpOnly(true);
+                    response.addCookie(cookie);
+                    return requestedLocale;
+                }
+            } else {
+                Cookie[] cookies = (request.getCookies() == null) ? new Cookie[] {} : request.getCookies();
+                List<Cookie> localeCookies = Arrays.stream(cookies).filter(c -> c.getName().contentEquals(cookieName))
+                        .collect(Collectors.toList());
+                if (localeCookies.size() >= 1) { // case where the locale has been inserted in the cookie previously.
+                    return LocaleUtils.toLocale(localeCookies.get(0).getValue());
+                }
             }
-        } else {
-            Cookie[] cookies = (request.getCookies() == null) ? new Cookie[] {} : request.getCookies();
-            List<Cookie> localeCookies = Arrays.stream(cookies).filter(c -> c.getName().contentEquals(cookieName))
-                    .collect(Collectors.toList());
-            if (localeCookies.size() >= 1) { // case where the locale has been inserted in the cookie previously.
-                return new Locale(localeCookies.get(0).getValue());
-            }
-        } // default case.
-        return new Locale(config.getDefaultLocale());
+        }
+        return config.getDefaultLocale();
     }
 
 }
