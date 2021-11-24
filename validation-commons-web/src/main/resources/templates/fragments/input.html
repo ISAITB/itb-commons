@@ -5,7 +5,7 @@
         <th:block th:fragment="pageHeader(config, minimalUI)">
             <h1 id="bannerSection" class="overall-title" onclick="window.location.href='upload'" th:text="${localiser.localise('validator.uploadTitle')}" th:if="${!minimalUI && !htmlBannerExists}">Validator</h1>
             <div id="bannerSection" class="view-section-input" th:if="${!minimalUI && htmlBannerExists}">
-                <div th:utext="${localiser.localise('validator.htmlBanner')}">Validator</div>
+                <div th:utext="${localiser.localise('validator.bannerHtml')}">Validator</div>
             </div>
             <div class="alert alert-danger" th:if="${message}" th:text="${message}">A message</div>
         </th:block>
@@ -57,7 +57,7 @@
             <div th:class="${config.hasValidationTypeOptions()}? col-sm-5 : col-sm-10">
                 <select class="form-control" id="validationType" onchange="validationTypeChanged()" name="validationTypeInternal">
                     <option value="" selected="true" disabled="true"></option>
-                    <option th:each="type : ${config.declaredType}" th:text="${localiser.localise(localiser.buildMessageName('validator.typeLabel', type))}" th:attr="value=${type}">Type</option>
+                    <option th:each="type : ${config.declaredType}" th:text="${config.getValidationTypeLabel(type, localiser)}" th:attr="value=${type}">Type</option>
                 </select>
             </div>
             <div id="validationTypeOptionDiv" th:if="${config.hasValidationTypeOptions()}" class="col-sm-5 hidden">

@@ -3,10 +3,10 @@ package eu.europa.ec.itb.validation.commons.web;
 import eu.europa.ec.itb.validation.commons.BaseFileManager;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
-import eu.europa.ec.itb.validation.commons.config.LabelConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
 import eu.europa.ec.itb.validation.commons.report.ReportGeneratorBean;
+import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
 import eu.europa.ec.itb.validation.commons.test.BaseTest;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
 import org.junit.jupiter.api.AfterEach;
@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,13 +29,13 @@ public class BaseFileControllerTest extends BaseTest {
 
     private ApplicationConfig appConfig;
     private BaseFileManager<ApplicationConfig> fileManager;
-    private WebDomainConfigCache<WebDomainConfig<LabelConfig>> configCache;
+    private WebDomainConfigCache<WebDomainConfig> configCache;
     private ReportGeneratorBean reportGenerator;
     private Path reportFolder;
-    private WebDomainConfig<LabelConfig> domainConfig;
+    private WebDomainConfig domainConfig;
 
-    BaseFileController<BaseFileManager<ApplicationConfig>, ApplicationConfig, WebDomainConfigCache<WebDomainConfig<LabelConfig>>> createController(ApplicationConfig appConfig, BaseFileManager<ApplicationConfig> fileManager, WebDomainConfigCache<WebDomainConfig<LabelConfig>> domainConfigCache, ReportGeneratorBean reportGenerator) {
-        var controller = new BaseFileController<BaseFileManager<ApplicationConfig>, ApplicationConfig, WebDomainConfigCache<WebDomainConfig<LabelConfig>>>() {
+    BaseFileController<BaseFileManager<ApplicationConfig>, ApplicationConfig, WebDomainConfigCache<WebDomainConfig>> createController(ApplicationConfig appConfig, BaseFileManager<ApplicationConfig> fileManager, WebDomainConfigCache<WebDomainConfig> domainConfigCache, ReportGeneratorBean reportGenerator) {
+        var controller = new BaseFileController<BaseFileManager<ApplicationConfig>, ApplicationConfig, WebDomainConfigCache<WebDomainConfig>>() {
             @Override
             public String getInputFileName(String uuid) {
                 return uuid + ".txt";
@@ -114,23 +115,25 @@ public class BaseFileControllerTest extends BaseTest {
 
     @Test
     void testGetReportPdf() throws IOException {
+        var servletRequest = mock(HttpServletRequest.class);
         var servletResponse = mock(HttpServletResponse.class);
         var reportUuid = "UUID1";
         var xmlFile = createFileWithContents(Path.of(reportFolder.toString(), reportUuid+".xml"), "");
         var expectedPdfFile = Path.of(fileManager.getReportFolder().toPath().toString(), reportUuid+".pdf");
         var controller = createController(appConfig, fileManager, configCache, reportGenerator);
-        var result = controller.getReportPdf("domain1", reportUuid, servletResponse);
+        var result = controller.getReportPdf("domain1", reportUuid, servletRequest, servletResponse);
         assertNotNull(result);
         assertEquals(expectedPdfFile, result.getFile().toPath());
         verify(servletResponse, times(1)).setHeader("Content-Disposition", "attachment; filename=report_"+reportUuid+".pdf");
-        verify(reportGenerator, times(1)).writeReport(domainConfig, xmlFile.toFile(), expectedPdfFile.toFile());
+        verify(reportGenerator, times(1)).writeReport(eq(xmlFile.toFile()), eq(expectedPdfFile.toFile()), any());
     }
 
     @Test
     void testGetReportPdfFileNotExists() {
+        var servletRequest = mock(HttpServletRequest.class);
         var servletResponse = mock(HttpServletResponse.class);
         var controller = createController(appConfig, fileManager, configCache, reportGenerator);
-        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", servletResponse));
+        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", servletRequest, servletResponse));
     }
 
     @Test
@@ -158,7 +161,7 @@ public class BaseFileControllerTest extends BaseTest {
         var controller = createController(appConfig, fileManager, configCache, reportGenerator);
         assertThrows(NotFoundException.class, () -> controller.getInput("domain1", "UUID"));
         assertThrows(NotFoundException.class, () -> controller.getReportXml("domain1", "UUID", mock(HttpServletResponse.class)));
-        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", mock(HttpServletResponse.class)));
+        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", mock(HttpServletRequest.class), mock(HttpServletResponse.class)));
         assertThrows(NotFoundException.class, () -> controller.deleteReport("domain1", "UUID"));
         assertThrows(NotFoundException.class, () -> controller.deleteInput("domain1", "UUID"));
     }
@@ -173,7 +176,7 @@ public class BaseFileControllerTest extends BaseTest {
         var controller = createController(appConfig, fileManager, configCache, reportGenerator);
         assertThrows(NotFoundException.class, () -> controller.getInput("domain1", "UUID"));
         assertThrows(NotFoundException.class, () -> controller.getReportXml("domain1", "UUID", mock(HttpServletResponse.class)));
-        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", mock(HttpServletResponse.class)));
+        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", mock(HttpServletRequest.class), mock(HttpServletResponse.class)));
         assertThrows(NotFoundException.class, () -> controller.deleteReport("domain1", "UUID"));
         assertThrows(NotFoundException.class, () -> controller.deleteInput("domain1", "UUID"));
     }

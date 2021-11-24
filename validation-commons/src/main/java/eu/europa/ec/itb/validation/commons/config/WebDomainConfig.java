@@ -1,64 +1,21 @@
 package eu.europa.ec.itb.validation.commons.config;
 
+import eu.europa.ec.itb.validation.commons.LocalisationHelper;
+
 import java.util.Map;
 
 /**
  * Base domain configuration class for validators that are web applications.
- *
- * @param <T> The specific label configuration class.
  */
-public abstract class WebDomainConfig<T extends LabelConfig> extends DomainConfig {
+public class WebDomainConfig extends DomainConfig {
 
-    private String uploadTitle = "Validator";
+    /** Name of the request attribute under which the relevant domain config object is stored. */
+    public static final String DOMAIN_CONFIG_REQUEST_ATTRIBUTE = "domainConfig";
+
     private String webServiceId = "ValidationService";
     private Map<String, String> webServiceDescription;
-    private Map<String, String> typeLabel;
-    private Map<String, Map<String, String>> typeOptionLabel;
-    private String htmlBanner;
-    private String htmlFooter;
     private boolean supportMinimalUserInterface;
     private boolean showAbout;
-    private T label;
-
-    /**
-     * Constructor.
-     */
-    public WebDomainConfig() {
-        this.label = newLabelConfig();
-    }
-
-    /**
-     * @return A new and empty label configuration class.
-     */
-    protected abstract T newLabelConfig();
-
-    /**
-     * @return A map of validation type to option to option label.
-     */
-    public Map<String, Map<String, String>> getTypeOptionLabel() {
-        return typeOptionLabel;
-    }
-
-    /**
-     * @param typeOptionLabel A map of validation type to option to option label.
-     */
-    public void setTypeOptionLabel(Map<String, Map<String, String>> typeOptionLabel) {
-        this.typeOptionLabel = typeOptionLabel;
-    }
-
-    /**
-     * @return The HTML title for the upload page.
-     */
-    public String getUploadTitle() {
-        return uploadTitle;
-    }
-
-    /**
-     * @param uploadTitle The HTML title for the upload page.
-     */
-    public void setUploadTitle(String uploadTitle) {
-        this.uploadTitle = uploadTitle;
-    }
 
     /**
      * @return The ID of the SOAP web service.
@@ -86,48 +43,6 @@ public abstract class WebDomainConfig<T extends LabelConfig> extends DomainConfi
      */
     public void setWebServiceDescription(Map<String, String> webServiceDescription) {
         this.webServiceDescription = webServiceDescription;
-    }
-
-    /**
-     * @return Map of validation type to label.
-     */
-    public Map<String, String> getTypeLabel() {
-        return typeLabel;
-    }
-
-    /**
-     * @param typeLabel Map of validation type to label.
-     */
-    public void setTypeLabel(Map<String, String> typeLabel) {
-        this.typeLabel = typeLabel;
-    }
-
-    /**
-     * @return The HTML content for the UI's banner.
-     */
-    public String getHtmlBanner() {
-        return htmlBanner;
-    }
-
-    /**
-     * @param htmlBanner The HTML content for the UI's banner.
-     */
-    public void setHtmlBanner(String htmlBanner) {
-        this.htmlBanner = htmlBanner;
-    }
-
-    /**
-     * @return The HTML content for the UI's footer.
-     */
-    public String getHtmlFooter() {
-        return htmlFooter;
-    }
-
-    /**
-     * @param htmlFooter The HTML content for the UI's footer.
-     */
-    public void setHtmlFooter(String htmlFooter) {
-        this.htmlFooter = htmlFooter;
     }
 
     /**
@@ -159,23 +74,78 @@ public abstract class WebDomainConfig<T extends LabelConfig> extends DomainConfi
     }
 
     /**
-     * @return The label configuration.
+     * The complete type and option label for a given validation type and option combination.
+     *
+     * @param typeOption The complete validation type (includes type and option as TYPE.OPTION).
+     * @param helper The helper to lookup translations.
+     * @return The option's label.
      */
-    public T getLabel() {
-        return label;
+    public String getCompleteTypeOptionLabel(String typeOption, LocalisationHelper helper) {
+        String text = null;
+        if (helper.propertyExists(String.format("validator.completeTypeOptionLabel.%s", typeOption))) {
+            text = helper.localise(String.format("validator.completeTypeOptionLabel.%s", typeOption));
+        } else {
+            for (var type: getDeclaredType()) {
+                var options = getValidationTypeOptions().get(type);
+                if (options == null || options.isEmpty()) {
+                    if (type.equals(typeOption)) {
+                        // Return label for type.
+                        text = getValidationTypeLabel(type, helper);
+                    }
+                } else {
+                    for (var option: options) {
+                        if (typeOption.equals(type+"."+option)) {
+                            text = getValidationTypeLabel(type, helper) + " - " + getValidationTypeOptionLabel(type, option, helper);
+                            break;
+                        }
+                    }
+                }
+                if (text != null) {
+                    break;
+                }
+            }
+            if (text == null) {
+                throw new IllegalStateException(String.format("The validation type and option combination [%s] was invalid", typeOption));
+            }
+        }
+        return text;
     }
 
     /**
-     * The option label for a given validation type and option combination.
+     * The label for a validation type.
+     *
+     * @param type The validation type.
+     * @param helper The helper to lookup translations.
+     * @return The label.
+     */
+    public String getValidationTypeLabel(String type, LocalisationHelper helper) {
+        String text;
+        if (helper.propertyExists(String.format("validator.typeLabel.%s", type))) {
+            text = helper.localise(String.format("validator.typeLabel.%s", type));
+        } else {
+            text = type;
+        }
+        return text;
+    }
+
+    /**
+     * The label for an option of a validation type.
      *
      * @param type The validation type.
      * @param option The option.
-     * @return The option's label.
+     * @param helper The helper to lookup translations.
+     * @return The label.
      */
-    public String getValidationTypeOptionLabel(String type, String option) {
-        if (typeOptionLabel.containsKey(type)) {
-            return typeOptionLabel.get(type).get(option);
+    public String getValidationTypeOptionLabel(String type, String option, LocalisationHelper helper) {
+        String text;
+        if (helper.propertyExists(String.format("validator.typeOptionLabel.%s.%s", type, option))) {
+            text = helper.localise(String.format("validator.typeOptionLabel.%s.%s", type, option));
+        } else if (helper.propertyExists(String.format("validator.optionLabel.%s", option))) {
+            text = helper.localise(String.format("validator.optionLabel.%s", option));
+        } else {
+            text = option;
         }
-        return null;
+        return text;
     }
+
 }

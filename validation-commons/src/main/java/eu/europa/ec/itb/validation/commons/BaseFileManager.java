@@ -151,7 +151,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             byte[] decodedBytes = Base64.getDecoder().decode(content);
             FileUtils.writeByteArrayToFile(tempFile, decodedBytes);
         } catch (IOException e) {
-            throw new ValidatorException("Error when processing the provided Base64 data.", e);
+            throw new ValidatorException("validator.label.exception.base64", e);
         }
         return tempFile;
     }
@@ -597,7 +597,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 try {
                     if (config.isRestrictResourcesToDomain()) {
                         if ((new File(localFile.trim())).isAbsolute() || !domainConfigCache.isInDomainFolder(domainConfig.getDomain(), localFile)) {
-                            throw new ValidatorException(String.format("Resources are restricted to domain. Their paths should be relative to domain folder. Unable to load file %s", localFile));
+                            throw new ValidatorException("validator.label.exception.fileOutsideDomain", localFile);
                         } else {
                             localFileReferences.add(Paths.get(config.getResourceRoot(), domainConfig.getDomain(), localFile.trim()).toFile().getCanonicalFile());
                         }
@@ -609,7 +609,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                         }
                     }
                 } catch (IOException e) {
-                    throw new ValidatorException("Unable to read local validation artifacts", e);
+                    throw new ValidatorException("validator.label.exception.unableToReadLocalValidationArtefacts", e);
                 }
             }
         }
@@ -645,7 +645,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 }
             }
         } else {
-        	throw new ValidatorException("Unable to find validation file " + ((fileOrFolder != null)? fileOrFolder.getPath(): ""));
+        	throw new ValidatorException("validator.label.exception.unableToFindValidationArtefact", ((fileOrFolder != null)? fileOrFolder.getPath(): ""));
         }
         return fileInfo;
     }
@@ -925,7 +925,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                         try {
                             file = getFileFromString(targetFolder, content, contentType);
                         } catch (IOException e) {
-                            throw new ValidatorException("Unable to process provided string value", e);
+                            throw new ValidatorException("validator.label.exception.unableToProcessString", e);
                         }
                         break;
                     case URI:
@@ -933,7 +933,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                         try {
                             file = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType);
                         } catch (IOException e) {
-                            throw new ValidatorException("Unable to process provided URI resource", e);
+                            throw new ValidatorException("validator.label.exception.unableToProcessURI", e);
                         }
                         break;
                     default: // BASE_64
@@ -945,11 +945,11 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 try {
                     file = getFileFromURLOrBase64(targetFolder, content, null, artifactType);
                 } catch (IOException e) {
-                    throw new ValidatorException("Unable to save content (URL or BASE64) to file", e);
+                    throw new ValidatorException("validator.label.exception.unableToSaveContent", e);
                 }
             }
         } else {
-            throw new ValidatorException("Unable to store empty content");
+            throw new ValidatorException("validator.label.exception.unableToSaveEmpty");
         }
         return file;
     }

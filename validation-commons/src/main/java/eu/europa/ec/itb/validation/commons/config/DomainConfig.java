@@ -13,7 +13,6 @@ import java.util.*;
 public class DomainConfig {
 
     private boolean isDefined;
-    private String reportTitle = "Validation report";
     private String domain;
     private String domainName;
     private List<String> type;
@@ -23,9 +22,8 @@ public class DomainConfig {
     private Map<String, TypedValidationArtifactInfo> artifactInfo;
     private Long maximumReportsForDetailedOutput;
     private Long maximumReportsForXmlOutput;
-    private String defaultLocale; 
-    private Set<String> availableLocales; 
-    private String pathToLocaleTranslations;
+    private Locale defaultLocale;
+    private Set<Locale> availableLocales;
     private URLClassLoader localeTranslationsLoader;
     private String localeTranslationsBundle;
     private Map<String, String> domainProperties;
@@ -60,20 +58,6 @@ public class DomainConfig {
      */
     public void setMaximumReportsForDetailedOutput(Long maximumReportsForDetailedOutput) {
         this.maximumReportsForDetailedOutput = maximumReportsForDetailedOutput;
-    }
-
-    /**
-     * @return The title of PDF validation reports.
-     */
-    public String getReportTitle() {
-        return reportTitle;
-    }
-
-    /**
-     * @param reportTitle The title of PDF validation reports.
-     */
-    public void setReportTitle(String reportTitle) {
-        this.reportTitle = reportTitle;
     }
 
     /**
@@ -250,43 +234,29 @@ public class DomainConfig {
     /**
      * @return The default locale.
      */
-    public String getDefaultLocale() {
+    public Locale getDefaultLocale() {
         return this.defaultLocale;
     }
 
     /**
      * @param defaultLocale The default locale.
      */
-    public void setDefaultLocale(String defaultLocale) {
+    public void setDefaultLocale(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
     }
 
     /**
      * @param availableLocales The available locales. 
      */
-    public void setAvailableLocales(Set<String> availableLocales) {
+    public void setAvailableLocales(Set<Locale> availableLocales) {
         this.availableLocales = availableLocales;
     }
 
     /**
      * @return The available locales.
      */
-    public Set<String> getAvailableLocales() {
+    public Set<Locale> getAvailableLocales() {
         return this.availableLocales;
-    }
-
-    /**
-     * @return The path to the file with locale translations.
-     */
-    public String getPathToLocaleTranslations() {
-        return this.pathToLocaleTranslations;
-    }
-
-    /**
-     * @param pathToLocaleTranslations The path to a file with locale translations.
-     */
-    public void setPathToLocaleTranslations(String pathToLocaleTranslations) {
-        this.pathToLocaleTranslations = pathToLocaleTranslations;
     }
 
     /**

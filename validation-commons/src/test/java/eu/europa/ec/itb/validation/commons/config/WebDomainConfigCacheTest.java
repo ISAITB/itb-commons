@@ -1,30 +1,26 @@
 package eu.europa.ec.itb.validation.commons.config;
 
+import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import org.apache.commons.configuration2.MapConfiguration;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WebDomainConfigCacheTest {
 
-    private WebDomainConfig<LabelConfig> createWebDomainConfig() {
-        return new WebDomainConfig<>() {
-            @Override
-            protected LabelConfig newLabelConfig() {
-                return new LabelConfig();
-            }
-        };
+    private WebDomainConfig createWebDomainConfig() {
+        return new WebDomainConfig();
     }
 
-    private WebDomainConfigCache<WebDomainConfig<LabelConfig>> createWebDomainConfigCache() {
+    private WebDomainConfigCache<WebDomainConfig> createWebDomainConfigCache() {
         return new WebDomainConfigCache<>() {
             @Override
-            protected WebDomainConfig<LabelConfig> newDomainConfig() {
+            protected WebDomainConfig newDomainConfig() {
                 return createWebDomainConfig();
             }
 
@@ -36,7 +32,7 @@ public class WebDomainConfigCacheTest {
     }
 
     @Test
-    void testAddDomainConfiguration() throws ConfigurationException{
+    void testAddDomainConfiguration() {
         var cache = createWebDomainConfigCache();
         var config = createWebDomainConfig();
         config.setDeclaredType(List.of("type1"));
@@ -59,28 +55,24 @@ public class WebDomainConfigCacheTest {
                 Map.entry("validator.locale.available","en,es,fr")
         ));
         cache.addDomainConfiguration(config, configProperties);
-        assertEquals("title", config.getUploadTitle());
-        assertEquals("report", config.getReportTitle());
+        cache.addResourceBundlesConfiguration(config, configProperties);
+        var localisationHelper = new LocalisationHelper(config, Locale.ENGLISH);
+        assertEquals("title", localisationHelper.localise("validator.uploadTitle"));
+        assertEquals("report", localisationHelper.localise("validator.reportTitle"));
         assertEquals("service", config.getWebServiceId());
-        assertEquals(4, config.getTypeLabel().size());
-        assertEquals("typeLabel1", config.getTypeLabel().get("type1"));
-        assertEquals("typeOptionLabel1", config.getTypeLabel().get("type1.option1"));
-        assertEquals("typeLabel1 - defaultOptionLabel1", config.getTypeLabel().get("type1.option2"));
-        assertEquals("typeLabel1 - option3", config.getTypeLabel().get("type1.option3"));
-        assertEquals(1, config.getTypeOptionLabel().size());
-        assertEquals(3, config.getTypeOptionLabel().get("type1").size());
-        assertEquals("optionLabel1", config.getTypeOptionLabel().get("type1").get("option1"));
-        assertEquals("optionLabel1", config.getValidationTypeOptionLabel("type1", "option1"));
-        assertEquals("defaultOptionLabel1", config.getTypeOptionLabel().get("type1").get("option2"));
-        assertEquals("defaultOptionLabel1", config.getValidationTypeOptionLabel("type1", "option2"));
-        assertEquals("option3", config.getTypeOptionLabel().get("type1").get("option3"));
-        assertEquals("option3", config.getValidationTypeOptionLabel("type1", "option3"));
+        assertEquals("typeLabel1", config.getValidationTypeLabel("type1", localisationHelper));
+        assertEquals("typeOptionLabel1", config.getCompleteTypeOptionLabel("type1.option1", localisationHelper));
+        assertEquals("typeLabel1 - defaultOptionLabel1", config.getCompleteTypeOptionLabel("type1.option2", localisationHelper));
+        assertEquals("typeLabel1 - option3", config.getCompleteTypeOptionLabel("type1.option3", localisationHelper));
+        assertEquals("optionLabel1", config.getValidationTypeOptionLabel("type1", "option1", localisationHelper));
+        assertEquals("defaultOptionLabel1", config.getValidationTypeOptionLabel("type1", "option2", localisationHelper));
+        assertEquals("option3", config.getValidationTypeOptionLabel("type1", "option3", localisationHelper));
         assertEquals(1, config.getWebServiceDescription().size());
         assertEquals("description", config.getWebServiceDescription().get("key"));
         assertFalse(config.isShowAbout());
         assertTrue(config.isSupportMinimalUserInterface());
-        assertEquals("banner", config.getHtmlBanner());
-        assertEquals("footer", config.getHtmlFooter());
+        assertEquals("banner", localisationHelper.localise("validator.bannerHtml"));
+        assertEquals("footer", localisationHelper.localise("validator.footerHtml"));
     }
 
     @Test
@@ -118,36 +110,38 @@ public class WebDomainConfigCacheTest {
                 Map.entry("validator.label.maximumReportsExceededForDetailedOutputMessage", "maximumReportsExceededForDetailedOutputMessage"),
                 Map.entry("validator.label.maximumReportsExceededForXmlOutputMessage", "maximumReportsExceededForXmlOutputMessage")
         ));
-        cache.setLabels(config, configProperties);
-        assertEquals("resultSectionTitle", config.getLabel().getResultSectionTitle());
-        assertEquals("fileInputLabel", config.getLabel().getFileInputLabel());
-        assertEquals("fileInputPlaceholder", config.getLabel().getFileInputPlaceholder());
-        assertEquals("typeLabel", config.getLabel().getTypeLabel());
-        assertEquals("optionLabel", config.getLabel().getOptionLabel());
-        assertEquals("uploadButton", config.getLabel().getUploadButton());
-        assertEquals("resultSubSectionOverviewTitle", config.getLabel().getResultSubSectionOverviewTitle());
-        assertEquals("resultDateLabel", config.getLabel().getResultDateLabel());
-        assertEquals("resultFileNameLabel", config.getLabel().getResultFileNameLabel());
-        assertEquals("resultResultLabel", config.getLabel().getResultResultLabel());
-        assertEquals("resultErrorsLabel", config.getLabel().getResultErrorsLabel());
-        assertEquals("resultWarningsLabel", config.getLabel().getResultWarningsLabel());
-        assertEquals("resultMessagesLabel", config.getLabel().getResultMessagesLabel());
-        assertEquals("viewAnnotatedInputButton", config.getLabel().getViewAnnotatedInputButton());
-        assertEquals("downloadXMLReportButton", config.getLabel().getDownloadXMLReportButton());
-        assertEquals("downloadPDFReportButton", config.getLabel().getDownloadPDFReportButton());
-        assertEquals("resultSubSectionDetailsTitle", config.getLabel().getResultSubSectionDetailsTitle());
-        assertEquals("resultTestLabel", config.getLabel().getResultTestLabel());
-        assertEquals("resultLocationLabel", config.getLabel().getResultLocationLabel());
-        assertEquals("popupTitle", config.getLabel().getPopupTitle());
-        assertEquals("popupCloseButton", config.getLabel().getPopupCloseButton());
-        assertEquals("optionContentFile", config.getLabel().getOptionContentFile());
-        assertEquals("optionContentURI", config.getLabel().getOptionContentURI());
-        assertEquals("optionContentDirectInput", config.getLabel().getOptionContentDirectInput());
-        assertEquals("resultValidationTypeLabel", config.getLabel().getResultValidationTypeLabel());
-        assertEquals("includeExternalArtefacts", config.getLabel().getIncludeExternalArtefacts());
-        assertEquals("externalArtefactsTooltip", config.getLabel().getExternalArtefactsTooltip());
-        assertEquals("maximumReportsExceededForDetailedOutputMessage", config.getLabel().getMaximumReportsExceededForDetailedOutputMessage());
-        assertEquals("maximumReportsExceededForXmlOutputMessage", config.getLabel().getMaximumReportsExceededForXmlOutputMessage());
+        cache.addDomainConfiguration(config, configProperties);
+        cache.addResourceBundlesConfiguration(config, configProperties);
+        var localisationHelper = new LocalisationHelper(config, Locale.ENGLISH);
+        assertEquals("resultSectionTitle", localisationHelper.localise("validator.label.resultSectionTitle"));
+        assertEquals("fileInputLabel", localisationHelper.localise("validator.label.fileInputLabel"));
+        assertEquals("fileInputPlaceholder", localisationHelper.localise("validator.label.fileInputPlaceholder"));
+        assertEquals("typeLabel", localisationHelper.localise("validator.label.typeLabel"));
+        assertEquals("optionLabel", localisationHelper.localise("validator.label.optionLabel"));
+        assertEquals("uploadButton", localisationHelper.localise("validator.label.uploadButton"));
+        assertEquals("resultSubSectionOverviewTitle", localisationHelper.localise("validator.label.resultSubSectionOverviewTitle"));
+        assertEquals("resultDateLabel", localisationHelper.localise("validator.label.resultDateLabel"));
+        assertEquals("resultFileNameLabel", localisationHelper.localise("validator.label.resultFileNameLabel"));
+        assertEquals("resultResultLabel", localisationHelper.localise("validator.label.resultResultLabel"));
+        assertEquals("resultErrorsLabel", localisationHelper.localise("validator.label.resultErrorsLabel"));
+        assertEquals("resultWarningsLabel", localisationHelper.localise("validator.label.resultWarningsLabel"));
+        assertEquals("resultMessagesLabel", localisationHelper.localise("validator.label.resultMessagesLabel"));
+        assertEquals("viewAnnotatedInputButton", localisationHelper.localise("validator.label.viewAnnotatedInputButton"));
+        assertEquals("downloadXMLReportButton", localisationHelper.localise("validator.label.downloadXMLReportButton"));
+        assertEquals("downloadPDFReportButton", localisationHelper.localise("validator.label.downloadPDFReportButton"));
+        assertEquals("resultSubSectionDetailsTitle", localisationHelper.localise("validator.label.resultSubSectionDetailsTitle"));
+        assertEquals("resultTestLabel", localisationHelper.localise("validator.label.resultTestLabel"));
+        assertEquals("resultLocationLabel", localisationHelper.localise("validator.label.resultLocationLabel"));
+        assertEquals("popupTitle", localisationHelper.localise("validator.label.popupTitle"));
+        assertEquals("popupCloseButton", localisationHelper.localise("validator.label.popupCloseButton"));
+        assertEquals("optionContentFile", localisationHelper.localise("validator.label.optionContentFile"));
+        assertEquals("optionContentURI", localisationHelper.localise("validator.label.optionContentURI"));
+        assertEquals("optionContentDirectInput", localisationHelper.localise("validator.label.optionContentDirectInput"));
+        assertEquals("resultValidationTypeLabel", localisationHelper.localise("validator.label.resultValidationTypeLabel"));
+        assertEquals("includeExternalArtefacts", localisationHelper.localise("validator.label.includeExternalArtefacts"));
+        assertEquals("externalArtefactsTooltip", localisationHelper.localise("validator.label.externalArtefactsTooltip"));
+        assertEquals("maximumReportsExceededForDetailedOutputMessage", localisationHelper.localise("validator.label.maximumReportsExceededForDetailedOutputMessage"));
+        assertEquals("maximumReportsExceededForXmlOutputMessage", localisationHelper.localise("validator.label.maximumReportsExceededForXmlOutputMessage"));
    }
 
 }
