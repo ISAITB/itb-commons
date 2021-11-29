@@ -28,6 +28,10 @@ public abstract class BaseValidationRunner<X extends DomainConfig> implements Va
     protected static final Logger LOGGER_FEEDBACK_FILE = LoggerFactory.getLogger("VALIDATION_RESULT");
     /** The fixed pad to ensure consistent messages by validators. */
     protected static final String PAD = "   ";
+    /** Flag to switch off console output. */
+    public static final String FLAG_NO_OUTPUT = "-nooutput";
+    /** Flag to switch off file log output. */
+    public static final String FLAG_NO_LOG = "-nolog";
 
     protected X domainConfig;
 
@@ -53,12 +57,12 @@ public abstract class BaseValidationRunner<X extends DomainConfig> implements Va
                 message.append("|");
             }
             message.delete(message.length()-1, message.length()).append("].");
-            LOGGER_FEEDBACK.info(message.toString());
+            LOGGER_FEEDBACK.error(message.toString());
             LOGGER.error(message.toString());
             throw new IllegalArgumentException();
         } else {
             String message = "No validation domains could be found.";
-            LOGGER_FEEDBACK.info(message);
+            LOGGER_FEEDBACK.error(message);
             LOGGER.error(message);
             throw new IllegalStateException(message);
         }

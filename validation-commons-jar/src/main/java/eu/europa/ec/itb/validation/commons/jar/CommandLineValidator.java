@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.UUID;
@@ -20,6 +21,11 @@ import java.util.jar.JarFile;
  */
 public class CommandLineValidator {
 
+    /** Static flag to signal whether console output is on. */
+    public static boolean CONSOLE_OUTPUT_ON = true;
+    /** Static flag to signal whether file output is on. */
+    public static boolean FILE_OUTPUT_ON = true;
+
     /**
      * Run the initialisation.
      *
@@ -29,7 +35,12 @@ public class CommandLineValidator {
      * @throws IOException If an IO error occurs.
      */
     public void start(Class<?> mainClass, String[] commandLineArguments, String tempFolderName) throws IOException {
-        System.out.print("Starting validator ...");
+        boolean noOutput = inArray(commandLineArguments, BaseValidationRunner.FLAG_NO_OUTPUT);
+        boolean noLogs = inArray(commandLineArguments, BaseValidationRunner.FLAG_NO_LOG);
+        disableLoggersIfNeeded(noOutput, noLogs);
+        if (!noOutput) {
+            System.out.print("Starting validator ...");
+        }
         File tempFolder = createTemporaryFolder(tempFolderName);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(tempFolder)));
         // Setup folders - start
@@ -53,13 +64,41 @@ public class CommandLineValidator {
         ApplicationContext ctx = createContext(mainClass, commandLineArguments);
         // Post process config.
         ApplicationConfig config = ctx.getBean(ApplicationConfig.class);
-        System.out.println(" Done.");
+        if (!noOutput) {
+            System.out.println(" Done.");
+        }
         try {
             ValidationRunner runner = ctx.getBean(ValidationRunner.class);
             runner.bootstrap(commandLineArguments, new File(config.getTmpFolder(), UUID.randomUUID().toString()));
         } catch(Exception e) {
             // Ignore errors.
         }
+    }
+
+    /**
+     * Disable log appending for silent modes.
+     *
+     * @param disableConsole Disable console logging.
+     * @param disableFile Disable file logging.
+     */
+    protected static void disableLoggersIfNeeded(boolean disableConsole, boolean disableFile) {
+        if (disableConsole) {
+            CONSOLE_OUTPUT_ON = false;
+        }
+        if (disableFile) {
+            FILE_OUTPUT_ON = false;
+        }
+    }
+
+    /**
+     * Check to see if the provided array contains the given flag (non-case-sensitive check).
+     *
+     * @param args The arguments to check.
+     * @param flag The flag to look for.
+     * @return The check result.
+     */
+    protected static boolean inArray(String[] args, String flag) {
+        return args != null && Arrays.stream(args).anyMatch(flag::equalsIgnoreCase);
     }
 
     /**

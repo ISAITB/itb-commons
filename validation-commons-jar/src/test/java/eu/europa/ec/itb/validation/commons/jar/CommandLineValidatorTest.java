@@ -5,16 +5,15 @@ import eu.europa.ec.itb.validation.commons.test.BaseTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class CommandLineValidatorTest extends BaseTest {
@@ -75,4 +74,38 @@ public class CommandLineValidatorTest extends BaseTest {
         assertEquals(resourceFolder, Path.of(System.getProperty("validator.resourceRoot")));
     }
 
+    @Test
+    void testDisableLoggers() throws IllegalStateException {
+        resetLogging();
+        CommandLineValidator.disableLoggersIfNeeded(false, false);
+        assertTrue(CommandLineValidator.CONSOLE_OUTPUT_ON);
+        assertTrue(CommandLineValidator.FILE_OUTPUT_ON);
+
+        resetLogging();
+        CommandLineValidator.disableLoggersIfNeeded(true, false);
+        assertFalse(CommandLineValidator.CONSOLE_OUTPUT_ON);
+        assertTrue(CommandLineValidator.FILE_OUTPUT_ON);
+
+        resetLogging();
+        CommandLineValidator.disableLoggersIfNeeded(false, true);
+        assertTrue(CommandLineValidator.CONSOLE_OUTPUT_ON);
+        assertFalse(CommandLineValidator.FILE_OUTPUT_ON);
+
+        resetLogging();
+        CommandLineValidator.disableLoggersIfNeeded(true, true);
+        assertFalse(CommandLineValidator.CONSOLE_OUTPUT_ON);
+        assertFalse(CommandLineValidator.FILE_OUTPUT_ON);
+    }
+
+    private void resetLogging() {
+        CommandLineValidator.CONSOLE_OUTPUT_ON = true;
+        CommandLineValidator.FILE_OUTPUT_ON = true;
+    }
+
+    @Test
+    void testInArray() {
+        assertTrue(CommandLineValidator.inArray(List.of("a", "b").toArray(new String[] {}), "a"));
+        assertTrue(CommandLineValidator.inArray(List.of("a", "b").toArray(new String[] {}), "A"));
+        assertFalse(CommandLineValidator.inArray(List.of("a", "b").toArray(new String[] {}), "c"));
+    }
 }
