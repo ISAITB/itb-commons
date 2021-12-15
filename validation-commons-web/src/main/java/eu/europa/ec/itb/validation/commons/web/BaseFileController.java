@@ -143,7 +143,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
                 reportGenerator.writeReport(
                         reportFileXml,
                         reportFile,
-                        (report) -> getReportLabels(new LocalisationHelper(domainConfig, localeResolver.resolveLocale(request, response, domainConfig, appConfig)), report.getResult())
+                        new LocalisationHelper(domainConfig, localeResolver.resolveLocale(request, response, domainConfig, appConfig))
                 );
             } else {
                 throw new NotFoundException();
@@ -153,32 +153,6 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             response.setHeader("Content-Disposition", "attachment; filename=report_"+id+".pdf");
         }
         return new FileSystemResource(reportFile);
-    }
-
-    /**
-     * Get the labels to use in PDF reports.
-     *
-     * @param helper The localisation helper.
-     * @param resultType The report's result to consider.
-     * @return The labels.
-     */
-    private ReportLabels getReportLabels(LocalisationHelper helper, TestResultType resultType) {
-        var reportLabels = new ReportLabels();
-        reportLabels.setTitle(helper.localise("validator.reportTitle"));
-        reportLabels.setOverview(helper.localise("validator.label.resultSubSectionOverviewTitle"));
-        reportLabels.setDetails(helper.localise("validator.label.resultSubSectionDetailsTitle"));
-        reportLabels.setDate(helper.localise("validator.label.resultDateLabel"));
-        reportLabels.setResult(helper.localise("validator.label.resultResultLabel"));
-        reportLabels.setFileName(helper.localise("validator.label.resultFileNameLabel"));
-        reportLabels.setErrors(helper.localise("validator.label.resultErrorsLabel"));
-        reportLabels.setWarnings(helper.localise("validator.label.resultWarningsLabel"));
-        reportLabels.setMessages(helper.localise("validator.label.resultMessagesLabel"));
-        reportLabels.setTest(helper.localise("validator.label.resultTestLabel"));
-        reportLabels.setLocation(helper.localise("validator.label.resultLocationLabel"));
-        reportLabels.setPage(helper.localise("validator.label.pageLabel"));
-        reportLabels.setOf(helper.localise("validator.label.ofLabel"));
-        reportLabels.setResultType(helper.localise("validator.label.result."+resultType.value().toLowerCase(Locale.ROOT)));
-        return reportLabels;
     }
 
     /**

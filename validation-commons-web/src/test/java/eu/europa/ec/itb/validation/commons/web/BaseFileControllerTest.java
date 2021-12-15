@@ -1,14 +1,15 @@
 package eu.europa.ec.itb.validation.commons.web;
 
 import eu.europa.ec.itb.validation.commons.BaseFileManager;
+import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
 import eu.europa.ec.itb.validation.commons.report.ReportGeneratorBean;
-import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
 import eu.europa.ec.itb.validation.commons.test.BaseTest;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
+import eu.europa.ec.itb.validation.commons.web.locale.CustomLocaleResolver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,7 @@ public class BaseFileControllerTest extends BaseTest {
         controller.fileManager = fileManager;
         controller.domainConfigCache = domainConfigCache;
         controller.reportGenerator = reportGenerator;
+        controller.localeResolver = mock(CustomLocaleResolver.class);
         return controller;
     }
 
@@ -125,7 +127,7 @@ public class BaseFileControllerTest extends BaseTest {
         assertNotNull(result);
         assertEquals(expectedPdfFile, result.getFile().toPath());
         verify(servletResponse, times(1)).setHeader("Content-Disposition", "attachment; filename=report_"+reportUuid+".pdf");
-        verify(reportGenerator, times(1)).writeReport(eq(xmlFile.toFile()), eq(expectedPdfFile.toFile()), any());
+        verify(reportGenerator, times(1)).writeReport(eq(xmlFile.toFile()), eq(expectedPdfFile.toFile()), any(LocalisationHelper.class));
     }
 
     @Test
