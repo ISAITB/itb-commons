@@ -15,6 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CustomLocaleResolverTest {
 
     @Test
+    void testResolveLocaleForMissingInfo() {
+        CustomLocaleResolver localeResolver = new CustomLocaleResolver();
+        var result = localeResolver.resolveLocale(null, null, null, null);
+        assertEquals(Locale.ENGLISH, result);
+    }
+
+    @Test
     void testResolveCorrectDefaultLocale() {
         // the language set is the default
         MockHttpServletRequest request = new MockHttpServletRequest();
