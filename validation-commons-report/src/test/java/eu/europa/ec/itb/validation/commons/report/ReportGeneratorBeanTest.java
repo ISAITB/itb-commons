@@ -1,6 +1,8 @@
 package eu.europa.ec.itb.validation.commons.report;
 
 import com.gitb.tr.TAR;
+import com.gitb.tr.TestResultType;
+import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
 import org.apache.commons.io.FileUtils;
@@ -14,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -144,6 +147,42 @@ public class ReportGeneratorBeanTest {
         var bean = createBean(reportGenerator);
         assertThrows(ValidatorException.class, () -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), (report) -> labels));
         verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any());
+    }
+
+    @Test
+    void testGetReportLabels() throws Exception {
+        var reportGenerator = mock(ReportGenerator.class);
+        var successText = TestResultType.SUCCESS.value().toLowerCase(Locale.ROOT);
+        var bean = createBean(reportGenerator);
+        var helper = getDefaultLabelMockHelper("validator.reportTitle", "validator.label.resultSubSectionOverviewTitle", "validator.label.resultSubSectionDetailsTitle",
+                "validator.label.resultDateLabel", "validator.label.resultResultLabel", "validator.label.resultFileNameLabel",
+                "validator.label.resultErrorsLabel", "validator.label.resultWarningsLabel", "validator.label.resultMessagesLabel" ,
+                "validator.label.resultTestLabel", "validator.label.resultLocationLabel", "validator.label.pageLabel",
+                "validator.label.ofLabel", "validator.label.result."+successText);
+        var result = bean.getReportLabels(helper, TestResultType.SUCCESS);
+        assertNotNull(result);
+        assertEquals("validator.reportTitle_translated", result.getTitle());
+        assertEquals("validator.label.resultSubSectionOverviewTitle_translated", result.getOverview());
+        assertEquals("validator.label.resultSubSectionDetailsTitle_translated", result.getDetails());
+        assertEquals("validator.label.resultDateLabel_translated", result.getDate());
+        assertEquals("validator.label.resultResultLabel_translated", result.getResult());
+        assertEquals("validator.label.resultFileNameLabel_translated", result.getFileName());
+        assertEquals("validator.label.resultErrorsLabel_translated", result.getErrors());
+        assertEquals("validator.label.resultWarningsLabel_translated", result.getWarnings());
+        assertEquals("validator.label.resultMessagesLabel_translated", result.getMessages());
+        assertEquals("validator.label.resultTestLabel_translated", result.getTest());
+        assertEquals("validator.label.resultLocationLabel_translated", result.getLocation());
+        assertEquals("validator.label.pageLabel_translated", result.getPage());
+        assertEquals("validator.label.ofLabel_translated", result.getOf());
+        assertEquals("validator.label.result."+successText+"_translated", result.getResultType());
+    }
+
+    private LocalisationHelper getDefaultLabelMockHelper(String... keys) {
+        var helper = mock(LocalisationHelper.class);
+        for (var key: keys) {
+            when(helper.localise(key)).thenReturn(key+"_translated");
+        }
+        return helper;
     }
 
 }
