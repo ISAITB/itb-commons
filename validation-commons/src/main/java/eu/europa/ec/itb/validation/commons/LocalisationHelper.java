@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
@@ -87,10 +88,14 @@ public class LocalisationHelper {
         if (this.config != null) {
             URLClassLoader translationsLoader = this.config.getLocaleTranslationsLoader();
             if (translationsLoader != null) {
-                ResourceBundle translationsBundle = ResourceBundle.getBundle(config.getLocaleTranslationsBundle(),
-                        this.locale, translationsLoader);
-                if (translationsBundle.containsKey(property)) {
-                    return translationsBundle.getString(property);
+                try {
+                    ResourceBundle translationsBundle = ResourceBundle.getBundle(config.getLocaleTranslationsBundle(),
+                            this.locale, translationsLoader);
+                    if (translationsBundle.containsKey(property)) {
+                        return translationsBundle.getString(property);
+                    }
+                } catch (MissingResourceException e) {
+                    // Ignore to continue looking up the resource bundle.
                 }
             }
             if (config.getDomainProperties().containsKey(property)) {
