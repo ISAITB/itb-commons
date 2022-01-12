@@ -789,6 +789,9 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                             preconfiguredRemoteArtifactMap.put(key, getRemoteValidationArtifacts(domainConfig, validationType, artifactType));
                         }
                     }
+                } catch (ValidatorException e) {
+                    // Never allow configuration errors in one domain to prevent the others from being available.
+                    logger.error("Error while processing configuration for domain ["+domainConfig.getDomainName()+"]: "+e.getMessageForLog(), e);
                 } catch (Exception e) {
                     // Never allow configuration errors in one domain to prevent the others from being available.
                     logger.error("Error while processing configuration for domain ["+domainConfig.getDomainName()+"]", e);

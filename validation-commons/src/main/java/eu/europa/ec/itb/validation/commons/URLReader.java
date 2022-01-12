@@ -32,7 +32,7 @@ public class URLReader {
             }
             return connection.getInputStream();
         } catch (IOException e) {
-            throw new ValidatorException("validator.label.exception.unableToReadURI", e);
+            throw new ValidatorException("validator.label.exception.unableToReadURI", e, uri.toString());
         }
     }
 
