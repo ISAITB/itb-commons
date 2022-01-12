@@ -6,6 +6,8 @@ import com.gitb.tr.TestAssertionGroupReportsType;
 import com.gitb.tr.TestResultType;
 import com.gitb.tr.ValidationCounters;
 import com.gitb.vs.ValidateRequest;
+import eu.europa.ec.itb.validation.commons.config.DomainConfig;
+import org.apache.commons.lang3.LocaleUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -384,6 +386,25 @@ public class Utils {
         input.setType(type);
         input.setEncoding(encoding);
         return input;
+    }
+
+    /**
+     * Check that the requested locale is supported and if not return a default locale to use.
+     *
+     * @param requestedLocale The requested locale.
+     * @param domainConfig The domain configuration.
+     * @return The locale to use.
+     */
+    public static Locale getSupportedLocale(Locale requestedLocale, DomainConfig domainConfig) {
+        if (requestedLocale == null || requestedLocale.getLanguage() == null) {
+            return domainConfig.getDefaultLocale();
+        } else {
+            if (domainConfig.getAvailableLocales().contains(requestedLocale)) {
+                return requestedLocale;
+            } else {
+                return domainConfig.getDefaultLocale();
+            }
+        }
     }
 
 }
