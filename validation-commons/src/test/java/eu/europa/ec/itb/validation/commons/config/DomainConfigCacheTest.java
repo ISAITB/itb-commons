@@ -297,22 +297,29 @@ public class DomainConfigCacheTest extends BaseSpringTest {
         DomainConfigCache configCache4 = createDomainConfigCache();
         configCache4.addResourceBundlesConfiguration(domainConfig4, new MapConfiguration(props4));
         assertEquals(Locale.GERMAN, domainConfig4.getDefaultLocale());
+
+        var props5 = new HashMap<String, String>();
+        var domainConfig5 = new DomainConfig();
+        DomainConfigCache configCache5 = createDomainConfigCache();
+        configCache5.addResourceBundlesConfiguration(domainConfig5, new MapConfiguration(props5));
+        assertEquals(Locale.ENGLISH, domainConfig5.getDefaultLocale());
     }
 
     @Test
-    void testResolvePathForDomain() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    void testResolvePathForDomain() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
         DomainConfigCache configCache = createDomainConfigCache();
         Method resolvePathMethod = ReflectionUtils.findMethod(configCache.getClass(), "resolveFilePathForDomain", String.class, String.class);
         assertNotNull(resolvePathMethod);
         resolvePathMethod.setAccessible(Boolean.TRUE);
         String domain = "domain1";
         when(appConfig.isRestrictResourcesToDomain()).thenReturn(Boolean.TRUE);
+        createFileWithContents(Path.of(appConfig.getResourceRoot(), domain, "file1.properties"), "a=b");
         String absolutePath = Path.of(appConfig.getResourceRoot(), domain, "file1.properties").toString();
         String relativePath = Path.of(".", "file1.properties").toString();
         // The path is relative to the domain root folder. It should return a path.
         Object test1Object = resolvePathMethod.invoke(configCache, domain, relativePath);
         assertNotNull(test1Object);
-        assert(((Path)test1Object).startsWith(Path.of(appConfig.getResourceRoot(), domain)));        
+        assertTrue(isChildPathOf((Path)test1Object, Path.of(appConfig.getResourceRoot(), domain)));
         // The path is absolute. It should return null.
         Object test2Object = resolvePathMethod.invoke(configCache, domain, absolutePath);
         assertNull(test2Object);
@@ -320,11 +327,15 @@ public class DomainConfigCacheTest extends BaseSpringTest {
         // The path is absolute. It should return the path.
         Object test3Object = resolvePathMethod.invoke(configCache, domain, relativePath);
         assertNotNull(test3Object);
-        assert(((Path)test3Object).startsWith(Path.of(appConfig.getResourceRoot(), domain)));
+        assertTrue(isChildPathOf((Path)test3Object, Path.of(appConfig.getResourceRoot(), domain)));
         // The path is relative to the domain folder. It should return a path.
         Object test4Object = resolvePathMethod.invoke(configCache, domain, relativePath);
         assertNotNull(test4Object);
-        assert(((Path)test4Object).startsWith(Path.of(appConfig.getResourceRoot(), domain)));
+        assertTrue(isChildPathOf((Path)test4Object, Path.of(appConfig.getResourceRoot(), domain)));
+    }
+
+    private boolean isChildPathOf(Path pathToCheck, Path assumedParentPath) throws IOException {
+        return pathToCheck.toRealPath().startsWith(assumedParentPath.toRealPath());
     }
 
     @Test
