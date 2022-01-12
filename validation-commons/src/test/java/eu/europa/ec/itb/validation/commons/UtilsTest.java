@@ -6,6 +6,8 @@ import com.gitb.core.UsageEnumeration;
 import com.gitb.core.ValueEmbeddingEnumeration;
 import com.gitb.tr.*;
 import com.gitb.vs.ValidateRequest;
+import eu.europa.ec.itb.validation.commons.config.DomainConfig;
+import org.apache.commons.lang3.LocaleUtils;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
@@ -21,13 +23,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class UtilsTest {
 
@@ -271,5 +272,16 @@ public class UtilsTest {
         validateCreatedInputItem(Utils.createInputItem("name", "value", ValueEmbeddingEnumeration.STRING), null);
         validateCreatedInputItem(Utils.createInputItem("name", "value", ValueEmbeddingEnumeration.STRING, "string"), null);
         validateCreatedInputItem(Utils.createInputItem("name", "value", ValueEmbeddingEnumeration.STRING, "string", "UTF-8"), "UTF-8");
+    }
+
+    @Test
+    void testGetSupportedLocale() {
+        var domain = mock(DomainConfig.class);
+        when(domain.getDefaultLocale()).thenReturn(Locale.GERMAN);
+        when(domain.getAvailableLocales()).thenReturn(Set.of(Locale.GERMAN, Locale.FRENCH));
+        assertEquals(Locale.FRENCH, Utils.getSupportedLocale(Locale.FRENCH, domain));
+        assertEquals(Locale.GERMAN, Utils.getSupportedLocale(Locale.ITALIAN, domain));
+        assertEquals(Locale.GERMAN, Utils.getSupportedLocale(null, domain));
+        assertEquals(Locale.GERMAN, Utils.getSupportedLocale(LocaleUtils.toLocale(""), domain));
     }
 }
