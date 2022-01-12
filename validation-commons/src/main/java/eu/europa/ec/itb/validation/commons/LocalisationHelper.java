@@ -30,15 +30,32 @@ public class LocalisationHelper {
     }
 
     /**
+     * Constructor (to use the domain's default locale).
+     *
+     * @param config The DomainConfig object that contains the domain configuration.
+     */
+    public LocalisationHelper(DomainConfig config) {
+        this(config, null);
+    }
+
+    /**
      * Constructor.
      * 
-     * @param config The DomainConfig object that contains the domain configuration
-     *               and access to it.
-     * @param locale The Locale of the messages that should be fetched.
+     * @param config The DomainConfig object that contains the domain configuration.
+     * @param locale The Locale of the messages that should be fetched. If null this will be the domain's default locale.
+     *               If that is null as well, then the overall default is English.
      */
     public LocalisationHelper(DomainConfig config, Locale locale) {
         this.config = config;
-        this.locale = locale;
+        if (locale == null) {
+            if (config == null) {
+                this.locale = Locale.ENGLISH;
+            } else {
+                this.locale = config.getDefaultLocale();
+            }
+        } else {
+            this.locale = locale;
+        }
     }
 
     /**

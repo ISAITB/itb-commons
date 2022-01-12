@@ -16,6 +16,8 @@ import java.net.URLClassLoader;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class LocalisationHelperTest {
@@ -84,6 +86,16 @@ public class LocalisationHelperTest {
         LocalisationHelper localiser = new LocalisationHelper(Locale.ENGLISH);
         assertNotNull(localiser);
         assertEquals(Locale.ENGLISH, localiser.getLocale());
+    }
+
+    @Test
+    void testInitializeLocaliserForDefaultLocales() throws IllegalArgumentException {
+        var domainConfig = mock(DomainConfig.class);
+        when(domainConfig.getDefaultLocale()).thenReturn(Locale.GERMAN);
+        LocalisationHelper localiser1 = new LocalisationHelper(domainConfig);
+        assertEquals(Locale.GERMAN, localiser1.getLocale());
+        LocalisationHelper localiser2 = new LocalisationHelper(null, null);
+        assertEquals(Locale.ENGLISH, localiser2.getLocale());
     }
 
     @Test
