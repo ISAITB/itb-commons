@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.AddressNotFoundException;
 import com.maxmind.geoip2.model.CountryResponse;
 
 import org.aspectj.lang.JoinPoint;
@@ -78,7 +79,9 @@ public abstract class StatisticReporting {
         try{
             InetAddress address = InetAddress.getByName(ip);
             CountryResponse response = this.reader.country(address);
-            countryISO = response.getCountry().getIsoCode();    
+            countryISO = response.getCountry().getIsoCode();
+        }catch(AddressNotFoundException ex){
+            logger.warn(String.format("Unable to resolve country for ip: %s", ip));
         }catch(Exception ex){
             logger.warn(String.format("Error when resolving country for ip: %s", ip), ex);
         }
