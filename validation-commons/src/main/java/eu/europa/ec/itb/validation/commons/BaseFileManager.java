@@ -781,12 +781,20 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                         FileUtils.deleteQuietly(remoteConfigFolder);
                         TypedValidationArtifactInfo typedArtifactInfo = domainConfig.getArtifactInfo().get(validationType);
                         for (String artifactType: typedArtifactInfo.getTypes()) {
-                            artifactType = StringUtils.defaultString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
-                            File remoteFolderForType = new File(remoteConfigFolder, artifactType);
-                            downloadRemoteFiles(domainConfig.getDomain(), typedArtifactInfo.get(artifactType).getRemoteArtifacts(), remoteFolderForType, artifactType);
-                            // Update cache map.
-                            String key = domainConfig.getDomainName() + "|" + validationType + "|" + StringUtils.defaultString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
-                            preconfiguredRemoteArtifactMap.put(key, getRemoteValidationArtifacts(domainConfig, validationType, artifactType));
+                            try {
+                                artifactType = StringUtils.defaultString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
+                                File remoteFolderForType = new File(remoteConfigFolder, artifactType);
+                                downloadRemoteFiles(domainConfig.getDomain(), typedArtifactInfo.get(artifactType).getRemoteArtifacts(), remoteFolderForType, artifactType);
+                                // Update cache map.
+                                String key = domainConfig.getDomainName() + "|" + validationType + "|" + StringUtils.defaultString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
+                                preconfiguredRemoteArtifactMap.put(key, getRemoteValidationArtifacts(domainConfig, validationType, artifactType));
+                            } catch (ValidatorException e) {
+                                // Never allow configuration errors in one validation type to prevent the others from being available.
+                                logger.error("Error while processing configuration for type ["+validationType+"] of domain ["+domainConfig.getDomainName()+"]: "+e.getMessageForLog(), e);
+                            } catch (Exception e) {
+                                // Never allow configuration errors in one validation type to prevent the others from being available.
+                                logger.error("Error while processing configuration for type ["+validationType+"] of domain ["+domainConfig.getDomainName()+"]", e);
+                            }
                         }
                     }
                 } catch (ValidatorException e) {
