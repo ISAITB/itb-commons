@@ -35,9 +35,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.springBoot>2.6.2</version.springBoot>
+        <version.springBoot>2.6.4</version.springBoot>
         <version.springSecurityTest>5.5.2</version.springSecurityTest>
-        <version.slf4j>1.7.32</version.slf4j>
+        <version.slf4j>1.7.36</version.slf4j>
         <version.javaxAnnotationApi>1.3.2</version.javaxAnnotationApi>
         <version.gitbTypes>1.15.0</version.gitbTypes>
         <version.commonsLang>3.10</version.commonsLang>
