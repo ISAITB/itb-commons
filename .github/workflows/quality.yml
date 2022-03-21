@@ -1,4 +1,4 @@
-name: Quality build
+name: Quality build # Build with SonarCloud
 on:
   push:
     branches:
