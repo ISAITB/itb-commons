@@ -61,6 +61,7 @@ public class ReportGeneratorBeanTest {
         labels.setDetails("Details");
         labels.setOverview("Overview");
         labels.setOf("Of");
+        labels.setAssertionId("Assertion");
         return labels;
     }
 

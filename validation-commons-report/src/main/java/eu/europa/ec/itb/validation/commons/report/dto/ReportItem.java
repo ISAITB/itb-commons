@@ -9,6 +9,7 @@ public class ReportItem {
     private String description;
     private String test;
     private String location;
+    private String assertionId;
 
     /**
      * @return The item's level.
@@ -64,5 +65,19 @@ public class ReportItem {
      */
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    /**
+     * @return The item's assertion ID.
+     */
+    public String getAssertionId() {
+        return assertionId;
+    }
+
+    /**
+     * @param assertionId The item's assertion ID.
+     */
+    public void setAssertionId(String assertionId) {
+        this.assertionId = assertionId;
     }
 }

@@ -95,6 +95,7 @@ public class ReportGeneratorBean {
         reportLabels.setLocation(helper.localise("validator.label.resultLocationLabel"));
         reportLabels.setPage(helper.localise("validator.label.pageLabel"));
         reportLabels.setOf(helper.localise("validator.label.ofLabel"));
+        reportLabels.setAssertionId(helper.localise("validator.label.assertionIdLabel"));
         reportLabels.setResultType(helper.localise("validator.label.result."+resultType.value().toLowerCase(Locale.ROOT)));
         return reportLabels;
     }
