@@ -166,6 +166,7 @@ public class ReportGenerator {
             parameters.put("locationLabel", labels.getLocation());
             parameters.put("pageLabel", labels.getPage());
             parameters.put("ofLabel", labels.getOf());
+            parameters.put("assertionIdLabel", labels.getAssertionId());
             if (report.getReportItems() != null && !report.getReportItems().isEmpty()) {
                 parameters.put("reportItems", report.getReportItems());
             }
@@ -258,6 +259,7 @@ public class ReportGenerator {
                         reportItem.setDescription(StringUtils.defaultIfBlank(tarItem.getDescription(), "-"));
                         reportItem.setTest(StringUtils.trimToNull(tarItem.getTest()));
                         reportItem.setLocation(StringUtils.trimToNull(tarItem.getLocation()));
+                        reportItem.setAssertionId(StringUtils.trimToNull(tarItem.getAssertionID()));
                         report.getReportItems().add(reportItem);
                     }
                 }

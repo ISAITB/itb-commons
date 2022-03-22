@@ -19,6 +19,7 @@ public class ReportLabels {
     private String location;
     private String page;
     private String of;
+    private String assertionId;
 
     /**
      * @return The title of the report.
@@ -214,5 +215,19 @@ public class ReportLabels {
      */
     public void setOf(String of) {
         this.of = of;
+    }
+
+    /**
+     * @return The assertion ID label.
+     */
+    public String getAssertionId() {
+        return assertionId;
+    }
+
+    /**
+     * @param assertionId The assertion ID label.
+     */
+    public void setAssertionId(String assertionId) {
+        this.assertionId = assertionId;
     }
 }
