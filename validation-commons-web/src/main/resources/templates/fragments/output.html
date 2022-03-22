@@ -79,6 +79,7 @@
                             </div>
                             <div th:if="${!clickableItems && item.value.location != null}" class="col-xs-12 report-item-test"><span class="report-item-test-label" th:text="${localiser.localise('validator.label.resultLocationLabel')}">Location:</span><span th:text="${item.value.location}">Location</span></div>
                             <div class="col-xs-12 report-item-test" th:if="${item.value.test != null}"><span class="report-item-test-label" th:text="${localiser.localise('validator.label.resultTestLabel')}">Test:</span><span th:text="${item.value.test}">Test</span></div>
+                            <div class="col-xs-12 report-item-test" th:if="${item.value.assertionID != null}"><span class="report-item-test-label" th:text="${localiser.localise('validator.label.additionalInfoLabel')}">Test:</span><span th:text="${item.value.assertionID}">Additional information</span></div>
                         </div>
                     </div>
                     <div th:unless="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}">
