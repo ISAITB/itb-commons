@@ -23,12 +23,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
+import static eu.europa.ec.itb.validation.commons.web.Constants.MDC_DOMAIN;
+
 /**
  * Base class for web controllers managing access to the validator's reports.
  */
 public abstract class BaseFileController<T extends BaseFileManager, R extends ApplicationConfig, Z extends WebDomainConfigCache> {
-
-    private static final String MDC_DOMAIN = "domain";
 
     @Autowired
     protected R config;

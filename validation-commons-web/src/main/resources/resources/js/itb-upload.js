@@ -866,10 +866,10 @@ function setCode(reportItemElement) {
 	});
 }
 function localeChanged() {
-    var selectedLocale = $('select#availableLocales option:checked').val();
+    var selectedLocale = $('select#availableLocales option:checked').val(),
+        url = window.location.href;
     $('select#availableLocales [selected=true]').attr("selected", "false");
     $('select#availableLocales option:checked').attr("selected", "true");
-    var url = window.location.href;
     if (url.indexOf('?') > -1){
         url = url.split('?')[0];
     }
