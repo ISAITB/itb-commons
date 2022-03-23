@@ -16,7 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class CommandLineValidatorTest extends BaseTest {
+class CommandLineValidatorTest extends BaseTest {
 
     ApplicationContext context;
 
@@ -78,28 +78,28 @@ public class CommandLineValidatorTest extends BaseTest {
     void testDisableLoggers() throws IllegalStateException {
         resetLogging();
         CommandLineValidator.disableLoggersIfNeeded(false, false);
-        assertTrue(CommandLineValidator.CONSOLE_OUTPUT_ON);
-        assertTrue(CommandLineValidator.FILE_OUTPUT_ON);
+        assertTrue(CommandLineValidator.isConsoleOutputOn());
+        assertTrue(CommandLineValidator.isFileOutputOn());
 
         resetLogging();
         CommandLineValidator.disableLoggersIfNeeded(true, false);
-        assertFalse(CommandLineValidator.CONSOLE_OUTPUT_ON);
-        assertTrue(CommandLineValidator.FILE_OUTPUT_ON);
+        assertFalse(CommandLineValidator.isConsoleOutputOn());
+        assertTrue(CommandLineValidator.isFileOutputOn());
 
         resetLogging();
         CommandLineValidator.disableLoggersIfNeeded(false, true);
-        assertTrue(CommandLineValidator.CONSOLE_OUTPUT_ON);
-        assertFalse(CommandLineValidator.FILE_OUTPUT_ON);
+        assertTrue(CommandLineValidator.isConsoleOutputOn());
+        assertFalse(CommandLineValidator.isFileOutputOn());
 
         resetLogging();
         CommandLineValidator.disableLoggersIfNeeded(true, true);
-        assertFalse(CommandLineValidator.CONSOLE_OUTPUT_ON);
-        assertFalse(CommandLineValidator.FILE_OUTPUT_ON);
+        assertFalse(CommandLineValidator.isConsoleOutputOn());
+        assertFalse(CommandLineValidator.isFileOutputOn());
     }
 
     private void resetLogging() {
-        CommandLineValidator.CONSOLE_OUTPUT_ON = true;
-        CommandLineValidator.FILE_OUTPUT_ON = true;
+        CommandLineValidator.setConsoleOutputOn(true);
+        CommandLineValidator.setFileOutputOn(true);
     }
 
     @Test

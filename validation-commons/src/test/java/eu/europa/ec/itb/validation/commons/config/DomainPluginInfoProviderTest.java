@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { DomainPluginInfoProviderTest.TestConfig.class, BaseTestConfiguration.class })
-public class DomainPluginInfoProviderTest extends BaseSpringTest {
+class DomainPluginInfoProviderTest extends BaseSpringTest {
 
     @TestConfiguration
     static class TestConfig {

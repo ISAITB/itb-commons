@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { BaseTestConfiguration.class })
-public class DomainConfigCacheTest extends BaseSpringTest {
+class DomainConfigCacheTest extends BaseSpringTest {
 
     @Autowired
     private ApplicationConfig appConfig;

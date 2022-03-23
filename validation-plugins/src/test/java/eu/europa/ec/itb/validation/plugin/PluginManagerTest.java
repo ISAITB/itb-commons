@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PluginManagerTest {
+class PluginManagerTest {
 
     private PluginManager createPluginManager(PluginConfigProvider provider) throws Exception {
         // Using this approach to allow mocking of the private provider before bean initialisation.

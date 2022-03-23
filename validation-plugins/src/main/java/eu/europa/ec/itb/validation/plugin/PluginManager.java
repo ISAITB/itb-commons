@@ -95,7 +95,7 @@ public class PluginManager {
             URLClassLoader loader = new URLClassLoader(new URL[] {jarFile.toUri().toURL()}, null);
             classLoaders.add(loader);
             for (String clazz: classes) {
-                Class pluginClass = loader.loadClass(clazz);
+                Class<?> pluginClass = loader.loadClass(clazz);
                 instances.add(new PluginAdapter(pluginClass.getConstructor().newInstance(), loader));
             }
             return instances;
@@ -109,7 +109,7 @@ public class PluginManager {
      */
     @PreDestroy
     private void destroy() {
-        classLoaders.forEach((loader) -> {
+        classLoaders.forEach(loader -> {
             try {
                 loader.close();
             } catch (IOException e) {

@@ -54,7 +54,7 @@ public class CustomLocaleResolver {
                     Cookie[] cookies = (request.getCookies() == null) ? new Cookie[] {} : request.getCookies();
                     List<Cookie> localeCookies = Arrays.stream(cookies).filter(c -> c.getName().contentEquals(cookieName))
                             .collect(Collectors.toList());
-                    if (localeCookies.size() >= 1) { // case where the locale has been inserted in the cookie previously.
+                    if (!localeCookies.isEmpty()) { // case where the locale has been inserted in the cookie previously.
                         return LocaleUtils.toLocale(localeCookies.get(0).getValue());
                     }
                 }

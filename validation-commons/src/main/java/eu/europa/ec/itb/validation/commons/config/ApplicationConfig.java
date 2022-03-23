@@ -176,7 +176,7 @@ public abstract class ApplicationConfig {
         } else {
             throw new IllegalStateException("Invalid resourceRoot configured ["+resourceRoot+"]. Ensure you specify the validator.resourceRoot property correctly.");
         }
-        logger.info("Loaded validation domains: "+domain);
+        logger.info("Loaded validation domains: {}", domain);
         // Load domain names.
         StringBuilder logMsg = new StringBuilder();
         for (String domainFolder: domain) {
@@ -185,7 +185,7 @@ public abstract class ApplicationConfig {
             this.domainNameToDomainId.put(domainName, domainFolder);
             logMsg.append('[').append(domainFolder).append("]=[").append(domainName).append("]");
         }
-        logger.info("Loaded validation domain names: " + logMsg);
+        logger.info("Loaded validation domain names: {}", logMsg);
         // Set startup times and resource update times.
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss (XXX)");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss (XXX)");

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DomainConfigCacheSupportMethodTest {
+class DomainConfigCacheSupportMethodTest {
 
     private DomainConfigCache<DomainConfig> createDomainConfigCache() {
         return new DomainConfigCache<>() {

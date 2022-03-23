@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class ErrorControllerTest {
+class WebErrorControllerTest {
 
     @Test
     void testHandleErrorNormalRequest() {
@@ -28,7 +28,7 @@ public class ErrorControllerTest {
         when(request.getHeader(Constants.AJAX_REQUEST_HEADER)).thenReturn(null);
         when(request.getHeader("referer")).thenReturn(null);
         var response = mock(HttpServletResponse.class);
-        var controller = new ErrorController();
+        var controller = new WebErrorController();
         var result = controller.handleError(request, response);
         assertNotNull(result);
         assertNotNull(result.getModelMap().getAttribute("minimalUI"));
@@ -61,7 +61,7 @@ public class ErrorControllerTest {
             }
         };
         when(response.getOutputStream()).thenReturn(out);
-        var controller = new ErrorController();
+        var controller = new WebErrorController();
         var result = controller.handleError(request, response);
         assertNull(result);
         ObjectMapper mapper = new ObjectMapper();

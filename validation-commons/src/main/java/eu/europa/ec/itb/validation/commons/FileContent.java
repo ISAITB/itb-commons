@@ -8,11 +8,11 @@ import com.gitb.core.ValueEmbeddingEnumeration;
 public class FileContent {
 
     /** Content is to be treated as a URL. */
-    public static final String embedding_URL     	= "URL" ;
+    public static final String EMBEDDING_URL = "URL" ;
     /** Content is to be treated as a BASE64 encoded string. */
-    public static final String embedding_BASE64		= "BASE64" ;
+    public static final String EMBEDDING_BASE_64 = "BASE64" ;
     /** Content is to be treated as a plain string. */
-    public static final String embedding_STRING		= "STRING" ;
+    public static final String EMBEDDING_STRING = "STRING" ;
 
     private String content;
     private ValueEmbeddingEnumeration embeddingMethod;
@@ -70,7 +70,7 @@ public class FileContent {
         if (method == null) {
             return null;
         } else {
-            if (embedding_URL.equals(method)) {
+            if (EMBEDDING_URL.equals(method)) {
                 return ValueEmbeddingEnumeration.URI;
             }
             return ValueEmbeddingEnumeration.fromValue(method);
@@ -84,7 +84,7 @@ public class FileContent {
      * @return The check result.
      */
     public static boolean isValidEmbeddingMethod(String type) {
-        return embedding_URL.equals(type) || ValueEmbeddingEnumeration.BASE_64.name().equals(type) || ValueEmbeddingEnumeration.URI.name().equals(type) || ValueEmbeddingEnumeration.STRING.name().equals(type);
+        return EMBEDDING_URL.equals(type) || ValueEmbeddingEnumeration.BASE_64.name().equals(type) || ValueEmbeddingEnumeration.URI.name().equals(type) || ValueEmbeddingEnumeration.STRING.name().equals(type);
     }
 
 }

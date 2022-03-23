@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { BaseInputHelperTest.TestConfig.class, BaseTestConfiguration.class })
-public class BaseInputHelperTest extends BaseSpringTest {
+class BaseInputHelperTest extends BaseSpringTest {
 
     @TestConfiguration
     static class TestConfig {

@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class UtilsTest {
+class UtilsTest {
 
     @Test
     void testGetXMLGregorianCalendarDateTime() {

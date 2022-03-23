@@ -22,9 +22,37 @@ import java.util.jar.JarFile;
 public class CommandLineValidator {
 
     /** Static flag to signal whether console output is on. */
-    public static boolean CONSOLE_OUTPUT_ON = true;
+    private static boolean consoleOutputOn = true;
     /** Static flag to signal whether file output is on. */
-    public static boolean FILE_OUTPUT_ON = true;
+    private static boolean fileOutputOn = true;
+
+    /**
+     * @return Whether console output is on.
+     */
+    public static boolean isConsoleOutputOn() {
+        return consoleOutputOn;
+    }
+
+    /**
+     * @return Whether file output is on.
+     */
+    public static boolean isFileOutputOn() {
+        return fileOutputOn;
+    }
+
+    /**
+     * @param consoleOutputOn The value for the consoleOutputOn flag.
+     */
+    public static void setConsoleOutputOn(boolean consoleOutputOn) {
+        CommandLineValidator.consoleOutputOn = consoleOutputOn;
+    }
+
+    /**
+     * @param fileOutputOn The value for the fileOutputOn flag.
+     */
+    public static void setFileOutputOn(boolean fileOutputOn) {
+        CommandLineValidator.fileOutputOn = fileOutputOn;
+    }
 
     /**
      * Run the initialisation.
@@ -83,10 +111,10 @@ public class CommandLineValidator {
      */
     protected static void disableLoggersIfNeeded(boolean disableConsole, boolean disableFile) {
         if (disableConsole) {
-            CONSOLE_OUTPUT_ON = false;
+            consoleOutputOn = false;
         }
         if (disableFile) {
-            FILE_OUTPUT_ON = false;
+            fileOutputOn = false;
         }
     }
 
@@ -133,16 +161,19 @@ public class CommandLineValidator {
         // Explode validator resources to temp folder
         File tempJarFile = new File(tempFolder, "validator-resources.jar");
         FileUtils.copyInputStreamToFile(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("validator-resources.jar")), tempJarFile);
-        JarFile resourcesJar = new JarFile(tempJarFile);
+        try (JarFile resourcesJar = new JarFile(tempJarFile)) {
         Enumeration<JarEntry> entries = resourcesJar.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            File f = new File(tempFolder, entry.getName());
-            if (entry.isDirectory()) { // if its a directory, create it
-                f.mkdir();
-                continue;
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                File fileFromJar = new File(tempFolder, entry.getName());
+                if (fileFromJar.toPath().normalize().startsWith(tempFolder.toPath())) {
+                    if (entry.isDirectory()) { // if it's a directory, create it
+                        fileFromJar.mkdir();
+                        continue;
+                    }
+                    FileUtils.copyInputStreamToFile(resourcesJar.getInputStream(entry), fileFromJar);
+                }
             }
-            FileUtils.copyInputStreamToFile(resourcesJar.getInputStream(entry), f);
         }
     }
 

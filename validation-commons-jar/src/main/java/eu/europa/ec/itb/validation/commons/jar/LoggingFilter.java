@@ -19,7 +19,7 @@ public class LoggingFilter extends Filter<ILoggingEvent> {
     public FilterReply decide(ILoggingEvent event) {
         FilterReply decision = FilterReply.NEUTRAL;
         var forConsole = BaseValidationRunner.LOGGER_FEEDBACK.getName().equals(event.getLoggerName());
-        if ((forConsole && !CommandLineValidator.CONSOLE_OUTPUT_ON) || (!forConsole && !CommandLineValidator.FILE_OUTPUT_ON)) {
+        if ((forConsole && !CommandLineValidator.isConsoleOutputOn()) || (!forConsole && !CommandLineValidator.isFileOutputOn())) {
             decision = FilterReply.DENY;
         }
         return decision;
