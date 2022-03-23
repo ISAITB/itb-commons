@@ -2,7 +2,6 @@ package eu.europa.ec.itb.validation.commons.config;
 
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.artifact.*;
-import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import eu.europa.ec.itb.validation.plugin.PluginInfo;
 import org.apache.commons.configuration2.*;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -38,6 +36,7 @@ import java.util.stream.Collectors;
 public abstract class DomainConfigCache <T extends DomainConfig> {
 
     private static final String DEFAULT_FILE_ENCODING = "UTF-8";
+    private static final String PROPERTY_SUFFIX = ".properties";
     private static final Logger logger = LoggerFactory.getLogger(DomainConfigCache.class);
 
     @Autowired
@@ -45,12 +44,12 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
 
     private final ConcurrentHashMap<String, T> domainConfigs = new ConcurrentHashMap<>();
     private final T undefinedDomainConfig;
-    private final ExtensionFilter propertyFilter = new ExtensionFilter(".properties");
+    private final ExtensionFilter propertyFilter = new ExtensionFilter(PROPERTY_SUFFIX);
 
     /**
      * Constructor.
      */
-    public DomainConfigCache() {
+    protected DomainConfigCache() {
         undefinedDomainConfig = newDomainConfig();
         undefinedDomainConfig.setDefined(false);
     }
@@ -146,7 +145,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
     public T getConfigForDomainName(String domainName) {
         T config = getConfigForDomain(appConfig.getDomainNameToDomainId().getOrDefault(domainName, ""));
         if (config == null) {
-            logger.warn("Invalid domain name ["+domainName+"].");
+            logger.warn("Invalid domain name [{}].", domainName);
         }
         return config;
     }
@@ -206,7 +205,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setDeclaredType(declaredValidationTypes);
                     domainConfig.setValidationTypeOptions(validationTypeOptions);
                     Set<ValidatorChannel> supportedChannels = new HashSet<>(Arrays.asList(getSupportedChannels()));
-                    domainConfig.setChannels(Arrays.stream(StringUtils.split(config.getString("validator.channels", getDefaultChannelsStr()), ',')).map(String::trim).map((name) -> toValidatorChannel(supportedChannels, name)).collect(Collectors.toSet()));
+                    domainConfig.setChannels(Arrays.stream(StringUtils.split(config.getString("validator.channels", getDefaultChannelsStr()), ',')).map(String::trim).map(name -> toValidatorChannel(supportedChannels, name)).collect(Collectors.toSet()));
                     // Parse plugins - start
                     Path domainRootPath = Paths.get(appConfig.getResourceRoot(), domainConfig.getDomain());
                     Function<Map<String, String>, PluginInfo> pluginConfigMapper = (Map<String, String> values) -> {
@@ -241,10 +240,10 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     completeValidationArtifactConfig(domainConfig);
                     // Add resource bundles to the domain configuration.
                     addResourceBundlesConfiguration(domainConfig, config);
-                    logger.info("Loaded configuration for domain ["+domain+"]");
+                    logger.info("Loaded configuration for domain [{}]", domain);
                 } catch (Exception e) {
                     // Make sure a domain's invalid configuration never fails the overall startup of the validator.
-                    logger.warn("Failed to initialise configuration for domain ["+domain+"]", e);
+                    logger.warn(String.format("Failed to initialise configuration for domain [%s]", domain), e);
                     domainConfig = null;
                 } finally {
                     if (domainConfig == null) {
@@ -359,13 +358,11 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     int artifactTypeCount = artifactInfo.getTypes().size();
                     if (artifactTypeCount == 1) {
                         if (artifactInfo.get().getExternalArtifactSupport() != ExternalArtifactSupport.REQUIRED) {
-                            logger.warn("Domain ["+domainConfig.getDomainName()+"] defines no preconfigured validation artifacts for validation type ["+validationType+"] but also doesn't require externally provided artifacts. Forcing external artifacts as required.");
+                            logger.warn("Domain [{}] defines no preconfigured validation artifacts for validation type [{}] but also doesn't require externally provided artifacts. Forcing external artifacts as required.", domainConfig.getDomainName(), validationType);
                             artifactInfo.get().setExternalArtifactSupport(ExternalArtifactSupport.REQUIRED);
                         }
-                    } else if (artifactTypeCount > 1) {
-                        if (artifactInfo.getOverallExternalArtifactSupport() == ExternalArtifactSupport.NONE) {
-                            logger.warn("Domain ["+domainConfig.getDomainName()+"] defines no preconfigured validation artifacts for validation type ["+validationType+"] but also doesn't expect externally provided artifacts. At least one of the defined artifact types should be set with optional external artifacts.");
-                        }
+                    } else if (artifactTypeCount > 1 && artifactInfo.getOverallExternalArtifactSupport() == ExternalArtifactSupport.NONE) {
+                        logger.warn("Domain [{}] defines no preconfigured validation artifacts for validation type [{}] but also doesn't expect externally provided artifacts. At least one of the defined artifact types should be set with optional external artifacts.", domainConfig.getDomainName(), validationType);
                     }
                 }
             }
@@ -440,16 +437,16 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                         var files = file.listFiles();
                         if (files != null) {
                             List<String> propFileNames = Arrays.stream(files).filter(File::isFile)
-                                    .filter( f -> f.getName().contains(".properties"))
-                                    .map( f -> f.getName().substring(0, f.getName().lastIndexOf(".properties")))
+                                    .filter( f -> f.getName().contains(PROPERTY_SUFFIX))
+                                    .map( f -> f.getName().substring(0, f.getName().lastIndexOf(PROPERTY_SUFFIX)))
                                     .collect(Collectors.toList());
                             bundleName = obtainBundleName(propFileNames);
                         }
                     } else {
                         translationsFolder = file.getParentFile();
                         String fileName =  file.getName();
-                        if (fileName.endsWith(".properties")) {
-                            bundleName = fileName.substring(0, fileName.lastIndexOf(".properties"));
+                        if (fileName.endsWith(PROPERTY_SUFFIX)) {
+                            bundleName = fileName.substring(0, fileName.lastIndexOf(PROPERTY_SUFFIX));
                         } else {
                             bundleName = fileName;
                         }
@@ -586,9 +583,9 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
         for (String type: types) {
             String value;
             try {
-                value = config.getString(key+"."+type, Character.valueOf(defaultIfMissing).toString());
+                value = config.getString(key+"."+type, Character.toString(defaultIfMissing));
             } catch (Exception e) {
-                value = Character.valueOf(defaultIfMissing).toString();
+                value = Character.toString(defaultIfMissing);
             }
             map.put(type, value.toCharArray()[0]);
         }
@@ -643,7 +640,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
             String fullKey = mapKeys.next();
             String[] partsAfterCommon = StringUtils.split(StringUtils.substringAfter(fullKey, commonKey+"."), '.');
             if (partsAfterCommon != null && partsAfterCommon.length == 2) {
-                Map<String, String> instanceData = collectedData.computeIfAbsent(partsAfterCommon[0], (key) -> new HashMap<>());
+                Map<String, String> instanceData = collectedData.computeIfAbsent(partsAfterCommon[0], key -> new HashMap<>());
                 instanceData.put(partsAfterCommon[1], config.getString(fullKey));
             }
         }

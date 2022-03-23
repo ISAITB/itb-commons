@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest
 @ContextConfiguration(classes = { SecurityConfigTest.TestConfig.class, SecurityConfig.class })
-public class SecurityConfigTest {
+class SecurityConfigTest {
 
     @TestConfiguration
     static class TestConfig {

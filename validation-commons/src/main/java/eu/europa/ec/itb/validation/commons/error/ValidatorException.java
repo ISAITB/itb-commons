@@ -14,7 +14,7 @@ public class ValidatorException extends RuntimeException {
      */
     public static final String MESSAGE_DEFAULT = "validator.label.exception.default";
 
-    private final Object[] messageParams;
+    private final transient Object[] messageParams;
     private final boolean localised;
 
     /**

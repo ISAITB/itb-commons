@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @EnableConfigurationProperties(value = ApplicationConfigTest.ApplicationConfigForTesting.class)
 @ContextConfiguration(classes = {ApplicationConfigTest.TestConfig.class})
 @TestPropertySource("classpath:testConfig/testApplication.properties")
-public class ApplicationConfigTest {
+class ApplicationConfigTest {
 
     @TestConfiguration
     static class TestConfig {

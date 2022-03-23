@@ -25,18 +25,18 @@ import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -61,7 +61,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     @Autowired
     protected T config = null;
     @Autowired
-    protected DomainConfigCache domainConfigCache = null;
+    protected DomainConfigCache<?> domainConfigCache = null;
     @Autowired
     protected URLReader urlReader = null;
     @Autowired(required = false)
@@ -546,23 +546,21 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @return The list of preconfigured files.
      */
     public List<FileInfo> getPreconfiguredValidationArtifacts(DomainConfig domainConfig, String validationType, String artifactType) {
-        if (artifactType == null) {
-            artifactType = TypedValidationArtifactInfo.DEFAULT_TYPE;
-        }
-        String key = domainConfig.getDomainName() + "|" + validationType + "|" + artifactType;
+        final String artifactTypeToUse = Objects.requireNonNullElse(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
+        String key = domainConfig.getDomainName() + "|" + validationType + "|" + artifactTypeToUse;
         List<FileInfo> allFiles = new ArrayList<>();
         // Local artifacts.
         if (!preconfiguredLocalArtifactMap.containsKey(key)) {
             List<FileInfo> files = new ArrayList<>();
             // Local files.
-            boolean preprocess = preprocessor != null && domainConfig.getArtifactInfo().get(validationType).get(artifactType).getPreProcessorPath() != null;
-            for (File localFile : getLocalValidationArtifactFiles(domainConfig, validationType, artifactType)) {
-                List<FileInfo> loadedArtifacts = getLocalValidationArtifacts(localFile, artifactType);
+            boolean preprocess = preprocessor != null && domainConfig.getArtifactInfo().get(validationType).get(artifactTypeToUse).getPreProcessorPath() != null;
+            for (File localFile : getLocalValidationArtifactFiles(domainConfig, validationType, artifactTypeToUse)) {
+                List<FileInfo> loadedArtifacts = getLocalValidationArtifacts(localFile, artifactTypeToUse);
                 if (!preprocess) {
                     files.addAll(loadedArtifacts);
                 } else {
                     for (FileInfo fileInfo : loadedArtifacts) {
-                        File processedFile = preprocessFile(domainConfig, fileInfo.getFile(), domainConfig.getArtifactInfo().get(validationType).get(artifactType).getPreProcessorPath(), domainConfig.getArtifactInfo().get(validationType).get(artifactType).getPreProcessorOutputExtension());
+                        File processedFile = preprocessFile(domainConfig, fileInfo.getFile(), domainConfig.getArtifactInfo().get(validationType).get(artifactTypeToUse).getPreProcessorPath(), domainConfig.getArtifactInfo().get(validationType).get(artifactTypeToUse).getPreProcessorOutputExtension());
                         files.add(new FileInfo(processedFile));
                     }
                 }
@@ -571,10 +569,10 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         }
         allFiles.addAll(preconfiguredLocalArtifactMap.get(key));
         // Remote files - these are already pre-processed as part of the bootstrap.
-        if (!preconfiguredRemoteArtifactMap.containsKey(key)) {
+        preconfiguredRemoteArtifactMap.computeIfAbsent(key, k -> {
             logger.warn("Remote validation artifacts were not found to be cached. This is not normal as caching is done via the periodic reload.");
-            preconfiguredRemoteArtifactMap.put(key, getRemoteValidationArtifacts(domainConfig, validationType, artifactType));
-        }
+            return getRemoteValidationArtifacts(domainConfig, validationType, artifactTypeToUse);
+        });
         allFiles.addAll(preconfiguredRemoteArtifactMap.get(key));
         return allFiles;
     }
@@ -636,10 +634,8 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 File[] files = fileOrFolder.listFiles();
                 if (files != null) {
                     for (File currentFile: files) {
-                        if (currentFile.isFile()) {
-                            if (isAcceptedArtifactFile(currentFile, artifactType)) {
-                                fileInfo.add(new FileInfo(currentFile, getContentTypeForFile(currentFile, null)));
-                            }
+                        if (currentFile.isFile() && isAcceptedArtifactFile(currentFile, artifactType)) {
+                            fileInfo.add(new FileInfo(currentFile, getContentTypeForFile(currentFile, null)));
                         }
                     }
                 }
@@ -713,8 +709,8 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     @PostConstruct
     public void init() {
         FileUtils.deleteQuietly(getTempFolder());
-        for (Object config: domainConfigCache.getAllDomainConfigurations()) {
-            getExternalDomainFileCacheLock(((DomainConfig)config).getDomainName());
+        for (DomainConfig domainConfig: domainConfigCache.getAllDomainConfigurations()) {
+            getExternalDomainFileCacheLock(domainConfig.getDomainName());
         }
         FileUtils.deleteQuietly(getRemoteFileCacheFolder());
         resetRemoteFileCache();
@@ -727,7 +723,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @return The lock.
      */
     ReentrantReadWriteLock getExternalDomainFileCacheLock(String domainName) {
-        return externalDomainFileCacheLocks.computeIfAbsent(domainName, (key) -> new ReentrantReadWriteLock());
+        return externalDomainFileCacheLocks.computeIfAbsent(domainName, key -> new ReentrantReadWriteLock());
     }
 
     /**
@@ -767,48 +763,58 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     @Scheduled(fixedDelayString = "${validator.cleanupRate}")
     public void resetRemoteFileCache() {
         logger.debug("Resetting remote validation artifact cache");
-        for (Object domainConfigObj: domainConfigCache.getAllDomainConfigurations()) {
-            DomainConfig domainConfig = (DomainConfig)domainConfigObj;
+        for (DomainConfig domainConfig: domainConfigCache.getAllDomainConfigurations()) {
             try {
                 // Get write lock for domain.
-                logger.debug("Waiting for lock to reset cache for ["+domainConfig.getDomainName()+"]");
+                logger.debug("Waiting for lock to reset cache for [{}]", domainConfig.getDomainName());
                 getExternalDomainFileCacheLock(domainConfig.getDomainName()).writeLock().lock();
-                logger.debug("Locked cache for ["+domainConfig.getDomainName()+"]");
-                try {
-                    for (String validationType: domainConfig.getType()) {
-                        // Empty cache folder.
-                        File remoteConfigFolder = new File(new File(getRemoteFileCacheFolder(), domainConfig.getDomainName()), validationType);
-                        FileUtils.deleteQuietly(remoteConfigFolder);
-                        TypedValidationArtifactInfo typedArtifactInfo = domainConfig.getArtifactInfo().get(validationType);
-                        for (String artifactType: typedArtifactInfo.getTypes()) {
-                            try {
-                                artifactType = StringUtils.defaultString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
-                                File remoteFolderForType = new File(remoteConfigFolder, artifactType);
-                                downloadRemoteFiles(domainConfig.getDomain(), typedArtifactInfo.get(artifactType).getRemoteArtifacts(), remoteFolderForType, artifactType);
-                                // Update cache map.
-                                String key = domainConfig.getDomainName() + "|" + validationType + "|" + StringUtils.defaultString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
-                                preconfiguredRemoteArtifactMap.put(key, getRemoteValidationArtifacts(domainConfig, validationType, artifactType));
-                            } catch (ValidatorException e) {
-                                // Never allow configuration errors in one validation type to prevent the others from being available.
-                                logger.error("Error while processing configuration for type ["+validationType+"] of domain ["+domainConfig.getDomainName()+"]: "+e.getMessageForLog(), e);
-                            } catch (Exception e) {
-                                // Never allow configuration errors in one validation type to prevent the others from being available.
-                                logger.error("Error while processing configuration for type ["+validationType+"] of domain ["+domainConfig.getDomainName()+"]", e);
-                            }
-                        }
+                logger.debug("Locked cache for [{}]", domainConfig.getDomainName());
+                for (String validationType: domainConfig.getType()) {
+                    // Empty cache folder.
+                    File remoteConfigFolder = new File(new File(getRemoteFileCacheFolder(), domainConfig.getDomainName()), validationType);
+                    FileUtils.deleteQuietly(remoteConfigFolder);
+                    TypedValidationArtifactInfo typedArtifactInfo = domainConfig.getArtifactInfo().get(validationType);
+                    for (String artifactType: typedArtifactInfo.getTypes()) {
+                        downloadRemoteFilesForArtifactType(artifactType, validationType, remoteConfigFolder, domainConfig, typedArtifactInfo);
                     }
-                } catch (ValidatorException e) {
-                    // Never allow configuration errors in one domain to prevent the others from being available.
-                    logger.error("Error while processing configuration for domain ["+domainConfig.getDomainName()+"]: "+e.getMessageForLog(), e);
-                } catch (Exception e) {
-                    // Never allow configuration errors in one domain to prevent the others from being available.
-                    logger.error("Error while processing configuration for domain ["+domainConfig.getDomainName()+"]", e);
                 }
+            } catch (ValidatorException e) {
+                // Never allow configuration errors in one domain to prevent the others from being available.
+                logger.error(String.format("Error while processing configuration for domain [%s]: %s", domainConfig.getDomainName(), e.getMessageForLog()), e);
+            } catch (Exception e) {
+                // Never allow configuration errors in one domain to prevent the others from being available.
+                logger.error(String.format("Error while processing configuration for domain [%s]", domainConfig.getDomainName()), e);
             } finally {
                 // Unlock domain.
                 getExternalDomainFileCacheLock(domainConfig.getDomainName()).writeLock().unlock();
-                logger.debug("Reset remote validation artifact cache for ["+domainConfig.getDomainName()+"]");
+                logger.debug("Reset remote validation artifact cache for [{}]", domainConfig.getDomainName());
             }
+        }
+    }
+
+    /**
+     * Process the remote files for a given artifact type ensuring that errors do not propagate.
+     *
+     * @param artifactType The artifact type.
+     * @param validationType The validation type.
+     * @param remoteConfigFolder The remote config folder.
+     * @param domainConfig The domain config.
+     * @param typedArtifactInfo The artifact info.
+     */
+    private void downloadRemoteFilesForArtifactType(String artifactType, String validationType, File remoteConfigFolder, DomainConfig domainConfig, TypedValidationArtifactInfo typedArtifactInfo) {
+        try {
+            artifactType = StringUtils.defaultString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
+            File remoteFolderForType = new File(remoteConfigFolder, artifactType);
+            downloadRemoteFiles(domainConfig.getDomain(), typedArtifactInfo.get(artifactType).getRemoteArtifacts(), remoteFolderForType, artifactType);
+            // Update cache map.
+            String key = domainConfig.getDomainName() + "|" + validationType + "|" + StringUtils.defaultString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
+            preconfiguredRemoteArtifactMap.put(key, getRemoteValidationArtifacts(domainConfig, validationType, artifactType));
+        } catch (ValidatorException e) {
+            // Never allow configuration errors in one validation type to prevent the others from being available.
+            logger.error(String.format("Error while processing configuration for type [%s] of domain [%s]: %s", validationType, domainConfig.getDomainName(), e.getMessageForLog()), e);
+        } catch (Exception e) {
+            // Never allow configuration errors in one validation type to prevent the others from being available.
+            logger.error(String.format("Error while processing configuration for type [%s] of domain [%s]", validationType, domainConfig.getDomainName()), e);
         }
     }
 
@@ -877,17 +883,15 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             Document document = docBuilderFactory.newDocumentBuilder().newDocument();
             m.marshal(OBJECT_FACTORY.createTestStepReport(report), document);
 
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
+            Transformer transformer = Utils.secureTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, "{http://www.gitb.com/core/v1/}value");
             try (OutputStream fos = new FileOutputStream(outputFile)) {
                 transformer.transform(new DOMSource(document), new StreamResult(fos));
                 fos.flush();
-            } catch(IOException e) {
-                logger.warn("Unable to save XML report", e);
             }
-
+        } catch(IOException e) {
+            logger.warn("Unable to save XML report", e);
         } catch (Exception e) {
             logger.warn("Unable to marshal XML report", e);
         }
@@ -900,9 +904,9 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param domainName The name of the domain in question.
      */
     public void signalValidationStart(String domainName) {
-        logger.debug("Signalling validation start for ["+domainName+"]");
+        logger.debug("Signalling validation start for [{}]", domainName);
         getExternalDomainFileCacheLock(domainName).readLock().lock();
-        logger.debug("Signalled validation start for ["+domainName+"]");
+        logger.debug("Signalled validation start for [{}]", domainName);
     }
 
     /**
@@ -911,9 +915,9 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param domainName The name of the domain in question.
      */
     public void signalValidationEnd(String domainName) {
-        logger.debug("Signalling validation end for ["+domainName+"]");
+        logger.debug("Signalling validation end for [{}]", domainName);
         getExternalDomainFileCacheLock(domainName).readLock().unlock();
-        logger.debug("Signalled validation end for ["+domainName+"]");
+        logger.debug("Signalled validation end for [{}]", domainName);
     }
 
     /**

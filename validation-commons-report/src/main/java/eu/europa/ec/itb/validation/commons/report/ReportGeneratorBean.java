@@ -29,7 +29,7 @@ public class ReportGeneratorBean {
      * @param helper The localisation helper to use for the report's labels.
      */
     public void writeReport(File inFile, File outFile, LocalisationHelper helper) {
-        writeReport(inFile, outFile, (tar) -> getReportLabels(helper, tar.getResult()));
+        writeReport(inFile, outFile, tar -> getReportLabels(helper, tar.getResult()));
     }
 
     /**
@@ -55,7 +55,7 @@ public class ReportGeneratorBean {
      * @param helper The localisation helper to use for the report's labels.
      */
     public void writeReport(TAR report, File outFile, LocalisationHelper helper) {
-        writeReport(report, outFile, (tar) -> getReportLabels(helper, tar.getResult()));
+        writeReport(report, outFile, tar -> getReportLabels(helper, tar.getResult()));
     }
 
     /**

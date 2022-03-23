@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ValidationExceptionTest {
+class ValidationExceptionTest {
 
     @Test
     void testDefaultMessage() {

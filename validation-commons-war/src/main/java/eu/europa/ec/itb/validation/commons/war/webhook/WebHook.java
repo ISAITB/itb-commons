@@ -1,12 +1,9 @@
 package eu.europa.ec.itb.validation.commons.war.webhook;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +17,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
-import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
+import javax.annotation.PostConstruct;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Singleton class that sends usage data for statistical purposes during every validation. It will only be instantiated
@@ -75,7 +72,7 @@ public class WebHook {
         }else{
             this.usageDataWriter = objectMapper.writerFor(UsageData.class).withAttribute("secret", this.secret);
         }
-        logger.info(String.format("Statistics reporting is active and set to post data to [%s]", this.url));
+        logger.info("Statistics reporting is active and set to post data to [{}]", this.url);
     }
 
 
@@ -87,7 +84,7 @@ public class WebHook {
      */
     @Async
     public void sendUsageData(UsageData data) {
-        Map<String, String> urlParams = new HashMap<String, String>();
+        Map<String, String> urlParams = new HashMap<>();
         if (this.secret != null) {
             urlParams.put("secret", this.secret);
         }
@@ -98,16 +95,14 @@ public class WebHook {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
             HttpEntity<String> entity = new HttpEntity<>(jsonData, headers);
-            try{
-                ResponseEntity<String> response = restTemplate.postForEntity(this.url, entity, String.class, urlParams);
-                if (response.getStatusCodeValue() >= 300) { // Unexpected response codes
-                    logger.warn("Statistics reporting received response " + response.getStatusCodeValue() + " and message " + response.getBody());
-                }
-            }catch(Exception ex){
-                logger.warn("Error during statistics reporting", ex);
+            ResponseEntity<String> response = restTemplate.postForEntity(this.url, entity, String.class, urlParams);
+            if (response.getStatusCodeValue() >= 300) { // Unexpected response codes
+                logger.warn("Statistics reporting received response {} and message {}", response.getStatusCodeValue(), response.getBody());
             }
         } catch (JsonProcessingException ex) {
             logger.warn("Error serializing UsageData object to JSON format.", ex);
+        } catch(Exception ex) {
+            logger.warn("Error during statistics reporting", ex);
         }
     }
 

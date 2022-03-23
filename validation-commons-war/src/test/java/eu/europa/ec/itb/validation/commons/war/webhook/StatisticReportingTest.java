@@ -24,7 +24,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class StatisticReportingTest extends BaseTest {
+class StatisticReportingTest extends BaseTest {
 
     private ApplicationConfig appConfig;
     private WebHook webHook;
