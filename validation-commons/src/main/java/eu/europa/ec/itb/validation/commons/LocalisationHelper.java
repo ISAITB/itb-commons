@@ -78,7 +78,7 @@ public class LocalisationHelper {
     public String localise(String property, Object ... param) {
         String labelValue = findTranslation(property);
         if (labelValue == null) {
-            logger.warn("Value for label " + property + " and locale " + this.locale + " not found.");
+            logger.warn("Value for label {} and locale {} not found.", property, this.locale);
             labelValue = "[" + property + "]";
         } else if (param != null) {
             labelValue = MessageFormat.format(labelValue, param);

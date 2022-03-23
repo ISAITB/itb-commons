@@ -30,7 +30,7 @@ import java.util.function.Function;
  */
 public class ReportGenerator {
 
-    private final static Logger LOG = LoggerFactory.getLogger(ReportGenerator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReportGenerator.class);
     private final JAXBContext jaxbContext;
 
     /**

@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ValidationPluginTest {
+class ValidationPluginTest {
 
     ValidationPlugin createPlugin(Supplier<GetModuleDefinitionResponse> responseFn) {
         return new ValidationPlugin() {

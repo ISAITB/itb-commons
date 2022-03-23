@@ -87,7 +87,7 @@ public class WebHook {
      */
     @Async
     public void sendUsageData(UsageData data) {
-        Map<String, String> urlParams = new HashMap<String, String>();
+        Map<String, String> urlParams = new HashMap<>();
         if (this.secret != null) {
             urlParams.put("secret", this.secret);
         }
@@ -101,7 +101,7 @@ public class WebHook {
             try{
                 ResponseEntity<String> response = restTemplate.postForEntity(this.url, entity, String.class, urlParams);
                 if (response.getStatusCodeValue() >= 300) { // Unexpected response codes
-                    logger.warn("Statistics reporting received response " + response.getStatusCodeValue() + " and message " + response.getBody());
+                    logger.warn("Statistics reporting received response {} and message {}", response.getStatusCodeValue(), response.getBody());
                 }
             }catch(Exception ex){
                 logger.warn("Error during statistics reporting", ex);

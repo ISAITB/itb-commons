@@ -9,6 +9,7 @@ import eu.europa.ec.itb.validation.commons.web.locale.CustomLocaleResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -31,9 +32,9 @@ import java.util.Map;
  * Error handling for the validator's web application.
  */
 @Controller
-public class ErrorController implements org.springframework.boot.web.servlet.error.ErrorController {
+public class WebErrorController implements ErrorController {
 
-	private static final Logger logger = LoggerFactory.getLogger(ErrorController.class);
+	private static final Logger logger = LoggerFactory.getLogger(WebErrorController.class);
 
     @Autowired
     private CustomLocaleResolver localeResolver;
@@ -61,7 +62,7 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
             isMinimalUI = false;
         }
         boolean previousPage = (request.getHeader("referer") != null)? Boolean.TRUE: Boolean.FALSE;
-        Map<String, Object> attributes = new HashMap<String, Object>();
+        Map<String, Object> attributes = new HashMap<>();
         attributes.put("minimalUI", isMinimalUI);
         attributes.put("previousPage", previousPage);	
         attributes.put("errorMessage", getErrorMessage(status));

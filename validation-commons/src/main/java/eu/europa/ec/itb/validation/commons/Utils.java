@@ -7,7 +7,6 @@ import com.gitb.tr.TestResultType;
 import com.gitb.tr.ValidationCounters;
 import com.gitb.vs.ValidateRequest;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
-import org.apache.commons.lang3.LocaleUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -16,14 +15,12 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.XMLConstants;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.*;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayOutputStream;
@@ -40,7 +37,7 @@ public class Utils {
     /**
      * A key used to record line numbers in parsed XML content.
      */
-    public static String LINE_NUMBER_KEY_NAME = "lineNumber";
+    public static final String LINE_NUMBER_KEY_NAME = "lineNumber";
 
     /**
      * Create a calendar for the current time.
@@ -57,6 +54,61 @@ public class Utils {
     }
 
     /**
+     * Create a secured XML transformer instance.
+     *
+     * @return The transformer to use.
+     */
+    public static Transformer secureTransformer() {
+        try {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            return transformerFactory.newTransformer();
+        } catch (TransformerConfigurationException e) {
+            throw new IllegalStateException("Could not create XML transformer", e);
+        }
+    }
+
+    /**
+     * Create a secured XML Document Builder instance.
+     *
+     * @return The document builder to use.
+     */
+    public static DocumentBuilder secureDocumentBuilder() {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbf.setXIncludeAware(false);
+            dbf.setValidating(false);
+            dbf.setExpandEntityReferences(false);
+            return dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new IllegalStateException("Could not create XML document builder", e);
+        }
+    }
+
+    /**
+     * Create a secured XML SAX parser instance.
+     *
+     * @return The SAX parser to use.
+     */
+    public static SAXParser secureSAXParser() {
+        try {
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            spf.setXIncludeAware(false);
+            spf.setValidating(false);
+            return spf.newSAXParser();
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new IllegalStateException("Could not create XML SAX parser", e);
+        }
+    }
+
+    /**
      * Serialise the provided node to a byte array.
      *
      * @param content The content.
@@ -65,7 +117,7 @@ public class Utils {
     public static byte[] serialize(Node content) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            Transformer transformer = secureTransformer();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
@@ -82,11 +134,7 @@ public class Utils {
      * @return The document.
      */
     public static Document emptyDocument() {
-        try {
-            return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        } catch (ParserConfigurationException e) {
-            throw new IllegalStateException(e);
-        }
+        return secureDocumentBuilder().newDocument();
     }
 
     /**
@@ -99,19 +147,10 @@ public class Utils {
      * @throws SAXException If an error occurs when parsing the XML.
      */
     public static Document readXMLWithLineNumbers(InputStream is) throws IOException, SAXException {
-        final Document doc;
-        SAXParser parser;
-        try {
-            final SAXParserFactory factory = SAXParserFactory.newInstance();
-            parser = factory.newSAXParser();
-            final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            doc = docBuilder.newDocument();
-        } catch (final ParserConfigurationException e) {
-            throw new RuntimeException("Can't create SAX parser / DOM builder.", e);
-        }
+        final Document doc = secureDocumentBuilder().newDocument();
+        final SAXParser parser = secureSAXParser();
 
-        final Stack<Element> elementStack = new Stack<>();
+        final Deque<Element> elementStack = new LinkedList<>();
         final StringBuilder textBuffer = new StringBuilder();
         final DefaultHandler handler = new DefaultHandler() {
             private Locator locator;
@@ -160,7 +199,7 @@ public class Utils {
              * @see DefaultHandler#characters(char[], int, int)
              */
             @Override
-            public void characters(final char ch[], final int start, final int length) throws SAXException {
+            public void characters(final char[] ch, final int start, final int length) throws SAXException {
                 textBuffer.append(ch, start, length);
             }
 
@@ -228,10 +267,8 @@ public class Utils {
      */
     public static List<AnyContent> getInputFor(ValidateRequest validateRequest, String name) {
         List<AnyContent> inputs = new ArrayList<>();
-        if (validateRequest != null) {
-            if (validateRequest.getInput() != null) {
-                inputs.addAll(getInputFor(validateRequest.getInput(), name));
-            }
+        if (validateRequest != null && validateRequest.getInput() != null) {
+            inputs.addAll(getInputFor(validateRequest.getInput(), name));
         }
         return inputs;
     }
@@ -303,12 +340,11 @@ public class Utils {
                     if (mergedReport.getResult() == null) {
                         mergedReport.setResult(TestResultType.UNDEFINED);
                     }
-                    if (report.getResult() != null && report.getResult() != TestResultType.UNDEFINED) {
-                        if ((mergedReport.getResult() == TestResultType.UNDEFINED) ||
+                    if (report.getResult() != null && report.getResult() != TestResultType.UNDEFINED &&
+                            ((mergedReport.getResult() == TestResultType.UNDEFINED) ||
                                 (mergedReport.getResult() == TestResultType.SUCCESS && report.getResult() != TestResultType.SUCCESS) ||
-                                (mergedReport.getResult() == TestResultType.WARNING && report.getResult() == TestResultType.FAILURE)) {
-                            mergedReport.setResult(report.getResult());
-                        }
+                                (mergedReport.getResult() == TestResultType.WARNING && report.getResult() == TestResultType.FAILURE))) {
+                        mergedReport.setResult(report.getResult());
                     }
                     if (report.getContext() != null) {
                         if (mergedReport.getContext() == null) {

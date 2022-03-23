@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class WebDomainConfigCacheTest {
+class WebDomainConfigCacheTest {
 
     private WebDomainConfig createWebDomainConfig() {
         return new WebDomainConfig();

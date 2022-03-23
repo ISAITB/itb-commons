@@ -21,7 +21,7 @@ import java.util.List;
 public abstract class BaseValidationRunner<X extends DomainConfig> implements ValidationRunner {
 
     /** Regular logger for application output. */
-    protected static final Logger LOGGER = LoggerFactory.getLogger(ValidationRunner.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(BaseValidationRunner.class);
     /** Logger specifically for command line feedback to the user. */
     protected static final Logger LOGGER_FEEDBACK = LoggerFactory.getLogger("FEEDBACK");
     /** Logger specifically for feedback for the user added in the log file. */
@@ -57,8 +57,9 @@ public abstract class BaseValidationRunner<X extends DomainConfig> implements Va
                 message.append("|");
             }
             message.delete(message.length()-1, message.length()).append("].");
-            LOGGER_FEEDBACK.error(message.toString());
-            LOGGER.error(message.toString());
+            var messageString = message.toString();
+            LOGGER_FEEDBACK.error(messageString);
+            LOGGER.error(messageString);
             throw new IllegalArgumentException();
         } else {
             String message = "No validation domains could be found.";

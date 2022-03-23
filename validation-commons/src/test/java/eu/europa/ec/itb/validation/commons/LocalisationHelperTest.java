@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @TestInstance(Lifecycle.PER_CLASS)
-public class LocalisationHelperTest {
+class LocalisationHelperTest {
 
     private String localTranslationsFolderPath;
     private String localTranslationsBundleName;
@@ -147,10 +147,10 @@ public class LocalisationHelperTest {
         domainProperties.put("testParameterised1", "Test1 %d");
         configWithoutLocaleTranslations.setDomainProperties(domainProperties);
         LocalisationHelper localiser = new LocalisationHelper(configWithoutLocaleTranslations, Locale.ENGLISH);
-        assertEquals(localiser.localise("testDefault"), "testDefault");
-        assertEquals(localiser.localise("testValidator"), "testValidator");
-        assertEquals(localiser.localise("test"), "testDefaultDomain");
-        assertEquals(localiser.localise("testLocal"), "NonExisting");
+        assertEquals("testDefault", localiser.localise("testDefault"));
+        assertEquals("testValidator", localiser.localise("testValidator"));
+        assertEquals("testDefaultDomain", localiser.localise("test"));
+        assertEquals("NonExisting", localiser.localise("testLocal"));
     }
 
     @AfterAll

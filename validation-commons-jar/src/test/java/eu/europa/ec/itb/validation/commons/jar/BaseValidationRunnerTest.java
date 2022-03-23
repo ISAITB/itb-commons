@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-public class BaseValidationRunnerTest extends BaseTest {
+class BaseValidationRunnerTest extends BaseTest {
 
     private BaseValidationRunner<DomainConfig> createRunner() {
         return new BaseValidationRunner<>() {

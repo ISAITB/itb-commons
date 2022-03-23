@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { BaseFileManagerTest.TestConfig.class, BaseTestConfiguration.class })
-public class BaseFileManagerTest extends BaseSpringTest {
+class BaseFileManagerTest extends BaseSpringTest {
 
     @Primary
     @TestConfiguration
@@ -376,34 +376,28 @@ public class BaseFileManagerTest extends BaseSpringTest {
         return domainConfig;
     }
 
-    @Test
-    void testPreprocessFileIfNeeded() throws IOException {
+    private void testPreprocessFileIfNeeded(String artifactType, boolean isExternal, String processedFileName) throws IOException {
         fileManager.preprocessor = new TestPreprocessor();
         var inputFile = Path.of(appConfig.getTmpFolder(), "aFile");
         Files.writeString(inputFile, "TEST");
-        var result = fileManager.preprocessFileIfNeeded(domainConfigForPreprocessingTests(), "type1", "artifact1", inputFile.toFile(), false);
+        var result = fileManager.preprocessFileIfNeeded(domainConfigForPreprocessingTests(), "type1", artifactType, inputFile.toFile(), isExternal);
         assertNotNull(result);
-        assertEquals(Paths.get(inputFile.getParent().toString(), "PROCESSED_aFile.txt"), result.toPath());
+        assertEquals(Paths.get(inputFile.getParent().toString(), processedFileName), result.toPath());
+    }
+
+    @Test
+    void testPreprocessFileIfNeeded() throws IOException {
+        testPreprocessFileIfNeeded("artifact1", false, "PROCESSED_aFile.txt");
     }
 
     @Test
     void testPreprocessFileIfNeededExternal() throws IOException {
-        fileManager.preprocessor = new TestPreprocessor();
-        var inputFile = Path.of(appConfig.getTmpFolder(), "aFile");
-        Files.writeString(inputFile, "TEST");
-        var result = fileManager.preprocessFileIfNeeded(domainConfigForPreprocessingTests(), "type1", "artifact1", inputFile.toFile(), true);
-        assertNotNull(result);
-        assertEquals(Paths.get(inputFile.getParent().toString(), "PROCESSED_aFile.txt"), result.toPath());
+        testPreprocessFileIfNeeded("artifact1", true, "PROCESSED_aFile.txt");
     }
 
     @Test
     void testPreprocessFileIfNeededNotNeeded() throws IOException {
-        fileManager.preprocessor = new TestPreprocessor();
-        var inputFile = Path.of(appConfig.getTmpFolder(), "aFile");
-        Files.writeString(inputFile, "TEST");
-        var result = fileManager.preprocessFileIfNeeded(domainConfigForPreprocessingTests(), "type1", "artifact2", inputFile.toFile(), false);
-        assertNotNull(result);
-        assertEquals(Paths.get(inputFile.getParent().toString(), "aFile"), result.toPath());
+        testPreprocessFileIfNeeded("artifact2", false, "aFile");
     }
 
     @Test
