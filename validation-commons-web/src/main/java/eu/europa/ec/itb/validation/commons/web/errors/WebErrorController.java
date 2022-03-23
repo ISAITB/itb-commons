@@ -16,13 +16,12 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
@@ -49,7 +48,7 @@ public class WebErrorController implements ErrorController {
      * @param response The HTTP response.
      * @return The model data.
      */
-    @RequestMapping("/error")
+    @GetMapping("/error")
     public ModelAndView handleError(HttpServletRequest request, HttpServletResponse response) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         DomainConfig domainConfig = (DomainConfig) request.getAttribute(WebDomainConfig.DOMAIN_CONFIG_REQUEST_ATTRIBUTE);

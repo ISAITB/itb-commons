@@ -35,6 +35,11 @@ import java.util.*;
 public class Utils {
 
     /**
+     * Constructor to prevent instantiation.
+     */
+    private Utils() { throw new IllegalStateException("Utility class"); }
+
+    /**
      * A key used to record line numbers in parsed XML content.
      */
     public static final String LINE_NUMBER_KEY_NAME = "lineNumber";
