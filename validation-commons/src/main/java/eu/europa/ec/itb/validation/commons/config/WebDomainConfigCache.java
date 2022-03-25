@@ -50,7 +50,7 @@ public abstract class WebDomainConfigCache <T extends WebDomainConfig> extends D
     protected void addDomainConfiguration(T domainConfig, Configuration config) {
         super.addDomainConfiguration(domainConfig, config);
         domainConfig.setWebServiceId(config.getString("validator.webServiceId", "ValidatorService"));
-        domainConfig.setWebServiceDescription(parseMap("validator.webServiceDescription", config));
+        domainConfig.setWebServiceDescription(ParseUtils.parseMap("validator.webServiceDescription", config));
         domainConfig.setShowAbout(config.getBoolean("validator.showAbout", true));
         domainConfig.setSupportMinimalUserInterface(config.getBoolean("validator.supportMinimalUserInterface", false));
     }
