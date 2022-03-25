@@ -283,12 +283,15 @@
 					<printWhenExpression><![CDATA[$P{reportItems} != null]]></printWhenExpression>
 				</reportElement>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
-					<datasetRun subDataset="Dataset1" uuid="06463cfb-af7f-4c80-a8e0-358c9b441c0c">
+					<datasetRun subDataset="Dataset1" uuid="47f11706-f532-48af-b5a0-ca6eba89ed98">
 						<datasetParameter name="testLabel">
 							<datasetParameterExpression><![CDATA[$P{testLabel}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="locationLabel">
 							<datasetParameterExpression><![CDATA[$P{locationLabel}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="assertionIdLabel">
+							<datasetParameterExpression><![CDATA[$P{assertionIdLabel}]]></datasetParameterExpression>
 						</datasetParameter>
 						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{reportItems})]]></dataSourceExpression>
 					</datasetRun>
