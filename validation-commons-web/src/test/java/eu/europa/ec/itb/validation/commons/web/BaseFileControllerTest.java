@@ -49,6 +49,10 @@ class BaseFileControllerTest extends BaseTest {
             public String getReportFileNamePdf(String uuid) {
                 return uuid + ".pdf";
             }
+            @Override
+            public String getReportFileNameCsv(String uuid) {
+                return uuid + ".csv";
+            }
         };
         controller.config = appConfig;
         controller.fileManager = fileManager;

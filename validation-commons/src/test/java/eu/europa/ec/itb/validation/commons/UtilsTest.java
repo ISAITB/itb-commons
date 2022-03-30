@@ -7,6 +7,7 @@ import com.gitb.core.ValueEmbeddingEnumeration;
 import com.gitb.tr.*;
 import com.gitb.vs.ValidateRequest;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
+import eu.europa.ec.itb.validation.commons.test.BaseTest;
 import org.apache.commons.lang3.LocaleUtils;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
@@ -23,6 +24,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -30,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class UtilsTest {
+class UtilsTest extends BaseTest {
 
     @Test
     void testGetXMLGregorianCalendarDateTime() {
@@ -283,5 +286,29 @@ class UtilsTest {
         assertEquals(Locale.GERMAN, Utils.getSupportedLocale(Locale.ITALIAN, domain));
         assertEquals(Locale.GERMAN, Utils.getSupportedLocale(null, domain));
         assertEquals(Locale.GERMAN, Utils.getSupportedLocale(LocaleUtils.toLocale(""), domain));
+    }
+
+    @Test
+    void testToTarWithFile() throws IOException {
+        var tarFile = Path.of(tmpFolder.toString(), "tarFile.xml");
+        Files.copy(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/tarFile.xml")), tarFile);
+        var result = Utils.toTAR(tarFile.toFile());
+        assertNotNull(result);
+        assertNotNull(result.getReports());
+        assertNotNull(result.getReports().getInfoOrWarningOrError());
+        assertEquals(result.getReports().getInfoOrWarningOrError().size(), 5);
+        assertEquals(result.getResult(), TestResultType.FAILURE);
+    }
+
+    @Test
+    void testToTarWithStream() throws IOException {
+        var tarFile = Path.of(tmpFolder.toString(), "tarFile.xml");
+        Files.copy(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/tarFile.xml")), tarFile);
+        var result = Utils.toTAR(Files.newInputStream(tarFile));
+        assertNotNull(result);
+        assertNotNull(result.getReports());
+        assertNotNull(result.getReports().getInfoOrWarningOrError());
+        assertEquals(result.getReports().getInfoOrWarningOrError().size(), 5);
+        assertEquals(result.getResult(), TestResultType.FAILURE);
     }
 }
