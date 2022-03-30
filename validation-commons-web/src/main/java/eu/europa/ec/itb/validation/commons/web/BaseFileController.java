@@ -1,6 +1,7 @@
 package eu.europa.ec.itb.validation.commons.web;
 
 import eu.europa.ec.itb.validation.commons.BaseFileManager;
+import eu.europa.ec.itb.validation.commons.CsvReportGenerator;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
@@ -39,6 +40,8 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
     @Autowired
     protected ReportGeneratorBean reportGenerator;
     @Autowired
+    protected CsvReportGenerator csvReportGenerator;
+    @Autowired
     protected CustomLocaleResolver localeResolver;
     @Autowired
     protected ApplicationConfig appConfig;
@@ -66,6 +69,14 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
      * @return The file name.
      */
     public abstract String getReportFileNamePdf(String uuid);
+
+    /**
+     * Get the CSV report file name for a given file ID part.
+     *
+     * @param uuid The variable ID part.
+     * @return The file name.
+     */
+    public abstract String getReportFileNameCsv(String uuid);
 
     /**
      * Get the input file that was used for the validation.
@@ -118,7 +129,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
     }
 
     /**
-     * Get the XML validation report file that was generated from the validation.
+     * Get the PDF validation report file that was generated from the validation.
      *
      * @param domain The domain name.
      * @param id The unique ID for the input file.
@@ -150,6 +161,39 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
         }
         if (response != null) {
             response.setHeader("Content-Disposition", "attachment; filename=report_"+id+".pdf");
+        }
+        return new FileSystemResource(reportFile);
+    }
+
+    /**
+     * Get the CSV validation report file that was generated from the validation.
+     *
+     * @param domain The domain name.
+     * @param id The unique ID for the input file.
+     * @param request the HTTP request.
+     * @param response the HTTP response.
+     * @return The file.
+     */
+    @GetMapping(value = "/{domain}/report/{id}/csv", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @ResponseBody
+    public FileSystemResource getReportCsv(@PathVariable String domain, @PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
+        WebDomainConfig domainConfig = domainConfigCache.getConfigForDomainName(domain);
+        if (domainConfig == null || !domainConfig.getChannels().contains(ValidatorChannel.FORM)) {
+            throw new NotFoundException();
+        }
+        MDC.put(MDC_DOMAIN, domain);
+        File reportFile = new File(fileManager.getReportFolder(), getReportFileNameCsv(id));
+        if (!(reportFile.exists() && reportFile.isFile())) {
+            // Generate the PDF.
+            File reportFileXml = new File(fileManager.getReportFolder(), getReportFileNameXml(id));
+            if (reportFileXml.exists() && reportFileXml.isFile()) {
+                csvReportGenerator.writeReport(reportFileXml, reportFile, new LocalisationHelper(domainConfig, localeResolver.resolveLocale(request, response, domainConfig, appConfig)), domainConfig);
+            } else {
+                throw new NotFoundException();
+            }
+        }
+        if (response != null) {
+            response.setHeader("Content-Disposition", "attachment; filename=report_"+id+".csv");
         }
         return new FileSystemResource(reportFile);
     }

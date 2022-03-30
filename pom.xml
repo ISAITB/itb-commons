@@ -44,6 +44,7 @@
         <version.commonsLang>3.10</version.commonsLang>
         <version.commonsConfiguration>2.7</version.commonsConfiguration>
         <version.commonsIo>2.7</version.commonsIo>
+        <version.commonsCsv>1.9.0</version.commonsCsv>
         <version.webjarsBootstrap>3.4.1</version.webjarsBootstrap>
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
@@ -384,6 +385,11 @@
                 <artifactId>spring-boot-starter-test</artifactId>
                 <scope>test</scope>
                 <version>${version.springBoot}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>${version.commonsCsv}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>

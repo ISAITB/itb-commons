@@ -55,6 +55,7 @@
                             <span id="downloadReportButtonXMLSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span>
                         </button>
                         <button th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" type="button" class="btn btn-default" id="downloadReportButtonPDF" onclick="downloadReportPDF()" disabled="true"><span th:text="${localiser.localise('validator.label.downloadPDFReportButton')}">Download PDF report</span><span id="downloadReportButtonPDFSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
+                        <button th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" type="button" class="btn btn-default" id="downloadReportButtonCSV" onclick="downloadReportCSV()" disabled="true"><span th:text="${localiser.localise('validator.label.downloadCSVReportButton')}">Download CSV report</span><span id="downloadReportButtonCSVSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
                     </div>
                 </div>
             </div>

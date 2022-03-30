@@ -2,8 +2,11 @@ package eu.europa.ec.itb.validation.commons.report;
 
 import com.gitb.core.AnyContent;
 import com.gitb.core.ValueEmbeddingEnumeration;
-import com.gitb.tbs.TestStepStatus;
-import com.gitb.tr.*;
+import com.gitb.tr.BAR;
+import com.gitb.tr.TAR;
+import com.gitb.tr.TestAssertionReportType;
+import com.gitb.tr.TestStepReportType;
+import eu.europa.ec.itb.validation.commons.Utils;
 import eu.europa.ec.itb.validation.commons.report.dto.ContextItem;
 import eu.europa.ec.itb.validation.commons.report.dto.Report;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportItem;
@@ -13,11 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,21 +30,6 @@ import java.util.function.Function;
 public class ReportGenerator {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReportGenerator.class);
-    private final JAXBContext jaxbContext;
-
-    /**
-     * Constructor.
-     */
-    public ReportGenerator() {
-        try {
-            jaxbContext = JAXBContext.newInstance(
-                    TAR.class,
-                    TestCaseReportType.class,
-                    TestStepStatus.class);
-        } catch (JAXBException e) {
-            throw new IllegalStateException(e);
-        }
-    }
 
     /**
      * Use the provided report file stream to generate the report's output.
@@ -125,13 +109,7 @@ public class ReportGenerator {
      * @param labelProvider A function to provide the labels to use in the report.
      */
     public void writeTARReport(InputStream inputStream, OutputStream outputStream, boolean addContext, Function<TAR, ReportLabels> labelProvider) {
-        try {
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            JAXBElement<TAR> tar = unmarshaller.unmarshal(new StreamSource(inputStream), TAR.class);
-            writeTARReport(tar.getValue(), outputStream, addContext, labelProvider);
-        } catch(Exception e) {
-            throw new IllegalStateException(e);
-        }
+        writeTARReport(Utils.toTAR(inputStream), outputStream, addContext, labelProvider);
     }
 
     /**
