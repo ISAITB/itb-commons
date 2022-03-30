@@ -1,9 +1,11 @@
 package eu.europa.ec.itb.validation.commons.web;
 
 import eu.europa.ec.itb.validation.commons.BaseFileManager;
+import eu.europa.ec.itb.validation.commons.CsvReportGenerator;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
+import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
 import eu.europa.ec.itb.validation.commons.report.ReportGeneratorBean;
@@ -32,6 +34,7 @@ class BaseFileControllerTest extends BaseTest {
     private BaseFileManager<ApplicationConfig> fileManager;
     private WebDomainConfigCache<WebDomainConfig> configCache;
     private ReportGeneratorBean reportGenerator;
+    private CsvReportGenerator csvReportGenerator;
     private Path reportFolder;
     private WebDomainConfig domainConfig;
 
@@ -58,6 +61,7 @@ class BaseFileControllerTest extends BaseTest {
         controller.fileManager = fileManager;
         controller.domainConfigCache = domainConfigCache;
         controller.reportGenerator = reportGenerator;
+        controller.csvReportGenerator = csvReportGenerator;
         controller.localeResolver = mock(CustomLocaleResolver.class);
         return controller;
     }
@@ -75,6 +79,7 @@ class BaseFileControllerTest extends BaseTest {
         reportGenerator = mock(ReportGeneratorBean.class);
         reportFolder = Path.of(tmpFolder.toString(), "reports");
         when(fileManager.getReportFolder()).thenReturn(reportFolder.toFile());
+        csvReportGenerator = mock(CsvReportGenerator.class);
     }
 
     @AfterEach
@@ -132,6 +137,20 @@ class BaseFileControllerTest extends BaseTest {
         assertEquals(expectedPdfFile, result.getFile().toPath());
         verify(servletResponse, times(1)).setHeader("Content-Disposition", "attachment; filename=report_"+reportUuid+".pdf");
         verify(reportGenerator, times(1)).writeReport(eq(xmlFile.toFile()), eq(expectedPdfFile.toFile()), any(LocalisationHelper.class));
+    }
+
+    @Test
+    void testGetReportCsv() throws IOException {
+        var servletRequest = mock(HttpServletRequest.class);
+        var servletResponse = mock(HttpServletResponse.class);
+        var reportUuid = "UUID1";
+        var xmlFile = createFileWithContents(Path.of(reportFolder.toString(), reportUuid+".xml"), "");
+        var expectedCsvFile = Path.of(fileManager.getReportFolder().toPath().toString(), reportUuid+".csv");
+        var controller = createController(appConfig, fileManager, configCache, reportGenerator);
+        var result = controller.getReportCsv("domain1", reportUuid, servletRequest, servletResponse);
+        assertNotNull(result);
+        verify(servletResponse, times(1)).setHeader("Content-Disposition", "attachment; filename=report_"+reportUuid+".csv");
+        verify(csvReportGenerator, times(1)).writeReport(eq(xmlFile.toFile()), eq(expectedCsvFile.toFile()), any(LocalisationHelper.class), any(DomainConfig.class));
     }
 
     @Test
