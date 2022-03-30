@@ -59,7 +59,7 @@ class ApplicationConfigTest {
     }
 
     @Test
-    void testConfigLoading() throws ParseException {
+    void testConfigLoading() {
         assertEquals(500000L, appConfig.getCleanupWebRate());
         assertEquals(2, appConfig.getDomain().size());
         assertTrue(appConfig.getDomain().contains("domain1"));
@@ -70,6 +70,8 @@ class ApplicationConfigTest {
         assertTrue(appConfig.getWebhook().isStatisticsEnableCountryDetection());
         assertEquals("/tmp/file.mmdb", appConfig.getWebhook().getStatisticsCountryDetectionDbFile());
         assertEquals("HEADER", appConfig.getWebhook().getIpHeader());
+        assertTrue(appConfig.isSupportsAdditionalInformationInReportItems());
+        assertTrue(appConfig.isSupportsTestDefinitionInReportItems());
     }
 
     @Test

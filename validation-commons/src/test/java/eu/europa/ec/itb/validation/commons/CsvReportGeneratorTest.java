@@ -38,8 +38,8 @@ public class CsvReportGeneratorTest extends BaseTest {
     }
 
     private DomainConfig createDomainConfig() {
-        var domainConfig = mock(DomainConfig.class);
-        when(domainConfig.isAddBOMToCSVExports()).thenReturn(true);
+        var domainConfig = new DomainConfig();
+        domainConfig.setAddBOMToCSVExports(true);
         return domainConfig;
     }
 
