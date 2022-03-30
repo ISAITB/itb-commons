@@ -1,10 +1,8 @@
 package eu.europa.ec.itb.validation.commons;
 
 import com.gitb.core.*;
-import com.gitb.tr.TAR;
-import com.gitb.tr.TestAssertionGroupReportsType;
-import com.gitb.tr.TestResultType;
-import com.gitb.tr.ValidationCounters;
+import com.gitb.tbs.TestStepStatus;
+import com.gitb.tr.*;
 import com.gitb.vs.ValidateRequest;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import org.w3c.dom.Document;
@@ -16,6 +14,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -23,9 +25,8 @@ import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -33,6 +34,19 @@ import java.util.*;
  * Class holding utility methods for common operations.
  */
 public class Utils {
+
+    private static final JAXBContext tdlJaxbContext;
+
+    static {
+        try {
+            tdlJaxbContext = JAXBContext.newInstance(
+                    TAR.class,
+                    TestCaseReportType.class,
+                    TestStepStatus.class);
+        } catch (JAXBException e) {
+            throw new IllegalStateException("Unable to initialise JAXB context for TDL classes", e);
+        }
+    }
 
     /**
      * Constructor to prevent instantiation.
@@ -445,6 +459,36 @@ public class Utils {
             } else {
                 return domainConfig.getDefaultLocale();
             }
+        }
+    }
+
+    /**
+     * Read a TAR instance from the provided TAR XML file.
+     *
+     * @param tarXml The XML file to read.
+     * @return The TAR instance.
+     */
+    public static TAR toTAR(File tarXml) {
+        try (FileInputStream inputStream = new FileInputStream(tarXml)) {
+            return toTAR(inputStream);
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to deserialize TAR report from file", e);
+        }
+    }
+
+    /**
+     * Read a TAR instance from the provided TAR XML input stream.
+     *
+     * @param tarXml The XML stream to read.
+     * @return The TAR instance.
+     */
+    public static TAR toTAR(InputStream tarXml) {
+        try {
+            Unmarshaller unmarshaller = tdlJaxbContext.createUnmarshaller();
+            JAXBElement<TAR> tar = unmarshaller.unmarshal(new StreamSource(tarXml), TAR.class);
+            return tar.getValue();
+        } catch (JAXBException e) {
+            throw new IllegalStateException("Unable to deserialize TAR report from stream", e);
         }
     }
 

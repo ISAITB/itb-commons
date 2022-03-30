@@ -694,6 +694,7 @@ function getReportData(inputID) {
     _state.reportLoad = jQuery.Deferred();
     _state.resultLoadXML = jQuery.Deferred();
     _state.resultLoadPDF = jQuery.Deferred();
+    _state.resultLoadCSV = jQuery.Deferred();
     $(document).ready(function() {
         getReport(inputID);
         getResultReport(inputID);
@@ -719,51 +720,48 @@ function getReport(inputID) {
         });
     }
 }
-function getResultReport(inputID) {
-    if ($('#downloadReportButtonXML').length) {
-        $.ajax({
-            url: "report/"+inputID+"/xml",
-            type: 'GET',
-            beforeSend: function(request) {
-            	request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            },
-            success: function(data) {
-                _state.itbResultReportXML = new Blob([data], { type: 'application/xml' });
-                $('#downloadReportButtonXMLSpinner').addClass('hidden');
-                $('#downloadReportButtonXML').prop('disabled', false);
-                _state.resultLoadXML.resolve();
-            },
-            error: function(response){
-            	raiseAlert(response.responseJSON.errorMessage)
-            }
-        });
-    }
-    if ($('#downloadReportButtonPDF').length) {
-    	 var ajax = new XMLHttpRequest();
-    	 ajax.open("GET", "report/"+inputID+"/pdf", true);
-    	 ajax.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-         ajax.onreadystatechange = function() {
-             if (this.readyState == 4) {
-                 if (this.status == 200) {
-                     _state.itbResultReportPDF = new Blob([this.response], {type: "application/octet-stream"});
-                     $('#downloadReportButtonPDFSpinner').addClass('hidden');
-                     $('#downloadReportButtonPDF').prop('disabled', false);
-                     _state.resultLoadPDF.resolve();
-                 }else{
-                 	_state.error = JSON.parse(this.responseText).errorMessage;
+function getResultReportForReportType(inputID, pathPostfix, buttonID, spinnerID) {
+    var successPromise = jQuery.Deferred();
+    if ($('#'+buttonID).length) {
+    	 var request = new XMLHttpRequest();
+    	 request.open("GET", "report/"+inputID+"/"+pathPostfix, true);
+    	 request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+         request.onreadystatechange = function() {
+             if (request.readyState == 4) {
+                 if (request.status == 200) {
+                     $('#'+spinnerID).addClass('hidden');
+                     $('#'+buttonID).prop('disabled', false);
+                     successPromise.resolve(request.response);
+                 } else if (request.responseText != "") {
+                 	_state.error = JSON.parse(request.responseText).errorMessage;
                  	raiseAlert(_state.error);
  				}
-             } else if (this.readyState == 2) {
-                 if (this.status == 200) {
-                     this.responseType = "blob";
+             } else if (request.readyState == 2) {
+                 if (request.status == 200) {
+                     request.responseType = "blob";
                  } else {
-                     this.responseType = "text";
+                     request.responseType = "text";
                  }
              }
          };
-         ajax.send(null);
+         request.send(null);
     }
-	$.when(_state.resultLoadXML, _state.resultLoadPDF).done(function () {
+    return successPromise
+}
+function getResultReport(inputID) {
+    getResultReportForReportType(inputID, 'xml', 'downloadReportButtonXML', 'downloadReportButtonXMLSpinner').done(function (data) {
+        _state.itbResultReportXML = new Blob([data], { type: 'application/xml' });
+        _state.resultLoadXML.resolve();
+    })
+    getResultReportForReportType(inputID, 'pdf', 'downloadReportButtonPDF', 'downloadReportButtonPDFSpinner').done(function (data) {
+        _state.itbResultReportPDF = new Blob([data], {type: "application/octet-stream"});
+        _state.resultLoadPDF.resolve();
+    })
+    getResultReportForReportType(inputID, 'csv', 'downloadReportButtonCSV', 'downloadReportButtonCSVSpinner').done(function (data) {
+        _state.itbResultReportCSV = new Blob([data], {type: "application/octet-stream"});
+        _state.resultLoadCSV.resolve();
+    })
+	$.when(_state.resultLoadXML, _state.resultLoadPDF, _state.itbResultReportCSV).done(function () {
         $.ajax({
             url: "report/"+inputID,
             type: 'DELETE',
@@ -790,6 +788,11 @@ function downloadReportXML() {
 function downloadReportPDF() {
 	_state.resultLoadPDF.done(function() {
 		saveAs(_state.itbResultReportPDF, "report.pdf");
+	});
+}
+function downloadReportCSV() {
+	_state.resultLoadCSV.done(function() {
+		saveAs(_state.itbResultReportCSV, "report.csv");
 	});
 }
 function getLineFromPositionString(positionString) {

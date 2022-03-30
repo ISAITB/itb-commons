@@ -83,6 +83,12 @@ class ReportGeneratorBeanTest {
         var bean = createBean(reportGenerator);
         assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), (report) -> labels));
         verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any());
+        // Alternate call.
+        reset(reportGenerator);
+        var localiser = mock(LocalisationHelper.class);
+        when(localiser.localise(anyString())).thenReturn("Label");
+        assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), localiser));
+        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any());
     }
 
     @Test
@@ -125,6 +131,12 @@ class ReportGeneratorBeanTest {
         }).when(reportGenerator).writeTARReport(any(FileInputStream.class), any(), any());
         var bean = createBean(reportGenerator);
         assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), (report) -> labels));
+        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any());
+        // Alternate call.
+        reset(reportGenerator);
+        var localiser = mock(LocalisationHelper.class);
+        when(localiser.localise(anyString())).thenReturn("Label");
+        assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), localiser));
         verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any());
     }
 

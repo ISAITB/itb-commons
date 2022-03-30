@@ -28,9 +28,24 @@ public class DomainConfig {
     private String localeTranslationsBundle;
     private Map<String, String> domainProperties;
     private String domainRoot;
+    private boolean addBOMToCSVExports = true;
     // Plugin configuration.
     private List<PluginInfo> pluginDefaultConfig;
     private Map<String, List<PluginInfo>> pluginPerTypeConfig;
+
+    /**
+     * @return Whether to add a BOM to the CSV exports.
+     */
+    public boolean isAddBOMToCSVExports() {
+        return addBOMToCSVExports;
+    }
+
+    /**
+     * @param addBOMToCSVExports Whether to add a BOM to the CSV exports.
+     */
+    public void setAddBOMToCSVExports(boolean addBOMToCSVExports) {
+        this.addBOMToCSVExports = addBOMToCSVExports;
+    }
 
     /**
      * @return The maximum number of items to include in an XML validation report.

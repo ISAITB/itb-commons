@@ -40,6 +40,36 @@ public abstract class ApplicationConfig {
     private boolean restrictResourcesToDomain = Boolean.TRUE;
     private final Webhook webhook = new Webhook();
     private String identifier;
+    private boolean supportsTestDefinitionInReportItems;
+    private boolean supportsAdditionalInformationInReportItems;
+
+    /**
+     * @return True if test definitions are supported in validation report items.
+     */
+    public boolean isSupportsTestDefinitionInReportItems() {
+        return supportsTestDefinitionInReportItems;
+    }
+
+    /**
+     * @param supportsTestDefinitionInReportItems True if test definitions are supported in validation report items.
+     */
+    public void setSupportsTestDefinitionInReportItems(boolean supportsTestDefinitionInReportItems) {
+        this.supportsTestDefinitionInReportItems = supportsTestDefinitionInReportItems;
+    }
+
+    /**
+     * @return True if additional information is supported in validation report items.
+     */
+    public boolean isSupportsAdditionalInformationInReportItems() {
+        return supportsAdditionalInformationInReportItems;
+    }
+
+    /**
+     * @param supportsAdditionalInformationInReportItems True if additional information is supported in validation report items.
+     */
+    public void setSupportsAdditionalInformationInReportItems(boolean supportsAdditionalInformationInReportItems) {
+        this.supportsAdditionalInformationInReportItems = supportsAdditionalInformationInReportItems;
+    }
 
     /**
      * @return The rate (in milliseconds) at which temporary web resources are cleaned up.
