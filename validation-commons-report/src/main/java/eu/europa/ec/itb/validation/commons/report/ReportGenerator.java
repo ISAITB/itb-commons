@@ -202,7 +202,7 @@ public class ReportGenerator {
      * @param <T> The specific report class.
      * @return The report DTO.
      */
-    private <T extends TestStepReportType> Report fromTestStepReportType(T reportType, String title, boolean addContext) {
+    <T extends TestStepReportType> Report fromTestStepReportType(T reportType, String title, boolean addContext) {
         Report report = new Report();
         if (reportType.getDate() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss 'Z'");
@@ -213,15 +213,15 @@ public class ReportGenerator {
         report.setTitle(Objects.requireNonNullElse(title, "Report"));
         if (reportType instanceof TAR) {
             TAR tarReport = (TAR)reportType;
-            if (addContext) {
+            if (addContext && tarReport.getContext() != null) {
                 for (AnyContent context : tarReport.getContext().getItem()) {
                     addContextItem(context, report.getContextItems(), "");
                 }
             }
+            long errors = 0;
+            long warnings = 0;
+            long messages = 0;
             if (tarReport.getReports() != null && tarReport.getReports().getInfoOrWarningOrError() != null) {
-                int errors = 0;
-                int warnings = 0;
-                int messages = 0;
                 for (JAXBElement<TestAssertionReportType> element : tarReport.getReports().getInfoOrWarningOrError()) {
                     if (element.getValue() instanceof BAR) {
                         BAR tarItem = (BAR) element.getValue();
@@ -241,10 +241,19 @@ public class ReportGenerator {
                         report.getReportItems().add(reportItem);
                     }
                 }
-                report.setErrorCount(String.valueOf(errors));
-                report.setWarningCount(String.valueOf(warnings));
-                report.setMessageCount(String.valueOf(messages));
             }
+            // If an explicit counters object is defined override the calculated ones.
+            if (tarReport.getCounters() != null
+                    && tarReport.getCounters().getNrOfErrors() != null
+                    && tarReport.getCounters().getNrOfWarnings() != null
+                    && tarReport.getCounters().getNrOfAssertions() != null) {
+                errors = tarReport.getCounters().getNrOfErrors().longValue();
+                warnings = tarReport.getCounters().getNrOfWarnings().longValue();
+                messages = tarReport.getCounters().getNrOfAssertions().longValue();
+            }
+            report.setErrorCount(String.valueOf(errors));
+            report.setWarningCount(String.valueOf(warnings));
+            report.setMessageCount(String.valueOf(messages));
         }
         if (report.getReportItems().isEmpty()) {
             report.setReportItems(null);
