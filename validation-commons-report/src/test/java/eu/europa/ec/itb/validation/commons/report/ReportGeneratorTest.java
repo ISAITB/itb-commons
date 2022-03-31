@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -21,11 +22,12 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.GregorianCalendar;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ReportGeneratorTest {
 
@@ -70,6 +72,15 @@ class ReportGeneratorTest {
         report.getContext().getItem().get(3).getItem().get(0).setType("string");
         report.getContext().getItem().get(3).getItem().get(0).setValue("value5");
         report.getContext().getItem().get(3).getItem().get(0).setEmbeddingMethod(ValueEmbeddingEnumeration.STRING);
+        report.getContext().getItem().get(3).getItem().add(new AnyContent());
+        report.getContext().getItem().get(3).getItem().get(1).setName("name6");
+        report.getContext().getItem().get(3).getItem().get(1).setType("map");
+        report.getContext().getItem().get(3).getItem().get(1).setValue("value6");
+        report.getContext().getItem().get(3).getItem().get(1).getItem().add(new AnyContent());
+        report.getContext().getItem().get(3).getItem().get(1).getItem().get(0).setName("name7");
+        report.getContext().getItem().get(3).getItem().get(1).getItem().get(0).setType("string");
+        report.getContext().getItem().get(3).getItem().get(1).getItem().get(0).setValue("value7");
+        report.getContext().getItem().get(3).getItem().get(1).getItem().get(0).setEmbeddingMethod(ValueEmbeddingEnumeration.STRING);
         report.setCounters(new ValidationCounters());
         report.getCounters().setNrOfErrors(BigInteger.ONE);
         report.getCounters().setNrOfWarnings(BigInteger.ONE);
@@ -111,6 +122,56 @@ class ReportGeneratorTest {
         assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(Files.newInputStream(xmlPath), Files.newOutputStream(pdfPath), (r) -> new ReportLabels()));
         assertTrue(Files.exists(pdfPath));
         assertTrue(Files.isRegularFile(pdfPath));
+    }
+
+    private String digest(Path path) throws NoSuchAlgorithmException, IOException {
+        var md = MessageDigest.getInstance("MD5");
+        md.update(Files.readAllBytes(path));
+        return DatatypeConverter.printHexBinary(md.digest());
+    }
+
+    @Test
+    void testContextItemNames() throws DatatypeConfigurationException {
+        var report = createTAR();
+        var reportData = new ReportGenerator().fromTestStepReportType(report, "Title", true);
+        assertEquals(5, reportData.getContextItems().size());
+        assertEquals("name1", reportData.getContextItems().get(0).getKey());
+        assertEquals("name2", reportData.getContextItems().get(1).getKey());
+        assertEquals("name3", reportData.getContextItems().get(2).getKey());
+        assertEquals("name4.name5", reportData.getContextItems().get(3).getKey());
+        assertEquals("name4.name6.name7", reportData.getContextItems().get(4).getKey());
+    }
+
+    @Test
+    void testEmptyItems() throws DatatypeConfigurationException {
+        var report = createTAR();
+        report.getReports().getInfoOrWarningOrError().clear();
+        var reportData = new ReportGenerator().fromTestStepReportType(report, "Title", true);
+        assertNotNull(reportData);
+        assertNull(reportData.getReportItems());
+    }
+
+    @Test
+    void testEmptyContext() throws DatatypeConfigurationException {
+        var report = createTAR();
+        report.getContext().getItem().clear();
+        var reportData = new ReportGenerator().fromTestStepReportType(report, "Title", true);
+        assertNotNull(reportData);
+        assertNull(reportData.getContextItems());
+    }
+
+    @Test
+    void testCounters() throws DatatypeConfigurationException {
+        var reportWithCounters = createTAR();
+        var reportWithoutCounters = createTAR();
+        reportWithoutCounters.setCounters(null);
+        var reportData1 = new ReportGenerator().fromTestStepReportType(reportWithCounters, "Title", true);
+        var reportData2 = new ReportGenerator().fromTestStepReportType(reportWithoutCounters, "Title", true);
+        assertNotNull(reportData1);
+        assertNotNull(reportData2);
+        assertEquals(reportData1.getErrorCount(), reportData2.getErrorCount());
+        assertEquals(reportData1.getWarningCount(), reportData2.getWarningCount());
+        assertEquals(reportData1.getMessageCount(), reportData2.getMessageCount());
     }
 
 }
