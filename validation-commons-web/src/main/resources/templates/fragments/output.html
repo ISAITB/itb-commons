@@ -5,7 +5,7 @@
         <h2 th:fragment="reportTitle(config, minimalUI)" class="view-section-title" th:if="${not minimalUI}" th:text="${localiser.localise('validator.label.resultSectionTitle')}">Validation result</h2>
 
         <th:block th:fragment="reportHeader(config, minimalUI)">
-            <div class="panel-heading"  th:if="${not minimalUI}">
+            <div class="panel-heading panel-heading-overview"  th:if="${not minimalUI}">
                 <h3 class="panel-title" th:text="${localiser.localise('validator.label.resultSubSectionOverviewTitle')}">Overview</h3>
             </div>
             <div class="panel-heading panel-heading-ui" th:if="${minimalUI}">
@@ -61,49 +61,55 @@
             </div>
         </div>
 
+        <th:block th:fragment="reportItems(reportItems, config, clickableItems)">
+            <div th:if="${reportItems == null || reportItems.infoOrWarningOrError == null || reportItems.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" class="report-item-container">
+                <div class="row report-item" th:each="item : ${reportItems.infoOrWarningOrError}" th:classappend="${clickableItems?('clickable report-item-' + item.name.localPart):('report-item-' + item.name.localPart)}" th:attrappend="onclick=${clickableItems}?@{|setCode(this)|}">
+                    <div class="col-xs-12 item-info">
+                        <div th:switch="${item.name.localPart}">
+                            <i th:case="'error'" class="fa fa-times-circle report-item-icon error-icon item-info-error"></i>
+                            <i th:case="'warning'" class="fa fa-exclamation-triangle report-item-icon warning-icon item-info-warning"></i>
+                            <i th:case="'info'" class="fa fa-info-circle report-item-icon info-icon item-info-info"></i>
+                            <span th:text="${item.value.description}" class="item-info-text">Description</span>
+                            <span th:if="${clickableItems}" style="display: none" th:text="${item.value.location}" class="item-info-location">INPUT:0:0</span>
+                        </div>
+                    </div>
+                    <div th:if="${!clickableItems && item.value.location != null}" class="col-xs-12 report-item-test"><span class="report-item-test-label" th:text="${localiser.localise('validator.label.resultLocationLabel')}">Location:</span><span th:text="${item.value.location}">Location</span></div>
+                    <div class="col-xs-12 report-item-test" th:if="${item.value.test != null}"><span class="report-item-test-label" th:text="${localiser.localise('validator.label.resultTestLabel')}">Test:</span><span th:text="${item.value.test}">Test</span></div>
+                    <div class="col-xs-12 report-item-test" th:if="${item.value.assertionID != null}"><span class="report-item-test-label" th:text="${localiser.localise('validator.label.additionalInfoLabel')}">Test:</span><span th:text="${item.value.assertionID}">Additional information</span></div>
+                </div>
+            </div>
+            <div th:unless="${reportItems == null || reportItems.infoOrWarningOrError == null || reportItems.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}">
+                <div style="padding-top:15px;padding-bottom:15px;">
+                    <div class="alert alert-warning" style="margin-bottom:0px;" th:text="${localiser.localise('validator.label.maximumReportsExceededForDetailedOutputMessage')}">
+                        Maximum results exceeded for detailed display.
+                    </div>
+                </div>
+            </div>
+        </th:block>
+
+        <div th:fragment="reportInputModal()" class="modal fade input-content-modal" id="input-content-modal" role="dialog" aria-labelledby="inputDialog">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn btn-primary popup-close" data-dismiss="modal" aria-label="Close" th:text="${localiser.localise('validator.label.popupCloseButton')}">Close</button>
+                        <h4 class="modal-title" id="inputContentTitle" th:text="${localiser.localise('validator.label.popupTitle')}">Input content</h4>
+                    </div>
+                    <div id="input-content-pane" class="modal-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div th:fragment="reportDetails(config, minimalUI, clickableItems)">
             <div class="panel panel-default" th:style="${minimalUI}?'display:none':''" th:classappend="${minimalUI} ? remove : ''" th:if="${report.reports != null && report.reports.infoOrWarningOrError != null && report.reports.infoOrWarningOrError.size() > 0}">
                 <div class="panel-heading">
                     <h3 class="panel-title" th:text="${localiser.localise('validator.label.resultSubSectionDetailsTitle')}">Details</h3>
                 </div>
                 <div class="panel-body result-details-panel">
-                    <div th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" class="report-item-container">
-                        <div class="row report-item" th:each="item : ${report.reports.infoOrWarningOrError}" th:classappend="${clickableItems?('clickable report-item-' + item.name.localPart):('report-item-' + item.name.localPart)}" th:attrappend="onclick=${clickableItems}?@{|setCode(this)|}">
-                            <div class="col-xs-12 item-info">
-                                <div th:switch="${item.name.localPart}">
-                                    <i th:case="'error'" class="fa fa-times-circle report-item-icon error-icon item-info-error"></i>
-                                    <i th:case="'warning'" class="fa fa-exclamation-triangle report-item-icon warning-icon item-info-warning"></i>
-                                    <i th:case="'info'" class="fa fa-info-circle report-item-icon info-icon item-info-info"></i>
-                                    <span th:text="${item.value.description}" class="item-info-text">Description</span>
-                                    <span th:if="${clickableItems}" style="display: none" th:text="${item.value.location}" class="item-info-location">INPUT:0:0</span>
-                                </div>
-                            </div>
-                            <div th:if="${!clickableItems && item.value.location != null}" class="col-xs-12 report-item-test"><span class="report-item-test-label" th:text="${localiser.localise('validator.label.resultLocationLabel')}">Location:</span><span th:text="${item.value.location}">Location</span></div>
-                            <div class="col-xs-12 report-item-test" th:if="${item.value.test != null}"><span class="report-item-test-label" th:text="${localiser.localise('validator.label.resultTestLabel')}">Test:</span><span th:text="${item.value.test}">Test</span></div>
-                            <div class="col-xs-12 report-item-test" th:if="${item.value.assertionID != null}"><span class="report-item-test-label" th:text="${localiser.localise('validator.label.additionalInfoLabel')}">Test:</span><span th:text="${item.value.assertionID}">Additional information</span></div>
-                        </div>
-                    </div>
-                    <div th:unless="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}">
-                        <div style="padding-top:15px;padding-bottom:15px;">
-                            <div class="alert alert-warning" style="margin-bottom:0px;" th:text="${localiser.localise('validator.label.maximumReportsExceededForDetailedOutputMessage')}">
-                                Maximum results exceeded for detailed display.
-                            </div>
-                        </div>
-                    </div>
+                    <div th:replace="fragments/output :: reportItems(${report.reports}, ${config}, ${clickableItems})"/>
                 </div>
             </div>
-            <div class="modal fade input-content-modal" id="input-content-modal" role="dialog" aria-labelledby="inputDialog">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="btn btn-primary popup-close" data-dismiss="modal" aria-label="Close" th:text="${localiser.localise('validator.label.popupCloseButton')}">Close</button>
-                            <h4 class="modal-title" id="inputContentTitle" th:text="${localiser.localise('validator.label.popupTitle')}">Input content</h4>
-                        </div>
-                        <div id="input-content-pane" class="modal-body">
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div th:replace="fragments/output :: reportInputModal()"></div>
         </div>
 
     </body>
