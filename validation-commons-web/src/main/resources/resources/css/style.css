@@ -107,9 +107,6 @@ body {
     margin-bottom: 30px;
     cursor: pointer;
 }
-.overview-button-row {
-    padding-top: 10px;
-}
 .error-details {
     border-top: thick double rgb(237, 237, 237);
     padding-top: 20px;
@@ -164,4 +161,26 @@ body {
 }
 .locale-div div.input-group {
     margin-left: auto;
+}
+.panel-heading-details {
+    height: 55px;
+}
+.panel-heading-overview {
+    height: 55px;
+    display: flex;
+    align-items: center;
+}
+.panel-heading-details {
+    display: flex;
+    align-items: center;
+}
+.panel-heading-details-title {
+    flex-grow: 1;
+}
+.reportLimitTooltip {
+    margin-left: 5px;
+}
+.overview-button-row .btn-toolbar {
+    display: flex;
+    align-items: center;
 }

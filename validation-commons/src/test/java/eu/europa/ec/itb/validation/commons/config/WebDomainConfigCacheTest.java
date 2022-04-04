@@ -94,8 +94,7 @@ class WebDomainConfigCacheTest {
                 Map.entry("validator.label.resultWarningsLabel", "resultWarningsLabel"),
                 Map.entry("validator.label.resultMessagesLabel", "resultMessagesLabel"),
                 Map.entry("validator.label.viewAnnotatedInputButton", "viewAnnotatedInputButton"),
-                Map.entry("validator.label.downloadXMLReportButton", "downloadXMLReportButton"),
-                Map.entry("validator.label.downloadPDFReportButton", "downloadPDFReportButton"),
+                Map.entry("validator.label.downloadReportButton", "downloadReportButton"),
                 Map.entry("validator.label.resultSubSectionDetailsTitle", "resultSubSectionDetailsTitle"),
                 Map.entry("validator.label.resultTestLabel", "resultTestLabel"),
                 Map.entry("validator.label.resultLocationLabel", "resultLocationLabel"),
@@ -127,8 +126,7 @@ class WebDomainConfigCacheTest {
         assertEquals("resultWarningsLabel", localisationHelper.localise("validator.label.resultWarningsLabel"));
         assertEquals("resultMessagesLabel", localisationHelper.localise("validator.label.resultMessagesLabel"));
         assertEquals("viewAnnotatedInputButton", localisationHelper.localise("validator.label.viewAnnotatedInputButton"));
-        assertEquals("downloadXMLReportButton", localisationHelper.localise("validator.label.downloadXMLReportButton"));
-        assertEquals("downloadPDFReportButton", localisationHelper.localise("validator.label.downloadPDFReportButton"));
+        assertEquals("downloadReportButton", localisationHelper.localise("validator.label.downloadReportButton"));
         assertEquals("resultSubSectionDetailsTitle", localisationHelper.localise("validator.label.resultSubSectionDetailsTitle"));
         assertEquals("resultTestLabel", localisationHelper.localise("validator.label.resultTestLabel"));
         assertEquals("resultLocationLabel", localisationHelper.localise("validator.label.resultLocationLabel"));
