@@ -693,8 +693,11 @@ function getExternalArtifactSupport(options) {
 function getReportData(inputID) {
     _state.reportLoad = jQuery.Deferred();
     _state.resultLoadXML = jQuery.Deferred();
+    _state.resultLoadXMLAggregate = jQuery.Deferred();
     _state.resultLoadPDF = jQuery.Deferred();
+    _state.resultLoadPDFAggregate = jQuery.Deferred();
     _state.resultLoadCSV = jQuery.Deferred();
+    _state.resultLoadCSVAggregate = jQuery.Deferred();
     $(document).ready(function() {
         getReport(inputID);
         getResultReport(inputID);
@@ -720,17 +723,17 @@ function getReport(inputID) {
         });
     }
 }
-function getResultReportForReportType(inputID, pathPostfix, buttonID, spinnerID) {
+function getResultReportForReportType(inputID, pathPostfix, aggregate, buttonID, spinnerID) {
     var successPromise = jQuery.Deferred();
     if ($('#'+buttonID).length) {
     	 var request = new XMLHttpRequest();
-    	 request.open("GET", "report/"+inputID+"/"+pathPostfix, true);
+    	 request.open("GET", "report/"+inputID+"/"+pathPostfix+"?aggregate="+aggregate, true);
     	 request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
          request.onreadystatechange = function() {
              if (request.readyState == 4) {
                  if (request.status == 200) {
                      $('#'+spinnerID).addClass('hidden');
-                     $('#'+buttonID).prop('disabled', false);
+                     $('#'+buttonID).removeClass('disabled');
                      successPromise.resolve(request.response);
                  } else if (request.responseText != "") {
                  	_state.error = JSON.parse(request.responseText).errorMessage;
@@ -749,19 +752,31 @@ function getResultReportForReportType(inputID, pathPostfix, buttonID, spinnerID)
     return successPromise
 }
 function getResultReport(inputID) {
-    getResultReportForReportType(inputID, 'xml', 'downloadReportButtonXML', 'downloadReportButtonXMLSpinner').done(function (data) {
+    getResultReportForReportType(inputID, 'xml', false, 'downloadReportButtonXML', 'downloadReportButtonXMLSpinner').done(function (data) {
         _state.itbResultReportXML = new Blob([data], { type: 'application/xml' });
         _state.resultLoadXML.resolve();
     })
-    getResultReportForReportType(inputID, 'pdf', 'downloadReportButtonPDF', 'downloadReportButtonPDFSpinner').done(function (data) {
+    getResultReportForReportType(inputID, 'xml', true, 'downloadReportButtonXMLAggregate', 'downloadReportButtonXMLSpinnerAggregate').done(function (data) {
+        _state.itbResultReportXMLAggregate = new Blob([data], { type: 'application/xml' });
+        _state.resultLoadXMLAggregate.resolve();
+    })
+    getResultReportForReportType(inputID, 'pdf', false, 'downloadReportButtonPDF', 'downloadReportButtonPDFSpinner').done(function (data) {
         _state.itbResultReportPDF = new Blob([data], {type: "application/octet-stream"});
         _state.resultLoadPDF.resolve();
     })
-    getResultReportForReportType(inputID, 'csv', 'downloadReportButtonCSV', 'downloadReportButtonCSVSpinner').done(function (data) {
+    getResultReportForReportType(inputID, 'pdf', true, 'downloadReportButtonPDFAggregate', 'downloadReportButtonPDFSpinnerAggregate').done(function (data) {
+        _state.itbResultReportPDFAggregate = new Blob([data], {type: "application/octet-stream"});
+        _state.resultLoadPDFAggregate.resolve();
+    })
+    getResultReportForReportType(inputID, 'csv', false, 'downloadReportButtonCSV', 'downloadReportButtonCSVSpinner').done(function (data) {
         _state.itbResultReportCSV = new Blob([data], {type: "application/octet-stream"});
         _state.resultLoadCSV.resolve();
     })
-	$.when(_state.resultLoadXML, _state.resultLoadPDF, _state.itbResultReportCSV).done(function () {
+    getResultReportForReportType(inputID, 'csv', true, 'downloadReportButtonCSVAggregate', 'downloadReportButtonCSVSpinnerAggregate').done(function (data) {
+        _state.itbResultReportCSVAggregate = new Blob([data], {type: "application/octet-stream"});
+        _state.resultLoadCSVAggregate.resolve();
+    })
+	$.when(_state.resultLoadXML, _state.resultLoadXMLAggregate, _state.resultLoadPDF, _state.resultLoadPDFAggregate, _state.itbResultReportCSV, _state.itbResultReportCSVAggregate).done(function () {
         $.ajax({
             url: "report/"+inputID,
             type: 'DELETE',
@@ -785,14 +800,29 @@ function downloadReportXML() {
 		saveAs(_state.itbResultReportXML, "report.xml");
 	});
 }
+function downloadReportXMLAggregate() {
+	_state.resultLoadXMLAggregate.done(function() {
+		saveAs(_state.itbResultReportXMLAggregate, "report.xml");
+	});
+}
 function downloadReportPDF() {
 	_state.resultLoadPDF.done(function() {
 		saveAs(_state.itbResultReportPDF, "report.pdf");
 	});
 }
+function downloadReportPDFAggregate() {
+	_state.resultLoadPDFAggregate.done(function() {
+		saveAs(_state.itbResultReportPDFAggregate, "report.pdf");
+	});
+}
 function downloadReportCSV() {
 	_state.resultLoadCSV.done(function() {
 		saveAs(_state.itbResultReportCSV, "report.csv");
+	});
+}
+function downloadReportCSVAggregate() {
+	_state.resultLoadCSVAggregate.done(function() {
+		saveAs(_state.itbResultReportCSVAggregate, "report.csv");
 	});
 }
 function getLineFromPositionString(positionString) {
@@ -823,7 +853,7 @@ function setCode(reportItemElement) {
 			dragDrop: false
 		});
 		// Add report messages
-		$('.item-info').each(function(index, element) {
+		$('#reportItemsDetailed .item-info').each(function(index, element) {
 		    var line, lineToHighlight, text, type, indicatorIcon, indicator;
 			line = getLineFromPositionString($(this).find('.item-info-location').text());
 			lineToHighlight = line - 1
@@ -878,4 +908,16 @@ function localeChanged() {
     }
     url += '?lang=' + selectedLocale; 
     window.location.href = url;
+}
+
+function reportTypeChange(aggregate) {
+    if (aggregate) {
+        $('#reportItemsAggregated').removeClass('hidden');
+        $('#reportItemsDetailed').addClass('hidden');
+        $('#reportTypeSelectText').text($('#reportTypeSelectAggregatedText').text());
+    } else {
+        $('#reportItemsAggregated').addClass('hidden');
+        $('#reportItemsDetailed').removeClass('hidden');
+        $('#reportTypeSelectText').text($('#reportTypeSelectDetailedText').text());
+    }
 }

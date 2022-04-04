@@ -13,6 +13,7 @@ import java.util.*;
 public class DomainConfig {
 
     private boolean isDefined;
+    private boolean reportsOrdered;
     private String domain;
     private String domainName;
     private List<String> type;
@@ -32,6 +33,20 @@ public class DomainConfig {
     // Plugin configuration.
     private List<PluginInfo> pluginDefaultConfig;
     private Map<String, List<PluginInfo>> pluginPerTypeConfig;
+
+    /**
+     * @return True if validation reports should be ordered.
+     */
+    public boolean isReportsOrdered() {
+        return reportsOrdered;
+    }
+
+    /**
+     * @param reportsOrdered True if validation reports should be ordered.
+     */
+    public void setReportsOrdered(boolean reportsOrdered) {
+        this.reportsOrdered = reportsOrdered;
+    }
 
     /**
      * @return Whether to add a BOM to the CSV exports.

@@ -3,6 +3,7 @@ package eu.europa.ec.itb.validation.commons;
 import com.gitb.core.*;
 import com.gitb.tbs.TestStepStatus;
 import com.gitb.tr.*;
+import com.gitb.tr.ObjectFactory;
 import com.gitb.vs.ValidateRequest;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import org.w3c.dom.Document;
@@ -490,6 +491,51 @@ public class Utils {
         } catch (JAXBException e) {
             throw new IllegalStateException("Unable to deserialize TAR report from stream", e);
         }
+    }
+
+    /**
+     * Convert the provided detailed TAR report to an aggregate report.
+     *
+     * @param detailedTAR The detailed report to consider.
+     * @param helper The localisation helper to lookup translations.
+     * @return The aggregated report.
+     */
+    public static TAR toAggregatedTAR(TAR detailedTAR, LocalisationHelper helper) {
+        var aggregatedTAR = new TAR();
+        if (detailedTAR.getCounters() != null) {
+            aggregatedTAR.setCounters(new ValidationCounters());
+            aggregatedTAR.getCounters().setNrOfAssertions(BigInteger.valueOf(detailedTAR.getCounters().getNrOfAssertions().longValue()));
+            aggregatedTAR.getCounters().setNrOfErrors(BigInteger.valueOf(detailedTAR.getCounters().getNrOfErrors().longValue()));
+            aggregatedTAR.getCounters().setNrOfWarnings(BigInteger.valueOf(detailedTAR.getCounters().getNrOfWarnings().longValue()));
+        }
+        aggregatedTAR.setDate(detailedTAR.getDate());
+        aggregatedTAR.setName(detailedTAR.getName());
+        aggregatedTAR.setResult(detailedTAR.getResult());
+        if (detailedTAR.getContext() != null) {
+            aggregatedTAR.setContext(new AnyContent());
+        }
+        if (detailedTAR.getReports() != null) {
+            aggregatedTAR.setReports(new TestAssertionGroupReportsType());
+            var aggregatedReportItems = new AggregateReportItems(new ObjectFactory(), helper);
+            for (var item: detailedTAR.getReports().getInfoOrWarningOrError()) {
+                aggregatedReportItems.updateForReportItem(item);
+            }
+            aggregatedTAR.getReports().getInfoOrWarningOrError().addAll(aggregatedReportItems.getReportItems());
+        }
+        return aggregatedTAR;
+    }
+
+    /**
+     * Check to see if the provided aggregated and detailed reports have differences (i.e. whether there is any aggregation).
+     *
+     * @param detailedTAR The detailed report.
+     * @param aggregateTAR The aggregated report.
+     * @return The check result.
+     */
+    public static boolean aggregateDiffers(TAR detailedTAR, TAR aggregateTAR) {
+        return detailedTAR != null && aggregateTAR != null &&
+                detailedTAR.getReports() != null && aggregateTAR.getReports() != null &&
+                detailedTAR.getReports().getInfoOrWarningOrError().size() != aggregateTAR.getReports().getInfoOrWarningOrError().size();
     }
 
 }

@@ -30,8 +30,12 @@ public class Constants {
     public static final String PARAM_VALIDATION_TYPE_LABEL = "validationTypeLabel";
     /** Constant for the name of the message Thymeleaf template parameter. */
     public static final String PARAM_MESSAGE = "message";
-    /** Constant for the name of the report Thymeleaf template parameter. */
+    /** Constant for the name of the detailed report Thymeleaf template parameter. */
     public static final String PARAM_REPORT = "report";
+    /** Constant for the name of the aggregated report Thymeleaf template parameter. */
+    public static final String PARAM_AGGREGATE_REPORT = "aggregateReport";
+    /** Constant for the name of the Thymeleaf template parameter for the flag to show or not aggregated report controls. */
+    public static final String PARAM_SHOW_AGGREGATE_REPORT = "showAggregateReport";
     /** Constant for the name of the date Thymeleaf template parameter. */
     public static final String PARAM_DATE = "date";
     /** Constant for the name of the file name Thymeleaf template parameter. */

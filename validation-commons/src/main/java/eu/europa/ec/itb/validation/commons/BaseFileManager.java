@@ -854,11 +854,24 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param report The report to serialise and persist.
      * @param uuid The identifier to use when constructing the file's name.
      * @param domainConfig The domain's configuration.
+     * @param isAggregate Whether the report is an aggregate.
+     * @param <R> The specific type of domain configuration subclass.
+     */
+    public <R extends DomainConfig> void saveReport(TAR report, String uuid, R domainConfig, boolean isAggregate) {
+        File outputFile = new File(getReportFolder(), "TAR-"+uuid+(isAggregate?"_aggregate":"")+".xml");
+        this.saveReport(report, outputFile, domainConfig);
+    }
+
+    /**
+     * Save the provided TAR report in the validator's temporary file system as a detailed TAR report.
+     *
+     * @param report The report to serialise and persist.
+     * @param uuid The identifier to use when constructing the file's name.
+     * @param domainConfig The domain's configuration.
      * @param <R> The specific type of domain configuration subclass.
      */
     public <R extends DomainConfig> void saveReport(TAR report, String uuid, R domainConfig) {
-        File outputFile = new File(getReportFolder(), "TAR-"+uuid+".xml");
-        saveReport(report, outputFile, domainConfig);
+        this.saveReport(report, uuid, domainConfig, false);
     }
 
     /**
