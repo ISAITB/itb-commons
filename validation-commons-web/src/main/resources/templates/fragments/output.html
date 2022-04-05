@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
     <body>
-
         <h2 th:fragment="reportTitle(config, minimalUI)" class="view-section-title" th:if="${not minimalUI}" th:text="${localiser.localise('validator.label.resultSectionTitle')}">Validation result</h2>
 
         <th:block th:fragment="reportHeader(config, minimalUI)">
             <div class="panel-heading panel-heading-overview"  th:if="${not minimalUI}">
                 <h3 class="panel-title" th:text="${localiser.localise('validator.label.resultSubSectionOverviewTitle')}">Overview</h3>
             </div>
-            <div class="panel-heading panel-heading-ui" th:if="${minimalUI}">
-                <h1 class="panel-title col-xs-5 report-item panel-title-ui">Validation result</h1>
-                <div th:align="right">
+            <div class="panel-heading panel-heading-ui minimal-ui" th:if="${minimalUI}">
+                <div class="panel-title-ui" th:text="${localiser.localise('validator.label.resultSectionTitle')}">Validation result</div>
+                <div th:replace="fragments/common :: localeSelector(${config}, ${localiser.getLocale()})"/>
+                <div class="panel-title-controls">
                     <button type="submit" id="backSubmit" class="btn btn-default" onclick="window.location.href='uploadm'">Back</button>
                 </div>
             </div>

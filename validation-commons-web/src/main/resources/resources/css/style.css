@@ -8,8 +8,21 @@ body {
 	padding-top: 5px;
 	padding-bottom: 5px;
 }
+.panel-heading-ui.minimal-ui {
+    display: flex;
+    align-items: center;
+}
+.panel-heading-ui.minimal-ui .panel-title-ui {
+    flex-grow: 1;
+}
+.panel-heading-ui.minimal-ui .panel-title-controls {
+    margin-left: 5px;
+}
 .panel-title-ui {
 	font-weight: bold;
+    font-size: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 .view-section {
 	background-color: white;
@@ -148,9 +161,6 @@ body {
    overflow: auto;
    overflow-y: auto;
 }
-.minimal-title {
-    padding-top: 8px;
-}
 .external-input-margin {
     margin-top: 15px;
 }
@@ -190,4 +200,7 @@ body {
 .overview-button-row .btn-toolbar {
     display: flex;
     align-items: center;
+}
+.panel-body-minimal {
+    margin-bottom: -15px;
 }
