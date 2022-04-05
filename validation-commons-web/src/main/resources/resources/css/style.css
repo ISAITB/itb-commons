@@ -51,13 +51,20 @@ body {
 .report-item-error {
     background-color: #f2dede;
 }
+.report-item-error.clickable:hover {
+    background-color: #efd1d1;
+}
 .report-item-warning {
     background-color: #fcf8e3;
 }
-.report-item-info {
-    background-color: #EDEDED;
+.report-item-warning.clickable:hover {
+    background-color: #f3eed1;
 }
 .report-item-info {
+    background-color: #ededed;
+}
+.report-item-info.clickable:hover {
+    background-color: #dddddd;
 }
 .popup-close {
     float: right;
