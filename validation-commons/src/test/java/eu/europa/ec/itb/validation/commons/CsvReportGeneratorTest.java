@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CsvReportGeneratorTest extends BaseTest {
+class CsvReportGeneratorTest extends BaseTest {
 
     private CsvReportGenerator reportGenerator;
 
@@ -111,7 +111,11 @@ public class CsvReportGeneratorTest extends BaseTest {
         var tarFile = Path.of(tmpFolder.toString(), "tarFile.xml");
         Files.copy(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/tarFile.xml")), tarFile);
         var reporter = createBean(createAppConfig(true, true));
-        var exception = assertThrows(ValidatorException.class, () -> reporter.writeReport(tarFile.toFile(), tmpFolder.toFile(), createLocaliser(), createDomainConfig(true)));
+        var tarFileAsFile = tarFile.toFile();
+        var tmpFolderAsFile = tmpFolder.toFile();
+        var localiser = createLocaliser();
+        var domainConfig = createDomainConfig(true);
+        var exception = assertThrows(ValidatorException.class, () -> reporter.writeReport(tarFileAsFile, tmpFolderAsFile, localiser, domainConfig));
         assertEquals("validator.label.exception.unableToGenerateCSVReport", exception.getMessage());
     }
 

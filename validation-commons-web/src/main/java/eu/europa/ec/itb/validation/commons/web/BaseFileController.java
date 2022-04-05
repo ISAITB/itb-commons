@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -124,7 +125,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
         File reportFile = new File(fileManager.getReportFolder(), getReportFileNameXml(id, aggregate));
         if (reportFile.exists() && reportFile.isFile()) {
             if (response != null) {
-                response.setHeader("Content-Disposition", "attachment; filename=report_"+id+".xml");
+                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_"+id+".xml");
             }
             return new FileSystemResource(reportFile);
         } else {
@@ -169,7 +170,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             }
         }
         if (response != null) {
-            response.setHeader("Content-Disposition", "attachment; filename=report_"+id+".pdf");
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_"+id+".pdf");
         }
         return new FileSystemResource(reportFile);
     }
@@ -207,7 +208,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             }
         }
         if (response != null) {
-            response.setHeader("Content-Disposition", "attachment; filename=report_"+id+".csv");
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_"+id+".csv");
         }
         return new FileSystemResource(reportFile);
     }

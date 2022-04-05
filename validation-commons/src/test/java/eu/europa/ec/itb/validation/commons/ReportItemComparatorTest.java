@@ -14,7 +14,7 @@ import static eu.europa.ec.itb.validation.commons.ReportItemComparatorTest.Sever
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class ReportItemComparatorTest {
+class ReportItemComparatorTest {
 
     ObjectFactory objectFactory = new ObjectFactory();
 

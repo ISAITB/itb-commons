@@ -290,7 +290,8 @@ class UtilsTest extends BaseTest {
 
     @Test
     void testToTARWithFileError() {
-        assertThrows(IllegalStateException.class, () -> Utils.toTAR(tmpFolder.toFile()));
+        var tmpFolderAsFile = tmpFolder.toFile();
+        assertThrows(IllegalStateException.class, () -> Utils.toTAR(tmpFolderAsFile));
     }
 
     @Test
@@ -301,8 +302,8 @@ class UtilsTest extends BaseTest {
         assertNotNull(result);
         assertNotNull(result.getReports());
         assertNotNull(result.getReports().getInfoOrWarningOrError());
-        assertEquals(result.getReports().getInfoOrWarningOrError().size(), 5);
-        assertEquals(result.getResult(), TestResultType.FAILURE);
+        assertEquals(5, result.getReports().getInfoOrWarningOrError().size());
+        assertEquals(TestResultType.FAILURE, result.getResult());
     }
 
     @Test
@@ -318,8 +319,8 @@ class UtilsTest extends BaseTest {
         assertNotNull(result);
         assertNotNull(result.getReports());
         assertNotNull(result.getReports().getInfoOrWarningOrError());
-        assertEquals(result.getReports().getInfoOrWarningOrError().size(), 5);
-        assertEquals(result.getResult(), TestResultType.FAILURE);
+        assertEquals(5, result.getReports().getInfoOrWarningOrError().size());
+        assertEquals(TestResultType.FAILURE, result.getResult());
     }
 
     @Test

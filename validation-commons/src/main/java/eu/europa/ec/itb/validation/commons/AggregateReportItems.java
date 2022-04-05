@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class AggregateReportItems {
 
-    private final static Function<JAXBElement<TestAssertionReportType>, String> DEFAULT_CLASSIFIER = element -> String.format("[%s]|[%s]", element.getName().getLocalPart(), ((BAR)element.getValue()).getDescription());
+    private static final Function<JAXBElement<TestAssertionReportType>, String> DEFAULT_CLASSIFIER = element -> String.format("[%s]|[%s]", element.getName().getLocalPart(), ((BAR)element.getValue()).getDescription());
     private final Map<String, AggregateReportItem> itemMap = new LinkedHashMap<>();
     private final ObjectFactory objectFactory;
     private final LocalisationHelper localiser;
