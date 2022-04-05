@@ -10,9 +10,10 @@
             <div class="alert alert-danger" th:if="${message}" th:text="${message}">A message</div>
         </th:block>
 
-        <div th:fragment="formHeader(config, minimalUI)" class="panel-heading panel-heading-ui" th:if="${minimalUI}">
-            <h1 class="panel-title col-xs-5 minimal-title panel-title-ui" th:text="${localiser.localise('validator.label.validationInputPanel')}">Validation input</h1>
-            <div th:align="right">
+        <div th:fragment="formHeader(config, minimalUI)" class="panel-heading panel-heading-ui minimal-ui" th:if="${minimalUI}">
+            <div class="panel-title-ui" th:text="${localiser.localise('validator.label.validationInputPanel')}">Validation input</div>
+            <div th:replace="fragments/common :: localeSelector(${config}, ${localiser.getLocale()})"/>
+            <div class="panel-title-controls">
                 <button type="submit" id="inputFileSubmitMinimal" class="btn btn-default" disabled="true" onclick="uploadFile()" th:text="${localiser.localise('validator.label.uploadButton')}">Upload</button>
                 <input type="hidden" id="validationTypeToUse" name="validationType"/>
             </div>
