@@ -19,9 +19,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -30,6 +28,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -289,26 +289,90 @@ class UtilsTest extends BaseTest {
     }
 
     @Test
-    void testToTarWithFile() throws IOException {
+    void testToTARWithFileError() {
+        var tmpFolderAsFile = tmpFolder.toFile();
+        assertThrows(IllegalStateException.class, () -> Utils.toTAR(tmpFolderAsFile));
+    }
+
+    @Test
+    void testToTARWithFile() throws IOException {
         var tarFile = Path.of(tmpFolder.toString(), "tarFile.xml");
         Files.copy(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/tarFile.xml")), tarFile);
         var result = Utils.toTAR(tarFile.toFile());
         assertNotNull(result);
         assertNotNull(result.getReports());
         assertNotNull(result.getReports().getInfoOrWarningOrError());
-        assertEquals(result.getReports().getInfoOrWarningOrError().size(), 5);
-        assertEquals(result.getResult(), TestResultType.FAILURE);
+        assertEquals(5, result.getReports().getInfoOrWarningOrError().size());
+        assertEquals(TestResultType.FAILURE, result.getResult());
     }
 
     @Test
-    void testToTarWithStream() throws IOException {
+    void testToTARWithStreamError() {
+        assertThrows(IllegalStateException.class, () -> Utils.toTAR((InputStream) null));
+    }
+
+    @Test
+    void testToTARWithStream() throws IOException {
         var tarFile = Path.of(tmpFolder.toString(), "tarFile.xml");
         Files.copy(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/tarFile.xml")), tarFile);
         var result = Utils.toTAR(Files.newInputStream(tarFile));
         assertNotNull(result);
         assertNotNull(result.getReports());
         assertNotNull(result.getReports().getInfoOrWarningOrError());
-        assertEquals(result.getReports().getInfoOrWarningOrError().size(), 5);
-        assertEquals(result.getResult(), TestResultType.FAILURE);
+        assertEquals(5, result.getReports().getInfoOrWarningOrError().size());
+        assertEquals(TestResultType.FAILURE, result.getResult());
     }
+
+    @Test
+    void testToAggregateTAR() throws IOException {
+        var tarFile = Path.of(tmpFolder.toString(), "tarFileForAggregate.xml");
+        Files.copy(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/tarFileForAggregate.xml")), tarFile);
+        var detailed = Utils.toTAR(tarFile.toFile());
+        detailed.setContext(new AnyContent());
+        detailed.getContext().setValue("Value for context");
+        // Sanity check for test data
+        assertEquals(detailed.getReports().getInfoOrWarningOrError().size(), 5);
+        var aggregated = Utils.toAggregatedTAR(detailed, getLocalisationHelper());
+        assertNotSame(detailed, aggregated);
+        assertEquals(detailed.getResult(), aggregated.getResult());
+        assertEquals(detailed.getDate(), aggregated.getDate());
+        assertNotNull(aggregated.getContext());
+        assertNull(aggregated.getContext().getValue());
+        assertEquals(detailed.getCounters().getNrOfAssertions(), aggregated.getCounters().getNrOfAssertions());
+        assertEquals(detailed.getCounters().getNrOfErrors(), aggregated.getCounters().getNrOfErrors());
+        assertEquals(detailed.getCounters().getNrOfWarnings(), aggregated.getCounters().getNrOfWarnings());
+        assertEquals(3, aggregated.getReports().getInfoOrWarningOrError().size());
+        assertEquals("[Total 3] description1", ((BAR)aggregated.getReports().getInfoOrWarningOrError().get(0).getValue()).getDescription());
+        assertEquals("description4", ((BAR)aggregated.getReports().getInfoOrWarningOrError().get(1).getValue()).getDescription());
+        assertEquals("description5", ((BAR)aggregated.getReports().getInfoOrWarningOrError().get(2).getValue()).getDescription());
+    }
+
+    @Test
+    void testAggregateDiffers() throws IOException {
+        var tarFile1 = Path.of(tmpFolder.toString(), "tarFileForAggregate.xml");
+        var tarFile2 = Path.of(tmpFolder.toString(), "tarFile.xml");
+        Files.copy(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/tarFileForAggregate.xml")), tarFile1);
+        Files.copy(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/tarFile.xml")), tarFile2);
+        var detailed1 = Utils.toTAR(tarFile1.toFile());
+        var aggregated1 = Utils.toAggregatedTAR(detailed1, getLocalisationHelper());
+        var detailed2 = Utils.toTAR(tarFile2.toFile());
+        var aggregated2 = Utils.toAggregatedTAR(detailed2, getLocalisationHelper());
+        assertTrue(Utils.aggregateDiffers(detailed1, aggregated1));
+        assertFalse(Utils.aggregateDiffers(detailed2, aggregated2));
+        assertFalse(Utils.aggregateDiffers(detailed1, null));
+        assertFalse(Utils.aggregateDiffers(null, aggregated1));
+        assertFalse(Utils.aggregateDiffers(null, null));
+    }
+
+    private LocalisationHelper getLocalisationHelper() {
+        var localiser = mock(LocalisationHelper.class);
+        when(localiser.localise(eq("validator.label.reportItemTotalOccurrences"), any())).thenAnswer((a) -> {
+            assertEquals(2, a.getArguments().length);
+            assertTrue(a.getArgument(0) instanceof String);
+            assertTrue(a.getArgument(1) instanceof Long);
+            return "Total "+ a.getArgument(1);
+        });
+        return localiser;
+    }
+
 }

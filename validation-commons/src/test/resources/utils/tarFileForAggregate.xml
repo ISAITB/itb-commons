@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<TestStepReport xmlns="http://www.gitb.com/tr/v1/" xmlns:ns2="http://www.gitb.com/core/v1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="SHACL Validation" xsi:type="TAR">
+    <date>2022-03-30T08:54:30.479+02:00</date>
+    <result>FAILURE</result>
+    <counters>
+        <nrOfAssertions>0</nrOfAssertions>
+        <nrOfErrors>4</nrOfErrors>
+        <nrOfWarnings>1</nrOfWarnings>
+    </counters>
+    <context type="map"/>
+    <reports>
+        <error xsi:type="BAR">
+            <assertionID>assertionID1</assertionID>
+            <description>description1</description>
+            <location>location1</location>
+            <test>test1</test>
+        </error>
+        <error xsi:type="BAR">
+            <assertionID>assertionID2</assertionID>
+            <description>description1</description>
+            <location>location2</location>
+            <test>test2</test>
+        </error>
+        <error xsi:type="BAR">
+            <assertionID>assertionID3</assertionID>
+            <description>description1</description>
+            <location>location3</location>
+            <test>test3</test>
+        </error>
+        <info xsi:type="BAR">
+            <assertionID>assertionID4</assertionID>
+            <description>description4</description>
+            <location>location4</location>
+            <test>test4</test>
+        </info>
+        <warning xsi:type="BAR">
+            <assertionID>assertionID5</assertionID>
+            <description>description5</description>
+            <location>location5</location>
+            <test>test5</test>
+        </warning>
+    </reports>
+</TestStepReport>

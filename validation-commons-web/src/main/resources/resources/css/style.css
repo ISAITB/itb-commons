@@ -51,13 +51,20 @@ body {
 .report-item-error {
     background-color: #f2dede;
 }
+.report-item-error.clickable:hover {
+    background-color: #efd1d1;
+}
 .report-item-warning {
     background-color: #fcf8e3;
 }
-.report-item-info {
-    background-color: #EDEDED;
+.report-item-warning.clickable:hover {
+    background-color: #f3eed1;
 }
 .report-item-info {
+    background-color: #ededed;
+}
+.report-item-info.clickable:hover {
+    background-color: #dddddd;
 }
 .popup-close {
     float: right;
@@ -106,9 +113,6 @@ body {
 .overall-title {
     margin-bottom: 30px;
     cursor: pointer;
-}
-.overview-button-row {
-    padding-top: 10px;
 }
 .error-details {
     border-top: thick double rgb(237, 237, 237);
@@ -164,4 +168,26 @@ body {
 }
 .locale-div div.input-group {
     margin-left: auto;
+}
+.panel-heading-details {
+    height: 55px;
+}
+.panel-heading-overview {
+    height: 55px;
+    display: flex;
+    align-items: center;
+}
+.panel-heading-details {
+    display: flex;
+    align-items: center;
+}
+.panel-heading-details-title {
+    flex-grow: 1;
+}
+.reportLimitTooltip {
+    margin-left: 5px;
+}
+.overview-button-row .btn-toolbar {
+    display: flex;
+    align-items: center;
 }

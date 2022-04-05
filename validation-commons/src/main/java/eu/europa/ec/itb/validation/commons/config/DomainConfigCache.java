@@ -236,6 +236,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     // Maximum report thresholds - end
                     // CSV BOM configuration.
                     domainConfig.setAddBOMToCSVExports(config.getBoolean("validator.addBOMToCSVExports", Boolean.TRUE));
+                    domainConfig.setReportsOrdered(config.getBoolean("validator.reportsOrdered", false));
                     // Allow subclasses to extend the configuration as needed.
                     addDomainConfiguration(domainConfig, config);
                     completeValidationArtifactConfig(domainConfig);

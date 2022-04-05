@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CsvReportGeneratorTest extends BaseTest {
+class CsvReportGeneratorTest extends BaseTest {
 
     private CsvReportGenerator reportGenerator;
 
@@ -37,9 +37,9 @@ public class CsvReportGeneratorTest extends BaseTest {
         return localiser;
     }
 
-    private DomainConfig createDomainConfig() {
+    private DomainConfig createDomainConfig(boolean addBOM) {
         var domainConfig = new DomainConfig();
-        domainConfig.setAddBOMToCSVExports(true);
+        domainConfig.setAddBOMToCSVExports(addBOM);
         return domainConfig;
     }
 
@@ -57,7 +57,7 @@ public class CsvReportGeneratorTest extends BaseTest {
         var reporter = createBean(createAppConfig(true, true));
         var csvFile = Path.of(tmpFolder.toString(), "report.csv");
         // Test
-        reporter.writeReport(tarFile.toFile(), csvFile.toFile(), createLocaliser(), createDomainConfig());
+        reporter.writeReport(tarFile.toFile(), csvFile.toFile(), createLocaliser(), createDomainConfig(true));
         assertTrue(Files.exists(csvFile));
         var lines = Files.readAllLines(csvFile);
         assertEquals(6, lines.size());
@@ -71,7 +71,7 @@ public class CsvReportGeneratorTest extends BaseTest {
         var reporter = createBean(createAppConfig(false, false));
         var csvFile = Path.of(tmpFolder.toString(), "report.csv");
         // Test
-        reporter.writeReport(tarFile.toFile(), csvFile.toFile(), createLocaliser(), createDomainConfig());
+        reporter.writeReport(tarFile.toFile(), csvFile.toFile(), createLocaliser(), createDomainConfig(true));
         assertTrue(Files.exists(csvFile));
         var lines = Files.readAllLines(csvFile);
         assertEquals(6, lines.size());
@@ -85,7 +85,7 @@ public class CsvReportGeneratorTest extends BaseTest {
         var reporter = createBean(createAppConfig(true, true));
         var csvFile = Path.of(tmpFolder.toString(), "report.csv");
         // Test
-        reporter.writeReport(tarFile.toFile(), csvFile.toFile(), createLocaliser(), createDomainConfig());
+        reporter.writeReport(tarFile.toFile(), csvFile.toFile(), createLocaliser(), createDomainConfig(true));
         assertTrue(Files.exists(csvFile));
         var lines = Files.readAllLines(csvFile);
         assertEquals(6, lines.size());
@@ -93,11 +93,29 @@ public class CsvReportGeneratorTest extends BaseTest {
     }
 
     @Test
+    void testWriteReportWithFileNoExtraFieldsPresentNoBOM() throws IOException {
+        var tarFile = Path.of(tmpFolder.toString(), "tarFile.xml");
+        Files.copy(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/tarFileNoTestsNoAssertions.xml")), tarFile);
+        var reporter = createBean(createAppConfig(true, true));
+        var csvFile = Path.of(tmpFolder.toString(), "report.csv");
+        // Test
+        reporter.writeReport(tarFile.toFile(), csvFile.toFile(), createLocaliser(), createDomainConfig(false));
+        assertTrue(Files.exists(csvFile));
+        var lines = Files.readAllLines(csvFile);
+        assertEquals(6, lines.size());
+        assertEquals("Level,Description,Location", lines.get(0));
+    }
+
+    @Test
     void testWriteError() throws IOException {
         var tarFile = Path.of(tmpFolder.toString(), "tarFile.xml");
         Files.copy(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/tarFile.xml")), tarFile);
         var reporter = createBean(createAppConfig(true, true));
-        var exception = assertThrows(ValidatorException.class, () -> reporter.writeReport(tarFile.toFile(), tmpFolder.toFile(), createLocaliser(), createDomainConfig()));
+        var tarFileAsFile = tarFile.toFile();
+        var tmpFolderAsFile = tmpFolder.toFile();
+        var localiser = createLocaliser();
+        var domainConfig = createDomainConfig(true);
+        var exception = assertThrows(ValidatorException.class, () -> reporter.writeReport(tarFileAsFile, tmpFolderAsFile, localiser, domainConfig));
         assertEquals("validator.label.exception.unableToGenerateCSVReport", exception.getMessage());
     }
 

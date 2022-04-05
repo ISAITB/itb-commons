@@ -116,6 +116,8 @@ class DomainConfigCacheTest extends BaseSpringTest {
         assertEquals(0, config.getPluginPerTypeConfig().get("type1.option1_2").size());
         assertEquals(1000, config.getMaximumReportsForDetailedOutput());
         assertEquals(10000, config.getMaximumReportsForXmlOutput());
+        assertTrue(config.isReportsOrdered());
+        assertTrue(config.isAddBOMToCSVExports());
     }
 
     @Test

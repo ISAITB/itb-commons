@@ -45,16 +45,16 @@ class BaseFileControllerTest extends BaseTest {
                 return uuid + ".txt";
             }
             @Override
-            public String getReportFileNameXml(String uuid) {
-                return uuid + ".xml";
+            public String getReportFileNameXml(String uuid, boolean aggregate) {
+                return uuid + (aggregate?"_aggregate":"") + ".xml";
             }
             @Override
-            public String getReportFileNamePdf(String uuid) {
-                return uuid + ".pdf";
+            public String getReportFileNamePdf(String uuid, boolean aggregate) {
+                return uuid + (aggregate?"_aggregate":"") + ".pdf";
             }
             @Override
-            public String getReportFileNameCsv(String uuid) {
-                return uuid + ".csv";
+            public String getReportFileNameCsv(String uuid, boolean aggregate) {
+                return uuid + (aggregate?"_aggregate":"") + ".csv";
             }
         };
         controller.config = appConfig;
@@ -111,7 +111,7 @@ class BaseFileControllerTest extends BaseTest {
         var reportUuid = "UUID1";
         var inputFile = createFileWithContents(Path.of(reportFolder.toString(), reportUuid+".xml"), "");
         var controller = createController(appConfig, fileManager, configCache, reportGenerator);
-        var result = controller.getReportXml("domain1", reportUuid, servletResponse);
+        var result = controller.getReportXml("domain1", reportUuid, false, servletResponse);
         assertNotNull(result);
         assertEquals(inputFile, result.getFile().toPath());
         verify(servletResponse, times(1)).setHeader("Content-Disposition", "attachment; filename=report_"+reportUuid+".xml");
@@ -121,7 +121,7 @@ class BaseFileControllerTest extends BaseTest {
     void testGetReportXmlFileNotExists() {
         var servletResponse = mock(HttpServletResponse.class);
         var controller = createController(appConfig, fileManager, configCache, reportGenerator);
-        assertThrows(NotFoundException.class, () -> controller.getReportXml("domain1", "UUID", servletResponse));
+        assertThrows(NotFoundException.class, () -> controller.getReportXml("domain1", "UUID", false, servletResponse));
     }
 
     @Test
@@ -132,7 +132,7 @@ class BaseFileControllerTest extends BaseTest {
         var xmlFile = createFileWithContents(Path.of(reportFolder.toString(), reportUuid+".xml"), "");
         var expectedPdfFile = Path.of(fileManager.getReportFolder().toPath().toString(), reportUuid+".pdf");
         var controller = createController(appConfig, fileManager, configCache, reportGenerator);
-        var result = controller.getReportPdf("domain1", reportUuid, servletRequest, servletResponse);
+        var result = controller.getReportPdf("domain1", reportUuid, false, servletRequest, servletResponse);
         assertNotNull(result);
         assertEquals(expectedPdfFile, result.getFile().toPath());
         verify(servletResponse, times(1)).setHeader("Content-Disposition", "attachment; filename=report_"+reportUuid+".pdf");
@@ -147,7 +147,7 @@ class BaseFileControllerTest extends BaseTest {
         var xmlFile = createFileWithContents(Path.of(reportFolder.toString(), reportUuid+".xml"), "");
         var expectedCsvFile = Path.of(fileManager.getReportFolder().toPath().toString(), reportUuid+".csv");
         var controller = createController(appConfig, fileManager, configCache, reportGenerator);
-        var result = controller.getReportCsv("domain1", reportUuid, servletRequest, servletResponse);
+        var result = controller.getReportCsv("domain1", reportUuid, false, servletRequest, servletResponse);
         assertNotNull(result);
         verify(servletResponse, times(1)).setHeader("Content-Disposition", "attachment; filename=report_"+reportUuid+".csv");
         verify(csvReportGenerator, times(1)).writeReport(eq(xmlFile.toFile()), eq(expectedCsvFile.toFile()), any(LocalisationHelper.class), any(DomainConfig.class));
@@ -158,7 +158,7 @@ class BaseFileControllerTest extends BaseTest {
         var servletRequest = mock(HttpServletRequest.class);
         var servletResponse = mock(HttpServletResponse.class);
         var controller = createController(appConfig, fileManager, configCache, reportGenerator);
-        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", servletRequest, servletResponse));
+        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", false, servletRequest, servletResponse));
     }
 
     @Test
@@ -185,8 +185,8 @@ class BaseFileControllerTest extends BaseTest {
         when(configCache.getConfigForDomainName(any())).thenReturn(null);
         var controller = createController(appConfig, fileManager, configCache, reportGenerator);
         assertThrows(NotFoundException.class, () -> controller.getInput("domain1", "UUID"));
-        assertThrows(NotFoundException.class, () -> controller.getReportXml("domain1", "UUID", mock(HttpServletResponse.class)));
-        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", mock(HttpServletRequest.class), mock(HttpServletResponse.class)));
+        assertThrows(NotFoundException.class, () -> controller.getReportXml("domain1", "UUID", false, mock(HttpServletResponse.class)));
+        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", false, mock(HttpServletRequest.class), mock(HttpServletResponse.class)));
         assertThrows(NotFoundException.class, () -> controller.deleteReport("domain1", "UUID"));
         assertThrows(NotFoundException.class, () -> controller.deleteInput("domain1", "UUID"));
     }
@@ -200,8 +200,8 @@ class BaseFileControllerTest extends BaseTest {
         });
         var controller = createController(appConfig, fileManager, configCache, reportGenerator);
         assertThrows(NotFoundException.class, () -> controller.getInput("domain1", "UUID"));
-        assertThrows(NotFoundException.class, () -> controller.getReportXml("domain1", "UUID", mock(HttpServletResponse.class)));
-        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", mock(HttpServletRequest.class), mock(HttpServletResponse.class)));
+        assertThrows(NotFoundException.class, () -> controller.getReportXml("domain1", "UUID", false, mock(HttpServletResponse.class)));
+        assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", false, mock(HttpServletRequest.class), mock(HttpServletResponse.class)));
         assertThrows(NotFoundException.class, () -> controller.deleteReport("domain1", "UUID"));
         assertThrows(NotFoundException.class, () -> controller.deleteInput("domain1", "UUID"));
     }
