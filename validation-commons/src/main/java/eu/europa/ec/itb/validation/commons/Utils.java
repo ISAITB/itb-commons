@@ -488,7 +488,7 @@ public class Utils {
             Unmarshaller unmarshaller = tdlJaxbContext.createUnmarshaller();
             JAXBElement<TAR> tar = unmarshaller.unmarshal(new StreamSource(tarXml), TAR.class);
             return tar.getValue();
-        } catch (JAXBException e) {
+        } catch (Exception e) {
             throw new IllegalStateException("Unable to deserialize TAR report from stream", e);
         }
     }
