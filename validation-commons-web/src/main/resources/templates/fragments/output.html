@@ -119,8 +119,20 @@
                     <div class="panel-heading-details-title">
                         <h3 class="panel-title" th:text="${localiser.localise('validator.label.resultSubSectionDetailsTitle')}">Details</h3>
                     </div>
-                    <div th:if="${showAggregateReport && (report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput)}" class="panel-heading-details-control">
-                        <div class="btn-group">
+                    <div th:if="${report.reports == null || report.reports.infoOrWarningOrError == null || report.reports.infoOrWarningOrError.size() <= config.maximumReportsForDetailedOutput}" class="panel-heading-details-control btn-toolbar">
+                        <div id="severityFilterButton" class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span id="severityFilterText" th:text="${localiser.localise('validator.label.viewReportItemsShowAll')}">Show all</span> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" onclick="severityFilterChange();return false;"><span id="severityFilterShowAllText" th:text="${localiser.localise('validator.label.viewReportItemsShowAll')}">Show all</span></a></li>
+                                <li role="separator" class="divider"></li>
+                                <li id="severityFilterErrorOption"><a href="#" onclick="severityFilterChange('error');return false;"><span id="severityFilterShowErrorsText" th:text="${localiser.localise('validator.label.viewReportItemsShowErrors')}">Show errors</span></a></li>
+                                <li id="severityFilterWarningOption"><a href="#" onclick="severityFilterChange('warning');return false;"><span id="severityFilterShowWarningsText" th:text="${localiser.localise('validator.label.viewReportItemsShowWarnings')}">Show warnings</span></a></li>
+                                <li id="severityFilterMessageOption"><a href="#" onclick="severityFilterChange('message');return false;"><span id="severityFilterShowMessagesText" th:text="${localiser.localise('validator.label.viewReportItemsShowMessages')}">Show messages</span></a></li>
+                            </ul>
+                        </div>
+                        <div th:if="${showAggregateReport}" class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span id="reportTypeSelectText" th:text="${localiser.localise('validator.label.viewReportItemsDetailed')}">Detailed report</span> <span class="caret"></span>
                             </button>

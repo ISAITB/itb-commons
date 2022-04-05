@@ -22,6 +22,9 @@ $(document).ready(function() {
 	    });
 	}
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+    if ($(".panel-heading-details").length > 0) {
+        updateSeverityFilterVisibility();
+    }
     notifyListeners('FORM_READY', {});
 });
 
@@ -919,5 +922,64 @@ function reportTypeChange(aggregate) {
         $('#reportItemsAggregated').addClass('hidden');
         $('#reportItemsDetailed').removeClass('hidden');
         $('#reportTypeSelectText').text($('#reportTypeSelectDetailedText').text());
+    }
+    updateSeverityFilterVisibility();
+}
+
+function updateSeverityFilterVisibility() {
+    var parentId = 'reportItemsDetailed';
+    if ($('#reportItemsDetailed').hasClass('hidden')) {
+        parentId = 'reportItemsAggregated';
+    }
+    var errorCount = $('#'+parentId+' .report-item.report-item-error').length,
+        warningCount = $('#'+parentId+' .report-item.report-item-warning').length,
+        messageCount = $('#'+parentId+' .report-item.report-item-info').length,
+        visibleCount = 0
+    if (errorCount == 0) {
+        $('#severityFilterErrorOption').addClass('hidden');
+    } else {
+        $('#severityFilterErrorOption').removeClass('hidden');
+        visibleCount += 1;
+    }
+    if (warningCount == 0) {
+        $('#severityFilterWarningOption').addClass('hidden');
+    } else {
+        $('#severityFilterWarningOption').removeClass('hidden');
+        visibleCount += 1;
+    }
+    if (messageCount == 0) {
+        $('#severityFilterMessageOption').addClass('hidden');
+    } else {
+        $('#severityFilterMessageOption').removeClass('hidden');
+        visibleCount += 1;
+    }
+    if (visibleCount > 1) {
+        $('#severityFilterButton').removeClass('hidden');
+    } else {
+        $('#severityFilterButton').addClass('hidden');
+    }
+}
+
+function severityFilterChange(level) {
+    if (level == 'error') {
+        $('#severityFilterText').text($('#severityFilterShowErrorsText').text());
+        $('.report-item.report-item-error').removeClass('hidden');
+        $('.report-item.report-item-warning').addClass('hidden');
+        $('.report-item.report-item-info').addClass('hidden');
+    } else if (level == 'warning') {
+        $('#severityFilterText').text($('#severityFilterShowWarningsText').text());
+        $('.report-item.report-item-error').addClass('hidden');
+        $('.report-item.report-item-warning').removeClass('hidden');
+        $('.report-item.report-item-info').addClass('hidden');
+    } else if (level == 'message') {
+        $('#severityFilterText').text($('#severityFilterShowMessagesText').text());
+        $('.report-item.report-item-error').addClass('hidden');
+        $('.report-item.report-item-warning').addClass('hidden');
+        $('.report-item.report-item-info').removeClass('hidden');
+    } else {
+        $('#severityFilterText').text($('#severityFilterShowAllText').text());
+        $('.report-item.report-item-error').removeClass('hidden');
+        $('.report-item.report-item-warning').removeClass('hidden');
+        $('.report-item.report-item-info').removeClass('hidden');
     }
 }
