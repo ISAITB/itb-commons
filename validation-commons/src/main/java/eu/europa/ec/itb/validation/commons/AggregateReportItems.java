@@ -50,7 +50,11 @@ public class AggregateReportItems {
      * @param classifierFn The classification function to use.
      */
     public void updateForReportItem(JAXBElement<TestAssertionReportType> element, Function<JAXBElement<TestAssertionReportType>, String> classifierFn) {
-        itemMap.computeIfAbsent(classifierFn.apply(element), k -> new AggregateReportItem(cloneElement(element))).addOne();
+        if (element.getValue() instanceof BAR) {
+            itemMap.computeIfAbsent(classifierFn.apply(element), k -> new AggregateReportItem(cloneElement(element.getName().getLocalPart(), (BAR)element.getValue()))).addOne();
+        } else {
+            throw new IllegalStateException("Report items encountered having an unexpected class type ["+element.getValue().getClass()+"]");
+        }
     }
 
     /**
@@ -71,26 +75,22 @@ public class AggregateReportItems {
     /**
      * Clone the provided report item element.
      *
-     * @param element The original item's element.
+     * @param wrapperName The local name of the wrapping JAXB element.
+     * @param source The original item's element.
      * @return The cloned element.
      */
-    private JAXBElement<TestAssertionReportType> cloneElement(JAXBElement<TestAssertionReportType> element) {
-        if (element.getValue() instanceof BAR) {
-            var source = (BAR)element.getValue();
-            var target = new BAR();
-            target.setDescription(source.getDescription());
-            target.setAssertionID(source.getAssertionID());
-            target.setType(source.getType());
-            target.setValue(source.getValue());
-            target.setLocation(source.getLocation());
-            target.setTest(source.getTest());
-            switch (element.getName().getLocalPart()) {
-                case "error": return objectFactory.createTestAssertionGroupReportsTypeError(target);
-                case "warning": return objectFactory.createTestAssertionGroupReportsTypeWarning(target);
-                default: return objectFactory.createTestAssertionGroupReportsTypeInfo(target);
-            }
-        } else {
-            throw new IllegalStateException("Report items encountered having an unexpected class type ["+element.getValue().getClass()+"]");
+    private JAXBElement<TestAssertionReportType> cloneElement(String wrapperName, BAR source) {
+        var target = new BAR();
+        target.setDescription(source.getDescription());
+        target.setAssertionID(source.getAssertionID());
+        target.setType(source.getType());
+        target.setValue(source.getValue());
+        target.setLocation(source.getLocation());
+        target.setTest(source.getTest());
+        switch (wrapperName) {
+            case "error": return objectFactory.createTestAssertionGroupReportsTypeError(target);
+            case "warning": return objectFactory.createTestAssertionGroupReportsTypeWarning(target);
+            default: return objectFactory.createTestAssertionGroupReportsTypeInfo(target);
         }
     }
 

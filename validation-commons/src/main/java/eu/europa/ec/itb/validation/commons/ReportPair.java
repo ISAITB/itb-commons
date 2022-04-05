@@ -2,6 +2,8 @@ package eu.europa.ec.itb.validation.commons;
 
 import com.gitb.tr.TAR;
 
+import java.util.Objects;
+
 /**
  * Wrapper class to hold the pair of a validation's TAR reports.
  */
@@ -17,6 +19,7 @@ public class ReportPair {
      * @param aggregateReport The aggregate TAR report.
      */
     public ReportPair(TAR detailedReport, TAR aggregateReport) {
+        Objects.requireNonNull(detailedReport, "Detailed report must always be provided");
         this.detailedReport = detailedReport;
         this.aggregateReport = aggregateReport;
     }
