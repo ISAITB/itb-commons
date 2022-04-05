@@ -55,7 +55,7 @@
             <div class="locale-div">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-globe" aria-hidden="true"></i></span>
-                    <select class="form-control input-sm" id="availableLocales" name="availableLocales" onchange="localeChanged()">
+                    <select class="form-control" th:classappend="${minimalUI?'':'input-sm'}" id="availableLocales" name="availableLocales" onchange="localeChanged()">
                         <th:block th:each="locale : ${config.availableLocales}">
                             <th:block th:switch="${locale.getDisplayCountry(locale).isBlank()}">
                                 <option th:case="true" th:value="${locale.toString()}" th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(locale.getDisplayLanguage(locale))}" th:selected="${locale == currentLocale}">Locale</option>
