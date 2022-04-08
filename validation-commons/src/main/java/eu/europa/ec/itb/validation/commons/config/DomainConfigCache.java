@@ -222,7 +222,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setPluginPerTypeConfig(ParseUtils.parseTypedValueList("validator.plugins", domainConfig.getType(), config, pluginConfigMapper));
                     // Parse plugins - end
                     // Input preprocessing expressions - start
-                    domainConfig.setInputPreprocessorPerType(ParseUtils.parseMap("validator.input.preprocessor", config, validationTypes));;
+                    domainConfig.setInputPreprocessorPerType(ParseUtils.parseMap("validator.input.preprocessor", config, validationTypes));
                     // Input preprocessing expressions - end
                     // Maximum report thresholds - start
                     domainConfig.setMaximumReportsForDetailedOutput(config.getLong("validator.maximumReportsForDetailedOutput", DEFAULT_MAXIMUM_REPORTS_FOR_DETAILS_OUTPUT));
