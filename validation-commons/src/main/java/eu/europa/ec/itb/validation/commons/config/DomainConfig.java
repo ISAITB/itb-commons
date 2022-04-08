@@ -30,9 +30,24 @@ public class DomainConfig {
     private Map<String, String> domainProperties;
     private String domainRoot;
     private boolean addBOMToCSVExports = true;
+    private Map<String, String> inputPreprocessorPerType;
     // Plugin configuration.
     private List<PluginInfo> pluginDefaultConfig;
     private Map<String, List<PluginInfo>> pluginPerTypeConfig;
+
+    /**
+     * @return The preprocessing expression per (full) validation type.
+     */
+    public Map<String, String> getInputPreprocessorPerType() {
+        return inputPreprocessorPerType;
+    }
+
+    /**
+     * @param inputPreprocessorPerType The preprocessing expression per (full) validation type.
+     */
+    public void setInputPreprocessorPerType(Map<String, String> inputPreprocessorPerType) {
+        this.inputPreprocessorPerType = inputPreprocessorPerType;
+    }
 
     /**
      * @return True if validation reports should be ordered.
