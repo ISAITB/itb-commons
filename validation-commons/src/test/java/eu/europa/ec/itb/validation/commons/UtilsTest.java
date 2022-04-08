@@ -331,7 +331,7 @@ class UtilsTest extends BaseTest {
         detailed.setContext(new AnyContent());
         detailed.getContext().setValue("Value for context");
         // Sanity check for test data
-        assertEquals(detailed.getReports().getInfoOrWarningOrError().size(), 5);
+        assertEquals(5, detailed.getReports().getInfoOrWarningOrError().size());
         var aggregated = Utils.toAggregatedTAR(detailed, getLocalisationHelper());
         assertNotSame(detailed, aggregated);
         assertEquals(detailed.getResult(), aggregated.getResult());

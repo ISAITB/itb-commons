@@ -36,6 +36,8 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
 
     private static final String DEFAULT_FILE_ENCODING = "UTF-8";
     private static final String PROPERTY_SUFFIX = ".properties";
+    static final long DEFAULT_MAXIMUM_REPORTS_FOR_DETAILS_OUTPUT = 5000L;
+    static final long DEFAULT_MAXIMUM_REPORTS_FOR_XML_OUTPUT = 50000L;
     private static final Logger logger = LoggerFactory.getLogger(DomainConfigCache.class);
 
     @Autowired
@@ -180,7 +182,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setDomainName(appConfig.getDomainIdToDomainName().get(domain));
                     domainConfig.setDomainRoot(Paths.get(appConfig.getResourceRoot(), domain).toString());
 
-                    List<String> declaredValidationTypes = Arrays.stream(StringUtils.split(config.getString("validator.type"), ',')).map(String::trim).collect(Collectors.toList());
+                    List<String> declaredValidationTypes = Arrays.stream(Objects.requireNonNull(StringUtils.split(config.getString("validator.type"), ','), "No validation types were configured")).map(String::trim).collect(Collectors.toList());
                     Map<String, List<String>> validationTypeOptions = new HashMap<>();
                     for (Map.Entry<String,String> entry: ParseUtils.parseMap("validator.typeOptions", config, declaredValidationTypes).entrySet()) {
                         validationTypeOptions.put(entry.getKey(), Arrays.stream(StringUtils.split(entry.getValue(), ',')).map(String::trim).collect(Collectors.toList()));
@@ -219,16 +221,17 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setPluginDefaultConfig(ParseUtils.parseValueList("validator.defaultPlugins", config, pluginConfigMapper));
                     domainConfig.setPluginPerTypeConfig(ParseUtils.parseTypedValueList("validator.plugins", domainConfig.getType(), config, pluginConfigMapper));
                     // Parse plugins - end
+                    // Input preprocessing expressions - start
+                    domainConfig.setInputPreprocessorPerType(ParseUtils.parseMap("validator.input.preprocessor", config, validationTypes));
+                    // Input preprocessing expressions - end
                     // Maximum report thresholds - start
-                    long defaultMaximumReportsForDetailsOutput = 5000L;
-                    long defaultMaximumReportsForXmlOutput = 50000L;
-                    domainConfig.setMaximumReportsForDetailedOutput(config.getLong("validator.maximumReportsForDetailedOutput", defaultMaximumReportsForDetailsOutput));
+                    domainConfig.setMaximumReportsForDetailedOutput(config.getLong("validator.maximumReportsForDetailedOutput", DEFAULT_MAXIMUM_REPORTS_FOR_DETAILS_OUTPUT));
                     if (domainConfig.getMaximumReportsForDetailedOutput() < 0) {
-                        domainConfig.setMaximumReportsForDetailedOutput(defaultMaximumReportsForDetailsOutput);
+                        domainConfig.setMaximumReportsForDetailedOutput(DEFAULT_MAXIMUM_REPORTS_FOR_DETAILS_OUTPUT);
                     }
-                    domainConfig.setMaximumReportsForXmlOutput(config.getLong("validator.maximumReportsForXmlOutput", defaultMaximumReportsForXmlOutput));
+                    domainConfig.setMaximumReportsForXmlOutput(config.getLong("validator.maximumReportsForXmlOutput", DEFAULT_MAXIMUM_REPORTS_FOR_XML_OUTPUT));
                     if (domainConfig.getMaximumReportsForXmlOutput() < 0) {
-                        domainConfig.setMaximumReportsForXmlOutput(defaultMaximumReportsForXmlOutput);
+                        domainConfig.setMaximumReportsForXmlOutput(DEFAULT_MAXIMUM_REPORTS_FOR_XML_OUTPUT);
                     }
                     if (domainConfig.getMaximumReportsForXmlOutput() < domainConfig.getMaximumReportsForDetailedOutput()) {
                         domainConfig.setMaximumReportsForXmlOutput(domainConfig.getMaximumReportsForDetailedOutput());

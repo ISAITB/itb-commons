@@ -29,6 +29,8 @@ import static eu.europa.ec.itb.validation.commons.web.Constants.MDC_DOMAIN;
  */
 public abstract class BaseFileController<T extends BaseFileManager, R extends ApplicationConfig, Z extends WebDomainConfigCache> {
 
+    private static final String CONTENT_DISPOSITION_ATTACHMENT_VALUE = "attachment; filename=report_%s.%s";
+
     @Autowired
     protected R config;
     @Autowired
@@ -125,7 +127,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
         File reportFile = new File(fileManager.getReportFolder(), getReportFileNameXml(id, aggregate));
         if (reportFile.exists() && reportFile.isFile()) {
             if (response != null) {
-                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_"+id+".xml");
+                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format(CONTENT_DISPOSITION_ATTACHMENT_VALUE, id, "xml"));
             }
             return new FileSystemResource(reportFile);
         } else {
@@ -170,7 +172,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             }
         }
         if (response != null) {
-            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_"+id+".pdf");
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format(CONTENT_DISPOSITION_ATTACHMENT_VALUE, id, "pdf"));
         }
         return new FileSystemResource(reportFile);
     }
@@ -208,7 +210,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             }
         }
         if (response != null) {
-            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_"+id+".csv");
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format(CONTENT_DISPOSITION_ATTACHMENT_VALUE, id, "csv"));
         }
         return new FileSystemResource(reportFile);
     }
@@ -228,20 +230,20 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             throw new NotFoundException();
         }
         MDC.put(MDC_DOMAIN, domain);
-        deleteSpecificReport(new File(fileManager.getReportFolder(), getReportFileNameXml(id, false)));
-        deleteSpecificReport(new File(fileManager.getReportFolder(), getReportFileNameXml(id, true)));
-        deleteSpecificReport(new File(fileManager.getReportFolder(), getReportFileNamePdf(id, false)));
-        deleteSpecificReport(new File(fileManager.getReportFolder(), getReportFileNamePdf(id, true)));
-        deleteSpecificReport(new File(fileManager.getReportFolder(), getReportFileNameCsv(id, false)));
-        deleteSpecificReport(new File(fileManager.getReportFolder(), getReportFileNameCsv(id, true)));
+        deleteSpecificFile(new File(fileManager.getReportFolder(), getReportFileNameXml(id, false)));
+        deleteSpecificFile(new File(fileManager.getReportFolder(), getReportFileNameXml(id, true)));
+        deleteSpecificFile(new File(fileManager.getReportFolder(), getReportFileNamePdf(id, false)));
+        deleteSpecificFile(new File(fileManager.getReportFolder(), getReportFileNamePdf(id, true)));
+        deleteSpecificFile(new File(fileManager.getReportFolder(), getReportFileNameCsv(id, false)));
+        deleteSpecificFile(new File(fileManager.getReportFolder(), getReportFileNameCsv(id, true)));
     }
 
     /**
-     * Delete the provided report file.
+     * Delete the provided file.
      *
-     * @param reportFile The report file to delete.
+     * @param reportFile The file to delete.
      */
-    private void deleteSpecificReport(File reportFile) {
+    private void deleteSpecificFile(File reportFile) {
         if (reportFile.exists() && reportFile.isFile()) {
             FileUtils.deleteQuietly(reportFile);
         }
@@ -261,10 +263,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             throw new NotFoundException();
         }
         MDC.put(MDC_DOMAIN, domain);
-        File reportFile = new File(fileManager.getReportFolder(), getInputFileName(id));
-        if (reportFile.exists() && reportFile.isFile()) {
-            FileUtils.deleteQuietly(reportFile);
-        }
+        deleteSpecificFile(new File(fileManager.getReportFolder(), getInputFileName(id)));
     }
 
 }

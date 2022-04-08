@@ -727,7 +727,7 @@ function getReport(inputID) {
     }
 }
 function getResultReportForReportType(inputID, pathPostfix, aggregate, buttonID, spinnerID) {
-    var successPromise = jQuery.Deferred();
+    var resultPromise = jQuery.Deferred();
     if ($('#'+buttonID).length) {
     	 var request = new XMLHttpRequest();
     	 request.open("GET", "report/"+inputID+"/"+pathPostfix+"?aggregate="+aggregate, true);
@@ -735,12 +735,13 @@ function getResultReportForReportType(inputID, pathPostfix, aggregate, buttonID,
          request.onreadystatechange = function() {
              if (request.readyState == 4) {
                  if (request.status == 200) {
-                     $('#'+spinnerID).addClass('hidden');
-                     $('#'+buttonID).removeClass('disabled');
-                     successPromise.resolve(request.response);
+                    $('#'+spinnerID).addClass('hidden');
+                    $('#'+buttonID).removeClass('disabled');
+                    resultPromise.resolve({ payload: request.response, ok: true });
                  } else if (request.responseText != "") {
                  	_state.error = JSON.parse(request.responseText).errorMessage;
                  	raiseAlert(_state.error);
+                 	resultPromise.resolve();
  				}
              } else if (request.readyState == 2) {
                  if (request.status == 200) {
@@ -751,32 +752,34 @@ function getResultReportForReportType(inputID, pathPostfix, aggregate, buttonID,
              }
          };
          request.send(null);
+    } else {
+        resultPromise.resolve();
     }
-    return successPromise
+    return resultPromise
 }
 function getResultReport(inputID) {
     getResultReportForReportType(inputID, 'xml', false, 'downloadReportButtonXML', 'downloadReportButtonXMLSpinner').done(function (data) {
-        _state.itbResultReportXML = new Blob([data], { type: 'application/xml' });
+        if (data && data.ok) _state.itbResultReportXML = new Blob([data.payload], { type: 'application/xml' });
         _state.resultLoadXML.resolve();
     })
     getResultReportForReportType(inputID, 'xml', true, 'downloadReportButtonXMLAggregate', 'downloadReportButtonXMLSpinnerAggregate').done(function (data) {
-        _state.itbResultReportXMLAggregate = new Blob([data], { type: 'application/xml' });
+        if (data && data.ok) _state.itbResultReportXMLAggregate = new Blob([data.payload], { type: 'application/xml' });
         _state.resultLoadXMLAggregate.resolve();
     })
     getResultReportForReportType(inputID, 'pdf', false, 'downloadReportButtonPDF', 'downloadReportButtonPDFSpinner').done(function (data) {
-        _state.itbResultReportPDF = new Blob([data], {type: "application/octet-stream"});
-        _state.resultLoadPDF.resolve();
+        if (data && data.ok) _state.itbResultReportPDF = new Blob([data.payload], {type: "application/octet-stream"});
+       _state.resultLoadPDF.resolve();
     })
     getResultReportForReportType(inputID, 'pdf', true, 'downloadReportButtonPDFAggregate', 'downloadReportButtonPDFSpinnerAggregate').done(function (data) {
-        _state.itbResultReportPDFAggregate = new Blob([data], {type: "application/octet-stream"});
+        if (data && data.ok) _state.itbResultReportPDFAggregate = new Blob([data.payload], {type: "application/octet-stream"});
         _state.resultLoadPDFAggregate.resolve();
     })
     getResultReportForReportType(inputID, 'csv', false, 'downloadReportButtonCSV', 'downloadReportButtonCSVSpinner').done(function (data) {
-        _state.itbResultReportCSV = new Blob([data], {type: "application/octet-stream"});
+        if (data && data.ok) _state.itbResultReportCSV = new Blob([data.payload], {type: "application/octet-stream"});
         _state.resultLoadCSV.resolve();
     })
     getResultReportForReportType(inputID, 'csv', true, 'downloadReportButtonCSVAggregate', 'downloadReportButtonCSVSpinnerAggregate').done(function (data) {
-        _state.itbResultReportCSVAggregate = new Blob([data], {type: "application/octet-stream"});
+        _state.itbResultReportCSVAggregate = new Blob([data.payload], {type: "application/octet-stream"});
         _state.resultLoadCSVAggregate.resolve();
     })
 	$.when(_state.resultLoadXML, _state.resultLoadXMLAggregate, _state.resultLoadPDF, _state.resultLoadPDFAggregate, _state.itbResultReportCSV, _state.itbResultReportCSVAggregate).done(function () {
