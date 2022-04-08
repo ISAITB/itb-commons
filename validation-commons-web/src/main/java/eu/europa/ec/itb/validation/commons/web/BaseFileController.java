@@ -29,6 +29,8 @@ import static eu.europa.ec.itb.validation.commons.web.Constants.MDC_DOMAIN;
  */
 public abstract class BaseFileController<T extends BaseFileManager, R extends ApplicationConfig, Z extends WebDomainConfigCache> {
 
+    private static final String CONTENT_DISPOSITION_ATTACHMENT_VALUE = "attachment; filename=report_%s.%s";
+
     @Autowired
     protected R config;
     @Autowired
@@ -125,7 +127,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
         File reportFile = new File(fileManager.getReportFolder(), getReportFileNameXml(id, aggregate));
         if (reportFile.exists() && reportFile.isFile()) {
             if (response != null) {
-                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_"+id+".xml");
+                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format(CONTENT_DISPOSITION_ATTACHMENT_VALUE, id, "xml"));
             }
             return new FileSystemResource(reportFile);
         } else {
@@ -170,7 +172,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             }
         }
         if (response != null) {
-            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_"+id+".pdf");
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format(CONTENT_DISPOSITION_ATTACHMENT_VALUE, id, "pdf"));
         }
         return new FileSystemResource(reportFile);
     }
@@ -208,7 +210,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             }
         }
         if (response != null) {
-            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report_"+id+".csv");
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format(CONTENT_DISPOSITION_ATTACHMENT_VALUE, id, "csv"));
         }
         return new FileSystemResource(reportFile);
     }
