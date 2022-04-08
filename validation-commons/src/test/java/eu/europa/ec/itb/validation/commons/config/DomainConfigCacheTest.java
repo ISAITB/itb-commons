@@ -43,10 +43,14 @@ class DomainConfigCacheTest extends BaseSpringTest {
         super.setup();
         Files.createDirectory(Path.of(appConfig.getResourceRoot(), "domain1"));
         Files.createDirectory(Path.of(appConfig.getResourceRoot(), "domain2"));
+        Files.createDirectory(Path.of(appConfig.getResourceRoot(), "domain3"));
+        Files.createDirectory(Path.of(appConfig.getResourceRoot(), "domain4"));
         Files.copy(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("testDomainConfigs/plugin.jar")), Path.of(appConfig.getResourceRoot(), "domain1", "plugin.jar"));
         try {
             createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain1", "config.properties"), Files.readString(Paths.get(ClassLoader.getSystemResource("testDomainConfigs/domain1.properties").toURI())));
             createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain2", "config.properties"), Files.readString(Paths.get(ClassLoader.getSystemResource("testDomainConfigs/domain2.properties").toURI())));
+            createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain3", "config.properties"), Files.readString(Paths.get(ClassLoader.getSystemResource("testDomainConfigs/domain3.properties").toURI())));
+            createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain4", "config.properties"), Files.readString(Paths.get(ClassLoader.getSystemResource("testDomainConfigs/domain4.properties").toURI())));
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
@@ -118,6 +122,28 @@ class DomainConfigCacheTest extends BaseSpringTest {
         assertEquals(10000, config.getMaximumReportsForXmlOutput());
         assertTrue(config.isReportsOrdered());
         assertTrue(config.isAddBOMToCSVExports());
+        assertEquals("EXPRESSION", config.getInputPreprocessorPerType().get("type1.option1_1"));
+        assertNull(config.getInputPreprocessorPerType().get("type1.option1_2"));
+    }
+
+    @Test
+    void testConfigLoadMaximumThresholds() {
+        when(appConfig.getDomain()).thenReturn(Set.of("domain3"));
+        var cache = createDomainConfigCache();
+        cache.initBase();
+        var config = cache.getConfigForDomain("domain3");
+        assertEquals(DomainConfigCache.DEFAULT_MAXIMUM_REPORTS_FOR_DETAILS_OUTPUT, config.getMaximumReportsForDetailedOutput());
+        assertEquals(DomainConfigCache.DEFAULT_MAXIMUM_REPORTS_FOR_XML_OUTPUT, config.getMaximumReportsForXmlOutput());
+    }
+
+    @Test
+    void testConfigLoadBadThresholds() {
+        when(appConfig.getDomain()).thenReturn(Set.of("domain4"));
+        var cache = createDomainConfigCache();
+        cache.initBase();
+        var config = cache.getConfigForDomain("domain4");
+        assertEquals(10000L, config.getMaximumReportsForDetailedOutput());
+        assertEquals(config.getMaximumReportsForDetailedOutput(), config.getMaximumReportsForXmlOutput());
     }
 
     @Test

@@ -129,23 +129,33 @@ public class Utils {
     }
 
     /**
+     * Serialise the given XML source to the provided output stream.
+     *
+     * @param content The source.
+     * @param outputStream The target output to write to.
+     */
+    public static void serialize(Source content, OutputStream outputStream) {
+        try {
+            Transformer transformer = secureTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
+            transformer.transform(content, new StreamResult(outputStream));
+        } catch (TransformerException te) {
+            throw new IllegalStateException(te);
+        }
+    }
+
+    /**
      * Serialise the provided node to a byte array.
      *
      * @param content The content.
      * @return the node's bytes.
      */
     public static byte[] serialize(Node content) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            Transformer transformer = secureTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
-            transformer.transform(new DOMSource(content), new StreamResult(baos));
-        } catch (TransformerException te) {
-            throw new IllegalStateException(te);
-        }
-        return baos.toByteArray();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        serialize(new DOMSource(content), output);
+        return output.toByteArray();
     }
 
     /**
