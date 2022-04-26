@@ -112,7 +112,7 @@ class StatisticReportingTest extends BaseTest {
             return null;
         }).when(webHook).sendUsageData(any(UsageData.class));
         when(databaseReader.country(any())).thenAnswer((Answer<?>) invocation -> {
-            var country = new Country(List.of("fr-BE"), 1, 1, "BE", new HashMap<>());
+            var country = new Country(List.of("fr-BE"), 1, 1L, true, "BE", new HashMap<>());
             return new CountryResponse(null, country, null, country, null, null);
         });
         var reporter = createReporter(true);

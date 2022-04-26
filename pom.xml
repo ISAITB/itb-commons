@@ -49,11 +49,12 @@
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.5.1</version.webjarsJQuery>
-        <version.jasperReports>6.16.0</version.jasperReports>
+        <version.jasperReports>6.19.1</version.jasperReports>
         <version.jaxb>2.3.1</version.jaxb>
-        <version.geoip2>2.15.0</version.geoip2>
+        <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.bouncycastle>1.69</version.bouncycastle>
+        <version.jackson>2.13.2.20220328</version.jackson>
     </properties>
 
     <repositories>
@@ -396,6 +397,13 @@
                 <type>test-jar</type>
                 <classifier>tests</classifier>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${version.jackson}</version>
+                <scope>import</scope>
+                <type>pom</type>
             </dependency>
         </dependencies>
     </dependencyManagement>

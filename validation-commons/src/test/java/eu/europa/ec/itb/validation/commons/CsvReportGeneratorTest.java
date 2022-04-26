@@ -61,7 +61,7 @@ class CsvReportGeneratorTest extends BaseTest {
         assertTrue(Files.exists(csvFile));
         var lines = Files.readAllLines(csvFile);
         assertEquals(6, lines.size());
-        assertEquals(UTF8_BOM + "Level,Description,Location,Test,Additional info", lines.get(0));
+        assertArrayEquals((UTF8_BOM + "Level,Description,Location,Test,Additional info").getBytes(), lines.get(0).getBytes());
     }
 
     @Test
@@ -75,7 +75,7 @@ class CsvReportGeneratorTest extends BaseTest {
         assertTrue(Files.exists(csvFile));
         var lines = Files.readAllLines(csvFile);
         assertEquals(6, lines.size());
-        assertEquals(UTF8_BOM + "Level,Description,Location", lines.get(0));
+        assertArrayEquals((UTF8_BOM + "Level,Description,Location").getBytes(), lines.get(0).getBytes());
    }
 
     @Test
@@ -89,7 +89,7 @@ class CsvReportGeneratorTest extends BaseTest {
         assertTrue(Files.exists(csvFile));
         var lines = Files.readAllLines(csvFile);
         assertEquals(6, lines.size());
-        assertEquals(UTF8_BOM + "Level,Description,Location", lines.get(0));
+        assertArrayEquals((UTF8_BOM + "Level,Description,Location").getBytes(), lines.get(0).getBytes());
     }
 
     @Test
@@ -99,11 +99,12 @@ class CsvReportGeneratorTest extends BaseTest {
         var reporter = createBean(createAppConfig(true, true));
         var csvFile = Path.of(tmpFolder.toString(), "report.csv");
         // Test
+        System.out.println("testWriteReportWithFileNoExtraFieldsPresentNoBOM");
         reporter.writeReport(tarFile.toFile(), csvFile.toFile(), createLocaliser(), createDomainConfig(false));
         assertTrue(Files.exists(csvFile));
         var lines = Files.readAllLines(csvFile);
         assertEquals(6, lines.size());
-        assertEquals("Level,Description,Location", lines.get(0));
+        assertArrayEquals("Level,Description,Location".getBytes(), lines.get(0).getBytes());
     }
 
     @Test
