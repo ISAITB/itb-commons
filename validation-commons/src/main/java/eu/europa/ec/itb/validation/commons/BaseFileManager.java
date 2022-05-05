@@ -297,10 +297,10 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     public File getFileFromURL(File targetFolder, String url, String extension, String fileName, File preprocessorFile, String preprocessorOutputExtension, String artifactType) throws IOException {
         URL urlObj = new URL(url);
         if (fileName == null) {
-            fileName = FilenameUtils.getName(urlObj.getFile());
+            fileName = FilenameUtils.getName(urlObj.getPath());
         }
         if (extension == null) {
-            extension = FilenameUtils.getExtension(urlObj.getFile());
+            extension = FilenameUtils.getExtension(urlObj.getPath());
         }
         Path targetFilePath = createFile(targetFolder, extension, fileName);
         try (InputStream in = getInputStreamFromURL(url)){
