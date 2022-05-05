@@ -228,6 +228,17 @@ class BaseFileManagerTest extends BaseSpringTest {
     }
 
     @Test
+    void testGetFileFromURLWithQueryString() throws IOException {
+        var targetFolder = Path.of(appConfig.getTmpFolder(), "url_test");
+        var testURI = URI.create("http://test.com/determinedFile.txt?something=1");
+        when(urlReader.stream(any())).thenReturn(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)));
+        var result = fileManager.getFileFromURL(targetFolder.toFile(), testURI.toString(), null, null);
+        assertNotNull(result);
+        assertEquals(Path.of(targetFolder.toString(), "determinedFile.txt"), result.toPath());
+        assertEquals("TEST", Files.readString(result.toPath()));
+    }
+
+    @Test
     void testGetFileFromURLWithPreprocessor() throws IOException {
         fileManager.preprocessor = new TestPreprocessor();
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_test");
