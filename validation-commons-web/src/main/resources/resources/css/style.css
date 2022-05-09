@@ -200,6 +200,7 @@ body {
 .overview-button-row .btn-toolbar {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 }
 .panel-body-minimal {
     margin-bottom: -15px;

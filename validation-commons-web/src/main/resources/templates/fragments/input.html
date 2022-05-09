@@ -7,14 +7,18 @@
             <div id="bannerSection" class="view-section-input" th:if="${!minimalUI && htmlBannerExists}">
                 <div th:utext="${localiser.localise('validator.bannerHtml')}">Validator</div>
             </div>
-            <div class="alert alert-danger" th:if="${message}" th:text="${message}">A message</div>
+        </th:block>
+
+        <th:block th:fragment="messagePlaceholder()">
+            <div id="messagePlaceholder" class="alert alert-danger hidden"></div>
         </th:block>
 
         <div th:fragment="formHeader(config, minimalUI)" class="panel-heading panel-heading-ui minimal-ui" th:if="${minimalUI}">
             <div class="panel-title-ui" th:text="${localiser.localise('validator.label.validationInputPanel')}">Validation input</div>
             <div th:replace="fragments/common :: localeSelector(${config}, ${localiser.getLocale()})"/>
             <div class="panel-title-controls">
-                <button type="submit" id="inputFileSubmitMinimal" class="btn btn-default" disabled="true" onclick="uploadFile()" th:text="${localiser.localise('validator.label.uploadButton')}">Upload</button>
+                <button type="submit" id="inputFileSubmitMinimal" class="btn btn-default" disabled="true" onclick="doSubmit();return false;" th:text="${localiser.localise('validator.label.uploadButton')}">Upload</button>
+                <button type="button" id="backSubmit" class="btn btn-default hidden" onclick="doBack()" th:text="${localiser.localise('validator.label.backButton')}">Back</button>
                 <input type="hidden" id="validationTypeToUse" name="validationType"/>
             </div>
         </div>
@@ -73,6 +77,7 @@
         </div>
 
         <th:block th:fragment="mainForm(config)">
+            <div th:replace="fragments/input :: messagePlaceholder()"/>
             <div th:replace="fragments/input :: mainFormInput(${config})"/>
             <div th:replace="fragments/input :: mainFormValidationType(${config})"/>
         </th:block>
@@ -97,7 +102,7 @@
 
         <div th:fragment="submit(config, minimalUI)" class="form-group" th:if="${not minimalUI}">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" id="inputFileSubmit" class="btn btn-primary" disabled="true" onclick="uploadFile()" th:text="${localiser.localise('validator.label.uploadButton')}">Upload</button>
+                <button type="submit" id="inputFileSubmit" class="btn btn-primary" disabled="true" onclick="doSubmit(); return false;" th:text="${localiser.localise('validator.label.uploadButton')}">Upload</button>
                 <input type="hidden" id="validationTypeToUse" name="validationType"/>
             </div>
         </div>

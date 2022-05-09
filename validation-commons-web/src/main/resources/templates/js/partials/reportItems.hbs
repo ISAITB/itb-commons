@@ -1,0 +1,38 @@
+{{#if (or (not reportItems) (not reportItems.infoOrWarningOrError) (lte reportItems.infoOrWarningOrError.length data.maximumReportsForDetailedOutput))}}
+    <div class="report-item-container">
+        {{#each reportItems.infoOrWarningOrError}}
+            <div class="row report-item {{#if ../clickableItems}}clickable report-item-{{stripNS name}}{{else}}report-item-{{stripNS name}}{{/if}}" {{#if ../clickableItems}}onclick="setCode(this)"{{/if}}>
+                <div class="col-xs-12 item-info">
+                    <div>
+                        {{#switch (stripNS name)}}
+                            {{#case 'error'}}<i class="fa fa-times-circle report-item-icon error-icon item-info-error"></i>{{/case}}
+                            {{#case 'warning'}}<i class="fa fa-exclamation-triangle report-item-icon warning-icon item-info-warning"></i>{{/case}}
+                            {{#case 'info'}}<i class="fa fa-info-circle report-item-icon info-icon item-info-info"></i>{{/case}}
+                        {{/switch}}
+                        <span class="item-info-text">{{value.description}}</span>
+                        {{#if ../clickableItems}}
+                            <span style="display: none" class="item-info-location">{{value.location}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                {{#if (and (not ../clickableItems) value.location)}}
+                    <div class="col-xs-12 report-item-test"><span class="report-item-test-label">{{../data.translations.resultLocationLabel}}</span><span>{{value.location}}</span></div>
+                {{/if}}
+                {{#if value.test}}
+                    <div class="col-xs-12 report-item-test"><span class="report-item-test-label">{{../data.translations.resultTestLabel}}</span><span>{{value.test}}</span></div>
+                {{/if}}
+                {{#if value.assertionID}}
+                    <div class="col-xs-12 report-item-test"><span class="report-item-test-label">{{../data.translations.additionalInfoLabel}}</span><span>{{value.assertionID}}</span></div>
+                {{/if}}
+            </div>
+        {{/each}}
+    </div>
+{{else}}
+    <div>
+        <div style="padding-top:15px;padding-bottom:15px;">
+            <div class="alert alert-warning" style="margin-bottom:0px;">
+                {{data.translations.maximumReportsExceededForDetailedOutputMessage}}
+            </div>
+        </div>
+    </div>
+{{/if}}
