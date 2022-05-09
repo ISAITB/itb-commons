@@ -2,3 +2,5 @@
 target/
 **/target/
 *.iml
+/validation-commons-web/node/
+/validation-commons-web/node_modules/
