@@ -9,9 +9,11 @@ _state.listenerEvents['INPUT_CONTENT_TYPE_CHANGED'] = true;
 _state.listenerEvents['VALIDATION_TYPE_CHANGED'] = true;
 _state.listenerEvents['FORM_READY'] = true;
 _state.listenerEvents['SUBMIT_STATUS_VALIDATED'] = true;
+_state.listenerEvents['RESULTS_LOADED'] = true;
 _state.contentTypeValidators = {}
 
 $(document).ready(function() {
+    registerTemplateHelpers();
 	prepareControls();
 	if (document.getElementById('text-editor') !== null){
 		CodeMirror.fromTextArea(document.getElementById('text-editor'), {
@@ -27,6 +29,50 @@ $(document).ready(function() {
     }
     notifyListeners('FORM_READY', {});
 });
+
+function registerTemplateHelpers() {
+    const reduceOp = function(args, reducer){
+      args = Array.from(args);
+      args.pop(); // => options
+      var first = args.shift();
+      return args.reduce(reducer, first);
+    };
+    Handlebars.registerHelper({
+      'eq': function() { return reduceOp(arguments, function (a,b) { return a === b; }); },
+      'ne': function(){ return reduceOp(arguments, function (a,b) { return a !== b; }); },
+      'lt': function(){ return reduceOp(arguments, function (a,b) { return a < b; }); },
+      'gt': function(){ return reduceOp(arguments, function (a,b) { return a > b; }); },
+      'lte': function(){ return reduceOp(arguments, function (a,b) { return a <= b; }); },
+      'gte': function(){ return reduceOp(arguments, function (a,b) { return a >= b; }); },
+      'and': function(){ return reduceOp(arguments, function (a,b) { return a && b; }); },
+      'or': function(){ return reduceOp(arguments, function (a,b) { return a || b; }); },
+      'not': function(arg) {
+        if (arg) {
+            return false;
+        }
+        return true;
+      },
+      'sum': function(){ return reduceOp(arguments, function (a,b) { return a + b; }); },
+      'switch': function(value, options) {
+        this.switch_value = value;
+        return options.fn(this);
+      },
+      'case': function(value, options) {
+        if (value == this.switch_value) {
+            return options.fn(this);
+        }
+      },
+      'stripNS': function(value) {
+        if (value) {
+            var start = value.indexOf('}') + 1;
+            if (start > 1 && start < value.length) {
+                return value.substring(start);
+            }
+        }
+        return value;
+      }
+    });
+}
 
 function configure(config) {
     if (config) {
@@ -53,6 +99,16 @@ function configure(config) {
         }
         if (config.custom) {
             _config.custom = config.custom;
+        }
+        if (config.reportTemplate) {
+            _config.reportTemplate = config.reportTemplate;
+        } else {
+            _config.reportTemplate = 'report.hbs';
+        }
+        if (config.reportMinimalTemplate) {
+            _config.reportMinimalTemplate = config.reportMinimalTemplate;
+        } else {
+            _config.reportMinimalTemplate = 'reportMinimal.hbs';
         }
     }
 }
@@ -529,10 +585,6 @@ function externalElementHasValue(elementExt) {
 function triggerFileUpload() {
 	$('#inputFile').click();
 }
-function uploadFile() {
-	waitingDialog.show(validatingInputMessage, {dialogSize: 'm'}, _config.isMinimalUI?'busy-modal-minimal':'busy-modal');
-	return true;
-}
 
 function contentTypeChanged() {
 	var type = $('#contentType').val();
@@ -717,7 +769,7 @@ function getReport(inputID) {
                 	request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
                 },
                 error: function(response){
-                	raiseAlert(response.responseJSON.errorMessage)
+                	raiseAlert(response)
                 }
             });
             _state.reportLoad.resolve();
@@ -779,7 +831,7 @@ function getResultReport(inputID) {
         _state.resultLoadCSV.resolve();
     })
     getResultReportForReportType(inputID, 'csv', true, 'downloadReportButtonCSVAggregate', 'downloadReportButtonCSVSpinnerAggregate').done(function (data) {
-        _state.itbResultReportCSVAggregate = new Blob([data.payload], {type: "application/octet-stream"});
+        if (data && data.ok) _state.itbResultReportCSVAggregate = new Blob([data.payload], {type: "application/octet-stream"});
         _state.resultLoadCSVAggregate.resolve();
     })
 	$.when(_state.resultLoadXML, _state.resultLoadXMLAggregate, _state.resultLoadPDF, _state.resultLoadPDFAggregate, _state.itbResultReportCSV, _state.itbResultReportCSVAggregate).done(function () {
@@ -790,16 +842,34 @@ function getResultReport(inputID) {
             	request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             },
             error: function(response){
-            	raiseAlert(response.responseJSON.errorMessage)
+            	raiseAlert(response)
             }
         });
 	})
 }
-function raiseAlert(errorMessage){
-	$(".alert.alert-danger.ajax-error").remove();
-	const alertDiv = $("<div class='alert alert-danger ajax-error'></div>");
-	alertDiv.text(errorMessage);
-	alertDiv.insertAfter("#bannerSection");
+function clearMessages() {
+    $('#messagePlaceholder').addClass('hidden');
+    $('#messagePlaceholder').empty();
+}
+function raiseAlert(errorInfo, isFinal) {
+    var message = 'An unexpected error occurred';
+    if (isFinal) {
+        message = errorInfo;
+    } else {
+        try {
+            if (errorInfo) {
+                if (errorInfo.responseJSON && errorInfo.responseJSON.errorMessage) {
+                    message = errorInfo.responseJSON.errorMessage;
+                } else if (errorInfo.responseText) {
+                    message = JSON.parse(request.responseText).errorMessage;
+                }
+            }
+        } catch (error) {
+            message = 'An unexpected error occurred';
+        }
+    }
+    $('#messagePlaceholder').text(message);
+    $('#messagePlaceholder').removeClass('hidden');
 }
 function downloadReportXML() {
 	_state.resultLoadXML.done(function() {
@@ -985,4 +1055,64 @@ function severityFilterChange(level) {
         $('.report-item.report-item-warning').removeClass('hidden');
         $('.report-item.report-item-info').removeClass('hidden');
     }
+}
+
+function doSubmit() {
+    $('#reportPlaceholder').empty();
+    clearMessages();
+	waitingDialog.show(validatingInputMessage, {dialogSize: 'm'}, _config.isMinimalUI?'busy-modal-minimal':'busy-modal');
+	var form = $('form:first');
+    $.ajax({
+        url: $(form).prop("action"),
+        type: 'POST',
+        data: new FormData(form[0]),
+        success: function (data) {
+            waitingDialog.hide();
+            displayReport(data);
+        },
+        error: function (response) {
+            waitingDialog.hide();
+            raiseAlert(response);
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+    return false;
+}
+
+function displayReport(data) {
+    if (data.message) {
+        // An error occurred.
+        $('#messagePlaceholder').text(data.message);
+        $('#messagePlaceholder').removeClass('hidden');
+    } else {
+        // Validation completed.
+        var params = {
+            data: data,
+            config: _config
+        };
+        if (_config.isMinimalUI) {
+            _config.titleTextBackup = $('.panel-title-ui').text();
+            $('.panel-body-minimal').addClass('hidden');
+            $('#inputFileSubmitMinimal').addClass('hidden');
+            $('#backSubmit').removeClass('hidden');
+            $('form').removeClass('form-horizontal');
+            $('.panel-title-ui').text(data.translations.resultSectionTitle);
+            $('#reportPlaceholder').append($(App.Templates[_config.reportMinimalTemplate](params)));
+        } else {
+            $('#reportPlaceholder').append($(App.Templates[_config.reportTemplate](params)));
+        }
+        getReportData(data.reportId);
+        notifyListeners('RESULTS_LOADED', {data: data});
+    }
+}
+
+function doBack() {
+    $('.panel-body-minimal').removeClass('hidden');
+    $('#inputFileSubmitMinimal').removeClass('hidden');
+    $('#backSubmit').addClass('hidden');
+    $('form').addClass('form-horizontal');
+    $('.panel-title-ui').text(_config.titleTextBackup);
+    $('#reportPlaceholder').empty();
 }

@@ -1,0 +1,32 @@
+<div class="panel-body">
+    <div class="row">
+        <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultDateLabel}}</label>
+        <div><span class="form-control-static">{{data.report.date}}</span></div>
+    </div>
+    <div class="row">
+        <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultFileNameLabel}}</label>
+        <div><span class="form-control-static">{{data.fileName}}</span></div>
+    </div>
+    {{#if data.validationTypeLabel}}
+    <div class="row">
+        <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultValidationTypeLabel}}</label>
+        <div><span class="form-control-static">{{data.validationTypeLabel}}</span></div>
+    </div>
+    {{/if}}
+    <div class="row">
+        <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultResultLabel}}</label>
+        <div><span class="form-control-static">{{data.translations.resultValue}}</span></div>
+    </div>
+    <div class="row">
+        <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultErrorsLabel}}</label>
+        <div><span class="form-control-static">{{data.report.counters.nrOfErrors}}</span></div>
+    </div>
+    <div class="row">
+        <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultWarningsLabel}}</label>
+        <div><span class="form-control-static">{{data.report.counters.nrOfWarnings}}</span></div>
+    </div>
+    <div class="row">
+        <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultMessagesLabel}}</label>
+        <div><span class="form-control-static">{{data.report.counters.nrOfAssertions}}</span></div>
+    </div>
+</div>
