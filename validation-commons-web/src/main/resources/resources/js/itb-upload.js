@@ -1116,3 +1116,29 @@ function doBack() {
     $('.panel-title-ui').text(_config.titleTextBackup);
     $('#reportPlaceholder').empty();
 }
+
+function toggleReportDisplay() {
+    var reportOverviewDiv = $('#reportSummary');
+    var reportDetailsDiv = $('#reportItemsContent');
+    var viewDetailsButton = $('#viewDetailsButton');
+    var viewSummaryButton = $('#viewSummaryButton');
+    var overviewToolbar = $('#reportOverviewButtons');
+    var detailsToolbar = $('#reportDetailsButtons');
+    if (reportDetailsDiv.hasClass('hidden')) {
+        // Show report details
+        reportDetailsDiv.removeClass('hidden');
+        reportOverviewDiv.addClass('hidden');
+        viewSummaryButton.removeClass('hidden');
+        viewDetailsButton.addClass('hidden');
+        overviewToolbar.addClass('hidden');
+        detailsToolbar.removeClass('hidden');
+    } else {
+        // Show report overview
+        reportDetailsDiv.addClass('hidden');
+        reportOverviewDiv.removeClass('hidden');
+        viewSummaryButton.addClass('hidden');
+        viewDetailsButton.removeClass('hidden');
+        overviewToolbar.removeClass('hidden');
+        detailsToolbar.addClass('hidden');
+    }
+}

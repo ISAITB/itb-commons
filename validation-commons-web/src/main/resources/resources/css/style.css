@@ -197,11 +197,18 @@ body {
 .reportLimitTooltip {
     margin-left: 5px;
 }
-.overview-button-row .btn-toolbar {
+.overview-button-row {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
 }
 .panel-body-minimal {
     margin-bottom: -15px;
+}
+.btn-toolbar.toggle-display-toolbar {
+    margin-right: 5px;
+}
+.panel-body.items-minimal-panel {
+    padding-top: 0px;
+    padding-bottom: 0px;
 }

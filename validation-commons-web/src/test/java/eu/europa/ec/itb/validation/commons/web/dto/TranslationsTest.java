@@ -55,6 +55,8 @@ class TranslationsTest {
         assertEquals("TRANSLATED[validator.label.reportDetailedXML]", translations.getReportDetailedXML());
         assertEquals("TRANSLATED[validator.label.reportAggregatedXML]", translations.getReportAggregatedXML());
         assertEquals("TRANSLATED[validator.label.maximumReportsExceededForXmlOutputMessage]", translations.getMaximumReportsExceededForXmlOutputMessage());
+        assertEquals("TRANSLATED[validator.label.viewDetailsButton]", translations.getViewDetailsButton());
+        assertEquals("TRANSLATED[validator.label.viewSummaryButton]", translations.getViewSummaryButton());
     }
 
 }
