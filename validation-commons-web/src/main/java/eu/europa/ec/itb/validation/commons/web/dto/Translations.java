@@ -45,6 +45,8 @@ public class Translations {
     private String downloadReportButton;
     private String reportDetailedXML;
     private String reportAggregatedXML;
+    private String viewDetailsButton;
+    private String viewSummaryButton;
 
     /**
      * Constructor that set's all labels that are common for all validators.
@@ -86,6 +88,8 @@ public class Translations {
         setReportDetailedXML(helper.localise("validator.label.reportDetailedXML"));
         setReportAggregatedXML(helper.localise("validator.label.reportAggregatedXML"));
         setMaximumReportsExceededForXmlOutputMessage(helper.localise("validator.label.maximumReportsExceededForXmlOutputMessage", domainConfig.getMaximumReportsForXmlOutput()));
+        setViewDetailsButton(helper.localise("validator.label.viewDetailsButton"));
+        setViewSummaryButton(helper.localise("validator.label.viewSummaryButton"));
     }
 
     /**
@@ -530,9 +534,37 @@ public class Translations {
     }
 
     /**
-     * @param reportAggregatedXML The label value to set..
+     * @param reportAggregatedXML The label value to set.
      */
     public void setReportAggregatedXML(String reportAggregatedXML) {
         this.reportAggregatedXML = reportAggregatedXML;
+    }
+
+    /**
+     * @return The label value.
+     */
+    public String getViewDetailsButton() {
+        return viewDetailsButton;
+    }
+
+    /**
+     * @param viewDetailsButton The label value to set.
+     */
+    public void setViewDetailsButton(String viewDetailsButton) {
+        this.viewDetailsButton = viewDetailsButton;
+    }
+
+    /**
+     * @return The label value.
+     */
+    public String getViewSummaryButton() {
+        return viewSummaryButton;
+    }
+
+    /**
+     * @param viewSummaryButton The label value to set.
+     */
+    public void setViewSummaryButton(String viewSummaryButton) {
+        this.viewSummaryButton = viewSummaryButton;
     }
 }

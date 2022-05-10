@@ -1,6 +1,15 @@
 {{> reportSummary.hbs }}
-<div id="reportItemsDetailed" class="hidden">
-    {{> reportItems.hbs reportItems=data.report.reports clickableItems=true}}
+<div id="reportItemsContent" class="panel-body items-minimal-panel hidden">
+    <div id="reportItemsDetailed">
+        {{> reportItems.hbs reportItems=data.report.reports clickableItems=true}}
+    </div>
+    <div id="reportItemsAggregated" class="hidden">
+        {{> reportItems.hbs reportItems=data.aggregateReport.reports clickableItems=true}}
+    </div>
 </div>
-{{> reportControls.hbs }}
+<div id="reportControls" class="panel-footer overview-button-row">
+    {{> reportToggleDisplayButtons.hbs }}
+    {{> reportOverviewButtons.hbs }}
+    {{> reportDetailsButtons.hbs hidden=true }}
+</div>
 {{> reportInputModal.hbs}}
