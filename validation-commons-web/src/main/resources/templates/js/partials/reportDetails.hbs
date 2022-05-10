@@ -5,46 +5,7 @@
                 <div class="panel-heading-details-title">
                     <h3 class="panel-title">{{data.translations.resultSubSectionDetailsTitle}}</h3>
                 </div>
-                {{#if (or (not data.report.reports) (not data.report.reports.infoOrWarningOrError) (lte data.report.reports.infoOrWarningOrError.length data.maximumReportsForDetailedOutput))}}
-                    <div class="panel-heading-details-control btn-toolbar">
-                        {{#if (or
-                                      (and (gt data.report.counters.nrOfErrors 0) (or (gt data.report.counters.nrOfWarnings 0) (gt data.report.counters.nrOfAssertions 0)))
-                                      (and (gt data.report.counters.nrOfWarnings 0) (or (gt data.report.counters.nrOfErrors 0) (gt data.report.counters.nrOfAssertions 0)))
-                                      (and (gt data.report.counters.nrOfAssertions 0) (or (gt data.report.counters.nrOfWarnings 0) (gt data.report.counters.nrOfErrors 0)))
-                              )
-                        }}
-                            <div id="severityFilterButton" class="btn-group">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span id="severityFilterText">{{data.translations.viewReportItemsShowAll}}</span> <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" onclick="severityFilterChange();return false;"><span id="severityFilterShowAllText">{{data.translations.viewReportItemsShowAll}}</span></a></li>
-                                    <li role="separator" class="divider"></li>
-                                    {{#if (gt data.report.counters.nrOfErrors 0)}}
-                                        <li id="severityFilterErrorOption"><a href="#" onclick="severityFilterChange('error');return false;"><span id="severityFilterShowErrorsText">{{data.translations.viewReportItemsShowErrors}}</span></a></li>
-                                    {{/if}}
-                                    {{#if (gt data.report.counters.nrOfWarnings 0)}}
-                                        <li id="severityFilterWarningOption"><a href="#" onclick="severityFilterChange('warning');return false;"><span id="severityFilterShowWarningsText">{{data.translations.viewReportItemsShowWarnings}}</span></a></li>
-                                    {{/if}}
-                                    {{#if (gt data.report.counters.nrOfAssertions 0)}}
-                                        <li id="severityFilterMessageOption"><a href="#" onclick="severityFilterChange('message');return false;"><span id="severityFilterShowMessagesText">{{data.translations.viewReportItemsShowMessages}}</span></a></li>
-                                    {{/if}}
-                                </ul>
-                            </div>
-                        {{/if}}
-                        {{#if data.showAggregateReport}}
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span id="reportTypeSelectText">{{data.translations.viewReportItemsDetailed}}</span> <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" onclick="reportTypeChange(false);return false;"><span id="reportTypeSelectDetailedText">{{data.translations.viewReportItemsDetailed}}</span></a></li>
-                                    <li><a href="#" onclick="reportTypeChange(true);return false;"><span id="reportTypeSelectAggregatedText">{{data.translations.viewReportItemsAggregated}}</span></a></li>
-                                </ul>
-                            </div>
-                        {{/if}}
-                    </div>
-                {{/if}}
+                {{> reportDetailsButtons.hbs }}
             </div>
             <div class="panel-body result-details-panel">
                 <div id="reportItemsDetailed">
