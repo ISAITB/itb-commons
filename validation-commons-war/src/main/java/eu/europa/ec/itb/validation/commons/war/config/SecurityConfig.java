@@ -29,6 +29,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // Enable all CORS requests (see corsFilter bean).
                 .cors()
         .and()
+                // Disabling X-Frame-Options to allow the UI to be embedded in iframes.
+                .headers().frameOptions().disable()
+        .and()
                 // Disabling as this has issues when running behind a reverse proxy for a stateless app.
                 .csrf().disable();
     }
