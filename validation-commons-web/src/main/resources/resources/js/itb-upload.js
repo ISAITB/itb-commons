@@ -1064,6 +1064,7 @@ function doSubmit() {
 	var form = $('form:first');
     $.ajax({
         url: $(form).prop("action"),
+        headers: {'Accept': 'application/json'},
         type: 'POST',
         data: new FormData(form[0]),
         success: function (data) {

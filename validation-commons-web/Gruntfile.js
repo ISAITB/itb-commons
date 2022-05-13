@@ -45,13 +45,13 @@ module.exports = function(grunt) {
       },
       dist: {
         src: ['./src/main/resources/resources/js/itb-upload.js', './src/main/resources/resources/js/lib/busy.js', './target/temp/itb-templates.js'],
-        dest: './target/temp/itb-all.js'
+        dest: './target/classes/resources/js/itb-upload.js'
       }
     },
     uglify: {
       my_target: {
         files: {
-          './target/classes/resources/js/itb-upload-min.js': ['./target/temp/itb-all.js']
+          './target/classes/resources/js/itb-upload-min.js': ['./target/classes/resources/js/itb-upload.js']
         }
       }
     },
