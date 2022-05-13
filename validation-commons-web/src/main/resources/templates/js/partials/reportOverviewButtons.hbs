@@ -1,8 +1,8 @@
 <div id="reportOverviewButtons" class="btn-toolbar{{#if hidden}} hidden{{/if}}">
     {{#if (or (not data.report.reports) (not data.report.reports.infoOrWarningOrError) (lte data.report.reports.infoOrWarningOrError.length data.maximumReportsForDetailedOutput))}}
-        <button type="button" class="btn btn-default" id="viewInputButton" onclick="setCode()" disabled="true"><span>{{data.translations.viewAnnotatedInputButton}}</span><span id="viewInputButtonSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
+        <button type="button" class="btn btn-default" id="viewInputButton" onclick="setCode()" disabled="disabled"><span>{{data.translations.viewAnnotatedInputButton}}</span><span id="viewInputButtonSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
     {{/if}}
-    <div class="btn-group">
+    <div class="btn-group{{#if config.isMinimalUI}} dropup{{/if}}">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span>{{data.translations.downloadReportButton}}</span> <span class="caret"></span>
         </button>
