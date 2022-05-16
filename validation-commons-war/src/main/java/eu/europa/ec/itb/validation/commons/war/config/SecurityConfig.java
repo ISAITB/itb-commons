@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -24,8 +23,6 @@ public class SecurityConfig <Y extends WebDomainConfig, X extends WebDomainConfi
 
     @Autowired
     private X domainConfigCache;
-    @Autowired
-    private HeaderFilter<Y, X> headerFilter;
 
     /**
      * Check to see whether this validator includes a validator configuration that supports embedding.
@@ -57,7 +54,6 @@ public class SecurityConfig <Y extends WebDomainConfig, X extends WebDomainConfi
         if (hasEmbeddableValidator()) {
             // Disabling X-Frame-Options by default to set it by domain (see HeaderFilter).
             http.headers().frameOptions().disable();
-            http.addFilterAfter(headerFilter, SwitchUserFilter.class);
         } else {
             http.headers().frameOptions().deny();
         }

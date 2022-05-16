@@ -27,10 +27,6 @@ class SecurityConfigTest {
     @TestConfiguration
     static class TestConfig {
         @Bean
-        HeaderFilter<?, ?> headerFilter() {
-            return new HeaderFilter<>();
-        }
-        @Bean
         ApplicationConfig appConfig() {
             return mock(ApplicationConfig.class);
         }

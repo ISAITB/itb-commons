@@ -1,19 +1,16 @@
-package eu.europa.ec.itb.validation.commons.war.config;
+package eu.europa.ec.itb.validation.commons.web.filters;
 
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -24,16 +21,16 @@ import java.util.List;
  * Filter to apply custom settings to HTTP headers.
  */
 @Component
-public class HeaderFilter<Y extends WebDomainConfig, X extends WebDomainConfigCache<Y>> extends GenericFilterBean {
+@Order(2)
+public class HeaderFilter<Y extends WebDomainConfig, X extends WebDomainConfigCache<Y>> extends OncePerRequestFilter {
 
     private final List<RequestMatcher> configurablyAllowed = List.of(
             new AntPathRequestMatcher("/**/upload", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/**/upload", HttpMethod.POST.name()),
             new AntPathRequestMatcher("/**/uploadm", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/**/uploadm", HttpMethod.POST.name())
+            new AntPathRequestMatcher("/**/uploadm", HttpMethod.POST.name()),
+            new AntPathRequestMatcher("/**/error", HttpMethod.POST.name())
     );
-    @Autowired
-    private X domainConfigCache;
 
     /**
      * Applies custom headers to responses.
@@ -41,25 +38,18 @@ public class HeaderFilter<Y extends WebDomainConfig, X extends WebDomainConfigCa
      * {{@inheritDoc}}
      */
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
-            var deny = true;
-            if (matches(configurablyAllowed, (HttpServletRequest) request)) {
-                var pathParts = StringUtils.split(((HttpServletRequest) request).getRequestURI(), '/');
-                // We want the part before last (this is the domain)
-                var index = pathParts.length - 2;
-                if (index >= 0) {
-                    var domainConfig = domainConfigCache.getConfigForDomainName(pathParts[index]);
-                    if (domainConfig != null && domainConfig.isSupportUserInterfaceEmbedding()) {
-                        deny = false;
-                    }
-                }
-            }
-            if (deny) {
-                denyEmbedding((HttpServletResponse) response);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        var deny = true;
+        if (matches(configurablyAllowed, request)) {
+            var domainConfig = (Y)request.getAttribute(WebDomainConfig.DOMAIN_CONFIG_REQUEST_ATTRIBUTE);
+            if (domainConfig != null && domainConfig.isSupportUserInterfaceEmbedding()) {
+                deny = false;
             }
         }
-        chain.doFilter(request, response);
+        if (deny) {
+            denyEmbedding(response);
+        }
+        filterChain.doFilter(request, response);
     }
 
     /**
