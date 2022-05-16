@@ -1,5 +1,6 @@
 package eu.europa.ec.itb.validation.commons.config;
 
+import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import org.apache.commons.configuration2.Configuration;
 
 import java.util.List;
@@ -53,6 +54,7 @@ public abstract class WebDomainConfigCache <T extends WebDomainConfig> extends D
         domainConfig.setWebServiceDescription(ParseUtils.parseMap("validator.webServiceDescription", config));
         domainConfig.setShowAbout(config.getBoolean("validator.showAbout", true));
         domainConfig.setSupportMinimalUserInterface(config.getBoolean("validator.supportMinimalUserInterface", false));
+        domainConfig.setSupportUserInterfaceEmbedding(domainConfig.getChannels().contains(ValidatorChannel.FORM) && config.getBoolean("validator.supportUserInterfaceEmbedding", false));
     }
 
 }
