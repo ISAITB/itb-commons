@@ -16,6 +16,21 @@ public class WebDomainConfig extends DomainConfig {
     private Map<String, String> webServiceDescription;
     private boolean supportMinimalUserInterface;
     private boolean showAbout;
+    private boolean supportUserInterfaceEmbedding;
+
+    /**
+     * @return Whether the validator's user interface can be embedded in others.
+     */
+    public boolean isSupportUserInterfaceEmbedding() {
+        return supportUserInterfaceEmbedding;
+    }
+
+    /**
+     * @param supportUserInterfaceEmbedding Whether the validator's user interface can be embedded in others.
+     */
+    public void setSupportUserInterfaceEmbedding(boolean supportUserInterfaceEmbedding) {
+        this.supportUserInterfaceEmbedding = supportUserInterfaceEmbedding;
+    }
 
     /**
      * @return The ID of the SOAP web service.

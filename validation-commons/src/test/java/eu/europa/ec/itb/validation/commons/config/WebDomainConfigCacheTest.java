@@ -73,6 +73,7 @@ class WebDomainConfigCacheTest {
         assertTrue(config.isSupportMinimalUserInterface());
         assertEquals("banner", localisationHelper.localise("validator.bannerHtml"));
         assertEquals("footer", localisationHelper.localise("validator.footerHtml"));
+        assertFalse(config.isSupportUserInterfaceEmbedding());
     }
 
     @Test
