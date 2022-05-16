@@ -1,5 +1,8 @@
 package eu.europa.ec.itb.validation.commons.war.config;
 
+import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
+import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -7,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -16,7 +20,26 @@ import org.springframework.web.filter.CorsFilter;
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig <Y extends WebDomainConfig, X extends WebDomainConfigCache<Y>> extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private X domainConfigCache;
+    @Autowired
+    private HeaderFilter<Y, X> headerFilter;
+
+    /**
+     * Check to see whether this validator includes a validator configuration that supports embedding.
+     *
+     * @return The check result.
+     */
+    private boolean hasEmbeddableValidator() {
+        for (var config: domainConfigCache.getAllDomainConfigurations()) {
+            if (config.isSupportUserInterfaceEmbedding()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Enable CORS and disable CSRF checks.
@@ -29,11 +52,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // Enable all CORS requests (see corsFilter bean).
                 .cors()
         .and()
-                // Disabling X-Frame-Options to allow the UI to be embedded in iframes.
-                .headers().frameOptions().disable()
-        .and()
                 // Disabling as this has issues when running behind a reverse proxy for a stateless app.
                 .csrf().disable();
+        if (hasEmbeddableValidator()) {
+            // Disabling X-Frame-Options by default to set it by domain (see HeaderFilter).
+            http.headers().frameOptions().disable();
+            http.addFilterAfter(headerFilter, SwitchUserFilter.class);
+        } else {
+            http.headers().frameOptions().deny();
+        }
     }
 
     /**
