@@ -54,7 +54,7 @@ public abstract class WebDomainConfigCache <T extends WebDomainConfig> extends D
         domainConfig.setWebServiceDescription(ParseUtils.parseMap("validator.webServiceDescription", config));
         domainConfig.setShowAbout(config.getBoolean("validator.showAbout", true));
         domainConfig.setSupportMinimalUserInterface(config.getBoolean("validator.supportMinimalUserInterface", false));
-        domainConfig.setSupportUserInterfaceEmbedding(domainConfig.getChannels().contains(ValidatorChannel.FORM) && config.getBoolean("validator.supportUserInterfaceEmbedding", false));
+        domainConfig.setSupportUserInterfaceEmbedding(domainConfig.getChannels().contains(ValidatorChannel.FORM) && config.getBoolean("validator.supportUserInterfaceEmbedding", true));
     }
 
 }
