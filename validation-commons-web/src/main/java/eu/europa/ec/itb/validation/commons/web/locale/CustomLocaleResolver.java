@@ -44,9 +44,9 @@ public class CustomLocaleResolver {
                         if (response != null) {
                             if (config.isSupportUserInterfaceEmbedding()) {
                                 // Need to set as SameSite=None (and also secure).
-                                response.addHeader("Set-Cookie", String.format("%s=%s; HttpOnly; SameSite=None; Secure", cookieName, requestedLanguage));
+                                response.addHeader("Set-Cookie", String.format("%s=%s; HttpOnly; SameSite=None; Secure", cookieName, requestedLocale.getLanguage()));
                             } else {
-                                Cookie cookie = new Cookie(cookieName, requestedLanguage);
+                                Cookie cookie = new Cookie(cookieName, requestedLocale.getLanguage());
                                 cookie.setHttpOnly(true);
                                 response.addCookie(cookie);
                             }
