@@ -27,7 +27,7 @@ class CustomLocaleResolverTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addParameter("lang", Locale.ENGLISH.toString());
         MockHttpServletResponse response = new MockHttpServletResponse();
-        DomainConfig config = getDomainConfig();
+        var config = getDomainConfig();
         ApplicationConfig appConfig = getApplicationConfig();
         CustomLocaleResolver localeResolver = new CustomLocaleResolver();
         assertEquals(Locale.ENGLISH.getLanguage(), localeResolver.resolveLocale(request, response, config, appConfig).getLanguage());
@@ -41,7 +41,7 @@ class CustomLocaleResolverTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addParameter("lang", Locale.CHINESE.getLanguage());
         MockHttpServletResponse response = new MockHttpServletResponse();
-        DomainConfig config = getDomainConfig();
+        var config = getDomainConfig();
         ApplicationConfig appConfig = getApplicationConfig();
         CustomLocaleResolver localeResolver = new CustomLocaleResolver();
         assertEquals(Locale.ENGLISH.getLanguage(), localeResolver.resolveLocale(request, response, config, appConfig).getLanguage());
@@ -54,7 +54,7 @@ class CustomLocaleResolverTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addParameter("lang", Locale.GERMAN.toString());
         MockHttpServletResponse response = new MockHttpServletResponse();
-        DomainConfig config = getDomainConfig();
+        var config = getDomainConfig();
         ApplicationConfig appConfig = getApplicationConfig();
         CustomLocaleResolver localeResolver = new CustomLocaleResolver();
         assertEquals(Locale.GERMAN.getLanguage(), localeResolver.resolveLocale(request, response, config, appConfig).getLanguage());
@@ -66,15 +66,15 @@ class CustomLocaleResolverTest {
     void testResolveUnsetLocale() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        DomainConfig config = getDomainConfig();
+        var config = getDomainConfig();
         ApplicationConfig appConfig = getApplicationConfig();
         CustomLocaleResolver localeResolver = new CustomLocaleResolver();
         assertEquals("en", localeResolver.resolveLocale(request, response, config, appConfig).getLanguage());
         assertEquals(0, response.getCookies().length);
     }
 
-    private DomainConfig getDomainConfig() {
-        DomainConfig domainConfig = new WebDomainConfig();
+    private WebDomainConfig getDomainConfig() {
+        var domainConfig = new WebDomainConfig();
         domainConfig.setDomainName("domain");
         domainConfig.setDefaultLocale(Locale.ENGLISH);
         domainConfig.setAvailableLocales(Set.of(Locale.ENGLISH, Locale.FRENCH, Locale.GERMAN));
