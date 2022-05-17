@@ -113,8 +113,11 @@ body {
     cursor: pointer;
     cursor: hand;
 }
-.view-section-input {
+.view-section-input.normal-ui {
     padding-bottom: 20px;
+}
+.view-section-input.minimal-ui > form > .panel {
+    margin-bottom: 0px;
 }
 .view-section-result {
     border-top: thick double rgb(237, 237, 237);
@@ -215,4 +218,5 @@ body {
 #reportOverviewButtons {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 }
