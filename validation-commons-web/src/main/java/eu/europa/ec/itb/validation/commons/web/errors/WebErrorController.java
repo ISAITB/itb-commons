@@ -52,7 +52,7 @@ public class WebErrorController implements ErrorController {
     @RequestMapping(value = "/error", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView handleError(HttpServletRequest request, HttpServletResponse response) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-        DomainConfig domainConfig = (DomainConfig) request.getAttribute(WebDomainConfig.DOMAIN_CONFIG_REQUEST_ATTRIBUTE);
+        var domainConfig = (WebDomainConfig) request.getAttribute(WebDomainConfig.DOMAIN_CONFIG_REQUEST_ATTRIBUTE);
         String xRequestedWith = request.getHeader(Constants.AJAX_REQUEST_HEADER);
         if(xRequestedWith != null && xRequestedWith.equalsIgnoreCase("XmlHttpRequest")) {
         	return ajaxError(status, response);

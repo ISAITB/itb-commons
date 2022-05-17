@@ -1,19 +1,17 @@
 package eu.europa.ec.itb.validation.commons.web.locale;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
+import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
+import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
+import org.apache.commons.lang3.LocaleUtils;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.LocaleUtils;
-import org.springframework.stereotype.Component;
-
-import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
-import eu.europa.ec.itb.validation.commons.config.DomainConfig;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Class that controls the locale resolution from a given HTTP request.
@@ -32,7 +30,7 @@ public class CustomLocaleResolver {
      *                  the validator, used in the setting of the http only cookie.
      * @return The locale.
      */
-    public Locale resolveLocale(HttpServletRequest request, HttpServletResponse response, DomainConfig config, ApplicationConfig appConfig) {
+    public Locale resolveLocale(HttpServletRequest request, HttpServletResponse response, WebDomainConfig config, ApplicationConfig appConfig) {
         if (config == null) {
             return Locale.ENGLISH;
         } else {
@@ -44,9 +42,14 @@ public class CustomLocaleResolver {
                     var requestedLocale = LocaleUtils.toLocale(requestedLanguage);
                     if (config.getAvailableLocales().contains(requestedLocale)) {
                         if (response != null) {
-                            Cookie cookie = new Cookie(cookieName, requestedLanguage);
-                            cookie.setHttpOnly(true);
-                            response.addCookie(cookie);
+                            if (config.isSupportUserInterfaceEmbedding()) {
+                                // Need to set as SameSite=None (and also secure).
+                                response.addHeader("Set-Cookie", String.format("%s=%s; HttpOnly; SameSite=None; Secure", cookieName, requestedLanguage));
+                            } else {
+                                Cookie cookie = new Cookie(cookieName, requestedLanguage);
+                                cookie.setHttpOnly(true);
+                                response.addCookie(cookie);
+                            }
                         }
                         return requestedLocale;
                     }
