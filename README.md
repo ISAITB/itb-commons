@@ -28,6 +28,37 @@ Each module's library is intended to be used as a dependency for the modules of 
 following sections on the purpose and usage of each library. In the illustrated dependencies you should replace 
 `VERSION` with the specific snapshot or release version needed.
 
+## commons-parent
+
+Module that acts as the parent POM for the current project's modules. A specific module is used for this purpose
+to restrict build behaviours to the current project only, without being inherited by specific validator
+implementations. Common build settings (properties and dependency versions) are inherited from the root POM file.
+To use this as a parent, module POMs should define it as follows:
+
+```
+<parent>
+   <groupId>eu.europa.ec.itb.commons</groupId>
+   <artifactId>validation-commons-parent</artifactId>
+   <version>VERSION</version>
+   <relativePath>../commons-parent</relativePath>
+</parent>
+```
+
+## validator-parent
+
+Module that acts as the parent POM for validator implementations external to the current project.  Common build 
+settings (properties and dependency versions) are inherited from the root POM file. To use this as a parent, validator 
+POMs should define it as follows:
+
+```
+<parent>
+   <groupId>eu.europa.ec.itb.commons</groupId>
+   <artifactId>validator-parent</artifactId>
+   <version>1.2.0-SNAPSHOT</version>
+   <relativePath/>
+</parent>
+```
+
 ## validation-commons
 
 Common beans, base classes and utilities for all validators (i.e. the validators' "common" layer/module). The main 

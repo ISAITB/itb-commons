@@ -6,9 +6,11 @@
     <packaging>pom</packaging>
     <version>1.2.0-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Common utilities and foundation classes for all validators.</description>
+    <description>Common utilities, parent build definitions, and foundation classes for all validators.</description>
 
     <modules>
+        <module>commons-parent</module>
+        <module>validator-parent</module>
         <module>validation-plugins</module>
         <module>validation-commons</module>
         <module>validation-commons-web</module>
@@ -35,9 +37,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <sonar.organization>isaitb</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <version.springBoot>2.6.7</version.springBoot>
+        <version.springBoot>2.7.0</version.springBoot>
         <version.springSecurityTest>5.6.2</version.springSecurityTest>
         <version.javaxAnnotationApi>1.3.2</version.javaxAnnotationApi>
         <version.gitbTypes>1.16.0</version.gitbTypes>
@@ -55,6 +59,40 @@
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.bouncycastle>1.69</version.bouncycastle>
         <version.jackson>2.13.2.20220328</version.jackson>
+        <version.cxf>3.5.1</version.cxf>
+        <version.xerces>2.12.2</version.xerces>
+        <version.saxon>10.6</version.saxon>
+        <version.tika>2.4.0</version.tika>
+        <version.helgerSchematron>6.2.8</version.helgerSchematron>
+        <version.jaxWs>2.3.1</version.jaxWs>
+        <version.jws>1.1</version.jws>
+        <version.commonsBeanutils>1.9.4</version.commonsBeanutils>
+        <version.javaxActivation>1.1.1</version.javaxActivation>
+        <version.justify>3.1.0</version.justify>
+        <version.jakartaJson>2.0.0</version.jakartaJson>
+        <version.jayway>2.7.0</version.jayway>
+        <version.gson>2.9.0</version.gson>
+        <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
+        <version.commonsCompress>1.21</version.commonsCompress>
+        <version.commonsValidator>1.7</version.commonsValidator>
+        <version.springdoc>1.5.13</version.springdoc>
+        <version.topbraid>1.4.2</version.topbraid>
+        <version.freemarker>2.3.30</version.freemarker>
+        <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
+        <version.jena>4.3.2</version.jena>
+        <version.libthrift>0.15.0</version.libthrift>
+        <!-- Plugin versions -->
+        <version.plugin.mavenCompilerPlugin>3.8.1</version.plugin.mavenCompilerPlugin>
+        <version.plugin.mavenJarPlugin>3.2.0</version.plugin.mavenJarPlugin>
+        <version.plugin.dependencyCheckPlugin>7.1.0</version.plugin.dependencyCheckPlugin>
+        <version.plugin.frontendMavenPlugin>1.12.1</version.plugin.frontendMavenPlugin>
+        <version.plugin.jacocoMavenPlugin>0.8.7</version.plugin.jacocoMavenPlugin>
+        <version.plugin.versionsMavenPlugin>2.8.1</version.plugin.versionsMavenPlugin>
+        <version.plugin.mavenEnforcerPlugin>3.0.0-M3</version.plugin.mavenEnforcerPlugin>
+        <version.plugin.jasperreportsPlugin>2.8</version.plugin.jasperreportsPlugin>
+        <version.plugin.mavenReleasePlugin>3.0.0-M4</version.plugin.mavenReleasePlugin>
+        <version.plugin.mavenSurefirePlugin>3.0.0-M5</version.plugin.mavenSurefirePlugin>
+        <version.plugin.mavenJavadocPlugin>3.3.0</version.plugin.mavenJavadocPlugin>
     </properties>
 
     <repositories>
@@ -63,12 +101,20 @@
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
             <id>jasperreports</id>
             <url>https://jaspersoft.jfrog.io/artifactory/jrs-ce-releases/</url>
         </repository>
         <repository>
             <id>jaspersoft-third-party</id>
             <url>https://jaspersoft.jfrog.io/artifactory/third-party-ce-artifacts/</url>
+        </repository>
+        <repository>
+            <id>osgeo.org</id>
+            <url>https://repo.osgeo.org/repository/release/</url>
         </repository>
         <repository>
             <id>itbRepoRead</id>
@@ -89,16 +135,26 @@
 
     <scm>
         <developerConnection>scm:git:https://webgate.ec.europa.eu/CITnet/stash/scm/itb/itb-commons.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${version.springBoot}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${version.plugin.mavenJarPlugin}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>6.3.1</version>
+                    <version>${version.plugin.dependencyCheckPlugin}</version>
                     <configuration>
                         <failBuildOnCVSS>0</failBuildOnCVSS>
                         <suppressionFile>etc/owasp-suppressions.xml</suppressionFile>
@@ -111,50 +167,9 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>test-jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>com.alexnederlof</groupId>
-                    <artifactId>jasperreports-plugin</artifactId>
-                    <version>2.8</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>net.sf.jasperreports</groupId>
-                            <artifactId>jasperreports-fonts</artifactId>
-                            <version>${version.jasperReports}</version>
-                            <exclusions>
-                                <exclusion>
-                                    <groupId>com.lowagie</groupId>
-                                    <artifactId>itext</artifactId>
-                                </exclusion>
-                            </exclusions>
-                        </dependency>
-                        <dependency>
-                            <groupId>net.sf.jasperreports</groupId>
-                            <artifactId>jasperreports</artifactId>
-                            <version>${version.jasperReports}</version>
-                            <exclusions>
-                                <exclusion>
-                                    <groupId>com.lowagie</groupId>
-                                    <artifactId>itext</artifactId>
-                                </exclusion>
-                            </exclusions>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
                     <groupId>com.github.eirslett</groupId>
                     <artifactId>frontend-maven-plugin</artifactId>
-                    <version>1.12.1</version>
+                    <version>${version.plugin.frontendMavenPlugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -162,30 +177,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${version.plugin.mavenCompilerPlugin}</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>3.0.0-M4</version>
-                <configuration>
-                    <tagNameFormat>@{project.version}</tagNameFormat>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
-            </plugin>
-            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.7</version>
+                <version>${version.plugin.jacocoMavenPlugin}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -201,49 +202,8 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>aggregate</id>
-                        <goals>
-                            <goal>aggregate</goal>
-                        </goals>
-                        <phase>site</phase>
-                        <configuration>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.0</version>
-                <reportSets>
-                    <reportSet>
-                        <id>aggregate</id>
-                        <inherited>false</inherited>
-                        <reports>
-                            <report>aggregate</report>
-                        </reports>
-                    </reportSet>
-                    <reportSet>
-                        <id>default</id>
-                        <reports>
-                            <report>javadoc</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
 
     <dependencyManagement>
         <dependencies>
@@ -289,6 +249,16 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>eu.europa.ec.itb.commons</groupId>
+                <artifactId>validation-commons-war</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>eu.europa.ec.itb.commons</groupId>
+                <artifactId>validation-commons-jar</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter</artifactId>
                 <version>${version.springBoot}</version>
@@ -314,9 +284,39 @@
                 <version>${version.springBoot}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+                <version>${version.cxf}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-aop</artifactId>
+                <version>${version.springBoot}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-validation</artifactId>
+                <version>${version.springBoot}</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.annotation</groupId>
                 <artifactId>javax.annotation-api</artifactId>
                 <version>${version.javaxAnnotationApi}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>${version.javaxActivation}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.ws</groupId>
+                <artifactId>jaxws-api</artifactId>
+                <version>${version.jaxWs}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.jws</groupId>
+                <artifactId>javax.jws-api</artifactId>
+                <version>${version.jws}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -332,6 +332,38 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${version.commonsIo}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${version.commonsBeanutils}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.leadpony.justify</groupId>
+                <artifactId>justify</artifactId>
+                <version>${version.justify}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.json</groupId>
+                <artifactId>jakarta.json-api</artifactId>
+                <version>${version.jakartaJson}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.json</artifactId>
+                <classifier>module</classifier>
+                <version>${version.jakartaJson}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>${version.jayway}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${version.gson}</version>
             </dependency>
             <dependency>
                 <groupId>org.webjars</groupId>
@@ -379,6 +411,52 @@
                 <version>${version.bouncycastle}</version>
             </dependency>
             <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>${version.xerces}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.saxon</groupId>
+                <artifactId>Saxon-HE</artifactId>
+                <version>${version.saxon}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-core</artifactId>
+                <version>${version.tika}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-parsers-standard-package</artifactId>
+                <version>${version.tika}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ISAITB</groupId>
+                <artifactId>tableschema-java-fork</artifactId>
+                <version>${version.frictionlessTableSchema}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax</groupId>
+                        <artifactId>javaee-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.helger.schematron</groupId>
+                <artifactId>ph-schematron-api</artifactId>
+                <version>${version.helgerSchematron}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.helger.schematron</groupId>
+                <artifactId>ph-schematron-xslt</artifactId>
+                <version>${version.helgerSchematron}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.helger.schematron</groupId>
+                <artifactId>ph-schematron-pure</artifactId>
+                <version>${version.helgerSchematron}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <scope>test</scope>
@@ -404,11 +482,59 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${version.commonsCompress}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${version.commonsValidator}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${version.springdoc}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.topbraid</groupId>
+                <artifactId>shacl</artifactId>
+                <version>${version.topbraid}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${version.freemarker}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-arq</artifactId>
+                <version>${version.jena}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-rdfconnection</artifactId>
+                <version>${version.jena}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.thrift</groupId>
+                <artifactId>libthrift</artifactId>
+                <version>${version.libthrift}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
                 <version>${version.jackson}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+            <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${version.springBoot}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
