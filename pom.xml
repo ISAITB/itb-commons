@@ -157,6 +157,9 @@
                     <version>${version.plugin.dependencyCheckPlugin}</version>
                     <configuration>
                         <failBuildOnCVSS>0</failBuildOnCVSS>
+                        <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+                        <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
+                        <nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
                         <suppressionFile>etc/owasp-suppressions.xml</suppressionFile>
                     </configuration>
                     <executions>
