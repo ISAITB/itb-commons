@@ -93,6 +93,7 @@
         <version.plugin.mavenReleasePlugin>3.0.0-M4</version.plugin.mavenReleasePlugin>
         <version.plugin.mavenSurefirePlugin>3.0.0-M5</version.plugin.mavenSurefirePlugin>
         <version.plugin.mavenJavadocPlugin>3.3.0</version.plugin.mavenJavadocPlugin>
+        <version.plugin.mavenResourcesPlugin>3.2.0</version.plugin.mavenResourcesPlugin>
     </properties>
 
     <repositories>
@@ -173,6 +174,11 @@
                     <groupId>com.github.eirslett</groupId>
                     <artifactId>frontend-maven-plugin</artifactId>
                     <version>${version.plugin.frontendMavenPlugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${version.plugin.mavenResourcesPlugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
