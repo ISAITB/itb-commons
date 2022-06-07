@@ -1060,6 +1060,11 @@ function severityFilterChange(level) {
 }
 
 function doSubmit() {
+    if ($('#contentType').val() == "stringType") {
+        $("#text-editor-value").val(getCodeMirrorNative('#text-editor').getDoc().getValue());
+    } else {
+        $("#text-editor-value").val('');
+    }
     $('#reportPlaceholder').empty();
     clearMessages();
 	waitingDialog.show(validatingInputMessage, {dialogSize: 'm'}, _config.isMinimalUI?'busy-modal-minimal':'busy-modal');
