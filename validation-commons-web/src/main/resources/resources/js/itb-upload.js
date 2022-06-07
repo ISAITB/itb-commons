@@ -588,15 +588,16 @@ function triggerFileUpload() {
 
 function contentTypeChanged() {
 	var type = $('#contentType').val();
-	$('#inputFileSubmit').prop('disabled', true);
 	if (type == "uriType"){
 		$("#uriToValidate").removeClass('hidden');
 		$("#fileToValidate").addClass('hidden');
 		$("#stringToValidate").addClass('hidden');
+        updateSubmitStatus();
 	} else if (type == "fileType") {
 		$("#fileToValidate").removeClass('hidden');
 		$("#uriToValidate").addClass('hidden');
 		$("#stringToValidate").addClass('hidden');
+        updateSubmitStatus();
 	} else if (type == "stringType") {
 		$("#stringToValidate").removeClass('hidden');
 		$("#uriToValidate").addClass('hidden');
@@ -604,6 +605,7 @@ function contentTypeChanged() {
 		setTimeout(function() {
             var codeMirror = getCodeMirrorNative('#text-editor')
             codeMirror.refresh();
+            updateSubmitStatus();
 		}, 0);
 	}
     notifyListeners('INPUT_CONTENT_TYPE_CHANGED', {});
