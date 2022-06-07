@@ -607,6 +607,8 @@ function contentTypeChanged() {
             codeMirror.refresh();
             updateSubmitStatus();
 		}, 0);
+	} else {
+        updateSubmitStatus();
 	}
     notifyListeners('INPUT_CONTENT_TYPE_CHANGED', {});
 }
