@@ -205,6 +205,15 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setType(validationTypes);
                     domainConfig.setDeclaredType(declaredValidationTypes);
                     domainConfig.setValidationTypeOptions(validationTypeOptions);
+                    // add default validation type
+                    String defaultType = config.getString("validator.defaultType");
+                    if (defaultType != null && !defaultType.isBlank()) {
+                        if (validationTypes.contains(defaultType)) {
+                            domainConfig.setDefaultType(defaultType);
+                        } else {
+                            logger.warn(String.format("Failed to initialise configuration for domain [%s]. Default type [%s] is not a full type.", domain, defaultType));
+                        }
+                    }
                     Set<ValidatorChannel> supportedChannels = new HashSet<>(Arrays.asList(getSupportedChannels()));
                     domainConfig.setChannels(Arrays.stream(StringUtils.split(config.getString("validator.channels", getDefaultChannelsStr()), ',')).map(String::trim).map(name -> toValidatorChannel(supportedChannels, name)).collect(Collectors.toSet()));
                     // Parse plugins - start

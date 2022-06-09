@@ -122,6 +122,9 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
      * @return The type of validation (validated).
      */
     public String validateValidationType(R domainConfig, String validationType) {
+        if (validationType == null || validationType.isBlank()) {
+            validationType = domainConfig.getDefaultType();
+        }
         if (validationType != null && !domainConfig.getType().contains(validationType)) {
             throw new ValidatorException("validator.label.exception.validationTypeInvalid", validationType, domainConfig.getDomainName(), String.join(", ", domainConfig.getType()));
         } else if (validationType == null && domainConfig.getType().size() != 1) {
