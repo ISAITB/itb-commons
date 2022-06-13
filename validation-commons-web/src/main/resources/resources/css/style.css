@@ -220,3 +220,6 @@ body {
     align-items: center;
     flex-wrap: wrap;
 }
+#bannerSection > div {
+    margin-bottom: 20px;
+}
