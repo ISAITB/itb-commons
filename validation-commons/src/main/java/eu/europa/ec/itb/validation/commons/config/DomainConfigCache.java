@@ -211,13 +211,13 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                         if (validationTypes.contains(defaultType)) {
                             domainConfig.setDefaultType(defaultType);
                         } else {
-                            logger.warn(String.format("Failed to initialise configuration for domain [%s]. Default type [%s] is not a full type.", domain, defaultType));
+                            logger.warn("Failed to initialise configuration for domain [{}]. Default type [{}] is not a full type.", domain, defaultType);
                         }
                     }
                     // if one validation type is provided and missing or invalid default validation type
                     if (domainConfig.getDefaultType() == null && validationTypes.size() == 1) {
                         defaultType = validationTypes.get(0);
-                        logger.info(String.format("Setting default validation type for domain [%s] to only validation type provided [%s].", domain, defaultType));
+                        logger.info("Setting default validation type for domain [{}] to only validation type provided [{}].", domain, defaultType);
                         domainConfig.setDefaultType(defaultType);
                     }
                     Set<ValidatorChannel> supportedChannels = new HashSet<>(Arrays.asList(getSupportedChannels()));
