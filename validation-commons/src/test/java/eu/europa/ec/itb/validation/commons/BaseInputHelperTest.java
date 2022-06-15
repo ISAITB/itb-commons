@@ -15,6 +15,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -27,6 +32,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -185,51 +191,31 @@ class BaseInputHelperTest extends BaseSpringTest {
         assertEquals("type1", inputHelper.validateValidationType(domainConfig, null));
     }
 
-    @Test
-    void testValidateValidationTypeAsDefaultNok() {
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"typeX", "test1"})
+    void testValidateValidationTypeMultipleTypesAndMissingDefault(String validationType) {
         var domainConfig = new DomainConfig();
         domainConfig.setType(List.of("type1", "type2"));
-        assertThrows(ValidatorException.class, () -> inputHelper.validateValidationType(domainConfig, null));
+        assertThrows(ValidatorException.class, () -> inputHelper.validateValidationType(domainConfig, validationType));
     }
 
-    @Test
-    void testValidateValidationTypeAsDefaultNotFound() {
+    @ParameterizedTest
+    @MethodSource(value = "validationTypes")
+    void testValidateValidationTypeDefaultWithSeveralTypesAndDefault(String defaultType, String assertType, String providedType) {
         var domainConfig = new DomainConfig();
         domainConfig.setType(List.of("type1", "type2"));
-        assertThrows(ValidatorException.class, () -> inputHelper.validateValidationType(domainConfig, "typeX"));
+        domainConfig.setDefaultType(defaultType);
+        assertEquals(assertType, inputHelper.validateValidationType(domainConfig, providedType));
     }
 
-    @Test
-    void testValidateValidationTypeWithSeveralTypesAndNoDefaultOk() {
-        var domainConfig = new DomainConfig();
-        domainConfig.setType(List.of("type1", "type2"));
-        assertThrows(ValidatorException.class, () -> inputHelper.validateValidationType(domainConfig, "test1"));
+    private static Stream<Arguments> validationTypes() {
+        return Stream.of(
+                Arguments.arguments("type1", "type1", "type1"),
+                Arguments.arguments("type2", "type1", "type1"),
+                Arguments.arguments("type2", "type2", null));
     }
-
-    @Test
-    void testValidateValidationTypeDefaultWithSeveralTypesAndDefaultOk() {
-        var domainConfig = new DomainConfig();
-        domainConfig.setType(List.of("type1", "type2"));
-        domainConfig.setDefaultType("type1");
-        assertEquals("type1", inputHelper.validateValidationType(domainConfig, "type1"));
-    }
-
-    @Test
-    void testValidateValidationTypeNonDefaultWithSeveralTypesAndDefaultOk() {
-        var domainConfig = new DomainConfig();
-        domainConfig.setType(List.of("type1", "type2"));
-        domainConfig.setDefaultType("type2");
-        assertEquals("type1", inputHelper.validateValidationType(domainConfig, "type1"));
-    }
-
-    @Test
-    void testValidateValidationTypeWithSeveralTypesAndDefaultNok() {
-        var domainConfig = new DomainConfig();
-        domainConfig.setType(List.of("type1", "type2"));
-        domainConfig.setDefaultType("type2");
-        assertEquals("type2", inputHelper.validateValidationType(domainConfig, null));
-    }
-
+    
     @Test
     void testValidateValidationTypeWithSeveralTypesAndDefaultNotFound() {
         var domainConfig = new DomainConfig();
