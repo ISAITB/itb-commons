@@ -164,13 +164,6 @@ class BaseInputHelperTest extends BaseSpringTest {
     }
 
     @Test
-    void testValidateValidationTypeForValidateRequestNoMatchOk() {
-        var domainConfig = new DomainConfig();
-        domainConfig.setType(List.of("type1"));
-        assertEquals("type1", inputHelper.validateValidationType(domainConfig, new ValidateRequest(), "input"));
-    }
-
-    @Test
     void testValidateValidationTypeForValidateRequestNoMatchNok() {
         var domainConfig = new DomainConfig();
         domainConfig.setType(List.of("type1", "type2"));
@@ -188,6 +181,7 @@ class BaseInputHelperTest extends BaseSpringTest {
     void testValidateValidationTypeAsDefaultOk() {
         var domainConfig = new DomainConfig();
         domainConfig.setType(List.of("type1"));
+        domainConfig.setDefaultType("type1");
         assertEquals("type1", inputHelper.validateValidationType(domainConfig, null));
     }
 
@@ -202,6 +196,45 @@ class BaseInputHelperTest extends BaseSpringTest {
     void testValidateValidationTypeAsDefaultNotFound() {
         var domainConfig = new DomainConfig();
         domainConfig.setType(List.of("type1", "type2"));
+        assertThrows(ValidatorException.class, () -> inputHelper.validateValidationType(domainConfig, "typeX"));
+    }
+
+    @Test
+    void testValidateValidationTypeWithSeveralTypesAndNoDefaultOk() {
+        var domainConfig = new DomainConfig();
+        domainConfig.setType(List.of("type1", "type2"));
+        assertThrows(ValidatorException.class, () -> inputHelper.validateValidationType(domainConfig, "test1"));
+    }
+
+    @Test
+    void testValidateValidationTypeDefaultWithSeveralTypesAndDefaultOk() {
+        var domainConfig = new DomainConfig();
+        domainConfig.setType(List.of("type1", "type2"));
+        domainConfig.setDefaultType("type1");
+        assertEquals("type1", inputHelper.validateValidationType(domainConfig, "type1"));
+    }
+
+    @Test
+    void testValidateValidationTypeNonDefaultWithSeveralTypesAndDefaultOk() {
+        var domainConfig = new DomainConfig();
+        domainConfig.setType(List.of("type1", "type2"));
+        domainConfig.setDefaultType("type2");
+        assertEquals("type1", inputHelper.validateValidationType(domainConfig, "type1"));
+    }
+
+    @Test
+    void testValidateValidationTypeWithSeveralTypesAndDefaultNok() {
+        var domainConfig = new DomainConfig();
+        domainConfig.setType(List.of("type1", "type2"));
+        domainConfig.setDefaultType("type2");
+        assertEquals("type2", inputHelper.validateValidationType(domainConfig, null));
+    }
+
+    @Test
+    void testValidateValidationTypeWithSeveralTypesAndDefaultNotFound() {
+        var domainConfig = new DomainConfig();
+        domainConfig.setType(List.of("type1", "type2"));
+        domainConfig.setDefaultType("type2");
         assertThrows(ValidatorException.class, () -> inputHelper.validateValidationType(domainConfig, "typeX"));
     }
 
