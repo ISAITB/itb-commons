@@ -18,6 +18,7 @@ public class DomainConfig {
     private String domainName;
     private List<String> type;
     private List<String> declaredType;
+    private String defaultType;
     private Map<String, List<String>> validationTypeOptions;
     private Set<ValidatorChannel> channels = new HashSet<>();
     private Map<String, TypedValidationArtifactInfo> artifactInfo;
@@ -117,6 +118,20 @@ public class DomainConfig {
      */
     public void setDeclaredType(List<String> declaredType) {
         this.declaredType = declaredType;
+    }
+
+    /**
+     * @return The default validation type.
+     */
+    public String getDefaultType() {
+        return defaultType;
+    }
+
+    /**
+     * @param defaultType The default validation type.
+     */
+    public void setDefaultType(String defaultType) {
+        this.defaultType = defaultType;
     }
 
     /**
