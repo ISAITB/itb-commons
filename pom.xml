@@ -75,7 +75,7 @@
         <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
         <version.commonsCompress>1.21</version.commonsCompress>
         <version.commonsValidator>1.7</version.commonsValidator>
-        <version.springdoc>1.5.13</version.springdoc>
+        <version.springdoc>1.6.9</version.springdoc>
         <version.topbraid>1.4.2</version.topbraid>
         <version.freemarker>2.3.30</version.freemarker>
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
