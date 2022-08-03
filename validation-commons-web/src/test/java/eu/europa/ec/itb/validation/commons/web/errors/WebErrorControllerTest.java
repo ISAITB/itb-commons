@@ -3,6 +3,7 @@ package eu.europa.ec.itb.validation.commons.web.errors;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.itb.validation.commons.web.Constants;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletOutputStream;
@@ -20,6 +21,19 @@ import static org.mockito.Mockito.*;
 
 class WebErrorControllerTest {
 
+    private WebErrorController getController() {
+        var controller = new WebErrorController();
+        try {
+            var field = WebErrorController.class.getDeclaredField("errorAttributes");
+            field.setAccessible(true);
+            field.set(controller, mock(ErrorAttributes.class));
+            field.setAccessible(false);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return controller;
+    }
+
     @Test
     void testHandleErrorNormalRequest() {
         var request = mock(HttpServletRequest.class);
@@ -28,7 +42,7 @@ class WebErrorControllerTest {
         when(request.getHeader(Constants.AJAX_REQUEST_HEADER)).thenReturn(null);
         when(request.getHeader("referer")).thenReturn(null);
         var response = mock(HttpServletResponse.class);
-        var controller = new WebErrorController();
+        var controller = getController();
         var result = controller.handleError(request, response);
         assertNotNull(result);
         assertNotNull(result.getModelMap().getAttribute("minimalUI"));
@@ -61,7 +75,7 @@ class WebErrorControllerTest {
             }
         };
         when(response.getOutputStream()).thenReturn(out);
-        var controller = new WebErrorController();
+        var controller = getController();
         var result = controller.handleError(request, response);
         assertNull(result);
         ObjectMapper mapper = new ObjectMapper();

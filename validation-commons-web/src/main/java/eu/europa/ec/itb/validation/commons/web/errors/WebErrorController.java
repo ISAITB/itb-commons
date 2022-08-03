@@ -2,13 +2,13 @@ package eu.europa.ec.itb.validation.commons.web.errors;
 
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
-import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.web.Constants;
 import eu.europa.ec.itb.validation.commons.web.locale.CustomLocaleResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +18,7 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.RequestDispatcher;
@@ -40,6 +41,8 @@ public class WebErrorController implements ErrorController {
     private CustomLocaleResolver localeResolver;
     @Autowired
     private ApplicationConfig appConfig;
+    @Autowired
+    private ErrorAttributes errorAttributes;
 
     /**
      * Handle a web error. The handling here forwards to a common error page or, in case of errors
@@ -51,11 +54,12 @@ public class WebErrorController implements ErrorController {
      */
     @RequestMapping(value = "/error", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView handleError(HttpServletRequest request, HttpServletResponse response) {
+        Throwable cause = errorAttributes.getError(new ServletWebRequest(request));
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         var domainConfig = (WebDomainConfig) request.getAttribute(WebDomainConfig.DOMAIN_CONFIG_REQUEST_ATTRIBUTE);
         String xRequestedWith = request.getHeader(Constants.AJAX_REQUEST_HEADER);
         if(xRequestedWith != null && xRequestedWith.equalsIgnoreCase("XmlHttpRequest")) {
-        	return ajaxError(status, response);
+        	return ajaxError(status, response, cause);
         }
         Boolean isMinimalUI = (Boolean)request.getAttribute(Constants.IS_MINIMAL);
         if (isMinimalUI == null) {
@@ -65,7 +69,7 @@ public class WebErrorController implements ErrorController {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("minimalUI", isMinimalUI);
         attributes.put("previousPage", previousPage);	
-        attributes.put("errorMessage", getErrorMessage(status));
+        attributes.put("errorMessage", getErrorMessage(status, cause));
         if (domainConfig == null) {
             attributes.put("localiser", new LocalisationHelper(Locale.ENGLISH));
 
@@ -80,13 +84,14 @@ public class WebErrorController implements ErrorController {
      * Extract the error message depending on the type of error.
      *
      * @param status The received error status.
+     * @param cause The cause of the error.
      * @return The message to display.
      */
-    private String getErrorMessage(Object status){
+    private String getErrorMessage(Object status, Throwable cause){
     	String errorMessage = "-";
     	if (status != null) {
             int statusCode = Integer.parseInt(status.toString());
-            if(statusCode == HttpStatus.NOT_FOUND.value()) {
+            if(statusCode == HttpStatus.NOT_FOUND.value() || cause instanceof NotFoundException) {
             	errorMessage = "The requested path or resource does not exist.";
             } else {
             	errorMessage = "An internal server error occurred.";
@@ -100,13 +105,14 @@ public class WebErrorController implements ErrorController {
      *
      * @param status The error information.
      * @param response The HTTP response.
+     * @param cause The cause of the error.
      * @return The model data.
      */
-    private ModelAndView ajaxError(Object status, HttpServletResponse response) {
+    private ModelAndView ajaxError(Object status, HttpServletResponse response, Throwable cause) {
     	MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
     	MediaType jsonMimeType = MediaType.APPLICATION_JSON;
     	Map<String, String> responseMessage = new HashMap<>();
-    	responseMessage.put("errorMessage", getErrorMessage(status));
+    	responseMessage.put("errorMessage", getErrorMessage(status, cause));
     	try {
     		jsonConverter.write(responseMessage, jsonMimeType, new ServletServerHttpResponse(response));
     	} catch (HttpMessageNotWritableException | IOException e) {
