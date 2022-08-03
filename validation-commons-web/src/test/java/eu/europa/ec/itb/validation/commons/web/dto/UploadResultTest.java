@@ -4,6 +4,7 @@ import com.gitb.tr.TAR;
 import com.gitb.tr.TestAssertionGroupReportsType;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.Utils;
+import eu.europa.ec.itb.validation.commons.config.ErrorResponseTypeEnum;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import org.junit.jupiter.api.Test;
 
@@ -59,6 +60,7 @@ class UploadResultTest {
         assertNull(result3.getValidationTypeLabel());
 
         when(domainConfig.checkRemoteArtefactStatus(anyString())).thenReturn(false);
+        when(domainConfig.getResponseForRemoteArtefactLoadFailure(anyString())).thenReturn(ErrorResponseTypeEnum.WARN);
         var result4 = new UploadResult<>();
         result4.populateCommon(helper, "type1", domainConfig, "report1", "file1", detailedReport, aggregateReport, translations);
         assertEquals("validator.label.exception.failureToLoadRemoteArtefacts", result4.getMessage());
