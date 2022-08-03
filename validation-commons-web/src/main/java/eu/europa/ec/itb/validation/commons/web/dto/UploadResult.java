@@ -3,6 +3,7 @@ package eu.europa.ec.itb.validation.commons.web.dto;
 import com.gitb.tr.TAR;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.Utils;
+import eu.europa.ec.itb.validation.commons.config.ErrorResponseTypeEnum;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 public class UploadResult <T extends Translations> {
 
     private String message;
+    private boolean messageIsError = true;
     private String reportId;
     private String fileName;
     private TAR report;
@@ -181,6 +183,20 @@ public class UploadResult <T extends Translations> {
     }
 
     /**
+     * @return Whether the configured message is at error level.
+     */
+    public boolean isMessageIsError() {
+        return messageIsError;
+    }
+
+    /**
+     * @param messageIsError Whether the configured message is at error level.
+     */
+    public void setMessageIsError(boolean messageIsError) {
+        this.messageIsError = messageIsError;
+    }
+
+    /**
      * Populate all result properties that are common to all validator types.
      *
      * @param helper The localisation helper to use to lookup translations.
@@ -206,5 +222,11 @@ public class UploadResult <T extends Translations> {
         setShowAggregateReport(Utils.aggregateDiffers(detailedReport, aggregateReport));
         setDate(detailedReport.getDate().toString());
         setTranslations(translations);
+        if (message == null && !domainConfig.checkRemoteArtefactStatus(validationType) && domainConfig.getResponseForRemoteArtefactLoadFailure(validationType) == ErrorResponseTypeEnum.WARN) {
+            // We only treat the case where we need to report a warning. When needing to respond with an error this has already
+            // been done before validation took place.
+            setMessage(helper.localise("validator.label.exception.failureToLoadRemoteArtefacts"));
+            setMessageIsError(false);
+        }
     }
 }

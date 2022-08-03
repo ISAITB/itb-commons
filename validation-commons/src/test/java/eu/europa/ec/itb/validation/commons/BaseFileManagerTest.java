@@ -574,7 +574,7 @@ class BaseFileManagerTest extends BaseSpringTest {
         var config1 = new DomainConfig();
         config1.setDomain("domain1");
         config1.setDomainName("domain1");
-        config1.setType(List.of("type1"));
+        config1.setType(List.of("type1", "type2"));
         config1.setArtifactInfo(new HashMap<>());
         config1.getArtifactInfo().put("type1", new TypedValidationArtifactInfo());
         config1.getArtifactInfo().get("type1").add("artifact1", new ValidationArtifactInfo());
@@ -587,10 +587,18 @@ class BaseFileManagerTest extends BaseSpringTest {
         config1.getArtifactInfo().get("type1").get("artifact2").getRemoteArtifacts().get(0).setUrl("http://test2.com");
         config1.getArtifactInfo().get("type1").get("artifact2").getRemoteArtifacts().get(0).setPreProcessorPath("preprocess/aFile.txt");
         config1.getArtifactInfo().get("type1").get("artifact2").getRemoteArtifacts().get(0).setPreProcessorOutputExtension(".txt");
+        config1.getArtifactInfo().get("type1").get("artifact2").getRemoteArtifacts().add(new RemoteValidationArtifactInfo());
+        config1.getArtifactInfo().get("type1").get("artifact2").getRemoteArtifacts().get(1).setUrl("http://test3.com");
+        config1.getArtifactInfo().put("type2", new TypedValidationArtifactInfo());
+        config1.getArtifactInfo().get("type2").add("artifact1", new ValidationArtifactInfo());
+        config1.getArtifactInfo().get("type2").get("artifact1").setRemoteArtifacts(new ArrayList<>());
+        config1.getArtifactInfo().get("type2").get("artifact1").getRemoteArtifacts().add(new RemoteValidationArtifactInfo());
+        config1.getArtifactInfo().get("type2").get("artifact1").getRemoteArtifacts().get(0).setUrl("http://test1.com");
         createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain1", "preprocess", "aFile.txt"), "CONTENT");
         fileManager.preprocessor = new TestPreprocessor();
         when(urlReader.stream(URI.create("http://test1.com"))).thenReturn(new ByteArrayInputStream("TEST1".getBytes(StandardCharsets.UTF_8)));
         when(urlReader.stream(URI.create("http://test2.com"))).thenReturn(new ByteArrayInputStream("TEST2".getBytes(StandardCharsets.UTF_8)));
+        when(urlReader.stream(URI.create("http://test3.com"))).thenThrow(new IllegalStateException("File not loaded"));
         when(domainConfigCache.getAllDomainConfigurations()).thenReturn(List.of(config1));
         fileManager.resetRemoteFileCache();
         assertTrue(Files.exists(Path.of(appConfig.getTmpFolder(), "remote_config", "domain1", "type1", "artifact1")));
@@ -601,6 +609,8 @@ class BaseFileManagerTest extends BaseSpringTest {
         assertEquals("TEST2", Files.readString(Objects.requireNonNull(Path.of(appConfig.getTmpFolder(), "remote_config", "domain1", "type1", "artifact2").toFile().listFiles())[0].toPath()));
         assertTrue(Objects.requireNonNull(Path.of(appConfig.getTmpFolder(), "remote_config", "domain1", "type1", "artifact2").toFile().listFiles())[0].getName().startsWith("PROCESSED_"));
         assertTrue(Objects.requireNonNull(Path.of(appConfig.getTmpFolder(), "remote_config", "domain1", "type1", "artifact2").toFile().listFiles())[0].getName().endsWith(".txt"));
+        assertFalse(config1.checkRemoteArtefactStatus("type1"));
+        assertTrue(config1.checkRemoteArtefactStatus("type2"));
     }
 
     private BAR createBAR(int index) {

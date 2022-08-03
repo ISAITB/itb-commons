@@ -255,6 +255,10 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     // CSV BOM configuration.
                     domainConfig.setAddBOMToCSVExports(config.getBoolean("validator.addBOMToCSVExports", Boolean.TRUE));
                     domainConfig.setReportsOrdered(config.getBoolean("validator.reportsOrdered", false));
+                    // Check how to react to remote artefact load failures - start
+                    var defaultResponseType = ErrorResponseTypeEnum.fromValue(config.getString("validator.remoteArtefactLoadErrors", "log"));
+                    domainConfig.setRemoteArtifactLoadErrorResponse(ParseUtils.parseEnumMap("validator.remoteArtefactLoadErrors", defaultResponseType, config, domainConfig.getType(), ErrorResponseTypeEnum::fromValue));
+                    // Check how to react to remote artefact load failures - end
                     // Allow subclasses to extend the configuration as needed.
                     addDomainConfiguration(domainConfig, config);
                     completeValidationArtifactConfig(domainConfig);

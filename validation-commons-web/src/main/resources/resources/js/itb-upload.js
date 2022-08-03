@@ -855,6 +855,18 @@ function clearMessages() {
     $('#messagePlaceholder').addClass('hidden');
     $('#messagePlaceholder').empty();
 }
+function showMessage(message, isError) {
+    var placeholder = $('#messagePlaceholder');
+    placeholder.text(message);
+    if (isError) {
+        placeholder.removeClass('alert-warning');
+        placeholder.addClass('alert-danger');
+    } else {
+        placeholder.removeClass('alert-danger');
+        placeholder.addClass('alert-warning');
+    }
+    placeholder.removeClass('hidden');
+}
 function raiseAlert(errorInfo, isFinal) {
     var message = 'An unexpected error occurred';
     if (isFinal) {
@@ -872,8 +884,7 @@ function raiseAlert(errorInfo, isFinal) {
             message = 'An unexpected error occurred';
         }
     }
-    $('#messagePlaceholder').text(message);
-    $('#messagePlaceholder').removeClass('hidden');
+    showMessage(message, true);
 }
 function downloadReportXML() {
 	_state.resultLoadXML.done(function() {
@@ -1093,10 +1104,10 @@ function doSubmit() {
 
 function displayReport(data) {
     if (data.message) {
-        // An error occurred.
-        $('#messagePlaceholder').text(data.message);
-        $('#messagePlaceholder').removeClass('hidden');
-    } else {
+        // An error or warning occurred.
+        showMessage(data.message, data.messageIsError);
+    }
+    if (!data.message || !data.messageIsError) {
         // Validation completed.
         var params = {
             data: data,

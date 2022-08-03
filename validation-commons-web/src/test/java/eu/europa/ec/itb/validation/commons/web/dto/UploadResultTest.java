@@ -18,10 +18,12 @@ class UploadResultTest {
     @Test
     void testPopulateCommon() {
         var helper = mock(LocalisationHelper.class);
+        when(helper.localise(anyString())).thenAnswer(call -> call.getArgument(0).toString());
         var domainConfig = mock(WebDomainConfig.class);
         when(domainConfig.getCompleteTypeOptionLabel(anyString(), any(LocalisationHelper.class))).then(call -> "LABEL["+call.getArgument(0)+"]");
         when(domainConfig.getMaximumReportsForDetailedOutput()).thenReturn(1L);
         when(domainConfig.getMaximumReportsForXmlOutput()).thenReturn(2L);
+        when(domainConfig.checkRemoteArtefactStatus(anyString())).thenReturn(true);
         var reports = new TestAssertionGroupReportsType();
         var detailedReport = mock(TAR.class);
         var timestamp = Utils.getXMLGregorianCalendarDateTime();
@@ -55,6 +57,12 @@ class UploadResultTest {
         var result3 = new UploadResult<>();
         result3.populateCommon(helper, null, domainConfig, "report1", "file1", detailedReport, aggregateReport, translations);
         assertNull(result3.getValidationTypeLabel());
+
+        when(domainConfig.checkRemoteArtefactStatus(anyString())).thenReturn(false);
+        var result4 = new UploadResult<>();
+        result4.populateCommon(helper, "type1", domainConfig, "report1", "file1", detailedReport, aggregateReport, translations);
+        assertEquals("validator.label.exception.failureToLoadRemoteArtefacts", result4.getMessage());
+        assertFalse(result4.isMessageIsError());
     }
 
 }
