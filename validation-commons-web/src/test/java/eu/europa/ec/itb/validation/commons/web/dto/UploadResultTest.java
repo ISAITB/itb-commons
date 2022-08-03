@@ -4,6 +4,7 @@ import com.gitb.tr.TAR;
 import com.gitb.tr.TestAssertionGroupReportsType;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.Utils;
+import eu.europa.ec.itb.validation.commons.config.ErrorResponseTypeEnum;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import org.junit.jupiter.api.Test;
 
@@ -18,10 +19,12 @@ class UploadResultTest {
     @Test
     void testPopulateCommon() {
         var helper = mock(LocalisationHelper.class);
+        when(helper.localise(anyString())).thenAnswer(call -> call.getArgument(0).toString());
         var domainConfig = mock(WebDomainConfig.class);
         when(domainConfig.getCompleteTypeOptionLabel(anyString(), any(LocalisationHelper.class))).then(call -> "LABEL["+call.getArgument(0)+"]");
         when(domainConfig.getMaximumReportsForDetailedOutput()).thenReturn(1L);
         when(domainConfig.getMaximumReportsForXmlOutput()).thenReturn(2L);
+        when(domainConfig.checkRemoteArtefactStatus(anyString())).thenReturn(true);
         var reports = new TestAssertionGroupReportsType();
         var detailedReport = mock(TAR.class);
         var timestamp = Utils.getXMLGregorianCalendarDateTime();
@@ -55,6 +58,13 @@ class UploadResultTest {
         var result3 = new UploadResult<>();
         result3.populateCommon(helper, null, domainConfig, "report1", "file1", detailedReport, aggregateReport, translations);
         assertNull(result3.getValidationTypeLabel());
+
+        when(domainConfig.checkRemoteArtefactStatus(anyString())).thenReturn(false);
+        when(domainConfig.getResponseForRemoteArtefactLoadFailure(anyString())).thenReturn(ErrorResponseTypeEnum.WARN);
+        var result4 = new UploadResult<>();
+        result4.populateCommon(helper, "type1", domainConfig, "report1", "file1", detailedReport, aggregateReport, translations);
+        assertEquals("validator.label.exception.failureToLoadRemoteArtefacts", result4.getMessage());
+        assertFalse(result4.isMessageIsError());
     }
 
 }

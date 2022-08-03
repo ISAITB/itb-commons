@@ -8,6 +8,7 @@ import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
+import eu.europa.ec.itb.validation.commons.config.ErrorResponseTypeEnum;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -548,7 +549,6 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     public List<FileInfo> getPreconfiguredValidationArtifacts(DomainConfig domainConfig, String validationType, String artifactType) {
         final String artifactTypeToUse = Objects.requireNonNullElse(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
         String key = domainConfig.getDomainName() + "|" + validationType + "|" + artifactTypeToUse;
-        List<FileInfo> allFiles = new ArrayList<>();
         // Local artifacts.
         if (!preconfiguredLocalArtifactMap.containsKey(key)) {
             List<FileInfo> files = new ArrayList<>();
@@ -567,13 +567,17 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             }
             preconfiguredLocalArtifactMap.put(key, files);
         }
-        allFiles.addAll(preconfiguredLocalArtifactMap.get(key));
+        List<FileInfo> allFiles = new ArrayList<>(preconfiguredLocalArtifactMap.get(key));
         // Remote files - these are already pre-processed as part of the bootstrap.
         preconfiguredRemoteArtifactMap.computeIfAbsent(key, k -> {
             logger.warn("Remote validation artifacts were not found to be cached. This is not normal as caching is done via the periodic reload.");
             return getRemoteValidationArtifacts(domainConfig, validationType, artifactTypeToUse);
         });
         allFiles.addAll(preconfiguredRemoteArtifactMap.get(key));
+        // Check to see if we should stop the process due to remote artefact load failures.
+        if (!domainConfig.checkRemoteArtefactStatus(validationType) && domainConfig.getResponseForRemoteArtefactLoadFailure(validationType) == ErrorResponseTypeEnum.FAIL) {
+            throw new ValidatorException("validator.label.exception.failureToLoadRemoteArtefactsError");
+        }
         return allFiles;
     }
 
@@ -770,12 +774,19 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 getExternalDomainFileCacheLock(domainConfig.getDomainName()).writeLock().lock();
                 logger.debug("Locked cache for [{}]", domainConfig.getDomainName());
                 for (String validationType: domainConfig.getType()) {
-                    // Empty cache folder.
-                    File remoteConfigFolder = new File(new File(getRemoteFileCacheFolder(), domainConfig.getDomainName()), validationType);
-                    FileUtils.deleteQuietly(remoteConfigFolder);
-                    TypedValidationArtifactInfo typedArtifactInfo = domainConfig.getArtifactInfo().get(validationType);
-                    for (String artifactType: typedArtifactInfo.getTypes()) {
-                        downloadRemoteFilesForArtifactType(artifactType, validationType, remoteConfigFolder, domainConfig, typedArtifactInfo);
+                    boolean downloadsSucceeded = true;
+                    try {
+                        // Empty cache folder.
+                        File remoteConfigFolder = new File(new File(getRemoteFileCacheFolder(), domainConfig.getDomainName()), validationType);
+                        FileUtils.deleteQuietly(remoteConfigFolder);
+                        TypedValidationArtifactInfo typedArtifactInfo = domainConfig.getArtifactInfo().get(validationType);
+                        for (String artifactType: typedArtifactInfo.getTypes()) {
+                            if (!downloadRemoteFilesForArtifactType(artifactType, validationType, remoteConfigFolder, domainConfig, typedArtifactInfo)) {
+                                downloadsSucceeded = false;
+                            }
+                        }
+                    } finally {
+                        domainConfig.setRemoteArtefactStatus(validationType, downloadsSucceeded);
                     }
                 }
             } catch (ValidatorException e) {
@@ -800,8 +811,10 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param remoteConfigFolder The remote config folder.
      * @param domainConfig The domain config.
      * @param typedArtifactInfo The artifact info.
+     * @return Whether all downloads succeeded.
      */
-    private void downloadRemoteFilesForArtifactType(String artifactType, String validationType, File remoteConfigFolder, DomainConfig domainConfig, TypedValidationArtifactInfo typedArtifactInfo) {
+    private boolean downloadRemoteFilesForArtifactType(String artifactType, String validationType, File remoteConfigFolder, DomainConfig domainConfig, TypedValidationArtifactInfo typedArtifactInfo) {
+        var result = false;
         try {
             artifactType = StringUtils.defaultString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
             File remoteFolderForType = new File(remoteConfigFolder, artifactType);
@@ -809,6 +822,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             // Update cache map.
             String key = domainConfig.getDomainName() + "|" + validationType + "|" + StringUtils.defaultString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
             preconfiguredRemoteArtifactMap.put(key, getRemoteValidationArtifacts(domainConfig, validationType, artifactType));
+            result = true;
         } catch (ValidatorException e) {
             // Never allow configuration errors in one validation type to prevent the others from being available.
             logger.error(String.format("Error while processing configuration for type [%s] of domain [%s]: %s", validationType, domainConfig.getDomainName(), e.getMessageForLog()), e);
@@ -816,6 +830,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             // Never allow configuration errors in one validation type to prevent the others from being available.
             logger.error(String.format("Error while processing configuration for type [%s] of domain [%s]", validationType, domainConfig.getDomainName()), e);
         }
+        return result;
     }
 
     /**

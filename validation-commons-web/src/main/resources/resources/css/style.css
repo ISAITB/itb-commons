@@ -133,6 +133,7 @@ body {
 .error-details {
     border-top: thick double rgb(237, 237, 237);
     padding-top: 20px;
+    padding-bottom: 20px;
 }
 .about-section {
     font-size: x-small;

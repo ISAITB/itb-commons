@@ -3,6 +3,8 @@ package eu.europa.ec.itb.validation.commons.config;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
 import eu.europa.ec.itb.validation.plugin.PluginInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URLClassLoader;
 import java.util.*;
@@ -11,6 +13,8 @@ import java.util.*;
  * Configuration for a given validation domain.
  */
 public class DomainConfig {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DomainConfig.class);
 
     private boolean isDefined;
     private boolean reportsOrdered;
@@ -35,6 +39,67 @@ public class DomainConfig {
     // Plugin configuration.
     private List<PluginInfo> pluginDefaultConfig;
     private Map<String, List<PluginInfo>> pluginPerTypeConfig;
+    private final Map<String, Boolean> remoteArtefactStatus = new HashMap<>();
+    private Map<String, ErrorResponseTypeEnum> remoteArtifactLoadErrorResponse;
+
+    /**
+     * Check to see if the provided validation type has encountered problems loading its remote
+     * (preconfigured) validation artefacts.
+     *
+     * @param validationType The validation type to check for.
+     * @return The check result. Will be returned as 'true' if the domain contains no such artefacts.
+     */
+    public boolean checkRemoteArtefactStatus(String validationType) {
+        if (validationType == null) {
+            validationType = defaultType;
+        }
+        if (validationType == null) {
+            return true;
+        } else {
+            return Boolean.TRUE.equals(remoteArtefactStatus.computeIfAbsent(validationType, key -> Boolean.TRUE));
+        }
+    }
+
+    /**
+     * Set the status for remotely loaded (preconfigured) validation artefacts for a given validation type.
+     *
+     * @param validationType The validation type to set the status for.
+     * @param success Whether all remote artefacts were loaded successfully.
+     */
+    public void setRemoteArtefactStatus(String validationType, boolean success) {
+        var currentStatus = remoteArtefactStatus.get(validationType);
+        if (Boolean.FALSE.equals(currentStatus) && success) {
+            LOG.info("Remote validation artefacts for validation type [{}] of domain [{}] have been restored.", validationType, getDomain());
+        } else if (!success) {
+            LOG.warn("Remote validation artefacts for validation type [{}] of domain [{}] failed to be loaded.", validationType, getDomain());
+        }
+        remoteArtefactStatus.put(validationType, success);
+    }
+
+    /**
+     * Check how to react to a failure when loading remote preconfigured artefacts.
+     *
+     * @param validationType The validation type to check for.
+     * @return The reaction type.
+     */
+    public ErrorResponseTypeEnum getResponseForRemoteArtefactLoadFailure(String validationType) {
+        if (validationType == null) {
+            validationType = defaultType;
+        }
+        if (validationType == null) {
+            return ErrorResponseTypeEnum.LOG;
+        } else {
+            return remoteArtifactLoadErrorResponse.computeIfAbsent(validationType, (key) -> ErrorResponseTypeEnum.LOG);
+        }
+    }
+
+    /**
+     * @param remoteArtifactLoadErrorResponse The map of (full) validation types to response types for remote
+     *                                        artefact load errors.
+     */
+    public void setRemoteArtifactLoadErrorResponse(Map<String, ErrorResponseTypeEnum> remoteArtifactLoadErrorResponse) {
+        this.remoteArtifactLoadErrorResponse = remoteArtifactLoadErrorResponse;
+    }
 
     /**
      * @return The preprocessing expression per (full) validation type.

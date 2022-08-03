@@ -124,6 +124,9 @@ class DomainConfigCacheTest extends BaseSpringTest {
         assertTrue(config.isAddBOMToCSVExports());
         assertEquals("EXPRESSION", config.getInputPreprocessorPerType().get("type1.option1_1"));
         assertNull(config.getInputPreprocessorPerType().get("type1.option1_2"));
+        assertEquals(ErrorResponseTypeEnum.FAIL, config.getResponseForRemoteArtefactLoadFailure("type1.option1_1"));
+        assertEquals(ErrorResponseTypeEnum.WARN, config.getResponseForRemoteArtefactLoadFailure("type1.option1_2"));
+        assertEquals(ErrorResponseTypeEnum.LOG, config.getResponseForRemoteArtefactLoadFailure("type2.option2_1"));
     }
 
     @Test
