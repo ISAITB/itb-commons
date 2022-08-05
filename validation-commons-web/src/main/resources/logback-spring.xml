@@ -27,5 +27,9 @@
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
+        <springProfile name="!dev">
+            <appender-ref ref="FILE"/>
+        </springProfile>
     </root>
+
 </configuration>
