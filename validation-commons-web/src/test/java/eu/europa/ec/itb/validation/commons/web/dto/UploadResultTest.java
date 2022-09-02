@@ -8,6 +8,8 @@ import eu.europa.ec.itb.validation.commons.config.ErrorResponseTypeEnum;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -65,6 +67,16 @@ class UploadResultTest {
         result4.populateCommon(helper, "type1", domainConfig, "report1", "file1", detailedReport, aggregateReport, translations);
         assertEquals("validator.label.exception.failureToLoadRemoteArtefacts", result4.getMessage());
         assertFalse(result4.isMessageIsError());
+    }
+
+    @Test
+    void testAdditionalErrorMessages() {
+        var result = new UploadResult<>();
+        assertNull(result.getAdditionalErrorMessages());
+        result.setAdditionalErrorMessages(List.of("Message"));
+        assertNotNull(result.getAdditionalErrorMessages());
+        assertEquals(1, result.getAdditionalErrorMessages().size());
+        assertEquals("Message", result.getAdditionalErrorMessages().get(0));
     }
 
 }

@@ -1102,6 +1102,16 @@ function doSubmit() {
     return false;
 }
 
+function printConsoleErrors(errors) {
+    if (errors) {
+        var message = "Errors were reported during the validation:\n";
+        for (var i=0; i < errors.length; i++) {
+            message += ("    " + errors[i] + "\n");
+        }
+        console.warn(message);
+    }
+}
+
 function displayReport(data) {
     if (data.message) {
         // An error or warning occurred.
@@ -1127,6 +1137,8 @@ function displayReport(data) {
         getReportData(data.reportId);
         notifyListeners('RESULTS_LOADED', {data: data});
     }
+    // Report any additional error messages if present.
+    printConsoleErrors(data.additionalErrorMessages);
 }
 
 function doBack() {
