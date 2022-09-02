@@ -7,6 +7,8 @@ import eu.europa.ec.itb.validation.commons.config.ErrorResponseTypeEnum;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
+
 /**
  * Class used to collect the values for the result of a validation via the user interface. This class is serialised
  * to JSON as the response to the validation call.
@@ -27,6 +29,7 @@ public class UploadResult <T extends Translations> {
     private Long maximumReportsForDetailedOutput;
     private Long maximumReportsForXmlOutput;
     private T translations;
+    private List<String> additionalErrorMessages;
 
     /**
      * @return The (optional) error message to display.
@@ -194,6 +197,20 @@ public class UploadResult <T extends Translations> {
      */
     public void setMessageIsError(boolean messageIsError) {
         this.messageIsError = messageIsError;
+    }
+
+    /**
+     * @return The list of additional (hidden) error messages to report.
+     */
+    public List<String> getAdditionalErrorMessages() {
+        return additionalErrorMessages;
+    }
+
+    /**
+     * @param additionalErrorMessages The list of additional (hidden) error messages to report.
+     */
+    public void setAdditionalErrorMessages(List<String> additionalErrorMessages) {
+        this.additionalErrorMessages = additionalErrorMessages;
     }
 
     /**
