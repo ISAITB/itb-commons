@@ -401,7 +401,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      */
     public InputStream getInputStreamFromURL(String url) {
         // Read the resource from the provided URI.
-        return urlReader.stream(URI.create(url));
+        return urlReader.stream(URI.create(StringUtils.defaultString(url).trim()));
     }
 
     /**
