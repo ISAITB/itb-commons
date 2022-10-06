@@ -61,9 +61,9 @@
         <version.jackson>2.13.2.20220328</version.jackson>
         <version.cxf>3.5.3</version.cxf>
         <version.xerces>2.12.2</version.xerces>
-        <version.saxon>10.6</version.saxon>
-        <version.tika>2.4.1</version.tika>
-        <version.helgerSchematron>6.2.8</version.helgerSchematron>
+        <version.saxon>11.4</version.saxon>
+        <version.tika>2.5.0</version.tika>
+        <version.helgerSchematron>6.3.3</version.helgerSchematron>
         <version.jaxWs>2.3.1</version.jaxWs>
         <version.jws>1.1</version.jws>
         <version.commonsBeanutils>1.9.4</version.commonsBeanutils>
