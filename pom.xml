@@ -58,7 +58,6 @@
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.bouncycastle>1.69</version.bouncycastle>
-        <version.jackson>2.13.2.20220328</version.jackson>
         <version.cxf>3.5.3</version.cxf>
         <version.xerces>2.12.2</version.xerces>
         <version.saxon>11.4</version.saxon>
@@ -95,7 +94,9 @@
         <version.plugin.mavenJavadocPlugin>3.3.0</version.plugin.mavenJavadocPlugin>
         <version.plugin.mavenResourcesPlugin>3.2.0</version.plugin.mavenResourcesPlugin>
         <!-- Version overrides in Spring Boot - START -->
-        <version.snakeyaml>1.32</version.snakeyaml> <!-- To resolve CVE-2022-25857 -->
+        <version.snakeyaml>1.32</version.snakeyaml> <!-- Spring Boot override to resolve CVE-2022-25857 -->
+        <version.jackson>2.13.4.20221013</version.jackson> <!-- Spring Boot override to resolve CVE-2022-42003 -->
+        <version.commonsText>1.10.0</version.commonsText> <!-- Apache Commons Configuration override to resolve CVE-2022-42889 -->
         <!-- Version overrides in Spring Boot - END -->
     </properties>
 
@@ -496,16 +497,23 @@
                 <version>${version.libthrift}</version>
             </dependency>
             <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${version.snakeyaml}</version>
+            </dependency>
+            <!-- Spring Boot override -->
+            <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
                 <version>${version.jackson}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+            <!-- Apache Commons Configuration override -->
             <dependency>
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>${version.snakeyaml}</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${version.commonsText}</version>
             </dependency>
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
             <dependency>
