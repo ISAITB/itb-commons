@@ -95,7 +95,9 @@
         <version.plugin.mavenJavadocPlugin>3.3.0</version.plugin.mavenJavadocPlugin>
         <version.plugin.mavenResourcesPlugin>3.2.0</version.plugin.mavenResourcesPlugin>
         <!-- Version overrides in Spring Boot - START -->
-        <version.snakeyaml>1.32</version.snakeyaml> <!-- To resolve CVE-2022-25857 -->
+        <version.snakeyaml>1.32</version.snakeyaml> <!-- Spring Boot override to resolve CVE-2022-25857 -->
+        <version.jacksonBom>2.13.4.20221013</version.jacksonBom> <!-- Spring Boot override to resolve CVE-2022-42003 -->
+        <version.commonsText>1.10.0</version.commonsText> <!-- Apache Commons Configuration override to resolve CVE-2022-42889 -->
         <!-- Version overrides in Spring Boot - END -->
     </properties>
 
@@ -506,6 +508,20 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${version.snakeyaml}</version>
+            </dependency>
+            <!-- Spring Boot override -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${version.jacksonBom}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <!-- Apache Commons Configuration override -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${version.commonsText}</version>
             </dependency>
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
             <dependency>
