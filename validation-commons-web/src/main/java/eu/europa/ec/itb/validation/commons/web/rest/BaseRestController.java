@@ -9,6 +9,7 @@ import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
+import eu.europa.ec.itb.validation.commons.web.JsonConfig;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
 import eu.europa.ec.itb.validation.commons.web.rest.model.ApiInfo;
 import eu.europa.ec.itb.validation.commons.web.rest.model.SchemaInfo;
@@ -50,8 +51,7 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
     protected DomainConfigCache<T> domainConfigs;
     @Autowired
     protected Z inputHelper;
-    @Autowired
-    protected ObjectMapper tarObjectMapper;
+    protected ObjectMapper tarObjectMapper = JsonConfig.objectMapper();
 
     /**
      * Get all domains configured in this validator and their supported validation types.
