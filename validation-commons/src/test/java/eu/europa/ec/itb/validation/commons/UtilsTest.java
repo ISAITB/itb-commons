@@ -375,4 +375,34 @@ class UtilsTest extends BaseTest {
         return localiser;
     }
 
+    private BAR createBAR() {
+        var bar = new BAR();
+        bar.setTest("test");
+        bar.setDescription("description");
+        bar.setType("type");
+        bar.setLocation("location");
+        bar.setValue("value");
+        bar.setAssertionID("assertionID");
+        return bar;
+    }
+
+    @Test
+    void testLimitReportItemsIfNeeded() {
+        var report = new TAR();
+        var objectFactory = new ObjectFactory();
+        report.setReports(new TestAssertionGroupReportsType());
+        report.getReports().getInfoOrWarningOrError().add(objectFactory.createTestAssertionGroupReportsTypeError(createBAR()));
+        report.getReports().getInfoOrWarningOrError().add(objectFactory.createTestAssertionGroupReportsTypeWarning(createBAR()));
+        report.getReports().getInfoOrWarningOrError().add(objectFactory.createTestAssertionGroupReportsTypeInfo(createBAR()));
+
+        var config = mock(DomainConfig.class);
+        when(config.getMaximumReportsForXmlOutput()).thenReturn(5L);
+        Utils.limitReportItemsIfNeeded(report, config);
+        assertEquals(3, report.getReports().getInfoOrWarningOrError().size());
+
+        when(config.getMaximumReportsForXmlOutput()).thenReturn(1L);
+        Utils.limitReportItemsIfNeeded(report, config);
+        assertEquals(1, report.getReports().getInfoOrWarningOrError().size());
+    }
+
 }

@@ -1,5 +1,7 @@
 package eu.europa.ec.itb.validation.commons.web.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gitb.tr.TAR;
 import eu.europa.ec.itb.validation.commons.BaseFileManager;
 import eu.europa.ec.itb.validation.commons.BaseInputHelper;
 import eu.europa.ec.itb.validation.commons.FileInfo;
@@ -16,18 +18,22 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static eu.europa.ec.itb.validation.commons.Utils.limitReportItemsIfNeeded;
 import static eu.europa.ec.itb.validation.commons.web.Constants.MDC_DOMAIN;
 
 /**
@@ -44,6 +50,8 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
     protected DomainConfigCache<T> domainConfigs;
     @Autowired
     protected Z inputHelper;
+    @Autowired
+    protected ObjectMapper tarObjectMapper;
 
     /**
      * Get all domains configured in this validator and their supported validation types.
@@ -119,6 +127,58 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
                 domainConfig,
                 schemaInfo.stream().map(SchemaInfo::toFileContent).collect(Collectors.toList()),
                 validationType, artifactType, parentFolder);
+    }
+
+    /**
+     * The report types accepted by any kind of validator.
+     *
+     * @return The report mime types.
+     */
+    protected Set<String> getSupportedReportTypes() {
+        return Set.of(MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE);
+    }
+
+    /**
+     * Get the first acceptable "Accept" header value from the request, with a default value if no supported
+     * value is found.
+     *
+     * @param request The HTTP request to check.
+     * @param defaultValue The default value to consider if no supported value is found.
+     * @return The value.
+     */
+    protected String getAcceptHeader(HttpServletRequest request, String defaultValue) {
+        String valueToReturn = null;
+        Enumeration<String> headerValues = request.getHeaders(HttpHeaders.ACCEPT);
+        while (headerValues.hasMoreElements() && valueToReturn == null) {
+            String acceptHeader = headerValues.nextElement();
+            for (String acceptableValue: getSupportedReportTypes()) {
+                if (acceptHeader.contains(acceptableValue)) {
+                    valueToReturn = acceptableValue;
+                    break;
+                }
+            }
+        }
+        valueToReturn = StringUtils.defaultIfEmpty(valueToReturn, defaultValue);
+        if (MediaType.TEXT_XML_VALUE.equals(valueToReturn)) {
+            valueToReturn = MediaType.APPLICATION_XML_VALUE;
+        }
+        return valueToReturn;
+    }
+
+    /**
+     * Write the TAR report as JSON to the provided output stream.
+     *
+     * @param outputStream The stream.
+     * @param report The report.
+     * @param domainConfig THe domain configuration.
+     */
+    protected void writeReportAsJson(OutputStream outputStream, TAR report, T domainConfig) {
+        limitReportItemsIfNeeded(report, domainConfig);
+        try {
+            tarObjectMapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, report);
+        } catch (IOException e) {
+            throw new IllegalStateException("An error occurred while writing the JSON report.", e);
+        }
     }
 
 }
