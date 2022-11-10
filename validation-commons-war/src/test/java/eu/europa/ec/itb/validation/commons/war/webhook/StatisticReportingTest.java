@@ -5,9 +5,7 @@ import com.maxmind.geoip2.model.CountryResponse;
 import com.maxmind.geoip2.record.Country;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.test.BaseTest;
-import eu.europa.ec.itb.validation.commons.war.webhook.StatisticReporting;
-import eu.europa.ec.itb.validation.commons.war.webhook.UsageData;
-import eu.europa.ec.itb.validation.commons.war.webhook.WebHook;
+import eu.europa.ec.itb.validation.commons.web.WebServiceContextProvider;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.junit.jupiter.api.AfterEach;
@@ -16,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -148,9 +148,7 @@ class StatisticReportingTest extends BaseTest {
         assertEquals("127.0.0.2", reporter.extractIpAddress(request));
     }
 
-    @Test
-    void testGetHttpRequest() throws Exception {
-        when(appConfig.getWebhook()).thenAnswer((Answer<?>) invocation -> new ApplicationConfig.Webhook());
+    private JoinPoint joinPointForRequestLookup() {
         var joinPoint = mock(JoinPoint.class);
         when(joinPoint.getSignature()).thenAnswer((Answer<?>) invocation -> {
             var signature = mock(MethodSignature.class);
@@ -158,9 +156,98 @@ class StatisticReportingTest extends BaseTest {
             return signature;
         });
         when(joinPoint.getArgs()).thenReturn(new Object[] { "string", 1, mock(HttpServletRequest.class), 2.0D });
+        return joinPoint;
+    }
+
+    @Test
+    void testGetHttpRequest() throws Exception {
+        when(appConfig.getWebhook()).thenAnswer((Answer<?>) invocation -> new ApplicationConfig.Webhook());
+        var joinPoint = joinPointForRequestLookup();
         var reporter = createReporter(false);
         var result = reporter.getHttpRequest(joinPoint);
         assertNotNull(result);
+    }
+
+    @Test
+    void testHandleUploadContext() throws Exception {
+        var dbFile = Path.of(tmpFolder.toString(), "db.mmdb");
+        when(appConfig.getWebhook()).thenAnswer((Answer<?>) invocation -> {
+            var webhookConfig = new ApplicationConfig.Webhook();
+            webhookConfig.setStatisticsEnableCountryDetection(true);
+            webhookConfig.setStatisticsCountryDetectionDbFile(dbFile.toString());
+            return webhookConfig;
+        });
+        var reporter = createReporter(false);
+        var joinPoint = joinPointForRequestLookup();
+        reporter.handleUploadContext(joinPoint, StatisticReportingConstants.WEB_API);
+        var context = reporter.getAdviceContext();
+        assertTrue(context.containsKey(StatisticReportingConstants.PARAM_IP));
+        assertTrue(context.containsKey(StatisticReportingConstants.PARAM_API));
+        assertEquals(StatisticReportingConstants.WEB_API, context.get(StatisticReportingConstants.PARAM_API));
+    }
+
+    @Test
+    void testHandleSoapCallContext() throws Exception {
+        var dbFile = Path.of(tmpFolder.toString(), "db.mmdb");
+        when(appConfig.getWebhook()).thenAnswer((Answer<?>) invocation -> {
+            var webhookConfig = new ApplicationConfig.Webhook();
+            webhookConfig.setStatisticsEnableCountryDetection(true);
+            webhookConfig.setStatisticsCountryDetectionDbFile(dbFile.toString());
+            return webhookConfig;
+        });
+        var reporter = createReporter(false);
+        var joinPoint = joinPointForRequestLookup();
+        var target = mock(WebServiceContextProvider.class);
+        var webServiceContext = mock(WebServiceContext.class);
+        var messageContext = mock(MessageContext.class);
+        var request = mock(HttpServletRequest.class);
+        when(request.getHeader("HEADER")).thenReturn(null);
+        when(request.getRemoteAddr()).thenReturn("127.0.0.2");
+        when(messageContext.get(eq(MessageContext.SERVLET_REQUEST))).thenReturn(request);
+        when(webServiceContext.getMessageContext()).thenReturn(messageContext);
+        when(target.getWebServiceContext()).thenReturn(webServiceContext);
+        when(joinPoint.getTarget()).thenReturn(target);
+
+        reporter.handleSoapCallContext(joinPoint);
+        var context = reporter.getAdviceContext();
+        assertTrue(context.containsKey(StatisticReportingConstants.PARAM_IP));
+        assertTrue(context.containsKey(StatisticReportingConstants.PARAM_API));
+        assertEquals(StatisticReportingConstants.SOAP_API, context.get(StatisticReportingConstants.PARAM_API));
+    }
+
+    @Test
+    void testHandleRestCallContext() throws Exception {
+        var dbFile = Path.of(tmpFolder.toString(), "db.mmdb");
+        when(appConfig.getWebhook()).thenAnswer((Answer<?>) invocation -> {
+            var webhookConfig = new ApplicationConfig.Webhook();
+            webhookConfig.setStatisticsEnableCountryDetection(true);
+            webhookConfig.setStatisticsCountryDetectionDbFile(dbFile.toString());
+            return webhookConfig;
+        });
+        var reporter = createReporter(false);
+        var joinPoint = joinPointForRequestLookup();
+        reporter.handleRestCallContext(joinPoint);
+        var context = reporter.getAdviceContext();
+        assertTrue(context.containsKey(StatisticReportingConstants.PARAM_IP));
+        assertTrue(context.containsKey(StatisticReportingConstants.PARAM_API));
+        assertEquals(StatisticReportingConstants.REST_API, context.get(StatisticReportingConstants.PARAM_API));
+    }
+
+    @Test
+    void testHandleEmailContext() throws Exception {
+        var dbFile = Path.of(tmpFolder.toString(), "db.mmdb");
+        when(appConfig.getWebhook()).thenAnswer((Answer<?>) invocation -> {
+            var webhookConfig = new ApplicationConfig.Webhook();
+            webhookConfig.setStatisticsEnableCountryDetection(true);
+            webhookConfig.setStatisticsCountryDetectionDbFile(dbFile.toString());
+            return webhookConfig;
+        });
+        var reporter = createReporter(false);
+        var joinPoint = joinPointForRequestLookup();
+        reporter.handleEmailContext(joinPoint);
+        var context = reporter.getAdviceContext();
+        assertTrue(context.containsKey(StatisticReportingConstants.PARAM_API));
+        assertEquals(StatisticReportingConstants.EMAIL_API, context.get(StatisticReportingConstants.PARAM_API));
     }
 
 }

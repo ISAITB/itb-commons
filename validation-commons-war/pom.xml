@@ -23,6 +23,10 @@
         	<artifactId>validation-commons</artifactId>
         </dependency>
         <dependency>
+            <groupId>eu.europa.ec.itb.commons</groupId>
+            <artifactId>validation-commons-web</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.maxmind.geoip2</groupId>
             <artifactId>geoip2</artifactId>
         </dependency>
