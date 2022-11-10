@@ -203,7 +203,7 @@ class StatisticReportingTest extends BaseTest {
         var request = mock(HttpServletRequest.class);
         when(request.getHeader("HEADER")).thenReturn(null);
         when(request.getRemoteAddr()).thenReturn("127.0.0.2");
-        when(messageContext.get(eq(MessageContext.SERVLET_REQUEST))).thenReturn(request);
+        when(messageContext.get(MessageContext.SERVLET_REQUEST)).thenReturn(request);
         when(webServiceContext.getMessageContext()).thenReturn(messageContext);
         when(target.getWebServiceContext()).thenReturn(webServiceContext);
         when(joinPoint.getTarget()).thenReturn(target);

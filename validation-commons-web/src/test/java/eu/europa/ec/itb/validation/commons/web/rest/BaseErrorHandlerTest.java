@@ -19,7 +19,7 @@ class BaseErrorHandlerTest {
         when(exception.getRequestedDomain()).thenReturn("domain1");
         var result = new BaseErrorHandler().handleNotFound(exception, mock(WebRequest.class));
         assertNotNull(result);
-        assertEquals(result.getStatusCode(), HttpStatus.NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
         assertTrue(result.getBody() instanceof ErrorInfo);
         assertEquals("The requested resource could not be found", ((ErrorInfo) result.getBody()).getMessage());
     }
@@ -30,7 +30,7 @@ class BaseErrorHandlerTest {
         when(exception.getMessageForDisplay(any())).thenReturn("Message");
         var result = new BaseErrorHandler().handleValidatorException(exception, mock(WebRequest.class));
         assertNotNull(result);
-        assertEquals(result.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
         assertTrue(result.getBody() instanceof ErrorInfo);
         assertEquals("Message", ((ErrorInfo) result.getBody()).getMessage());
     }
@@ -40,7 +40,7 @@ class BaseErrorHandlerTest {
         var exception = mock(Exception.class);
         var result = new BaseErrorHandler().handleUnexpectedErrors(exception, mock(WebRequest.class));
         assertNotNull(result);
-        assertEquals(result.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
         assertTrue(result.getBody() instanceof ErrorInfo);
         assertEquals("An unexpected error occurred during validation", ((ErrorInfo) result.getBody()).getMessage());
     }

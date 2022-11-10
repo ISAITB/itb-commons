@@ -204,7 +204,9 @@ public abstract class StatisticReporting {
      * @return The map.
      */
     protected Map<String, String> getAdviceContext() {
-        return adviceContext.get();
+        var contextMap = adviceContext.get();
+        adviceContext.remove();
+        return contextMap;
     }
 
 }

@@ -32,7 +32,7 @@ class RestModelTest {
     void testOutput() {
         var output = new Output();
         output.setReport("report");
-        assertEquals(output.getReport(), "report");
+        assertEquals("report", output.getReport());
     }
 
     @Test
