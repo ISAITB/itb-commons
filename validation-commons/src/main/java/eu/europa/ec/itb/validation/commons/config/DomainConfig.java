@@ -89,7 +89,7 @@ public class DomainConfig {
         if (validationType == null) {
             return ErrorResponseTypeEnum.LOG;
         } else {
-            return remoteArtifactLoadErrorResponse.computeIfAbsent(validationType, (key) -> ErrorResponseTypeEnum.LOG);
+            return remoteArtifactLoadErrorResponse.computeIfAbsent(validationType, key -> ErrorResponseTypeEnum.LOG);
         }
     }
 

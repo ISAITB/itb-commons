@@ -40,6 +40,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static eu.europa.ec.itb.validation.commons.Utils.limitReportItemsIfNeeded;
+
 /**
  * Base class to be extended providing support for common file-system based operations shared by any kind of validator.
  *
@@ -919,13 +921,9 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param <R> The specific type of domain configuration subclass.
      */
     public <R extends DomainConfig> void saveReport(TAR report, OutputStream outputStream, R domainConfig) {
+        limitReportItemsIfNeeded(report, domainConfig);
         try {
             Marshaller m = REPORT_CONTEXT.createMarshaller();
-
-            // Apply XML report limit for report items
-            if (report.getReports() != null && report.getReports().getInfoOrWarningOrError().size() > domainConfig.getMaximumReportsForXmlOutput()) {
-                report.getReports().getInfoOrWarningOrError().subList(domainConfig.getMaximumReportsForXmlOutput().intValue(), report.getReports().getInfoOrWarningOrError().size()).clear();
-            }
 
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             Document document = docBuilderFactory.newDocumentBuilder().newDocument();

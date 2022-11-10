@@ -548,4 +548,18 @@ public class Utils {
                 detailedTAR.getReports().getInfoOrWarningOrError().size() != aggregateTAR.getReports().getInfoOrWarningOrError().size();
     }
 
+    /**
+     * If needed limit the number of findings in the report.
+     *
+     * @param report The report.
+     * @param domainConfig The domain configuration.
+     * @param <R> The domain config type.
+     */
+    public static <R extends DomainConfig> void limitReportItemsIfNeeded(TAR report, R domainConfig) {
+        // Apply detailed report limit for report items (if needed).
+        if (report.getReports() != null && report.getReports().getInfoOrWarningOrError().size() > domainConfig.getMaximumReportsForXmlOutput()) {
+            report.getReports().getInfoOrWarningOrError().subList(domainConfig.getMaximumReportsForXmlOutput().intValue(), report.getReports().getInfoOrWarningOrError().size()).clear();
+        }
+    }
+
 }

@@ -1,15 +1,21 @@
 package eu.europa.ec.itb.validation.commons.web.rest;
 
+import com.gitb.tr.TAR;
 import eu.europa.ec.itb.validation.commons.*;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
+import eu.europa.ec.itb.validation.commons.web.JsonConfig;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
 import eu.europa.ec.itb.validation.commons.web.rest.model.SchemaInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -112,5 +118,38 @@ class BaseRestControllerTest {
         var result = controller.getExternalSchemas(domainConfig, List.of(schemaInfo1), "type1", "artifactType1", file);
         verify(controller.inputHelper, times(1)).validateExternalArtifacts(any(WebDomainConfig.class), anyList(), eq("type1"), eq("artifactType1"), eq(file));
         verify(schemaInfo1, times(1)).toFileContent();
+    }
+
+    @Test
+    void testGetAcceptHeader() {
+        // Found supported value.
+        var request = mock(HttpServletRequest.class);
+        when(request.getHeaders(anyString())).thenReturn(Collections.enumeration(List.of("application/json")));
+        assertEquals("application/json", controller.getAcceptHeader(request, "application/xml"));
+        // Found not-supported value.
+        request = mock(HttpServletRequest.class);
+        when(request.getHeaders(anyString())).thenReturn(Collections.enumeration(List.of("text/xml")));
+        assertEquals("application/xml", controller.getAcceptHeader(request, "application/xml"));
+    }
+
+    @Test
+    void testWriteReportAsJson() throws IOException {
+        var report = new TAR();
+        var config = mock(WebDomainConfig.class);
+        when(config.getMaximumReportsForXmlOutput()).thenReturn(5L);
+        report.setName("name");
+        controller.tarObjectMapper = new JsonConfig().objectMapper();
+        try (var out = new ByteArrayOutputStream()) {
+            controller.writeReportAsJson(out, report, config);
+            var reportString = out.toString();
+            assertTrue(reportString.indexOf("name") > 0);
+        }
+
+        var badStream = mock(OutputStream.class);
+        doThrow(IOException.class).when(badStream).write(anyInt());
+        doThrow(IOException.class).when(badStream).write(any(byte[].class));
+        doThrow(IOException.class).when(badStream).write(any(byte[].class), anyInt(), anyInt());
+
+        assertThrows(IllegalStateException.class, () -> controller.writeReportAsJson(badStream, report, config));
     }
 }
