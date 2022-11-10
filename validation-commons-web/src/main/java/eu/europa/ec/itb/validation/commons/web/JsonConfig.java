@@ -10,8 +10,6 @@ import com.gitb.core.AnyContent;
 import com.gitb.tr.BAR;
 import com.gitb.tr.TestAssertionGroupReportsType;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -20,8 +18,10 @@ import java.util.List;
 
 /**
  * Configuration for the serialisation of TAR reports to JSON.
+ *
+ * This is not a Spring Bean configuration class to avoid side effects to the
+ * ObjectMapper used internally by Spring Boot.
  */
-@Configuration
 public class JsonConfig {
 
     /**
@@ -29,8 +29,7 @@ public class JsonConfig {
      *
      * @return The object mapper.
      */
-    @Bean
-    public ObjectMapper objectMapper() {
+    public static ObjectMapper objectMapper() {
         var mapper = new ObjectMapper();
         var module = new SimpleModule("TAR");
         module.addSerializer(TestAssertionGroupReportsType.class, new TestAssertionGroupReportsTypeSerializer());

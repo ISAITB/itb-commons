@@ -59,7 +59,7 @@ class JsonConfigTest {
 
     @Test
     void testSerialize() throws JsonProcessingException, DatatypeConfigurationException {
-        var mapper = new JsonConfig().objectMapper();
+        var mapper = JsonConfig.objectMapper();
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(createTAR()));
     }
 
