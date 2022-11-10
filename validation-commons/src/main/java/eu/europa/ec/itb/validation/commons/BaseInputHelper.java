@@ -24,7 +24,7 @@ import java.util.Map;
  * @param <R> The specific domain config class.
  * @param <Z> The specific application config class.
  */
-public abstract class BaseInputHelper<T extends BaseFileManager, R extends DomainConfig, Z extends ApplicationConfig> {
+public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends BaseFileManager<Z>, R extends DomainConfig> {
 
     @Autowired
     protected T fileManager = null;
@@ -261,7 +261,6 @@ public abstract class BaseInputHelper<T extends BaseFileManager, R extends Domai
         }
         return artifacts;
     }
-
 
     /**
      * Validate, store and return the external (user-provided) validation artifacts.

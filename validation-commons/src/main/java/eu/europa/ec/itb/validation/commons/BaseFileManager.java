@@ -899,8 +899,28 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      */
     public <R extends DomainConfig> void saveReport(TAR report, File outputFile, R domainConfig) {
         try {
-            Marshaller m = REPORT_CONTEXT.createMarshaller();
             outputFile.getParentFile().mkdirs();
+            try (OutputStream fos = new FileOutputStream(outputFile)) {
+                saveReport(report, fos, domainConfig);
+            }
+        } catch(IOException e) {
+            logger.warn("Unable to save XML report", e);
+        } catch (Exception e) {
+            logger.warn("Unable to marshal XML report", e);
+        }
+    }
+
+    /**
+     * Save the provided TAR report to the provided stream.
+     *
+     * @param report The report to serialise and persist.
+     * @param outputStream The stream to write the serialised report to.
+     * @param domainConfig The domain's configuration.
+     * @param <R> The specific type of domain configuration subclass.
+     */
+    public <R extends DomainConfig> void saveReport(TAR report, OutputStream outputStream, R domainConfig) {
+        try {
+            Marshaller m = REPORT_CONTEXT.createMarshaller();
 
             // Apply XML report limit for report items
             if (report.getReports() != null && report.getReports().getInfoOrWarningOrError().size() > domainConfig.getMaximumReportsForXmlOutput()) {
@@ -914,10 +934,8 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             Transformer transformer = Utils.secureTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, "{http://www.gitb.com/core/v1/}value");
-            try (OutputStream fos = new FileOutputStream(outputFile)) {
-                transformer.transform(new DOMSource(document), new StreamResult(fos));
-                fos.flush();
-            }
+            transformer.transform(new DOMSource(document), new StreamResult(outputStream));
+            outputStream.flush();
         } catch(IOException e) {
             logger.warn("Unable to save XML report", e);
         } catch (Exception e) {

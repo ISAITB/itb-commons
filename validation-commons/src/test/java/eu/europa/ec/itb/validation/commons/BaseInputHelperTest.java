@@ -44,7 +44,7 @@ class BaseInputHelperTest extends BaseSpringTest {
     @TestConfiguration
     static class TestConfig {
         @Bean
-        public BaseInputHelper<BaseFileManager<ApplicationConfig>, DomainConfig, ApplicationConfig> testInputHelper() {
+        public BaseInputHelper<ApplicationConfig, BaseFileManager<ApplicationConfig>, DomainConfig> testInputHelper() {
             return new BaseInputHelper<>() {};
         }
         @Bean
@@ -54,7 +54,7 @@ class BaseInputHelperTest extends BaseSpringTest {
     }
 
     @Autowired
-    private BaseInputHelper<BaseFileManager<ApplicationConfig>, DomainConfig, ApplicationConfig> inputHelper;
+    private BaseInputHelper<ApplicationConfig, BaseFileManager<ApplicationConfig>, DomainConfig> inputHelper;
     @Autowired
     private BaseFileManager<ApplicationConfig> fileManager;
 

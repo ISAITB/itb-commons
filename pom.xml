@@ -41,10 +41,9 @@
         <maven.compiler.target>11</maven.compiler.target>
         <sonar.organization>isaitb</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <version.springBoot>2.7.4</version.springBoot>
-        <version.springSecurityTest>5.6.2</version.springSecurityTest>
+        <version.springBoot>2.7.5</version.springBoot>
         <version.javaxAnnotationApi>1.3.2</version.javaxAnnotationApi>
-        <version.gitbTypes>1.17.0</version.gitbTypes>
+        <version.gitbTypes>1.18.0</version.gitbTypes>
         <version.commonsLang>3.10</version.commonsLang>
         <version.commonsConfiguration>2.8.0</version.commonsConfiguration>
         <version.commonsIo>2.7</version.commonsIo>
@@ -94,8 +93,8 @@
         <version.plugin.mavenJavadocPlugin>3.3.0</version.plugin.mavenJavadocPlugin>
         <version.plugin.mavenResourcesPlugin>3.2.0</version.plugin.mavenResourcesPlugin>
         <!-- Version overrides in Spring Boot - START -->
-        <version.snakeyaml>1.32</version.snakeyaml> <!-- Spring Boot override to resolve CVE-2022-25857 -->
-        <version.jackson>2.13.4.20221013</version.jackson> <!-- Spring Boot override to resolve CVE-2022-42003 -->
+        <version.springSecurity>5.7.5</version.springSecurity>
+        <version.snakeyaml>1.33</version.snakeyaml> <!-- Spring Boot override to resolve CVE-2022-25857 -->
         <version.commonsText>1.10.0</version.commonsText> <!-- Apache Commons Configuration override to resolve CVE-2022-42889 -->
         <!-- Version overrides in Spring Boot - END -->
     </properties>
@@ -220,6 +219,28 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Dependency overrides to be revisited if needed - START -->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-config</artifactId>
+                <version>${version.springSecurity}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${version.springSecurity}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-crypto</artifactId>
+                <version>${version.springSecurity}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${version.springSecurity}</version>
+            </dependency>
+            <!-- Dependency overrides to be revisited if needed - STOP -->
             <dependency>
                 <groupId>eu.europa.ec.itb</groupId>
                 <artifactId>gitb-types</artifactId>
@@ -453,7 +474,7 @@
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-test</artifactId>
-                <version>${version.springSecurityTest}</version>
+                <version>${version.springSecurity}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -500,14 +521,6 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${version.snakeyaml}</version>
-            </dependency>
-            <!-- Spring Boot override -->
-            <dependency>
-                <groupId>com.fasterxml.jackson</groupId>
-                <artifactId>jackson-bom</artifactId>
-                <version>${version.jackson}</version>
-                <scope>import</scope>
-                <type>pom</type>
             </dependency>
             <!-- Apache Commons Configuration override -->
             <dependency>

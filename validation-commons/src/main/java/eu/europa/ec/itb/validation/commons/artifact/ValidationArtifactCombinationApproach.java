@@ -6,11 +6,15 @@ package eu.europa.ec.itb.validation.commons.artifact;
 public enum ValidationArtifactCombinationApproach {
 
     /** All artifacts must be successfully validated against to consider validation as successful. */
-    ALL("allOf"),
+    ALL(ValidationArtifactCombinationApproach.ALL_VALUE),
     /** Any of the artifacts must be successfully validated against to consider validation as successful. */
-    ANY("anyOf"),
+    ANY(ValidationArtifactCombinationApproach.ANY_VALUE),
     /** At least one of the artifacts must be successfully validated against to consider validation as successful. */
-    ONE_OF("oneOf");
+    ONE_OF(ValidationArtifactCombinationApproach.ONE_OF_VALUE);
+
+    public static final String ALL_VALUE = "allOf";
+    public static final String ANY_VALUE = "anyOf";
+    public static final String ONE_OF_VALUE = "oneOf";
 
     private final String name;
 
