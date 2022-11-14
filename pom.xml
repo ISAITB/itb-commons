@@ -96,6 +96,7 @@
         <version.springSecurity>5.7.5</version.springSecurity>
         <version.snakeyaml>1.33</version.snakeyaml> <!-- Spring Boot override to resolve CVE-2022-25857 -->
         <version.commonsText>1.10.0</version.commonsText> <!-- Apache Commons Configuration override to resolve CVE-2022-42889 -->
+        <version.protobuf>3.21.9</version.protobuf> <!-- Protobuf override for the Jena transitive dependency to resolve CVE-2022-3509 -->
         <!-- Version overrides in Spring Boot - END -->
     </properties>
 
@@ -239,6 +240,11 @@
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-core</artifactId>
                 <version>${version.springSecurity}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${version.protobuf}</version>
             </dependency>
             <!-- Dependency overrides to be revisited if needed - STOP -->
             <dependency>
