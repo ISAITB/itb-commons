@@ -2,8 +2,8 @@ package eu.europa.ec.itb.validation.commons;
 
 import com.gitb.core.*;
 import com.gitb.tbs.TestStepStatus;
-import com.gitb.tr.*;
 import com.gitb.tr.ObjectFactory;
+import com.gitb.tr.*;
 import com.gitb.vs.ValidateRequest;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import org.w3c.dom.Document;
@@ -80,13 +80,22 @@ public class Utils {
      */
     public static Transformer secureTransformer() {
         try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-            return transformerFactory.newTransformer();
+            return secureTransformerFactory().newTransformer();
         } catch (TransformerConfigurationException e) {
             throw new IllegalStateException("Could not create XML transformer", e);
         }
+    }
+
+    /**
+     * Create a secured XML transformer factory instance.
+     *
+     * @return The factory to use.
+     */
+    public static TransformerFactory secureTransformerFactory() {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        return transformerFactory;
     }
 
     /**
