@@ -110,6 +110,7 @@ public class Utils {
             dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
             dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbf.setNamespaceAware(true);
             dbf.setXIncludeAware(false);
             dbf.setValidating(false);
             dbf.setExpandEntityReferences(false);
