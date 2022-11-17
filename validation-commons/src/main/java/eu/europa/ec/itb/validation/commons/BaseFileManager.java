@@ -921,6 +921,19 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param <R> The specific type of domain configuration subclass.
      */
     public <R extends DomainConfig> void saveReport(TAR report, OutputStream outputStream, R domainConfig) {
+        saveReport(report, outputStream, domainConfig, true);
+    }
+
+    /**
+     * Save the provided TAR report to the provided stream.
+     *
+     * @param report The report to serialise and persist.
+     * @param outputStream The stream to write the serialised report to.
+     * @param domainConfig The domain's configuration.
+     * @param <R> The specific type of domain configuration subclass.
+     * @param useCDataForValues Use CDATA blocks for the context values.
+     */
+    public <R extends DomainConfig> void saveReport(TAR report, OutputStream outputStream, R domainConfig, boolean useCDataForValues) {
         limitReportItemsIfNeeded(report, domainConfig);
         try {
             Marshaller m = REPORT_CONTEXT.createMarshaller();
@@ -931,7 +944,9 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
 
             Transformer transformer = Utils.secureTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, "{http://www.gitb.com/core/v1/}value");
+            if (useCDataForValues) {
+                transformer.setOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, "{http://www.gitb.com/core/v1/}value");
+            }
             transformer.transform(new DOMSource(document), new StreamResult(outputStream));
             outputStream.flush();
         } catch(IOException e) {
