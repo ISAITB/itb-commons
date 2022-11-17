@@ -57,26 +57,49 @@ body {
 .report-item {
     margin-top: 5px;
     margin-bottom: 10px;
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+}
+.report-item-div {
+    margin-left: 5px;
+    padding-left: 0px;
+    padding-right: 0px;
     padding-top: 5px;
     padding-bottom: 5px;
-    border-radius: 5px;
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+    border: 1px solid #ddd;
+    border-left: 1px solid transparent;
 }
 .report-item-error {
+    background-color: #c9302c;
+}
+.report-item-error > .report-item-div {
     background-color: #f2dede;
 }
-.report-item-error.clickable:hover {
+.report-item-error.clickable:hover > .report-item-div {
     background-color: #efd1d1;
 }
 .report-item-warning {
+    background-color: #f0ad4e;
+}
+.report-item-warning > .report-item-div {
     background-color: #fcf8e3;
 }
-.report-item-warning.clickable:hover {
+.report-item-warning.clickable:hover > .report-item-div {
     background-color: #f3eed1;
 }
 .report-item-info {
+    background-color: #5cb85c;
+}
+.report-item-info > .report-item-div {
     background-color: #ededed;
 }
-.report-item-info.clickable:hover {
+.report-item-info.clickable:hover > .report-item-div {
     background-color: #dddddd;
 }
 .popup-close {
@@ -223,4 +246,28 @@ body {
 }
 #bannerSection > div {
     margin-bottom: 20px;
+}
+.overall-result {
+    font-size: 90%;
+    text-shadow: 1px 1px 0 rgb(90 90 90 / 50%);
+    padding: 0.3em 0.6em 0.3em;
+    font-weight: bold;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25em;
+}
+.overall-result.SUCCESS {
+    background-color: #5cb85c;
+}
+.overall-result.FAILURE {
+    background-color: #c9302c;
+}
+.overall-result.WARNING {
+    background-color: #f0ad4e;
+}
+.overall-result.UNDEFINED {
+    background-color: #7c7c7c;
 }
