@@ -57,7 +57,7 @@
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.bouncycastle>1.69</version.bouncycastle>
-        <version.cxf>3.5.3</version.cxf>
+        <version.cxf>3.5.5</version.cxf>
         <version.xerces>2.12.2</version.xerces>
         <version.saxon>11.4</version.saxon>
         <version.tika>2.5.0</version.tika>
