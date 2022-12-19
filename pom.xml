@@ -57,7 +57,7 @@
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.bouncycastle>1.69</version.bouncycastle>
-        <version.cxf>3.5.3</version.cxf>
+        <version.cxf>3.5.5</version.cxf>
         <version.xerces>2.12.2</version.xerces>
         <version.saxon>11.4</version.saxon>
         <version.tika>2.5.0</version.tika>
@@ -82,7 +82,7 @@
         <!-- Plugin versions -->
         <version.plugin.mavenCompilerPlugin>3.8.1</version.plugin.mavenCompilerPlugin>
         <version.plugin.mavenJarPlugin>3.2.0</version.plugin.mavenJarPlugin>
-        <version.plugin.dependencyCheckPlugin>7.3.2</version.plugin.dependencyCheckPlugin>
+        <version.plugin.dependencyCheckPlugin>7.4.1</version.plugin.dependencyCheckPlugin>
         <version.plugin.frontendMavenPlugin>1.12.1</version.plugin.frontendMavenPlugin>
         <version.plugin.jacocoMavenPlugin>0.8.7</version.plugin.jacocoMavenPlugin>
         <version.plugin.versionsMavenPlugin>2.8.1</version.plugin.versionsMavenPlugin>
