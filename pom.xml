@@ -166,6 +166,9 @@
                         <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
                         <nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
                         <suppressionFile>etc/owasp-suppressions.xml</suppressionFile>
+                        <excludes>
+                            <exclude>eu.europa.ec.itb.*:*</exclude>
+                        </excludes>
                     </configuration>
                     <executions>
                         <execution>
