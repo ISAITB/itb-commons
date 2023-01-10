@@ -92,6 +92,7 @@
         <version.plugin.mavenSurefirePlugin>3.0.0-M5</version.plugin.mavenSurefirePlugin>
         <version.plugin.mavenJavadocPlugin>3.3.0</version.plugin.mavenJavadocPlugin>
         <version.plugin.mavenResourcesPlugin>3.2.0</version.plugin.mavenResourcesPlugin>
+        <version.plugin.mavenAntRunPlugin>3.1.0</version.plugin.mavenAntRunPlugin>
         <!-- Version overrides in Spring Boot - START -->
         <version.snakeyaml>1.33</version.snakeyaml> <!-- Spring Boot override to resolve CVE-2022-25857 -->
         <version.commonsText>1.10.0</version.commonsText> <!-- Apache Commons Configuration override to resolve CVE-2022-42889 -->
