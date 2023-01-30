@@ -1,7 +1,6 @@
 package eu.europa.ec.itb.validation.commons.config;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterEach;
+import eu.europa.ec.itb.validation.commons.test.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,17 +16,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @EnableConfigurationProperties(value = ApplicationConfigTest.ApplicationConfigForTesting.class)
 @ContextConfiguration(classes = {ApplicationConfigTest.TestConfig.class})
 @TestPropertySource("classpath:testConfig/testApplication.properties")
-class ApplicationConfigTest {
+class ApplicationConfigTest extends BaseTest {
 
     @TestConfiguration
     static class TestConfig {
@@ -45,17 +44,11 @@ class ApplicationConfigTest {
     private ApplicationConfig appConfig;
 
     @BeforeEach
-    void setup() throws IOException {
-        var tmpFolder = Files.createTempDirectory("itb");
+    protected void setup() throws IOException {
+        super.setup();
         var resourceRoot = Path.of(tmpFolder.toString(), "resourceRoot");
         appConfig.setTmpFolder(tmpFolder.toString());
         appConfig.setResourceRoot(resourceRoot.toString());
-
-    }
-
-    @AfterEach
-    void teardown() {
-        FileUtils.deleteQuietly(Path.of(appConfig.getTmpFolder()).toFile());
     }
 
     @Test
@@ -117,9 +110,21 @@ class ApplicationConfigTest {
     }
 
     @Test
-    void testInitBadResourceRoot() {
-        appConfig.setResourceRoot(null);
-        assertThrows(IllegalStateException.class, () -> appConfig.init());
+    void testInitBadResourceRoot() throws IOException {
+        ApplicationConfig testAppConfig = spy(appConfig);
+        when(testAppConfig.getGenericConfigPath()).thenReturn("testConfig/testApplication.properties");
+        testAppConfig.setDomain(null);
+        var tempDirectory = Path.of(tmpFolder.toString(), "tempFile.txt");
+        createFileWithContents(tempDirectory, "TEST");
+        testAppConfig.setResourceRoot(tempDirectory.toFile().getAbsolutePath());
+        assertThrows(IllegalStateException.class,  testAppConfig::init);
     }
 
+    @Test
+    void testInitNoResourceRoot() {
+        ApplicationConfig testAppConfig = spy(appConfig);
+        when(testAppConfig.getGenericConfigPath()).thenReturn("testConfig/testApplication.properties");
+        testAppConfig.setResourceRoot(null);
+        assertDoesNotThrow(testAppConfig::init);
+    }
 }
