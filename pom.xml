@@ -17,6 +17,7 @@
         <module>validation-commons-war</module>
         <module>validation-commons-report</module>
         <module>validation-commons-jar</module>
+        <module>owasp-suppressions</module>
     </modules>
 
     <licenses>
@@ -161,12 +162,24 @@
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
                     <version>${version.plugin.dependencyCheckPlugin}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>eu.europa.ec.itb.commons</groupId>
+                            <artifactId>owasp-suppressions</artifactId>
+                            <version>${project.version}</version>
+                        </dependency>
+                    </dependencies>
                     <configuration>
                         <failBuildOnCVSS>0</failBuildOnCVSS>
                         <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
                         <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
                         <nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
-                        <suppressionFile>etc/owasp-suppressions.xml</suppressionFile>
+                        <suppressionFiles>
+                            <!-- The common suppressions to be shared with downstream projects. -->
+                            <suppressionFile>eu/europa/ec/itb/owasp-suppressions.xml</suppressionFile>
+                            <!-- Specific suppressions linked to the current project only. -->
+                            <suppressionFile>etc/owasp-suppressions.xml</suppressionFile>
+                        </suppressionFiles>
                         <excludes>
                             <exclude>eu.europa.ec.itb.*:*</exclude>
                         </excludes>
