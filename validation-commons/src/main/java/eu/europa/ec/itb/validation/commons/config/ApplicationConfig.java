@@ -2,17 +2,15 @@ package eu.europa.ec.itb.validation.commons.config;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,7 +192,10 @@ public abstract class ApplicationConfig {
      * Initialisation method to be called when creating subclasses of this class.
      */
     protected void init() {
-        if (resourceRoot != null && Files.isDirectory(Paths.get(resourceRoot))) {
+        if (resourceRoot != null) {
+            if (!Files.isDirectory(Paths.get(resourceRoot))) {
+                throw new IllegalStateException("When provided, the validator.resourceRoot property must point to an existing directory");
+            }
             // Setup domain.
             if (domain == null || domain.isEmpty()) {
                 File[] directories = new File(resourceRoot).listFiles(File::isDirectory);
@@ -204,10 +205,26 @@ public abstract class ApplicationConfig {
                 domain = Arrays.stream(directories).map(File::getName).collect(Collectors.toSet());
             }
         } else {
-            throw new IllegalStateException("Invalid resourceRoot configured ["+resourceRoot+"]. Ensure you specify the validator.resourceRoot property correctly.");
+            try {
+                File tempFolder = Files.createTempDirectory("temp").toFile();
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(tempFolder)));
+                try (var in = Thread.currentThread()
+                        .getContextClassLoader()
+                        .getResourceAsStream(getGenericConfigPath())) {
+                    FileUtils.copyInputStreamToFile(Objects.requireNonNull(in), Path.of(tempFolder.getAbsolutePath(), "any", "config.properties").toFile());
+                }
+                System.setProperty("validator.resourceRoot", tempFolder.toPath().toAbsolutePath().toString());
+                File[] directories = new File(tempFolder.getAbsolutePath()).listFiles(File::isDirectory);
+                if (directories == null || directories.length == 0) {
+                    throw new IllegalStateException("The resource root directory ["+tempFolder+"] is empty");
+                }
+                domain = Arrays.stream(directories).map(File::getName).collect(Collectors.toSet());
+                resourceRoot = tempFolder.getAbsolutePath();
+            } catch (java.io.IOException e){
+                throw new IllegalStateException("The validator.resourceRoot property was not set and an error prevented using the validator's generic 'any' configuration", e);
+            }
         }
         logger.info("Loaded validation domains: {}", domain);
-        // Load domain names.
         StringBuilder logMsg = new StringBuilder();
         for (String domainFolder: domain) {
             String domainName = StringUtils.defaultIfBlank(env.getProperty("validator.domainName."+domainFolder), domainFolder);
@@ -216,13 +233,22 @@ public abstract class ApplicationConfig {
             logMsg.append('[').append(domainFolder).append("]=[").append(domainName).append("]");
         }
         logger.info("Loaded validation domain names: {}", logMsg);
-        // Set startup times and resource update times.
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss (XXX)");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss (XXX)");
         startupTimestamp = dtf.format(ZonedDateTime.now());
         resourceUpdateTimestamp = sdf.format(new Date(Paths.get(resourceRoot).toFile().lastModified()));
     }
-    
+
+    /**
+     * Returns a generic configuration path. This is expected to overriden by individual validator implementations
+     * depending on the location of their generic configuration in the classpath.
+     *
+     * @return The configuration path on the classpath.
+     */
+    protected String getGenericConfigPath() {
+        return "any/config.properties";
+    }
+
     /**
      * Private class for the webhook config properties
      * */

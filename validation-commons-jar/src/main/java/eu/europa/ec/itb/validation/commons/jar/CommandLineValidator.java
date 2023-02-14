@@ -63,6 +63,7 @@ public class CommandLineValidator {
      * @throws IOException If an IO error occurs.
      */
     public void start(Class<?> mainClass, String[] commandLineArguments, String tempFolderName) throws IOException {
+        tempFolderName = Objects.requireNonNullElse(tempFolderName, "temp");
         boolean noOutput = inArray(commandLineArguments, BaseValidationRunner.FLAG_NO_OUTPUT);
         boolean noLogs = inArray(commandLineArguments, BaseValidationRunner.FLAG_NO_LOG);
         disableLoggersIfNeeded(noOutput, noLogs);
