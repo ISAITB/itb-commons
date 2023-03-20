@@ -1,5 +1,7 @@
 package eu.europa.ec.itb.validation.commons.config;
 
+import com.gitb.tr.TAR;
+import com.gitb.tr.ValidationOverview;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
 import eu.europa.ec.itb.validation.plugin.PluginInfo;
@@ -41,6 +43,68 @@ public class DomainConfig {
     private Map<String, List<PluginInfo>> pluginPerTypeConfig;
     private final Map<String, Boolean> remoteArtefactStatus = new HashMap<>();
     private Map<String, ErrorResponseTypeEnum> remoteArtifactLoadErrorResponse;
+
+    private String reportId;
+    private String reportName;
+    private Map<String, String> reportProfileIds;
+    private String reportProfileIdDefault;
+    private Map<String, String> reportCustomisationIds;
+    private String reportCustomisationIdDefault;
+    private String validationServiceName;
+    private String validationServiceVersion;
+
+    /**
+     * Apply configured metadata to the TAR report.
+     *
+     * @param report The report to enrich.
+     * @param appliedValidationType The (full) validation type that was applied to produce the report.
+     */
+    public void applyMetadata(TAR report, String appliedValidationType) {
+        if (report != null && appliedValidationType != null) {
+            if (report.getOverview() == null) {
+                report.setOverview(new ValidationOverview());
+            }
+            // Report ID.
+            if (reportId != null) {
+                report.setId(reportId);
+            }
+            // Report name.
+            if (reportName != null) {
+                report.setName(reportName);
+            }
+            // Validation service name.
+            if (validationServiceName != null) {
+                report.getOverview().setValidationServiceName(validationServiceName);
+            }
+            // Validation service version.
+            if (validationServiceVersion != null) {
+                report.getOverview().setValidationServiceVersion(validationServiceVersion);
+            }
+            // Profile ID.
+            String profileIdToApply = null;
+            if (reportProfileIds != null) {
+                profileIdToApply = reportProfileIds.get(appliedValidationType);
+            }
+            if (profileIdToApply == null) {
+                profileIdToApply = reportProfileIdDefault;
+                if (profileIdToApply == null) {
+                    profileIdToApply = appliedValidationType;
+                }
+            }
+            report.getOverview().setProfileID(profileIdToApply);
+            // Customisation ID.
+            String customisationIdToApply = null;
+            if (reportCustomisationIds != null) {
+                customisationIdToApply = reportCustomisationIds.get(appliedValidationType);
+            }
+            if (customisationIdToApply == null) {
+                customisationIdToApply = reportCustomisationIdDefault;
+            }
+            if (customisationIdToApply != null) {
+                report.getOverview().setCustomizationID(customisationIdToApply);
+            }
+        }
+    }
 
     /**
      * Check to see if the provided validation type has encountered problems loading its remote
@@ -452,4 +516,115 @@ public class DomainConfig {
         return !validationTypeOptions.isEmpty();
     }
 
+    /**
+     * @return The identifier to include in the TAR report (/TestStepReport/id).
+     */
+    public String getReportId() {
+        return reportId;
+    }
+
+    /**
+     * @param reportId The identifier to include in the TAR report (/TestStepReport/id).
+     */
+    public void setReportId(String reportId) {
+        this.reportId = reportId;
+    }
+
+    /**
+     * @return The name to include in the TAR report (/TestStepReport/name).
+     */
+    public String getReportName() {
+        return reportName;
+    }
+
+    /**
+     * @param reportName The name to include in the TAR report (/TestStepReport/name).
+     */
+    public void setReportName(String reportName) {
+        this.reportName = reportName;
+    }
+
+    /**
+     * @return The map (based on the full validation type) of profile IDs to include as overrides in TAR reports (/TestStepReport/overview/profileID).
+     */
+    public Map<String, String> getReportProfileIds() {
+        return reportProfileIds;
+    }
+
+    /**
+     * @param reportProfileIds The map (based on the full validation type) of profile IDs to include as overrides of the validation types in TAR reports (/TestStepReport/overview/profileID).
+     */
+    public void setReportProfileIds(Map<String, String> reportProfileIds) {
+        this.reportProfileIds = reportProfileIds;
+    }
+
+    /**
+     * @return The map (based on the full validation type) of customisation IDs to include as overrides of the validation type options in TAR reports (/TestStepReport/overview/customizationID).
+     */
+    public Map<String, String> getReportCustomisationIds() {
+        return reportCustomisationIds;
+    }
+
+    /**
+     * @param reportCustomisationIds The map (based on the full validation type) of customisation IDs to include as overrides of the validation type options in TAR reports (/TestStepReport/overview/customizationID).
+     */
+    public void setReportCustomisationIds(Map<String, String> reportCustomisationIds) {
+        this.reportCustomisationIds = reportCustomisationIds;
+    }
+
+    /**
+     * @return The validation service name to include in TAR reports (/TestStepReport/overview/validationServiceName).
+     */
+    public String getValidationServiceName() {
+        return validationServiceName;
+    }
+
+    /**
+     * @param validationServiceName The validation service name to include in TAR reports (/TestStepReport/overview/validationServiceName).
+     */
+    public void setValidationServiceName(String validationServiceName) {
+        this.validationServiceName = validationServiceName;
+    }
+
+    /**
+     * @return The validation service version to include in TAR reports (/TestStepReport/overview/validationServiceVersion).
+     */
+    public String getValidationServiceVersion() {
+        return validationServiceVersion;
+    }
+
+    /**
+     * @param validationServiceVersion The validation service version to include in TAR reports (/TestStepReport/overview/validationServiceVersion).
+     */
+    public void setValidationServiceVersion(String validationServiceVersion) {
+        this.validationServiceVersion = validationServiceVersion;
+    }
+
+    /**
+     * @return The default value to apply for the TAR report profile ID (/TestStepReport/overview/profileID) if no type-specific value is configured.
+     */
+    public String getReportProfileIdDefault() {
+        return reportProfileIdDefault;
+    }
+
+    /**
+     * @param reportProfileIdDefault The default value to apply for the TAR report profile ID (/TestStepReport/overview/profileID) if no type-specific value is configured.
+     */
+    public void setReportProfileIdDefault(String reportProfileIdDefault) {
+        this.reportProfileIdDefault = reportProfileIdDefault;
+    }
+
+    /**
+     * @return The default value to apply for the TAR report customisation ID (/TestStepReport/overview/customizationID) if no type-specific value is configured.
+     */
+    public String getReportCustomisationIdDefault() {
+        return reportCustomisationIdDefault;
+    }
+
+    /**
+     * @param reportCustomisationIdDefault The default value to apply for the TAR report customisation ID (/TestStepReport/overview/customizationID) if no type-specific value is configured.
+     */
+    public void setReportCustomisationIdDefault(String reportCustomisationIdDefault) {
+        this.reportCustomisationIdDefault = reportCustomisationIdDefault;
+    }
 }

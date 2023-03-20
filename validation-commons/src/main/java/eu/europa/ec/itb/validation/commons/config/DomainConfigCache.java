@@ -259,6 +259,16 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     var defaultResponseType = ErrorResponseTypeEnum.fromValue(config.getString("validator.remoteArtefactLoadErrors", "log"));
                     domainConfig.setRemoteArtifactLoadErrorResponse(ParseUtils.parseEnumMap("validator.remoteArtefactLoadErrors", defaultResponseType, config, domainConfig.getType(), ErrorResponseTypeEnum::fromValue));
                     // Check how to react to remote artefact load failures - end
+                    // Load optional report metadata - start.
+                    domainConfig.setValidationServiceName(config.getString("validator.report.validationServiceName"));
+                    domainConfig.setValidationServiceVersion(config.getString("validator.report.validationServiceVersion"));
+                    domainConfig.setReportId(config.getString("validator.report.id"));
+                    domainConfig.setReportName(config.getString("validator.report.name"));
+                    domainConfig.setReportProfileIdDefault(config.getString("validator.report.profileId"));
+                    domainConfig.setReportProfileIds(ParseUtils.parseMap("validator.report.profileId", config, domainConfig.getType()));
+                    domainConfig.setReportCustomisationIdDefault(config.getString("validator.report.customisationId"));
+                    domainConfig.setReportCustomisationIds(ParseUtils.parseMap("validator.report.customisationId", config, domainConfig.getType()));
+                    // Load optional report metadata - end.
                     // Allow subclasses to extend the configuration as needed.
                     addDomainConfiguration(domainConfig, config);
                     completeValidationArtifactConfig(domainConfig);

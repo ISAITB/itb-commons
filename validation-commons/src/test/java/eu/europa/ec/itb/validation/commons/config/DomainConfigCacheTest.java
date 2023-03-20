@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -127,6 +128,18 @@ class DomainConfigCacheTest extends BaseSpringTest {
         assertEquals(ErrorResponseTypeEnum.FAIL, config.getResponseForRemoteArtefactLoadFailure("type1.option1_1"));
         assertEquals(ErrorResponseTypeEnum.WARN, config.getResponseForRemoteArtefactLoadFailure("type1.option1_2"));
         assertEquals(ErrorResponseTypeEnum.LOG, config.getResponseForRemoteArtefactLoadFailure("type2.option2_1"));
+        assertEquals("validationServiceName", config.getValidationServiceName());
+        assertEquals("validationServiceVersion", config.getValidationServiceVersion());
+        assertEquals("ReportID", config.getReportId());
+        assertEquals("ReportName", config.getReportName());
+        assertEquals("profileDefault", config.getReportProfileIdDefault());
+        assertEquals("customisationDefault", config.getReportCustomisationIdDefault());
+        assertEquals(2, config.getReportProfileIds().size());
+        assertEquals("profile1", config.getReportProfileIds().get("type1.option1_1"));
+        assertEquals("profile2", config.getReportProfileIds().get("type2.option2_1"));
+        assertEquals(2, config.getReportCustomisationIds().size());
+        assertEquals("customisation1", config.getReportCustomisationIds().get("type1.option1_1"));
+        assertEquals("customisation2", config.getReportCustomisationIds().get("type2.option2_1"));
     }
 
     @Test
