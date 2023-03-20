@@ -1,11 +1,12 @@
 package eu.europa.ec.itb.validation.commons.config;
 
+import com.gitb.tr.TAR;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DomainConfigTest {
 
@@ -37,5 +38,42 @@ class DomainConfigTest {
         assertTrue(config.checkRemoteArtefactStatus(null));
         config.setDefaultType(null);
         assertTrue(config.checkRemoteArtefactStatus(null));
+    }
+
+    @Test
+    void testApplyMetadata() {
+        var report = new TAR();
+        var config = new DomainConfig();
+        config.setValidationServiceName("ServiceName");
+        config.setValidationServiceVersion("ServiceVersion");
+        config.setReportId("ID");
+        config.setReportName("ReportName");
+        config.applyMetadata(report, "type1");
+        assertEquals("ID", report.getId());
+        assertEquals("ReportName", report.getName());
+        assertNotNull(report.getOverview());
+        assertEquals("ServiceName", report.getOverview().getValidationServiceName());
+        assertEquals("ServiceVersion", report.getOverview().getValidationServiceVersion());
+        assertEquals("type1", report.getOverview().getProfileID());
+        assertNull(report.getOverview().getCustomizationID());
+
+        report = new TAR();
+        config.setReportProfileIds(Map.of("type1", "profile1", "type2", "profile2"));
+        config.setReportCustomisationIds(Map.of("type1", "customisation1", "type2", "customisation2"));
+        config.applyMetadata(report, "type1");
+        assertEquals("profile1", report.getOverview().getProfileID());
+        assertEquals("customisation1", report.getOverview().getCustomizationID());
+
+        report = new TAR();
+        config.applyMetadata(report, "typeX");
+        assertEquals("typeX", report.getOverview().getProfileID());
+        assertNull(report.getOverview().getCustomizationID());
+
+        report = new TAR();
+        config.setReportProfileIdDefault("defaultProfile");
+        config.setReportCustomisationIdDefault("defaultCustomisation");
+        config.applyMetadata(report, "typeX");
+        assertEquals("defaultProfile", report.getOverview().getProfileID());
+        assertEquals("defaultCustomisation", report.getOverview().getCustomizationID());
     }
 }

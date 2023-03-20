@@ -1,5 +1,7 @@
 package eu.europa.ec.itb.validation.commons.config;
 
+import com.gitb.core.Metadata;
+import com.gitb.core.ValidationModule;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 
 import java.util.Map;
@@ -17,6 +19,31 @@ public class WebDomainConfig extends DomainConfig {
     private boolean supportMinimalUserInterface;
     private boolean showAbout;
     private boolean supportUserInterfaceEmbedding;
+
+    /**
+     * Apply the configuration's metadata to the web service validation module definition.
+     *
+     * @param module The module to update.
+     */
+    public void applyWebServiceMetadata(ValidationModule module) {
+        if (module != null) {
+            module.setId(webServiceId);
+            module.setOperation("V");
+            module.setMetadata(new Metadata());
+            // Name.
+            var name = getValidationServiceName();
+            if (name == null) {
+                name = module.getId();
+            }
+            module.getMetadata().setName(name);
+            // Version.
+            var version = getValidationServiceVersion();
+            if (version == null) {
+                version = "1.0.0";
+            }
+            module.getMetadata().setVersion(version);
+        }
+    }
 
     /**
      * @return Whether the validator's user interface can be embedded in others.
