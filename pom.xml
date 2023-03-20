@@ -70,6 +70,7 @@
         <version.justify>3.1.0</version.justify>
         <version.jakartaJson>2.0.0</version.jakartaJson>
         <version.jayway>2.7.0</version.jayway>
+        <version.jsonSmart>2.4.10</version.jsonSmart> <!-- Override version JSON-smart version from Jayway to resolve CVE-2023-1370 -->
         <version.gson>2.9.0</version.gson>
         <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
         <version.commonsCompress>1.21</version.commonsCompress>
@@ -530,6 +531,12 @@
                 <groupId>com.fasterxml.woodstox</groupId>
                 <artifactId>woodstox-core</artifactId>
                 <version>${version.woodstox}</version>
+            </dependency>
+            <!-- Woodstox JSON smart -->
+            <dependency>
+                <groupId>net.minidev</groupId>
+                <artifactId>json-smart</artifactId>
+                <version>${version.jsonSmart}</version>
             </dependency>
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
             <dependency>
