@@ -40,20 +40,20 @@ public abstract class ApplicationConfig {
     private String identifier;
     private boolean supportsTestDefinitionInReportItems;
     private boolean supportsAdditionalInformationInReportItems;
-    private String basePublicUrl;
+    private String baseSoapEndpointUrl;
 
     /**
-     * @return The base public URL for the validator (up to, and without including, the domain).
+     * @return The base public URL for the validator's SOAP endpoints (up to, and without including, the domain).
      */
-    public String getBasePublicUrl() {
-        return basePublicUrl;
+    public String getBaseSoapEndpointUrl() {
+        return baseSoapEndpointUrl;
     }
 
     /**
-     * @param basePublicUrl The base public URL for the validator (up to, and without including, the domain).
+     * @param baseSoapEndpointUrl The base public URL for the validator's SOAP endpoints (up to, and without including, the domain).
      */
-    public void setBasePublicUrl(String basePublicUrl) {
-        this.basePublicUrl = basePublicUrl;
+    public void setBaseSoapEndpointUrl(String baseSoapEndpointUrl) {
+        this.baseSoapEndpointUrl = baseSoapEndpointUrl;
     }
 
     /**
