@@ -40,6 +40,21 @@ public abstract class ApplicationConfig {
     private String identifier;
     private boolean supportsTestDefinitionInReportItems;
     private boolean supportsAdditionalInformationInReportItems;
+    private String basePublicUrl;
+
+    /**
+     * @return The base public URL for the validator (up to, and without including, the domain).
+     */
+    public String getBasePublicUrl() {
+        return basePublicUrl;
+    }
+
+    /**
+     * @param basePublicUrl The base public URL for the validator (up to, and without including, the domain).
+     */
+    public void setBasePublicUrl(String basePublicUrl) {
+        this.basePublicUrl = basePublicUrl;
+    }
 
     /**
      * @return True if test definitions are supported in validation report items.
