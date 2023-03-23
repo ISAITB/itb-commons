@@ -96,6 +96,7 @@
         <version.plugin.mavenResourcesPlugin>3.2.0</version.plugin.mavenResourcesPlugin>
         <version.plugin.mavenAntRunPlugin>3.1.0</version.plugin.mavenAntRunPlugin>
         <!-- Version overrides in Spring Boot - START -->
+        <version.springFramework>5.3.26</version.springFramework> <!-- Spring Boot override to resolve CVE-2023-20861 -->
         <version.snakeyaml>1.33</version.snakeyaml> <!-- Spring Boot override to resolve CVE-2022-25857 -->
         <version.commonsText>1.10.0</version.commonsText> <!-- Apache Commons Configuration override to resolve CVE-2022-42889 -->
         <version.protobuf>3.21.9</version.protobuf> <!-- Protobuf override for the Jena transitive dependency to resolve CVE-2022-3509 -->
@@ -515,6 +516,7 @@
                 <artifactId>libthrift</artifactId>
                 <version>${version.libthrift}</version>
             </dependency>
+            <!-- Snakeyaml override -->
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
@@ -532,11 +534,19 @@
                 <artifactId>woodstox-core</artifactId>
                 <version>${version.woodstox}</version>
             </dependency>
-            <!-- Woodstox JSON smart -->
+            <!-- JSON smart override -->
             <dependency>
                 <groupId>net.minidev</groupId>
                 <artifactId>json-smart</artifactId>
                 <version>${version.jsonSmart}</version>
+            </dependency>
+            <!-- Spring framework override -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${version.springFramework}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
             <dependency>
