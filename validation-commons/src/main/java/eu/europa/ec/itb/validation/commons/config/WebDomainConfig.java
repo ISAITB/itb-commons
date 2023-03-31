@@ -4,6 +4,7 @@ import com.gitb.core.Metadata;
 import com.gitb.core.ValidationModule;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,6 +20,7 @@ public class WebDomainConfig extends DomainConfig {
     private boolean supportMinimalUserInterface;
     private boolean showAbout;
     private boolean supportUserInterfaceEmbedding;
+    private List<String> hiddenType;
 
     /**
      * Apply the configuration's metadata to the web service validation module definition.
@@ -190,4 +192,32 @@ public class WebDomainConfig extends DomainConfig {
         return text;
     }
 
+    /**
+     * @return the hidden type list
+     */
+    public List<String> getHiddenTypes() {
+        return hiddenType;
+    }
+
+    /**
+     * @param hiddenTypes
+     */
+    public void setHiddenTypes(List<String> hiddenTypes) {
+        this.hiddenType = hiddenTypes;
+    }
+
+    /**
+     * @param type the type to check
+     * @return a boolean value that is only true if the type is included in the hiddenType list
+     */
+    public boolean isHiddenType(String type) {
+        return this.hiddenType.contains(type);
+    }
+
+    /**
+     * @return a boolean value that is only true if at least one validation type is visible
+     */
+    public boolean hasNonHiddenValidationTypes() {
+        return this.hiddenType.containsAll(super.getType());
+    }
 }
