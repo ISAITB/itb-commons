@@ -52,7 +52,8 @@ class WebDomainConfigCacheTest {
                 Map.entry("validator.bannerHtml", "banner"),
                 Map.entry("validator.footerHtml", "footer"),
                 Map.entry("validator.locale.default", "en"),
-                Map.entry("validator.locale.available","en,es,fr")
+                Map.entry("validator.locale.available","en,es,fr"),
+                Map.entry("validator.hiddenType", "type2")
         ));
         cache.addDomainConfiguration(config, configProperties);
         cache.addResourceBundlesConfiguration(config, configProperties);
@@ -74,6 +75,10 @@ class WebDomainConfigCacheTest {
         assertEquals("banner", localisationHelper.localise("validator.bannerHtml"));
         assertEquals("footer", localisationHelper.localise("validator.footerHtml"));
         assertFalse(config.isSupportUserInterfaceEmbedding());
+        assertEquals(config.getHiddenTypes().size(), 1);
+        assertTrue(config.hasNonHiddenValidationTypes());
+        assertFalse(config.isHiddenType("type1"));
+        assertTrue(config.isHiddenType("type2"));
     }
 
     @Test

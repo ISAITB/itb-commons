@@ -218,6 +218,6 @@ public class WebDomainConfig extends DomainConfig {
      * @return a boolean value that is only true if at least one validation type is visible
      */
     public boolean hasNonHiddenValidationTypes() {
-        return this.hiddenType.containsAll(super.getType());
+        return !this.hiddenType.containsAll(super.getType());
     }
 }
