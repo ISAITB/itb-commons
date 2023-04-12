@@ -6,6 +6,8 @@ import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Base domain configuration class for validators that are web applications.
@@ -217,7 +219,9 @@ public class WebDomainConfig extends DomainConfig {
     /**
      * @return a boolean value that is only true if at least one validation type is visible
      */
-    public boolean hasNonHiddenValidationTypes() {
-        return !this.hiddenType.containsAll(super.getType());
+    public boolean hasMultipleNonHiddenValidationTypes() {
+        return super.getType().stream()
+                .filter(type -> !this.isHiddenType(type))
+                .count() > 1;
     }
 }

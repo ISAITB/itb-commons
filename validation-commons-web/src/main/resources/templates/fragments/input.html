@@ -58,7 +58,7 @@
             </div>
         </div>
 
-        <div th:fragment="mainFormValidationType(config)" class="form-group" th:if="${config.hasNonHiddenValidationTypes()}">
+        <div th:fragment="mainFormValidationType(config)" class="form-group" th:if="${config.hasMultipleNonHiddenValidationTypes()}">
             <label for="validationType" class="col-sm-2 control-label" th:text="${localiser.localise('validator.label.typeLabel')}">Validate as</label>
             <div th:class="${config.hasValidationTypeOptions()}? col-sm-5 : col-sm-10">
                 <select class="form-control" id="validationType" onchange="validationTypeChanged()" name="validationTypeInternal">

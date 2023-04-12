@@ -5,9 +5,7 @@ import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import org.apache.commons.configuration2.MapConfiguration;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,8 +50,7 @@ class WebDomainConfigCacheTest {
                 Map.entry("validator.bannerHtml", "banner"),
                 Map.entry("validator.footerHtml", "footer"),
                 Map.entry("validator.locale.default", "en"),
-                Map.entry("validator.locale.available","en,es,fr"),
-                Map.entry("validator.hiddenType", "type2")
+                Map.entry("validator.locale.available","en,es,fr")
         ));
         cache.addDomainConfiguration(config, configProperties);
         cache.addResourceBundlesConfiguration(config, configProperties);
@@ -75,10 +72,25 @@ class WebDomainConfigCacheTest {
         assertEquals("banner", localisationHelper.localise("validator.bannerHtml"));
         assertEquals("footer", localisationHelper.localise("validator.footerHtml"));
         assertFalse(config.isSupportUserInterfaceEmbedding());
+    }
+
+    @Test
+    void testHiddenValidationTypes() {
+        var config = createWebDomainConfig();
+        var configCache = createWebDomainConfigCache();
+        configCache.addDomainConfiguration(config, new MapConfiguration(new HashMap<>()));
+        config.setType(List.of("type1", "type2"));
+        assertEquals(config.getType().size(), 2);
+        assertTrue(config.hasMultipleNonHiddenValidationTypes());
+        config.setHiddenTypes(List.of("type2"));
         assertEquals(config.getHiddenTypes().size(), 1);
-        assertTrue(config.hasNonHiddenValidationTypes());
+        assertFalse(config.hasMultipleNonHiddenValidationTypes());
         assertFalse(config.isHiddenType("type1"));
         assertTrue(config.isHiddenType("type2"));
+        config.setHiddenTypes(new ArrayList<>());
+        assertTrue(config.hasMultipleNonHiddenValidationTypes());
+        config.setHiddenTypes(List.of("type1", "type2"));
+        assertFalse(config.hasMultipleNonHiddenValidationTypes());
     }
 
     @Test
