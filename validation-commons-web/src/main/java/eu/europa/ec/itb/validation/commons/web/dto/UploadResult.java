@@ -28,6 +28,7 @@ public class UploadResult <T extends Translations> {
     private String validationTypeLabel;
     private Long maximumReportsForDetailedOutput;
     private Long maximumReportsForXmlOutput;
+    private String resultValue;
     private T translations;
     private List<String> additionalErrorMessages;
 
@@ -214,6 +215,20 @@ public class UploadResult <T extends Translations> {
     }
 
     /**
+     * @return The result value (non-translated).
+     */
+    public String getResultValue() {
+        return resultValue;
+    }
+
+    /**
+     * @param resultValue The result value (non-translated).
+     */
+    public void setResultValue(String resultValue) {
+        this.resultValue = resultValue;
+    }
+
+    /**
      * Populate all result properties that are common to all validator types.
      *
      * @param helper The localisation helper to use to lookup translations.
@@ -238,6 +253,7 @@ public class UploadResult <T extends Translations> {
         setAggregateReport(aggregateReport);
         setShowAggregateReport(Utils.aggregateDiffers(detailedReport, aggregateReport));
         setDate(detailedReport.getDate().toString());
+        setResultValue(report.getResult().value());
         setTranslations(translations);
         if (message == null && !domainConfig.checkRemoteArtefactStatus(validationType) && domainConfig.getResponseForRemoteArtefactLoadFailure(validationType) == ErrorResponseTypeEnum.WARN) {
             // We only treat the case where we need to report a warning. When needing to respond with an error this has already
