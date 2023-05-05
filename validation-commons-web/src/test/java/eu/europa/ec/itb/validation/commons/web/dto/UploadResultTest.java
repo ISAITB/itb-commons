@@ -2,6 +2,7 @@ package eu.europa.ec.itb.validation.commons.web.dto;
 
 import com.gitb.tr.TAR;
 import com.gitb.tr.TestAssertionGroupReportsType;
+import com.gitb.tr.TestResultType;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.Utils;
 import eu.europa.ec.itb.validation.commons.config.ErrorResponseTypeEnum;
@@ -32,6 +33,7 @@ class UploadResultTest {
         var timestamp = Utils.getXMLGregorianCalendarDateTime();
         when(detailedReport.getDate()).thenReturn(timestamp);
         when(detailedReport.getReports()).thenReturn(reports);
+        when(detailedReport.getResult()).thenReturn(TestResultType.SUCCESS);
         var aggregateReport = mock(TAR.class);
         when(aggregateReport.getReports()).thenReturn(reports);
         var translations = mock(Translations.class);

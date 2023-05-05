@@ -253,7 +253,7 @@ public class UploadResult <T extends Translations> {
         setAggregateReport(aggregateReport);
         setShowAggregateReport(Utils.aggregateDiffers(detailedReport, aggregateReport));
         setDate(detailedReport.getDate().toString());
-        setResultValue(report.getResult().value());
+        setResultValue(detailedReport.getResult().value());
         setTranslations(translations);
         if (message == null && !domainConfig.checkRemoteArtefactStatus(validationType) && domainConfig.getResponseForRemoteArtefactLoadFailure(validationType) == ErrorResponseTypeEnum.WARN) {
             // We only treat the case where we need to report a warning. When needing to respond with an error this has already
