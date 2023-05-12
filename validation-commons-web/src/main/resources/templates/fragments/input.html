@@ -68,7 +68,7 @@
             </div>
             <div id="validationTypeOptionDiv" th:if="${config.hasValidationTypeOptions()}" class="col-sm-5 hidden">
                 <div id="validationTypeOptionLabelDiv" style="float:left; width:auto; padding-right:30px;">
-                    <label for="validationTypeOption" class="control-label" th:text="${localiser.localise('validator.label.optionLabel')}">Option</label>
+                    <label id="validationTypeOptionLabelLabel" for="validationTypeOption" class="control-label" th:text="${localiser.localise('validator.label.optionLabel')}">Option</label>
                 </div>
                 <div id="validationTypeOptionSelectDiv" style="overflow:hidden; width:auto;">
                     <select class="form-control" id="validationTypeOption" onchange="validationTypeOptionChanged()" name="validationTypeOptionInternal">
@@ -87,15 +87,15 @@
             <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" id="externalArtefactsCheck" name="addExternalArtefacts" onclick="toggleExternalArtefacts()"> <span th:text="${checkLabel}">Include external artefacts</span>
+                        <input type="checkbox" id="externalArtefactsCheck" name="addExternalArtefacts" onclick="toggleExternalArtefacts()"> <span id="includeExternalArtifactCheckText" th:text="${checkLabel}">Include external artefacts</span>
                     </label>
-                    <span data-toggle="tooltip" data-container="body" data-placement="right" th:attr="title=${checkTooltip}"><i class="far fa-question-circle"></i></span>
+                    <span id="includeExternalArtifactCheckTooltip" data-toggle="tooltip" data-container="body" data-placement="right" th:attr="title=${checkTooltip}"><i class="far fa-question-circle"></i></span>
                 </div>
             </div>
         </div>
 
         <div th:fragment="externalArtifactControl(artifactType, artifactLabel)" class="form-group" th:classappend="'externalClass_'+${artifactType}">
-            <label th:attr="for=${'externalAddButton_'+artifactType}" class="col-sm-2 control-label" th:text="${artifactLabel}">Artifact</label>
+            <label th:id="'externalLabel_'+${artifactType}" th:attr="for=${'externalAddButton_'+artifactType}" class="col-sm-2 control-label" th:text="${artifactLabel}">Artifact</label>
             <div class="col-sm-10" th:id="'externalDiv_'+${artifactType}">
                 <button th:id="'externalAddButton_'+${artifactType}" class="btn btn-default" type="button" th:attr="onclick=|addExternal('${artifactType}')|"><i class="fas fa-plus"></i></button>
             </div>

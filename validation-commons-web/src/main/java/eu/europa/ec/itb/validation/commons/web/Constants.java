@@ -44,6 +44,8 @@ public class Constants {
     public static final String PARAM_INPUT_ID = "inputID";
     /** Constant for the name of the report date Thymeleaf template parameter. */
     public static final String PARAM_REPORT_DATA = "reportData";
+    /** Constant for the name of the label configuration Thymeleaf template parameter. */
+    public static final String PARAM_LABEL_CONFIG = "labelConfig";
     /** Constant for the name of the Thymeleaf view for the upload form. */
     public static final String VIEW_UPLOAD_FORM = "uploadForm";
     /** Constant for the name of the MDC logging parameter for the domain name. */
