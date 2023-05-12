@@ -3,6 +3,7 @@ package eu.europa.ec.itb.validation.commons.config;
 import com.gitb.tr.TAR;
 import com.gitb.tr.ValidationOverview;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
+import eu.europa.ec.itb.validation.commons.artifact.ExternalArtifactSupport;
 import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
 import eu.europa.ec.itb.validation.plugin.PluginInfo;
 import org.slf4j.Logger;
@@ -494,16 +495,23 @@ public class DomainConfig {
      * @return The map of validation type to artifact type to external artifact support type.
      */
     public Map<String, Map<String, String>> getExternalArtifactInfoMap() {
-        // validation type -> artifact type -> support type
+        /*
+         * validation type -> artifact type -> support type
+         * We only return entries that are different to "none".
+         */
         Map<String, Map<String, String>> artifactInfoMap = new HashMap<>();
         if (getArtifactInfo() != null) {
             for (Map.Entry<String, TypedValidationArtifactInfo> entry: getArtifactInfo().entrySet()) {
                 Map<String, String> artifactTypeMap = new HashMap<>();
                 for (String artifactType: entry.getValue().getTypes()) {
-                    String supportType = entry.getValue().get(artifactType).getExternalArtifactSupport().getName();
-                    artifactTypeMap.put(artifactType, supportType);
+                    if (entry.getValue().get(artifactType).getExternalArtifactSupport() != ExternalArtifactSupport.NONE) {
+                        String supportType = entry.getValue().get(artifactType).getExternalArtifactSupport().getName();
+                        artifactTypeMap.put(artifactType, supportType);
+                    }
                 }
-                artifactInfoMap.put(entry.getKey(), artifactTypeMap);
+                if (!artifactTypeMap.isEmpty()) {
+                    artifactInfoMap.put(entry.getKey(), artifactTypeMap);
+                }
             }
         }
         return artifactInfoMap;

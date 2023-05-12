@@ -110,6 +110,9 @@ function configure(config) {
         } else {
             _config.reportMinimalTemplate = 'reportMinimal.hbs';
         }
+        if (config.labels) {
+            _config.labels = config.labels;
+        }
     }
 }
 
@@ -253,7 +256,27 @@ function completeValidationTypeChanged(previousValidationType) {
 	cleanExternalArtifacts({previousValidationType: previousValidationType});
 	checkForSubmit();
 	resetExternalArtifacts(previousValidationType);
+	setLabelsForCompleteValidationType()
     notifyListeners('VALIDATION_TYPE_CHANGED', { validationType: getCompleteValidationType() });
+}
+
+function setLabelsForCompleteValidationType() {
+    var i, artifactType;
+    for (i = 0; i < _config.artifactTypes.length; i++) {
+        artifactType = _config.artifactTypes[i];
+        // Label for external artifacts.
+        $("#externalLabel_"+artifactType).text(labelForExternalArtifactInput(artifactType));
+        // Placeholder text for file input.
+        $(".inputFileName_"+artifactType).attr("placeholder", placeholderTextForExternalArtifactFile(artifactType));
+    }
+    // Label for option dropdown.
+    $("#validationTypeOptionLabelLabel").text(getLabel('option', true, false));
+    // Include external artifacts check text.
+    $("#includeExternalArtifactCheckText").text(getLabel('externalIncludeText', true, true));
+    // Include external artifacts check tooltip.
+    var tooltipText = getLabel('externalIncludeTooltip', true, true);
+    $("#includeExternalArtifactCheckTooltip").attr("title", tooltipText);
+    $("#includeExternalArtifactCheckTooltip").attr("data-original-title", tooltipText);
 }
 
 function cleanExternalArtifacts(options) {
@@ -323,8 +346,10 @@ function resetExternalArtifacts(previousValidationType) {
     }
     if (updateCheckbox) {
         if (showCheckbox) {
-            $("#externalArtefactsCheck").prop('checked', false);
-            $(".includeExternalArtefacts").removeClass('hidden');
+            if ($(".includeExternalArtefacts").hasClass('hidden')) {
+                $("#externalArtefactsCheck").prop('checked', false);
+                $(".includeExternalArtefacts").removeClass('hidden');
+            }
         } else {
             $(".includeExternalArtefacts").addClass('hidden');
         }
@@ -366,17 +391,37 @@ function resetExternalArtifacts(previousValidationType) {
 }
 
 function maxExternalArtifacts(artifactType) {
-    if (_config.externalArtifactSettings[artifactType] && _config.externalArtifactSettings[artifactType].maxCount) {
+    if (_config.externalArtifactSettings && _config.externalArtifactSettings[artifactType] && _config.externalArtifactSettings[artifactType].maxCount) {
         return _config.externalArtifactSettings[artifactType].maxCount;
     }
     return -1;
 }
 
-function placeholderTextForExternalArtifactFile(artifactType) {
-    if (_config.externalArtifactSettings[artifactType] && _config.externalArtifactSettings[artifactType].filePlaceholder) {
-        return _config.externalArtifactSettings[artifactType].filePlaceholder;
+function getLabel(basePart, hasTypeVariants, hasOptionVariants) {
+    var completeType = getCompleteValidationType();
+    var type = getValidationType();
+    var message;
+    if (hasOptionVariants && completeType) {
+        message = _config.labels[basePart+'.'+completeType];
     }
-    return '';
+    if (message == undefined && hasTypeVariants) {
+        message = _config.labels[basePart+'.'+type];
+    }
+    if (message == undefined) {
+        message = _config.labels[basePart];
+        if (message == undefined) {
+            message = '';
+        }
+    }
+    return message;
+}
+
+function labelForExternalArtifactInput(artifactType) {
+    return getLabel('external.'+artifactType+'.label', true, true);
+}
+
+function placeholderTextForExternalArtifactFile(artifactType) {
+    return getLabel('external.'+artifactType+'.placeholder', true, true);
 }
 
 function addExternal(artifactType) {
@@ -478,7 +523,7 @@ function addElement(artifactType, placeholderText, focus) {
                         "<div class='input-group-btn'>" +
                             "<button class='btn btn-default' type='button' onclick='triggerFileUploadExternal(\"inputFile-"+elementId+"\")'><i class='far fa-folder-open'></i></button>" +
                         "</div>" +
-                        "<input type='text' id='inputFileName-"+elementId+"' placeholder='"+placeholderText+"' class='form-control clickable' onclick='triggerFileUploadExternal(\"inputFile-"+elementId+"\")' readonly='readonly'/>" +
+                        "<input type='text' id='inputFileName-"+elementId+"' placeholder='"+placeholderText+"' class='form-control clickable inputFileName_"+artifactType+"' onclick='triggerFileUploadExternal(\"inputFile-"+elementId+"\")' readonly='readonly'/>" +
                     "</div>" +
                 "</div>" +
                 "<div class='col-sm-11 hidden' id='uriToValidate-"+elementId+"'>"+
@@ -676,7 +721,7 @@ function getCommonExternalArtifactSupport() {
             if (validationTypeOptions[validationType].length == 0) {
                 for (j = 0; j < _config.artifactTypes.length; j++) {
                     artifactType = _config.artifactTypes[j];
-                    supportType = _config.externalArtifacts[validationType][artifactType];
+                    supportType = getExternalArtifactSupportValue(validationType, artifactType);
                     supportTypes[artifactType][supportType] = true;
                 }
             } else {
@@ -685,7 +730,7 @@ function getCommonExternalArtifactSupport() {
                     completeType = validationType + '.' + options[j].option
                     for (k = 0; k < _config.artifactTypes.length; k++) {
                         artifactType = _config.artifactTypes[k];
-                        supportType = _config.externalArtifacts[completeType][artifactType];
+                        supportType = getExternalArtifactSupportValue(completeType, artifactType);
                         supportTypes[artifactType][supportType] = true;
                     }
                 }
@@ -704,6 +749,14 @@ function getCommonExternalArtifactSupport() {
     return _config.commonExternalArtefactsSupport;
 }
 
+function getExternalArtifactSupportValue(type, artifactType) {
+    var supportType = "none";
+    if (_config.externalArtifacts != undefined && _config.externalArtifacts[type] != undefined && _config.externalArtifacts[type][artifactType] != undefined) {
+        supportType = _config.externalArtifacts[type][artifactType];
+    }
+    return supportType;
+}
+
 function getExternalArtifactSupport(options) {
 	var i, currentArtifactType, artifactType,
 	    supportType = "none",
@@ -716,14 +769,17 @@ function getExternalArtifactSupport(options) {
 	}
 	if (type) {
         if (options.artifactType) {
-            supportType = _config.externalArtifacts[type][options.artifactType];
+            supportType = getExternalArtifactSupportValue(type, options.artifactType);
         } else {
-            for (currentArtifactType in _config.externalArtifacts[type]) {
-                if (_config.externalArtifacts[type][currentArtifactType] == "required") {
-                    supportType = "required";
-                    break;
-                } else if (supportType == "none" && _config.externalArtifacts[type][currentArtifactType] == "optional") {
-                    supportType = "optional";
+            if (_config.externalArtifacts != undefined && _config.externalArtifacts[type] != undefined) {
+                for (currentArtifactType in _config.externalArtifacts[type]) {
+                    var configuredSupportType = getExternalArtifactSupportValue(type, currentArtifactType);
+                    if (configuredSupportType == "required") {
+                        supportType = "required";
+                        break;
+                    } else if (supportType == "none" && configuredSupportType == "optional") {
+                        supportType = "optional";
+                    }
                 }
             }
         }

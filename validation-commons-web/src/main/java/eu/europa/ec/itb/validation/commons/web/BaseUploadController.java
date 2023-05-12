@@ -1,16 +1,22 @@
 package eu.europa.ec.itb.validation.commons.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.web.dto.UploadResult;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static eu.europa.ec.itb.validation.commons.web.Constants.IS_MINIMAL;
@@ -112,4 +118,86 @@ public abstract class BaseUploadController <X extends WebDomainConfig, Y extends
     public boolean isMinimalUI(HttpServletRequest request) {
         return Objects.requireNonNullElse((Boolean) request.getAttribute(IS_MINIMAL), Boolean.FALSE);
     }
+
+    /**
+     * Get a JSON string containing the configuration for labels that are type and/or type and option sensitive.
+     * <p>
+     * The typeRelated and typeAndOptionRelated lists are pairs of Strings where the left is the property prefix from the
+     * domain configuration file (before the type postfix), and the right is the JSON property name to use.
+     *
+     * @param localisationHelper The helper used for localisation.
+     * @param config The domain configuration.
+     * @param typeRelated The label properties that are sensitive to the selected type.
+     * @param typeAndOptionRelated The label properties that are sensitive to the selected type and option.
+     * @return The JSON text to inject in the HTML as configuration.
+     */
+    public String getDynamicLabelConfiguration(LocalisationHelper localisationHelper, X config, List<Pair<String, String>> typeRelated, List<Pair<String, String>> typeAndOptionRelated) {
+        var translations = new LinkedHashMap<String, String>();
+        if (config.hasValidationTypeOptions()) {
+            addTypeTranslations(translations, localisationHelper, config, "validator.label.optionLabel", "option");
+        }
+        // Process label translations.
+        typeRelated.forEach((entry) -> {
+            addTypeTranslations(translations, localisationHelper, config, entry.getLeft(), entry.getRight());
+        });
+        typeAndOptionRelated.forEach((entry) -> {
+            addTypeAndOptionTranslations(translations, localisationHelper, config, entry.getLeft(), entry.getRight());
+        });
+        try {
+            return objectMapper.writeValueAsString(translations);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Unable to serialise label configuration", e);
+        }
+    }
+
+    /**
+     * Add translations for type-sensitive labels.
+     *
+     * @param translations The current translations.
+     * @param localisationHelper The localisation helper.
+     * @param config The domain configuration.
+     * @param configPropertyName The configuration property name.
+     * @param jsonPropertyName The JSON property name.
+     */
+    private void addTypeTranslations(Map<String, String> translations, LocalisationHelper localisationHelper, X config, String configPropertyName, String jsonPropertyName) {
+        translations.put(jsonPropertyName, localisationHelper.localise(configPropertyName));
+        for (var validationType: config.getDeclaredType()) {
+            addTranslation(translations, localisationHelper, configPropertyName, jsonPropertyName, validationType);
+        }
+    }
+
+    /**
+     * Add translations for type/option-sensitive labels.
+     *
+     * @param translations The current translations.
+     * @param localisationHelper The localisation helper.
+     * @param config The domain configuration.
+     * @param configPropertyName The configuration property name.
+     * @param jsonPropertyName The JSON property name.
+     */
+    private void addTypeAndOptionTranslations(Map<String, String> translations, LocalisationHelper localisationHelper, X config, String configPropertyName, String jsonPropertyName) {
+        addTypeTranslations(translations, localisationHelper, config, configPropertyName, jsonPropertyName);
+        for (var validationType: config.getValidationTypeOptions().entrySet()) {
+            for (var option: validationType.getValue()) {
+                addTranslation(translations, localisationHelper, configPropertyName, jsonPropertyName, validationType.getKey() + "." + option);
+            }
+        }
+    }
+
+    /**
+     * Add a translation for a type or type/option sensitive label.
+     *
+     * @param translations The current translations.
+     * @param localisationHelper The localisation helper.
+     * @param propertyPrefix The prefix of the configuration property.
+     * @param jsonPrefix The prefix of the resulting JSON property.
+     * @param propertyPostfix The prefix of the configuration and JSON property.
+     */
+    private void addTranslation(Map<String, String> translations, LocalisationHelper localisationHelper, String propertyPrefix, String jsonPrefix, String propertyPostfix) {
+        var messageKey = propertyPrefix+"."+propertyPostfix;
+        if (localisationHelper.propertyExists(messageKey)) {
+            translations.put(jsonPrefix+"."+propertyPostfix, localisationHelper.localise(messageKey));
+        }
+    }
+
 }

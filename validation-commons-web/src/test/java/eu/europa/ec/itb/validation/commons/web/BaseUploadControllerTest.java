@@ -2,9 +2,12 @@ package eu.europa.ec.itb.validation.commons.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
+import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
 import eu.europa.ec.itb.validation.commons.web.dto.UploadResult;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
+import java.util.Map;
 
 import static eu.europa.ec.itb.validation.commons.web.Constants.IS_MINIMAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 class BaseUploadControllerTest {
 
-    BaseUploadController<?, ?> controller;
+    BaseUploadController<WebDomainConfig, WebDomainConfigCache<WebDomainConfig>> controller;
 
     @BeforeEach
     void setup() {
@@ -108,4 +113,35 @@ class BaseUploadControllerTest {
         assertFalse(controller.isMinimalUI(request));
     }
 
+    @Test
+    void testGetDynamicLabelConfiguration() throws JsonProcessingException {
+        var helper = mock(LocalisationHelper.class);
+        var config = mock(WebDomainConfig.class);
+        when(config.hasValidationTypeOptions()).thenReturn(true);
+        when(config.getDeclaredType()).thenReturn(List.of("type1", "type2"));
+        when(config.getDeclaredType()).thenReturn(List.of("type1", "type2"));
+        when(config.getValidationTypeOptions()).thenReturn(Map.of("type1", List.of("option1", "option2")));
+        when(helper.localise(anyString())).then((args) -> args.getArguments()[0] + " [TRANSLATED]");
+        when(helper.propertyExists(anyString())).thenReturn(true);
+        var typeRelated = List.of(Pair.of("configA", "jsonA"));
+        var typeAndOptionRelated = List.of(Pair.of("otherConfigA", "otherJsonA"));
+        var jsonContent = controller.getDynamicLabelConfiguration(helper, config, typeRelated, typeAndOptionRelated);
+        var objectMapper = new ObjectMapper();
+        var json = objectMapper.readTree(jsonContent);
+        assertNotNull(json.get("option"));
+        assertNotNull(json.get("jsonA"));
+        assertNotNull(json.get("jsonA.type1"));
+        assertNotNull(json.get("jsonA.type2"));
+        assertNotNull(json.get("otherJsonA"));
+        assertNotNull(json.get("otherJsonA.type1"));
+        assertNotNull(json.get("otherJsonA.type1.option1"));
+        assertNotNull(json.get("otherJsonA.type1.option2"));
+        assertNotNull(json.get("otherJsonA.type2"));
+        assertEquals("configA [TRANSLATED]", json.get("jsonA").asText());
+        assertEquals("configA.type1 [TRANSLATED]", json.get("jsonA.type1").asText());
+        assertEquals("configA.type2 [TRANSLATED]", json.get("jsonA.type2").asText());
+        assertEquals("otherConfigA [TRANSLATED]", json.get("otherJsonA").asText());
+        assertEquals("otherConfigA.type1 [TRANSLATED]", json.get("otherJsonA.type1").asText());
+        assertEquals("otherConfigA.type2 [TRANSLATED]", json.get("otherJsonA.type2").asText());
+    }
 }
