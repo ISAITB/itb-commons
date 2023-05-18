@@ -4,6 +4,7 @@ import com.gitb.core.Metadata;
 import com.gitb.core.ValidationModule;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -213,15 +214,27 @@ public class WebDomainConfig extends DomainConfig {
      * @return a boolean value that is only true if the type is included in the hiddenType list
      */
     public boolean isHiddenType(String type) {
-        return this.hiddenType.contains(type);
+        return this.hiddenType.contains(type) ||
+                (super.getValidationTypeOptions().get(type) != null &&
+                        this.getVisibleValidationTypeOptions(type).size() < 1);
     }
 
     /**
-     * @return a boolean value that is only true if at least one validation type is visible
+     * @return a boolean value that is only true if more than one validation type is visible
      */
     public boolean hasMultipleNonHiddenValidationTypes() {
         return super.getType().stream()
                 .filter(type -> !this.isHiddenType(type))
                 .count() > 1;
+    }
+
+    public List<String> getVisibleValidationTypeOptions(String type) {
+        List<String> typeOptions = new ArrayList<>();
+
+        if (super.getValidationTypeOptions().get(type) != null) {
+            typeOptions = super.getValidationTypeOptions().get(type);
+        }
+
+        return typeOptions.stream().filter(option -> !isHiddenType(type + '.' + option)).collect(Collectors.toList());
     }
 }
