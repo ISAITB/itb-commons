@@ -5,9 +5,7 @@ import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import org.apache.commons.configuration2.MapConfiguration;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,6 +72,46 @@ class WebDomainConfigCacheTest {
         assertEquals("banner", localisationHelper.localise("validator.bannerHtml"));
         assertEquals("footer", localisationHelper.localise("validator.footerHtml"));
         assertFalse(config.isSupportUserInterfaceEmbedding());
+    }
+
+    @Test
+    void testHiddenValidationTypes() {
+        // Define configuration
+        // Two types, type1 has 2 options, type1, has no options
+        var config = createWebDomainConfig();
+        var configCache = createWebDomainConfigCache();
+        configCache.addDomainConfiguration(config, new MapConfiguration(new HashMap<>()));
+        config.setType(List.of("type1", "type2"));
+        config.setValidationTypeOptions(Map.of("type1", List.of("option1", "option2")));
+
+        // Check the options have been added correctly and are not hidden
+        assertEquals(config.getType().size(), 2);
+        assertTrue(config.hasMultipleNonHiddenValidationTypes());
+        assertEquals(config.getVisibleValidationTypeOptions("type1").size(), 2);
+        assertEquals(config.getVisibleValidationTypeOptions("type2").size(), 0);
+        assertFalse(config.isHiddenType("type2"));
+
+        //Hide option1 in type1 and check it hides correctly and the types are still both visible
+        config.setHiddenTypes(List.of("type1.option1"));
+        assertEquals(config.getHiddenTypes().size(), 1);
+        assertTrue(config.hasMultipleNonHiddenValidationTypes());
+        assertFalse(config.isHiddenType("type1.option2"));
+        assertTrue(config.isHiddenType("type1.option1"));
+        assertEquals(config.getVisibleValidationTypeOptions("type1").size(), 1);
+
+        //Remove hidden types and check they get removed and both types are visible
+        config.setHiddenTypes(new ArrayList<>());
+        assertTrue(config.hasMultipleNonHiddenValidationTypes());
+        assertFalse(config.isHiddenType("type1.option1"));
+        assertFalse(config.isHiddenType("type1.option2"));
+        assertFalse(config.isHiddenType("type1"));
+        assertEquals(config.getVisibleValidationTypeOptions("type1").size(), 2);
+
+        //Add both options of type1 and check the entire type hides
+        config.setHiddenTypes(List.of("type1.option1", "type1.option2"));
+        assertFalse(config.hasMultipleNonHiddenValidationTypes());
+        assertTrue(config.isHiddenType("type1"));
+        assertEquals(config.getVisibleValidationTypeOptions("type1").size(), 0);
     }
 
     @Test
