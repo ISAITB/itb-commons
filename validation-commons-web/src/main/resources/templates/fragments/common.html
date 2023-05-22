@@ -19,7 +19,7 @@
                 var validationTypeOptions = {};
                 [# th:each="type : ${config.getDeclaredType()}"]
                     validationTypeOptions[[# th:text="${type}" /]] = [];
-                    [# th:each="option : ${config.getValidationTypeOptions().get(type)}"]
+                    [# th:each="option : ${config.getVisibleValidationTypeOptions(type)}"]
                         validationTypeOptions[[# th:text="${type}" /]].push({
                             option: [# th:text="${option}" /],
                             label: [# th:text="${config.getValidationTypeOptionLabel(type, option, localiser)}" /]
