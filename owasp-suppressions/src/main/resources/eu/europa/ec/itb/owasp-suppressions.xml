@@ -42,4 +42,11 @@
         <packageUrl regex="true">^pkg:maven/org\.apache\.cxf/cxf\-rt\-bindings\-soap@.*$</packageUrl>
         <cve>CVE-2022-40705</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: guava-29.0-jre.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
+        <cpe>cpe:/a:google:guava</cpe>
+    </suppress>
 </suppressions>
