@@ -47,6 +47,13 @@
    file name: guava-29.0-jre.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
+        <vulnerabilityName>CVE-2023-2976</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: guava-29.0-jre.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
         <cpe>cpe:/a:google:guava</cpe>
     </suppress>
 </suppressions>
