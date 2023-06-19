@@ -46,17 +46,17 @@ function registerEventListeners() {
 }
 
 function registerReportEventListeners() {
-    $(".severityFilterChange").off().on("click", severityFilterChange);
-    $(".severityFilterChangeWithType").off().on("click", function() { severityFilterChange($(this).attr("data-severity")); });
-    $(".reportTypeChange").off().on("click", function() { reportTypeChange($(this).attr("data-detailed")); });
+    $(".severityFilterChange").off().on("click", function(event) { severityFilterChange(); event.preventDefault(); });
+    $(".severityFilterChangeWithType").off().on("click", function(event) { severityFilterChange($(this).attr("data-severity")); event.preventDefault(); });
+    $(".reportTypeChange").off().on("click", function(event) { reportTypeChange($(this).attr("data-detailed")); event.preventDefault(); });
     $(".setCode").off().on("click", function() { setCode(this); });
     $(".setCodeAll").off().on("click", setCode);
-    $(".downloadReportXML").off().on("click", downloadReportXML);
-    $(".downloadReportXMLAggregate").off().on("click", downloadReportXMLAggregate);
-    $(".downloadReportPDF").off().on("click", downloadReportPDF);
-    $(".downloadReportPDFAggregate").off().on("click", downloadReportPDFAggregate);
-    $(".downloadReportCSV").off().on("click", downloadReportCSV);
-    $(".downloadReportCSVAggregate").off().on("click", downloadReportCSVAggregate);
+    $(".downloadReportXML").off().on("click", function(event) { downloadReportXML(); event.preventDefault(); });
+    $(".downloadReportXMLAggregate").off().on("click", function(event) { downloadReportXMLAggregate(); event.preventDefault(); });
+    $(".downloadReportPDF").off().on("click", function(event) { downloadReportPDF(); event.preventDefault(); });
+    $(".downloadReportPDFAggregate").off().on("click", function(event) { downloadReportPDFAggregate(); event.preventDefault(); });
+    $(".downloadReportCSV").off().on("click", function(event) { downloadReportCSV(); event.preventDefault(); });
+    $(".downloadReportCSVAggregate").off().on("click", function(event) { downloadReportCSVAggregate(); event.preventDefault(); });
     $(".toggleReportDisplay").off().on("click", toggleReportDisplay);
 }
 
