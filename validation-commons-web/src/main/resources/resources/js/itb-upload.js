@@ -45,6 +45,21 @@ function registerEventListeners() {
     $(".addExternalArtifact").on("click", function() { addExternal($(this).attr("data-artifact-type")); });
 }
 
+function registerReportEventListeners() {
+    $(".severityFilterChange").off().on("click", severityFilterChange);
+    $(".severityFilterChangeWithType").off().on("click", function() { severityFilterChange($(this).attr("data-severity")); });
+    $(".reportTypeChange").off().on("click", function() { reportTypeChange($(this).attr("data-detailed")); });
+    $(".setCode").off().on("click", function() { setCode(this); });
+    $(".setCodeAll").off().on("click", setCode);
+    $(".downloadReportXML").off().on("click", downloadReportXML);
+    $(".downloadReportXMLAggregate").off().on("click", downloadReportXMLAggregate);
+    $(".downloadReportPDF").off().on("click", downloadReportPDF);
+    $(".downloadReportPDFAggregate").off().on("click", downloadReportPDFAggregate);
+    $(".downloadReportCSV").off().on("click", downloadReportCSV);
+    $(".downloadReportCSVAggregate").off().on("click", downloadReportCSVAggregate);
+    $(".toggleReportDisplay").off().on("click", toggleReportDisplay);
+}
+
 function doReload() {
     window.location.href='upload';
 }
@@ -1215,6 +1230,7 @@ function displayReport(data) {
             $('#reportPlaceholder').append($(App.Templates[_config.reportTemplate](params)));
         }
         getReportData(data.reportId);
+        registerReportEventListeners();
         notifyListeners('RESULTS_LOADED', {data: data});
     }
     // Report any additional error messages if present.
