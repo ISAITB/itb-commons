@@ -57,7 +57,7 @@
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.bouncycastle>1.69</version.bouncycastle>
-        <version.cxf>4.0.1</version.cxf>
+        <version.cxf>4.0.2</version.cxf>
         <version.xerces>2.12.2</version.xerces>
         <version.saxon>12.2</version.saxon>
         <version.tika>2.8.0</version.tika>
@@ -96,7 +96,7 @@
         <!-- Version overrides in Spring Boot - START -->
         <version.snakeyaml>1.33</version.snakeyaml> <!-- Spring Boot override to resolve CVE-2022-25857 -->
         <version.protobuf>3.21.9</version.protobuf> <!-- Protobuf override for the Jena transitive dependency to resolve CVE-2022-3509 -->
-        <version.woodstox>6.4.0</version.woodstox> <!-- Woodstox version to resolve CVE-2022-40152. This needs to match the version included in CXF core (currently at 3.5.5). -->
+        <version.woodstox>6.5.1</version.woodstox> <!-- Woodstox version to resolve CVE-2022-40152. This needs to match the version included in CXF core (currently at 4.0.2). -->
         <!-- Version overrides in Spring Boot - END -->
     </properties>
 
