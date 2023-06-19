@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,10 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static eu.europa.ec.itb.validation.commons.Utils.limitReportItemsIfNeeded;
 import static eu.europa.ec.itb.validation.commons.web.Constants.MDC_DOMAIN;
@@ -65,7 +64,7 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
     @ApiResponse(responseCode = "500", description = "Error (If a problem occurred with processing the request)", content = @Content)
     @GetMapping(value = "/api/info", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiInfo[] infoAll() {
-        var listDomainsConfig = domainConfigs.getAllDomainConfigurations().stream().filter(d -> d.isDefined() && d.getChannels().contains(ValidatorChannel.REST_API)).collect(Collectors.toList());
+        var listDomainsConfig = domainConfigs.getAllDomainConfigurations().stream().filter(d -> d.isDefined() && d.getChannels().contains(ValidatorChannel.REST_API)).toList();
         ApiInfo[] listApiInfo = new ApiInfo[listDomainsConfig.size()];
         int i=0;
         for (var domainConfig : listDomainsConfig) {
@@ -125,7 +124,7 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
         List<SchemaInfo> schemaInfo = Objects.requireNonNullElse(providedSchemas, Collections.emptyList());
         return inputHelper.validateExternalArtifacts(
                 domainConfig,
-                schemaInfo.stream().map(SchemaInfo::toFileContent).collect(Collectors.toList()),
+                schemaInfo.stream().map(SchemaInfo::toFileContent).toList(),
                 validationType, artifactType, parentFolder);
     }
 

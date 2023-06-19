@@ -7,8 +7,6 @@ import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Base domain configuration class for validators that are web applications.
@@ -215,8 +213,8 @@ public class WebDomainConfig extends DomainConfig {
      */
     public boolean isHiddenType(String type) {
         return this.hiddenType.contains(type) ||
-                (super.getValidationTypeOptions().get(type) != null &&
-                        this.getVisibleValidationTypeOptions(type).size() < 1);
+                super.getValidationTypeOptions().get(type) != null &&
+                        this.getVisibleValidationTypeOptions(type).isEmpty();
     }
 
     /**
@@ -235,6 +233,6 @@ public class WebDomainConfig extends DomainConfig {
             typeOptions = super.getValidationTypeOptions().get(type);
         }
 
-        return typeOptions.stream().filter(option -> !isHiddenType(type + '.' + option)).collect(Collectors.toList());
+        return typeOptions.stream().filter(option -> !isHiddenType(type + '.' + option)).toList();
     }
 }

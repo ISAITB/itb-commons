@@ -53,7 +53,7 @@ public class SecurityConfig <Y extends WebDomainConfig, X extends WebDomainConfi
                         .policyDirectives("script-src 'self' 'nonce-"+CSP_NONCE_HEADER_PLACEHOLDER+"'")))
                 .addFilterBefore(new CSPNonceFilter(), HeaderWriterFilter.class)
                 // Disable authentication.
-                .authorizeHttpRequests((auth) -> auth.anyRequest().permitAll());
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         if (hasEmbeddableValidator()) {
             // Disabling X-Frame-Options by default to set it by domain (see HeaderFilter).
             http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));

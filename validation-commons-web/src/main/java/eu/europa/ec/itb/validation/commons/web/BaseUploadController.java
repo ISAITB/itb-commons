@@ -137,12 +137,8 @@ public abstract class BaseUploadController <X extends WebDomainConfig, Y extends
             addTypeTranslations(translations, localisationHelper, config, "validator.label.optionLabel", "option");
         }
         // Process label translations.
-        typeRelated.forEach((entry) -> {
-            addTypeTranslations(translations, localisationHelper, config, entry.getLeft(), entry.getRight());
-        });
-        typeAndOptionRelated.forEach((entry) -> {
-            addTypeAndOptionTranslations(translations, localisationHelper, config, entry.getLeft(), entry.getRight());
-        });
+        typeRelated.forEach(entry -> addTypeTranslations(translations, localisationHelper, config, entry.getLeft(), entry.getRight()));
+        typeAndOptionRelated.forEach(entry -> addTypeAndOptionTranslations(translations, localisationHelper, config, entry.getLeft(), entry.getRight()));
         try {
             return objectMapper.writeValueAsString(translations);
         } catch (JsonProcessingException e) {

@@ -2,16 +2,15 @@ package eu.europa.ec.itb.validation.commons.web.locale;
 
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
-import org.apache.commons.lang3.LocaleUtils;
-import org.springframework.stereotype.Component;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.LocaleUtils;
+import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 /**
  * Class that controls the locale resolution from a given HTTP request.
@@ -55,8 +54,7 @@ public class CustomLocaleResolver {
                     }
                 } else {
                     Cookie[] cookies = (request.getCookies() == null) ? new Cookie[] {} : request.getCookies();
-                    List<Cookie> localeCookies = Arrays.stream(cookies).filter(c -> c.getName().contentEquals(cookieName))
-                            .collect(Collectors.toList());
+                    List<Cookie> localeCookies = Arrays.stream(cookies).filter(c -> c.getName().contentEquals(cookieName)).toList();
                     if (!localeCookies.isEmpty()) { // case where the locale has been inserted in the cookie previously.
                         return LocaleUtils.toLocale(localeCookies.get(0).getValue());
                     }

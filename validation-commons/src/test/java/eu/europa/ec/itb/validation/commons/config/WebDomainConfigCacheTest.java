@@ -85,10 +85,10 @@ class WebDomainConfigCacheTest {
         config.setValidationTypeOptions(Map.of("type1", List.of("option1", "option2")));
 
         // Check the options have been added correctly and are not hidden
-        assertEquals(config.getType().size(), 2);
+        assertEquals(2, config.getType().size());
         assertTrue(config.hasMultipleNonHiddenValidationTypes());
-        assertEquals(config.getVisibleValidationTypeOptions("type1").size(), 2);
-        assertEquals(config.getVisibleValidationTypeOptions("type2").size(), 0);
+        assertEquals(2, config.getVisibleValidationTypeOptions("type1").size());
+        assertEquals(0, config.getVisibleValidationTypeOptions("type2").size());
         assertFalse(config.isHiddenType("type2"));
 
         //Hide option1 in type1 and check it hides correctly and the types are still both visible
@@ -97,7 +97,7 @@ class WebDomainConfigCacheTest {
         assertTrue(config.hasMultipleNonHiddenValidationTypes());
         assertFalse(config.isHiddenType("type1.option2"));
         assertTrue(config.isHiddenType("type1.option1"));
-        assertEquals(config.getVisibleValidationTypeOptions("type1").size(), 1);
+        assertEquals(1, config.getVisibleValidationTypeOptions("type1").size());
 
         //Remove hidden types and check they get removed and both types are visible
         config.setHiddenTypes(new ArrayList<>());
@@ -105,13 +105,13 @@ class WebDomainConfigCacheTest {
         assertFalse(config.isHiddenType("type1.option1"));
         assertFalse(config.isHiddenType("type1.option2"));
         assertFalse(config.isHiddenType("type1"));
-        assertEquals(config.getVisibleValidationTypeOptions("type1").size(), 2);
+        assertEquals(2, config.getVisibleValidationTypeOptions("type1").size());
 
         //Add both options of type1 and check the entire type hides
         config.setHiddenTypes(List.of("type1.option1", "type1.option2"));
         assertFalse(config.hasMultipleNonHiddenValidationTypes());
         assertTrue(config.isHiddenType("type1"));
-        assertEquals(config.getVisibleValidationTypeOptions("type1").size(), 0);
+        assertEquals(0, config.getVisibleValidationTypeOptions("type1").size());
     }
 
     @Test

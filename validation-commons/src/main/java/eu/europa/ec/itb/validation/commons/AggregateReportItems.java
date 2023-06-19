@@ -9,7 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Utility class to aggregate validation report items in order to produce an aggregate report.
@@ -50,8 +49,8 @@ public class AggregateReportItems {
      * @param classifierFn The classification function to use.
      */
     public void updateForReportItem(JAXBElement<TestAssertionReportType> element, Function<JAXBElement<TestAssertionReportType>, String> classifierFn) {
-        if (element.getValue() instanceof BAR) {
-            itemMap.computeIfAbsent(classifierFn.apply(element), k -> new AggregateReportItem(cloneElement(element.getName().getLocalPart(), (BAR)element.getValue()))).addOne();
+        if (element.getValue() instanceof BAR elementValue) {
+            itemMap.computeIfAbsent(classifierFn.apply(element), k -> new AggregateReportItem(cloneElement(element.getName().getLocalPart(), elementValue))).addOne();
         } else {
             throw new IllegalStateException("Report items encountered having an unexpected class type ["+element.getValue().getClass()+"]");
         }
@@ -69,7 +68,7 @@ public class AggregateReportItems {
                 bar.setDescription(String.format("[%s] %s", localiser.localise("validator.label.reportItemTotalOccurrences", aggregateItem.counter), bar.getDescription()));
             }
             return aggregateItem.firstItem;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     /**
@@ -87,11 +86,11 @@ public class AggregateReportItems {
         target.setValue(source.getValue());
         target.setLocation(source.getLocation());
         target.setTest(source.getTest());
-        switch (wrapperName) {
-            case "error": return objectFactory.createTestAssertionGroupReportsTypeError(target);
-            case "warning": return objectFactory.createTestAssertionGroupReportsTypeWarning(target);
-            default: return objectFactory.createTestAssertionGroupReportsTypeInfo(target);
-        }
+        return switch (wrapperName) {
+            case "error" -> objectFactory.createTestAssertionGroupReportsTypeError(target);
+            case "warning" -> objectFactory.createTestAssertionGroupReportsTypeWarning(target);
+            default -> objectFactory.createTestAssertionGroupReportsTypeInfo(target);
+        };
     }
 
     /**

@@ -211,8 +211,7 @@ public class ReportGenerator {
         }
         report.setReportResult(reportType.getResult().value());
         report.setTitle(Objects.requireNonNullElse(title, "Report"));
-        if (reportType instanceof TAR) {
-            TAR tarReport = (TAR)reportType;
+        if (reportType instanceof TAR tarReport) {
             if (addContext && tarReport.getContext() != null) {
                 for (AnyContent context : tarReport.getContext().getItem()) {
                     addContextItem(context, report.getContextItems(), "");
@@ -223,8 +222,7 @@ public class ReportGenerator {
             long messages = 0;
             if (tarReport.getReports() != null && tarReport.getReports().getInfoOrWarningOrError() != null) {
                 for (JAXBElement<TestAssertionReportType> element : tarReport.getReports().getInfoOrWarningOrError()) {
-                    if (element.getValue() instanceof BAR) {
-                        BAR tarItem = (BAR) element.getValue();
+                    if (element.getValue() instanceof BAR tarItem) {
                         ReportItem reportItem = new ReportItem();
                         reportItem.setLevel(element.getName().getLocalPart());
                         if ("error".equalsIgnoreCase(reportItem.getLevel())) {
