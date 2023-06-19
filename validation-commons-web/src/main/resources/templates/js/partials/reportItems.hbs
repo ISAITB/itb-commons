@@ -1,7 +1,7 @@
 {{#if (or (not reportItems) (not reportItems.infoOrWarningOrError) (lte reportItems.infoOrWarningOrError.length data.maximumReportsForDetailedOutput))}}
     <div class="report-item-container">
         {{#each reportItems.infoOrWarningOrError}}
-            <div class="row report-item {{#if ../clickableItems}}clickable report-item-{{stripNS name}}{{else}}report-item-{{stripNS name}}{{/if}}" {{#if ../clickableItems}}onclick="setCode(this)"{{/if}}>
+            <div class="row report-item {{#if ../clickableItems}}clickable setCode report-item-{{stripNS name}}{{else}}report-item-{{stripNS name}}{{/if}}">
                 <div class="report-item-div container-fluid">
                     <div class="col-xs-12 item-info">
                         <div>

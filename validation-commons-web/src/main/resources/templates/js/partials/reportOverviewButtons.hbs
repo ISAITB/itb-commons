@@ -1,28 +1,28 @@
 <div id="reportOverviewButtons" class="btn-toolbar{{#if hidden}} hidden{{/if}}">
     {{#if (or (not data.report.reports) (not data.report.reports.infoOrWarningOrError) (lte data.report.reports.infoOrWarningOrError.length data.maximumReportsForDetailedOutput))}}
-        <button type="button" class="btn btn-default" id="viewInputButton" onclick="setCode()" disabled="disabled"><span>{{data.translations.viewAnnotatedInputButton}}</span><span id="viewInputButtonSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
+        <button type="button" class="btn btn-default setCodeAll" id="viewInputButton" disabled="disabled"><span>{{data.translations.viewAnnotatedInputButton}}</span><span id="viewInputButtonSpinner"> <i class="fa fa-spinner fa-spin fa-lg fa-fw"></i></span></button>
     {{/if}}
     <div class="btn-group{{#if config.isMinimalUI}} dropup{{/if}}">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span>{{data.translations.downloadReportButton}}</span> <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
-            <li id="downloadReportButtonXML" class="disabled"><a href="#" onclick="downloadReportXML();return false;"><span>{{#if data.showAggregateReport}}{{data.translations.reportDetailedXML}}{{else}}XML{{/if}}</span> <span id="downloadReportButtonXMLSpinner"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
+            <li id="downloadReportButtonXML" class="disabled"><a href="#" class="downloadReportXML"><span>{{#if data.showAggregateReport}}{{data.translations.reportDetailedXML}}{{else}}XML{{/if}}</span> <span id="downloadReportButtonXMLSpinner"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
             {{#if data.showAggregateReport}}
-                <li id="downloadReportButtonXMLAggregate" class="disabled"><a href="#" onclick="downloadReportXMLAggregate();return false;"><span>{{data.translations.reportAggregatedXML}}</span> <span id="downloadReportButtonXMLSpinnerAggregate"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
+                <li id="downloadReportButtonXMLAggregate" class="disabled"><a href="#" class="downloadReportXMLAggregate"><span>{{data.translations.reportAggregatedXML}}</span> <span id="downloadReportButtonXMLSpinnerAggregate"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
             {{/if}}
             {{#if (or (not data.report.reports) (not data.report.reports.infoOrWarningOrError) (lte data.report.reports.infoOrWarningOrError.length data.maximumReportsForDetailedOutput))}}
                 {{#if data.showAggregateReport}}
                     <li role="separator" class="divider"></li>
                 {{/if}}
-                <li id="downloadReportButtonPDF" class="disabled"><a href="#" onclick="downloadReportPDF();return false;"><span>{{#if data.showAggregateReport}}{{data.translations.reportDetailedPDF}}{{else}}PDF{{/if}}</span> <span id="downloadReportButtonPDFSpinner"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
+                <li id="downloadReportButtonPDF" class="disabled"><a href="#" class="downloadReportPDF"><span>{{#if data.showAggregateReport}}{{data.translations.reportDetailedPDF}}{{else}}PDF{{/if}}</span> <span id="downloadReportButtonPDFSpinner"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
                 {{#if data.showAggregateReport}}
-                    <li id="downloadReportButtonPDFAggregate" class="disabled"><a href="#" onclick="downloadReportPDFAggregate();return false;"><span>{{data.translations.reportAggregatedPDF}}</span> <span id="downloadReportButtonPDFSpinnerAggregate"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
+                    <li id="downloadReportButtonPDFAggregate" class="disabled"><a href="#" class="downloadReportPDFAggregate"><span>{{data.translations.reportAggregatedPDF}}</span> <span id="downloadReportButtonPDFSpinnerAggregate"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
                     <li role="separator" class="divider"></li>
                 {{/if}}
-                <li id="downloadReportButtonCSV" class="disabled"><a href="#" onclick="downloadReportCSV();return false;"><span>{{#if data.showAggregateReport}}{{data.translations.reportDetailedCSV}}{{else}}CSV{{/if}}</span> <span id="downloadReportButtonCSVSpinner"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
+                <li id="downloadReportButtonCSV" class="disabled"><a href="#" class="downloadReportCSV"><span>{{#if data.showAggregateReport}}{{data.translations.reportDetailedCSV}}{{else}}CSV{{/if}}</span> <span id="downloadReportButtonCSVSpinner"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
                 {{#if data.showAggregateReport}}
-                    <li id="downloadReportButtonCSVAggregate" class="disabled"><a href="#" onclick="downloadReportCSVAggregate();return false;"><span>{{data.translations.reportAggregatedCSV}}</span> <span id="downloadReportButtonCSVSpinnerAggregate"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
+                    <li id="downloadReportButtonCSVAggregate" class="disabled"><a href="#" class="downloadReportCSVAggregate"><span>{{data.translations.reportAggregatedCSV}}</span> <span id="downloadReportButtonCSVSpinnerAggregate"> <i class="fa fa-spinner fa-spin fa-fw"></i></span></a></li>
                 {{/if}}
             {{/if}}
         </ul>
