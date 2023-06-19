@@ -93,7 +93,7 @@ class WebDomainConfigCacheTest {
 
         //Hide option1 in type1 and check it hides correctly and the types are still both visible
         config.setHiddenTypes(List.of("type1.option1"));
-        assertEquals(config.getHiddenTypes().size(), 1);
+        assertEquals(1, config.getHiddenTypes().size());
         assertTrue(config.hasMultipleNonHiddenValidationTypes());
         assertFalse(config.isHiddenType("type1.option2"));
         assertTrue(config.isHiddenType("type1.option1"));
