@@ -3,8 +3,8 @@ package eu.europa.ec.itb.validation.commons;
 import com.gitb.tr.BAR;
 import com.gitb.tr.ObjectFactory;
 import com.gitb.tr.TestAssertionReportType;
+import jakarta.xml.bind.JAXBElement;
 
-import javax.xml.bind.JAXBElement;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;

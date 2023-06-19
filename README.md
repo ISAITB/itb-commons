@@ -129,7 +129,7 @@ installed the ITB commons dependencies. Currently, ITB commons libraries are not
 ## Prerequisites
 
 To build this project's libraries you require:
-* A JDK installation (11+).
+* A JDK installation (17+).
 * Maven (3+)
 
 ## Useful Maven commands

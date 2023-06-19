@@ -4,9 +4,9 @@ import com.gitb.tr.BAR;
 import com.gitb.tr.ObjectFactory;
 import com.gitb.tr.TestAssertionGroupReportsType;
 import com.gitb.tr.TestAssertionReportType;
+import jakarta.xml.bind.JAXBElement;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 

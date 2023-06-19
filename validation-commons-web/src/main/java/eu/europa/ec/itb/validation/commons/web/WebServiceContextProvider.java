@@ -1,6 +1,6 @@
 package eu.europa.ec.itb.validation.commons.web;
 
-import javax.xml.ws.WebServiceContext;
+import jakarta.xml.ws.WebServiceContext;
 
 /**
  * A component capable of returning a context for a SOAP web service call

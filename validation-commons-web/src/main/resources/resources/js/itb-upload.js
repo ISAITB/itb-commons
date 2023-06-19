@@ -14,6 +14,7 @@ _state.contentTypeValidators = {}
 
 $(document).ready(function() {
     registerTemplateHelpers();
+    registerEventListeners();
 	prepareControls();
 	if (document.getElementById('text-editor') !== null){
 		CodeMirror.fromTextArea(document.getElementById('text-editor'), {
@@ -29,6 +30,24 @@ $(document).ready(function() {
     }
     notifyListeners('FORM_READY', {});
 });
+
+function registerEventListeners() {
+    $(".triggerFileUpload").on("click", triggerFileUpload);
+    $(".fileInputChanged").on("change", fileInputChanged);
+    $(".contentTypeChanged").on("change", contentTypeChanged);
+    $(".validationTypeChanged").on("change", validationTypeChanged);
+    $(".validationTypeOptionChanged").on("change", validationTypeOptionChanged);
+    $(".toggleExternalArtefacts").on("click", toggleExternalArtefacts);
+    $(".doSubmit").on("click", doSubmit);
+    $(".doBack").on("click", doBack);
+    $(".doReload").on("click", doReload);
+    $(".localeChanged").on("change", localeChanged);
+    $(".addExternalArtifact").on("click", function() { addExternal($(this).attr("data-artifact-type")); });
+}
+
+function doReload() {
+    window.location.href='upload';
+}
 
 function registerTemplateHelpers() {
     const reduceOp = function(args, reducer){
@@ -511,7 +530,7 @@ function addElement(artifactType, placeholderText, focus) {
 	elementId = "external_"+artifactType+"-"+(indexLast+1);
     $("<div class='row externalDiv_"+artifactType+"' id='"+elementId+"'>" +
     	"<div class='col-sm-2'>"+
-			"<select class='form-control' id='contentType-"+elementId+"' name='contentType-external_"+artifactType+"' onchange='contentTypeChangedExternal(\""+elementId+"\")'>"+
+			"<select class='form-control contentTypeChangedExternal' id='contentType-"+elementId+"' data-element-id='"+elementId+"' name='contentType-external_"+artifactType+"'>"+
 				"<option value='fileType' selected='true'>"+_config.externalArtifactFileLabel+"</option>"+
 				"<option value='uriType'>"+_config.externalArtifactURILabel+"</option>"+
 		    "</select>"+
@@ -521,21 +540,26 @@ function addElement(artifactType, placeholderText, focus) {
                 "<div id='fileToValidate-class-"+elementId+"' class='col-sm-11'>" +
                     "<div class='input-group' id='fileToValidate-"+elementId+"'>" +
                         "<div class='input-group-btn'>" +
-                            "<button class='btn btn-default' type='button' onclick='triggerFileUploadExternal(\"inputFile-"+elementId+"\")'><i class='far fa-folder-open'></i></button>" +
+                            "<button class='btn btn-default triggerFileUploadExternal' type='button' data-file-type='inputFile-"+elementId+"'><i class='far fa-folder-open'></i></button>" +
                         "</div>" +
-                        "<input type='text' id='inputFileName-"+elementId+"' placeholder='"+placeholderText+"' class='form-control clickable inputFileName_"+artifactType+"' onclick='triggerFileUploadExternal(\"inputFile-"+elementId+"\")' readonly='readonly'/>" +
+                        "<input type='text' id='inputFileName-"+elementId+"' placeholder='"+placeholderText+"' data-file-type='inputFile-"+elementId+"' class='form-control clickable inputFileName_"+artifactType+" triggerFileUploadExternal' readonly='readonly'/>" +
                     "</div>" +
                 "</div>" +
                 "<div class='col-sm-11 hidden' id='uriToValidate-"+elementId+"'>"+
-                    "<input type='url' class='form-control' id='uri-"+elementId+"' name='uri-external_"+artifactType+"' onchange='fileInputChangedExternal(\""+elementId+"\")'>"+
+                    "<input type='url' class='form-control fileInputChangedExternal' id='uri-"+elementId+"' name='uri-external_"+artifactType+"' data-element-id='"+elementId+"'>"+
                 "</div>"+
-                "<input type='file' class='inputFile' id='inputFile-"+elementId+"' name='inputFile-external_"+artifactType+"' onchange='fileInputChangedExternal(\""+elementId+"\")'/>" +
+                "<input type='file' class='inputFile fileInputChangedExternal' id='inputFile-"+elementId+"' name='inputFile-external_"+artifactType+"' data-element-id='"+elementId+"'/>" +
                 "<div class='col-sm-1'>" +
-                    "<button class='btn btn-default' id='rmvButton-"+elementId+"' type='button' onclick='removeElement(\""+artifactType+"\",\""+elementId+"\")'><i class='far fa-trash-alt'></i></button>" +
+                    "<button class='btn btn-default removeElement' id='rmvButton-"+elementId+"' type='button' data-element-id='"+elementId+"' data-artifact-type='"+artifactType+"'><i class='far fa-trash-alt'></i></button>" +
                 "</div>" +
     		"</div>"+
 		"</div>"+
     "</div>").insertBefore("#externalAddButton_"+artifactType);
+    // Add event listeners.
+    $(".contentTypeChangedExternal").off().on("change", function() { contentTypeChangedExternal($(this).attr("data-element-id")); });
+    $(".triggerFileUploadExternal").off().on("click", function() { triggerFileUploadExternal($(this).attr("data-file-type")); });
+    $(".fileInputChangedExternal").off().on("change", function() { fileInputChangedExternal($(this).attr("data-element-id")); });
+    $(".removeElement").off().on("click", function() { removeElement($(this).attr("data-artifact-type"), $(this).attr("data-element-id")); });
     if (focus) {
         $("#"+elementId+" input").focus();
     }

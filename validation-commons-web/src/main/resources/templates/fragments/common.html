@@ -14,7 +14,7 @@
             <script th:src="@{/webjars/codemirror/5.62.2/lib/codemirror.js}"></script>
             <script th:src="@{/js/lib/handlebars.runtime.min.js}"></script>
             <script th:src="@{/js/itb-upload-min.js}"></script>
-            <script th:inline="javascript">
+            <script th:attr="nonce=${nonce}" th:inline="javascript">
                 var validatingInputMessage = [[${localiser.localise('validator.label.validatingInputMessage')}]];
                 var validationTypeOptions = {};
                 [# th:each="type : ${config.getDeclaredType()}"]
@@ -26,6 +26,8 @@
                         });
                     [/]
                 [/]
+            </script>
+            <script th:attr="nonce=${nonce}" th:inline="javascript" th:if="${!minimalUI && javascriptExtensionExists}" th:utext="${localiser.localise('validator.javascriptExtension')}">
             </script>
         </th:block>
 
@@ -55,7 +57,7 @@
             <div class="locale-div">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-globe" aria-hidden="true"></i></span>
-                    <select class="form-control" th:classappend="${minimalUI?'':'input-sm'}" id="availableLocales" name="availableLocales" onchange="localeChanged()">
+                    <select class="form-control localeChanged" th:classappend="${minimalUI?'':'input-sm'}" id="availableLocales" name="availableLocales">
                         <th:block th:each="locale : ${config.availableLocales}">
                             <th:block th:switch="${locale.getDisplayCountry(locale).isBlank()}">
                                 <option th:case="true" th:value="${locale.toString()}" th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(locale.getDisplayLanguage(locale))}" th:selected="${locale == currentLocale}">Locale</option>
