@@ -55,13 +55,13 @@ public class JsonConfig {
             List<BAR> warnings = new ArrayList<>();
             List<BAR> messages = new ArrayList<>();
             for (var item: type.getInfoOrWarningOrError()) {
-                if (item.getValue() instanceof BAR) {
+                if (item.getValue() instanceof BAR itemValue) {
                     if ("error".equals(item.getName().getLocalPart())) {
-                        errors.add((BAR) item.getValue());
+                        errors.add(itemValue);
                     } else if ("warning".equals(item.getName().getLocalPart())) {
-                        warnings.add((BAR) item.getValue());
+                        warnings.add(itemValue);
                     } else {
-                        messages.add((BAR) item.getValue());
+                        messages.add(itemValue);
                     }
                 }
             }

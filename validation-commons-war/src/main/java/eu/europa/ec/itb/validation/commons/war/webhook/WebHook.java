@@ -17,7 +17,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -96,8 +96,8 @@ public class WebHook {
             headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
             HttpEntity<String> entity = new HttpEntity<>(jsonData, headers);
             ResponseEntity<String> response = restTemplate.postForEntity(this.url, entity, String.class, urlParams);
-            if (response.getStatusCodeValue() >= 300) { // Unexpected response codes
-                logger.warn("Statistics reporting received response {} and message {}", response.getStatusCodeValue(), response.getBody());
+            if (response.getStatusCode().value() >= 300) { // Unexpected response codes
+                logger.warn("Statistics reporting received response {} and message {}", response.getStatusCode().value() , response.getBody());
             }
         } catch (JsonProcessingException ex) {
             logger.warn("Error serializing UsageData object to JSON format.", ex);

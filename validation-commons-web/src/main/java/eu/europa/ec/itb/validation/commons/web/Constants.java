@@ -26,6 +26,8 @@ public class Constants {
     public static final String PARAM_LOCALISER = "localiser";
     /** Constant for the name of the HTML banner exists Thymeleaf template parameter. */
     public static final String PARAM_HTML_BANNER_EXISTS = "htmlBannerExists";
+    /** Constant for the name of the JavaScript extension exists Thymeleaf template parameter. */
+    public static final String PARAM_JAVASCRIPT_EXTENSION_EXISTS = "javascriptExtensionExists";
     /** Constant for the name of the validation type label Thymeleaf template parameter. */
     public static final String PARAM_VALIDATION_TYPE_LABEL = "validationTypeLabel";
     /** Constant for the name of the message Thymeleaf template parameter. */
@@ -46,6 +48,8 @@ public class Constants {
     public static final String PARAM_REPORT_DATA = "reportData";
     /** Constant for the name of the label configuration Thymeleaf template parameter. */
     public static final String PARAM_LABEL_CONFIG = "labelConfig";
+    /** Constant for the name of the CSP nonce Thymeleaf template parameter. */
+    public static final String PARAM_NONCE = "nonce";
     /** Constant for the name of the Thymeleaf view for the upload form. */
     public static final String VIEW_UPLOAD_FORM = "uploadForm";
     /** Constant for the name of the MDC logging parameter for the domain name. */

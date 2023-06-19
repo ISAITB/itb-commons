@@ -11,12 +11,12 @@ import eu.europa.ec.itb.validation.commons.report.dto.ContextItem;
 import eu.europa.ec.itb.validation.commons.report.dto.Report;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportItem;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
+import jakarta.xml.bind.JAXBElement;
 import net.sf.jasperreports.engine.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBElement;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -211,8 +211,7 @@ public class ReportGenerator {
         }
         report.setReportResult(reportType.getResult().value());
         report.setTitle(Objects.requireNonNullElse(title, "Report"));
-        if (reportType instanceof TAR) {
-            TAR tarReport = (TAR)reportType;
+        if (reportType instanceof TAR tarReport) {
             if (addContext && tarReport.getContext() != null) {
                 for (AnyContent context : tarReport.getContext().getItem()) {
                     addContextItem(context, report.getContextItems(), "");
@@ -223,8 +222,7 @@ public class ReportGenerator {
             long messages = 0;
             if (tarReport.getReports() != null && tarReport.getReports().getInfoOrWarningOrError() != null) {
                 for (JAXBElement<TestAssertionReportType> element : tarReport.getReports().getInfoOrWarningOrError()) {
-                    if (element.getValue() instanceof BAR) {
-                        BAR tarItem = (BAR) element.getValue();
+                    if (element.getValue() instanceof BAR tarItem) {
                         ReportItem reportItem = new ReportItem();
                         reportItem.setLevel(element.getName().getLocalPart());
                         if ("error".equalsIgnoreCase(reportItem.getLevel())) {

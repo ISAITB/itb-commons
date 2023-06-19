@@ -3,9 +3,9 @@ package eu.europa.ec.itb.validation.commons;
 import com.gitb.tr.BAR;
 import com.gitb.tr.ObjectFactory;
 import com.gitb.tr.TestAssertionReportType;
+import jakarta.xml.bind.JAXBElement;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.bind.JAXBElement;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

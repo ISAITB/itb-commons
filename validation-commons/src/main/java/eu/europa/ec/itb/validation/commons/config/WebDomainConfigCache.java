@@ -6,8 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 /**
  * Base class for the loading and storing of domain configuration for validators that are web applications.
@@ -58,7 +56,7 @@ public abstract class WebDomainConfigCache <T extends WebDomainConfig> extends D
         domainConfig.setShowAbout(config.getBoolean("validator.showAbout", true));
         domainConfig.setSupportMinimalUserInterface(config.getBoolean("validator.supportMinimalUserInterface", false));
         domainConfig.setSupportUserInterfaceEmbedding(domainConfig.getChannels().contains(ValidatorChannel.FORM) && config.getBoolean("validator.supportUserInterfaceEmbedding", true));
-        domainConfig.setHiddenTypes(Arrays.stream(StringUtils.split(config.getString("validator.hiddenType", ""), ',')).map(String::trim).collect(Collectors.toList()));
+        domainConfig.setHiddenTypes(Arrays.stream(StringUtils.split(config.getString("validator.hiddenType", ""), ',')).map(String::trim).toList());
     }
 
 }

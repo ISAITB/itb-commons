@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
@@ -137,12 +137,8 @@ public abstract class BaseUploadController <X extends WebDomainConfig, Y extends
             addTypeTranslations(translations, localisationHelper, config, "validator.label.optionLabel", "option");
         }
         // Process label translations.
-        typeRelated.forEach((entry) -> {
-            addTypeTranslations(translations, localisationHelper, config, entry.getLeft(), entry.getRight());
-        });
-        typeAndOptionRelated.forEach((entry) -> {
-            addTypeAndOptionTranslations(translations, localisationHelper, config, entry.getLeft(), entry.getRight());
-        });
+        typeRelated.forEach(entry -> addTypeTranslations(translations, localisationHelper, config, entry.getLeft(), entry.getRight()));
+        typeAndOptionRelated.forEach(entry -> addTypeAndOptionTranslations(translations, localisationHelper, config, entry.getLeft(), entry.getRight()));
         try {
             return objectMapper.writeValueAsString(translations);
         } catch (JsonProcessingException e) {

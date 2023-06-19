@@ -11,7 +11,7 @@ import eu.europa.ec.itb.validation.commons.web.rest.model.SchemaInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;

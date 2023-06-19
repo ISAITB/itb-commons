@@ -3,6 +3,8 @@ package eu.europa.ec.itb.validation.commons.config;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.artifact.*;
 import eu.europa.ec.itb.validation.plugin.PluginInfo;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.apache.commons.configuration2.*;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
@@ -12,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -182,10 +182,10 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setDomainName(appConfig.getDomainIdToDomainName().get(domain));
                     domainConfig.setDomainRoot(Paths.get(appConfig.getResourceRoot(), domain).toString());
 
-                    List<String> declaredValidationTypes = Arrays.stream(Objects.requireNonNull(StringUtils.split(config.getString("validator.type"), ','), "No validation types were configured")).map(String::trim).collect(Collectors.toList());
+                    List<String> declaredValidationTypes = Arrays.stream(Objects.requireNonNull(StringUtils.split(config.getString("validator.type"), ','), "No validation types were configured")).map(String::trim).toList();
                     Map<String, List<String>> validationTypeOptions = new HashMap<>();
                     for (Map.Entry<String,String> entry: ParseUtils.parseMap("validator.typeOptions", config, declaredValidationTypes).entrySet()) {
-                        validationTypeOptions.put(entry.getKey(), Arrays.stream(StringUtils.split(entry.getValue(), ',')).map(String::trim).collect(Collectors.toList()));
+                        validationTypeOptions.put(entry.getKey(), Arrays.stream(StringUtils.split(entry.getValue(), ',')).map(String::trim).toList());
                     }
                     List<String> validationTypes;
                     if (validationTypeOptions.isEmpty()) {
@@ -424,7 +424,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
         String[] availableLocales = config.getString("validator.locale.available", "").split(",");
         LinkedHashSet<Locale> availableLocalesSet = new LinkedHashSet<>();
         if (availableLocales.length > 0 && !availableLocales[0].isEmpty()) {
-            availableLocalesSet.addAll(Arrays.stream(availableLocales).map(String::trim).map(LocaleUtils::toLocale).collect(Collectors.toList()));
+            availableLocalesSet.addAll(Arrays.stream(availableLocales).map(String::trim).map(LocaleUtils::toLocale).toList());
         }
         domainConfig.setAvailableLocales(availableLocalesSet);
         if (!domainConfig.getAvailableLocales().isEmpty()) {
@@ -473,7 +473,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                             List<String> propFileNames = Arrays.stream(files).filter(File::isFile)
                                     .filter( f -> f.getName().contains(PROPERTY_SUFFIX))
                                     .map( f -> f.getName().substring(0, f.getName().lastIndexOf(PROPERTY_SUFFIX)))
-                                    .collect(Collectors.toList());
+                                    .toList();
                             bundleName = obtainBundleName(propFileNames);
                         }
                     } else {

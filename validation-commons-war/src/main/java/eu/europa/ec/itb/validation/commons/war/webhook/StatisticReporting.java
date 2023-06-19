@@ -5,9 +5,9 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.ws.handler.MessageContext;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.xml.ws.handler.MessageContext;
 
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.AddressNotFoundException;
@@ -158,8 +158,7 @@ public abstract class StatisticReporting {
     protected void handleSoapCallContext(JoinPoint joinPoint) {
         Map<String, String> contextParams = new HashMap<>();
         contextParams.put(StatisticReportingConstants.PARAM_API, StatisticReportingConstants.SOAP_API);
-        if (config.getWebhook().isStatisticsEnableCountryDetection() && joinPoint.getTarget() instanceof WebServiceContextProvider) {
-            var validationService = (WebServiceContextProvider)joinPoint.getTarget();
+        if (config.getWebhook().isStatisticsEnableCountryDetection() && joinPoint.getTarget() instanceof WebServiceContextProvider validationService) {
             HttpServletRequest request = (HttpServletRequest)validationService.getWebServiceContext().getMessageContext()
                     .get(MessageContext.SERVLET_REQUEST);
             String ip = extractIpAddress(request);
