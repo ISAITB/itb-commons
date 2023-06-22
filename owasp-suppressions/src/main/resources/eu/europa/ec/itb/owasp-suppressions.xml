@@ -56,4 +56,18 @@
         <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
         <cpe>cpe:/a:google:guava</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jackson-databind-2.15.0.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <vulnerabilityName>CVE-2023-35116</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: bcprov-jdk15on-1.69.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.bouncycastle/bcprov\-jdk15on@.*$</packageUrl>
+        <vulnerabilityName>CVE-2023-33201</vulnerabilityName>
+    </suppress>
 </suppressions>
