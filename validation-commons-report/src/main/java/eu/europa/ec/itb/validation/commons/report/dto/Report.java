@@ -11,9 +11,9 @@ public class Report {
     private String title;
     private String reportDate;
     private String reportResult;
-    private String errorCount;
-    private String warningCount;
-    private String messageCount;
+    private int errorCount;
+    private int warningCount;
+    private int messageCount;
     private List<ReportItem> reportItems = new ArrayList<>();
     private List<ContextItem> contextItems = new ArrayList<>();
 
@@ -21,7 +21,7 @@ public class Report {
      * Constructor.
      */
     public Report() {
-        this(null, null, null, null, null, null);
+        this(null, null, null, 0, 0, 0);
     }
 
     /**
@@ -34,7 +34,7 @@ public class Report {
      * @param warningCount The number of warnings.
      * @param messageCount The number of information messages.
      */
-    public Report(String title, String reportDate, String reportResult, String errorCount, String warningCount, String messageCount) {
+    public Report(String title, String reportDate, String reportResult, int errorCount, int warningCount, int messageCount) {
         this.title = title;
         this.reportDate = reportDate;
         this.reportResult = reportResult;
@@ -88,42 +88,42 @@ public class Report {
     /**
      * @return The number of errors.
      */
-    public String getErrorCount() {
+    public int getErrorCount() {
         return errorCount;
     }
 
     /**
      * @param errorCount The number of errors.
      */
-    public void setErrorCount(String errorCount) {
+    public void setErrorCount(int errorCount) {
         this.errorCount = errorCount;
     }
 
     /**
      * @return The number of warnings.
      */
-    public String getWarningCount() {
+    public int getWarningCount() {
         return warningCount;
     }
 
     /**
      * @param warningCount The number of warnings.
      */
-    public void setWarningCount(String warningCount) {
+    public void setWarningCount(int warningCount) {
         this.warningCount = warningCount;
     }
 
     /**
      * @return The number of information messages.
      */
-    public String getMessageCount() {
+    public int getMessageCount() {
         return messageCount;
     }
 
     /**
      * @param messageCount The number of information messages.
      */
-    public void setMessageCount(String messageCount) {
+    public void setMessageCount(int messageCount) {
         this.messageCount = messageCount;
     }
 

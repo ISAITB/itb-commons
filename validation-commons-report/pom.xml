@@ -25,17 +25,28 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.sf.jasperreports</groupId>
-            <artifactId>jasperreports</artifactId>
-        </dependency>
-        <!-- Woodstox override for CVE-2022-40152. To be removed if woodstox version is above 6.3.1 -->
-        <dependency>
-            <groupId>com.fasterxml.woodstox</groupId>
-            <artifactId>woodstox-core</artifactId>
+            <groupId>com.openhtmltopdf</groupId>
+            <artifactId>openhtmltopdf-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
+            <groupId>com.openhtmltopdf</groupId>
+            <artifactId>openhtmltopdf-pdfbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.openhtmltopdf</groupId>
+            <artifactId>openhtmltopdf-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -43,31 +54,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.alexnederlof</groupId>
-                <artifactId>jasperreports-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>jasper</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <compiler>net.sf.jasperreports.engine.design.JRJdtCompiler</compiler>
-                    <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
-                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                    <outputFileExt>.jasper</outputFileExt>
-                    <xmlValidation>true</xmlValidation>
-                    <verbose>false</verbose>
-                    <numberOfThreads>4</numberOfThreads>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

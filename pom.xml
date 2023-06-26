@@ -51,12 +51,10 @@
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.5.1</version.webjarsJQuery>
-        <version.jasperReports>6.19.1</version.jasperReports>
         <version.jaxb>4.0.0</version.jaxb>
         <version.jaxb-impl>4.0.1</version.jaxb-impl>
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
-        <version.bouncycastle>1.69</version.bouncycastle>
         <version.cxf>4.0.2</version.cxf>
         <version.xerces>2.12.2</version.xerces>
         <version.saxon>12.2</version.saxon>
@@ -75,7 +73,10 @@
         <version.commonsValidator>1.7</version.commonsValidator>
         <version.springdoc>1.6.9</version.springdoc>
         <version.topbraid>1.4.2</version.topbraid>
-        <version.freemarker>2.3.30</version.freemarker>
+        <version.freemarker>2.3.32</version.freemarker>
+        <version.pdfbox>2.0.28</version.pdfbox>
+        <version.com.openhtmltopdf>1.0.10</version.com.openhtmltopdf>
+        <version.org.jsoup>1.15.4</version.org.jsoup>
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
         <version.jena>4.3.2</version.jena>
         <version.libthrift>0.15.0</version.libthrift>
@@ -87,7 +88,6 @@
         <version.plugin.jacocoMavenPlugin>0.8.10</version.plugin.jacocoMavenPlugin>
         <version.plugin.versionsMavenPlugin>2.16.0</version.plugin.versionsMavenPlugin>
         <version.plugin.mavenEnforcerPlugin>3.3.0</version.plugin.mavenEnforcerPlugin>
-        <version.plugin.jasperreportsPlugin>2.8</version.plugin.jasperreportsPlugin>
         <version.plugin.mavenReleasePlugin>3.0.1</version.plugin.mavenReleasePlugin>
         <version.plugin.mavenSurefirePlugin>3.1.2</version.plugin.mavenSurefirePlugin>
         <version.plugin.mavenJavadocPlugin>3.5.0</version.plugin.mavenJavadocPlugin>
@@ -96,7 +96,6 @@
         <!-- Version overrides in Spring Boot - START -->
         <version.snakeyaml>1.33</version.snakeyaml> <!-- Spring Boot override to resolve CVE-2022-25857 -->
         <version.protobuf>3.21.9</version.protobuf> <!-- Protobuf override for the Jena transitive dependency to resolve CVE-2022-3509 -->
-        <version.woodstox>6.5.1</version.woodstox> <!-- Woodstox version to resolve CVE-2022-40152. This needs to match the version included in CXF core (currently at 4.0.2). -->
         <!-- Version overrides in Spring Boot - END -->
     </properties>
 
@@ -108,14 +107,6 @@
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
-        </repository>
-        <repository>
-            <id>jasperreports</id>
-            <url>https://jaspersoft.jfrog.io/artifactory/jrs-ce-releases/</url>
-        </repository>
-        <repository>
-            <id>jaspersoft-third-party</id>
-            <url>https://jaspersoft.jfrog.io/artifactory/third-party-ce-artifacts/</url>
         </repository>
         <repository>
             <id>osgeo.org</id>
@@ -245,22 +236,6 @@
                 <groupId>eu.europa.ec.itb</groupId>
                 <artifactId>gitb-types-jakarta</artifactId>
                 <version>${version.gitbTypes}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sf.jasperreports</groupId>
-                <artifactId>jasperreports</artifactId>
-                <version>${version.jasperReports}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sf.jasperreports</groupId>
-                <artifactId>jasperreports-fonts</artifactId>
-                <version>${version.jasperReports}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.bouncycastle</groupId>
-                        <artifactId>bcprov-jdk15on</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -416,11 +391,6 @@
             	<version>${version.aspectjWeaver}</version>
             </dependency>
             <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
-                <version>${version.bouncycastle}</version>
-            </dependency>
-            <dependency>
                 <groupId>xerces</groupId>
                 <artifactId>xercesImpl</artifactId>
                 <version>${version.xerces}</version>
@@ -517,17 +487,36 @@
                 <artifactId>libthrift</artifactId>
                 <version>${version.libthrift}</version>
             </dependency>
+            <dependency>
+                <groupId>com.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-core</artifactId>
+                <version>${version.com.openhtmltopdf}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-pdfbox</artifactId>
+                <version>${version.com.openhtmltopdf}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-slf4j</artifactId>
+                <version>${version.com.openhtmltopdf}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${version.org.jsoup}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${version.pdfbox}</version>
+            </dependency>
             <!-- Snakeyaml override -->
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${version.snakeyaml}</version>
-            </dependency>
-            <!-- Woodstox override -->
-            <dependency>
-                <groupId>com.fasterxml.woodstox</groupId>
-                <artifactId>woodstox-core</artifactId>
-                <version>${version.woodstox}</version>
             </dependency>
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
             <dependency>

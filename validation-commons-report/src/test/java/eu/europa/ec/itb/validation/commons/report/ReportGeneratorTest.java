@@ -28,6 +28,8 @@ import java.util.Base64;
 import java.util.GregorianCalendar;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ReportGeneratorTest {
 
@@ -107,7 +109,7 @@ class ReportGeneratorTest {
     @Test
     void testWriteTARReportFromObject() {
         var pdfPath = Path.of(tmpPath.toString(), "report.pdf");
-        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(createTAR(), Files.newOutputStream(pdfPath), (report) -> new ReportLabels()));
+        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(createTAR(), Files.newOutputStream(pdfPath), (report) -> mockReportLabels()));
         assertTrue(Files.exists(pdfPath));
         assertTrue(Files.isRegularFile(pdfPath));
     }
@@ -119,9 +121,28 @@ class ReportGeneratorTest {
         var jaxbContext = JAXBContext.newInstance(TAR.class, TestCaseReportType.class, TestStepStatus.class);
         jaxbContext.createMarshaller().marshal(new JAXBElement<>(new QName("http://www.gitb.com/tr/v1/", "TestCaseReport"), TAR.class, report), Files.newOutputStream(xmlPath));
         var pdfPath = Path.of(tmpPath.toString(), "report.pdf");
-        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(Files.newInputStream(xmlPath), Files.newOutputStream(pdfPath), (r) -> new ReportLabels()));
+        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(Files.newInputStream(xmlPath), Files.newOutputStream(pdfPath), (r) -> mockReportLabels()));
         assertTrue(Files.exists(pdfPath));
         assertTrue(Files.isRegularFile(pdfPath));
+    }
+
+    private ReportLabels mockReportLabels() {
+        var mock = mock(ReportLabels.class);
+        when(mock.getAssertionId()).thenReturn("assertionId");
+        when(mock.getDate()).thenReturn("date");
+        when(mock.getDetails()).thenReturn("details");
+        when(mock.getFileName()).thenReturn("fileName");
+        when(mock.getFindings()).thenReturn("findings");
+        when(mock.getFindingsDetails()).thenReturn("findingsDetails");
+        when(mock.getLocation()).thenReturn("location");
+        when(mock.getOf()).thenReturn("of");
+        when(mock.getOverview()).thenReturn("overview");
+        when(mock.getPage()).thenReturn("page");
+        when(mock.getResult()).thenReturn("result");
+        when(mock.getResultType()).thenReturn("resultType");
+        when(mock.getTest()).thenReturn("test");
+        when(mock.getTitle()).thenReturn("title");
+        return mock;
     }
 
     private String digest(Path path) throws NoSuchAlgorithmException, IOException {

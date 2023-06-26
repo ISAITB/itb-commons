@@ -1,7 +1,6 @@
 package eu.europa.ec.itb.validation.commons.report;
 
 import com.gitb.tr.TAR;
-import com.gitb.tr.TestResultType;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
@@ -29,7 +28,7 @@ public class ReportGeneratorBean {
      * @param helper The localisation helper to use for the report's labels.
      */
     public void writeReport(File inFile, File outFile, LocalisationHelper helper) {
-        writeReport(inFile, outFile, tar -> getReportLabels(helper, tar.getResult()));
+        writeReport(inFile, outFile, tar -> getReportLabels(helper, tar));
     }
 
     /**
@@ -55,7 +54,7 @@ public class ReportGeneratorBean {
      * @param helper The localisation helper to use for the report's labels.
      */
     public void writeReport(TAR report, File outFile, LocalisationHelper helper) {
-        writeReport(report, outFile, tar -> getReportLabels(helper, tar.getResult()));
+        writeReport(report, outFile, tar -> getReportLabels(helper, tar));
     }
 
     /**
@@ -77,10 +76,10 @@ public class ReportGeneratorBean {
      * Get the labels to use in PDF reports.
      *
      * @param helper The localisation helper.
-     * @param resultType The report's result to consider.
+     * @param report The report to consider.
      * @return The labels.
      */
-    public ReportLabels getReportLabels(LocalisationHelper helper, TestResultType resultType) {
+    public ReportLabels getReportLabels(LocalisationHelper helper, TAR report) {
         var reportLabels = new ReportLabels();
         reportLabels.setTitle(helper.localise("validator.reportTitle"));
         reportLabels.setOverview(helper.localise("validator.label.resultSubSectionOverviewTitle"));
@@ -88,15 +87,14 @@ public class ReportGeneratorBean {
         reportLabels.setDate(helper.localise("validator.label.resultDateLabel"));
         reportLabels.setResult(helper.localise("validator.label.resultResultLabel"));
         reportLabels.setFileName(helper.localise("validator.label.resultFileNameLabel"));
-        reportLabels.setErrors(helper.localise("validator.label.resultErrorsLabel"));
-        reportLabels.setWarnings(helper.localise("validator.label.resultWarningsLabel"));
-        reportLabels.setMessages(helper.localise("validator.label.resultMessagesLabel"));
         reportLabels.setTest(helper.localise("validator.label.resultTestLabel"));
         reportLabels.setLocation(helper.localise("validator.label.resultLocationLabel"));
         reportLabels.setPage(helper.localise("validator.label.pageLabel"));
         reportLabels.setOf(helper.localise("validator.label.ofLabel"));
         reportLabels.setAssertionId(helper.localise("validator.label.additionalInfoLabel"));
-        reportLabels.setResultType(helper.localise("validator.label.result."+resultType.value().toLowerCase(Locale.ROOT)));
+        reportLabels.setResultType(helper.localise("validator.label.result."+report.getResult().value().toLowerCase(Locale.ROOT)));
+        reportLabels.setFindings(helper.localise("validator.label.resultFindingsLabel"));
+        reportLabels.setFindingsDetails(helper.localise("validator.label.resultFindingsDetailsLabel", report.getCounters().getNrOfErrors().intValue(), report.getCounters().getNrOfWarnings().intValue(), report.getCounters().getNrOfAssertions().intValue()));
         return reportLabels;
     }
 

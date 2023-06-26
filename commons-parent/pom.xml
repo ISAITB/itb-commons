@@ -58,35 +58,6 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>com.alexnederlof</groupId>
-                    <artifactId>jasperreports-plugin</artifactId>
-                    <version>${version.plugin.jasperreportsPlugin}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>net.sf.jasperreports</groupId>
-                            <artifactId>jasperreports-fonts</artifactId>
-                            <version>${version.jasperReports}</version>
-                            <exclusions>
-                                <exclusion>
-                                    <groupId>com.lowagie</groupId>
-                                    <artifactId>itext</artifactId>
-                                </exclusion>
-                            </exclusions>
-                        </dependency>
-                        <dependency>
-                            <groupId>net.sf.jasperreports</groupId>
-                            <artifactId>jasperreports</artifactId>
-                            <version>${version.jasperReports}</version>
-                            <exclusions>
-                                <exclusion>
-                                    <groupId>com.lowagie</groupId>
-                                    <artifactId>itext</artifactId>
-                                </exclusion>
-                            </exclusions>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
                     <version>${version.plugin.mavenReleasePlugin}</version>

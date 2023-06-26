@@ -12,14 +12,13 @@ public class ReportLabels {
     private String result;
     private String resultType;
     private String fileName;
-    private String errors;
-    private String warnings;
-    private String messages;
     private String test;
     private String location;
     private String page;
     private String of;
     private String assertionId;
+    private String findings;
+    private String findingsDetails;
 
     /**
      * @return The title of the report.
@@ -106,48 +105,6 @@ public class ReportLabels {
     }
 
     /**
-     * @return The errors label.
-     */
-    public String getErrors() {
-        return errors;
-    }
-
-    /**
-     * @param errors The errors label.
-     */
-    public void setErrors(String errors) {
-        this.errors = errors;
-    }
-
-    /**
-     * @return The warnings label.
-     */
-    public String getWarnings() {
-        return warnings;
-    }
-
-    /**
-     * @param warnings The warnings label.
-     */
-    public void setWarnings(String warnings) {
-        this.warnings = warnings;
-    }
-
-    /**
-     * @return The messages label.
-     */
-    public String getMessages() {
-        return messages;
-    }
-
-    /**
-     * @param messages The messages label.
-     */
-    public void setMessages(String messages) {
-        this.messages = messages;
-    }
-
-    /**
      * @return The test label.
      */
     public String getTest() {
@@ -229,5 +186,33 @@ public class ReportLabels {
      */
     public void setAssertionId(String assertionId) {
         this.assertionId = assertionId;
+    }
+
+    /**
+     * @return The findings label.
+     */
+    public String getFindings() {
+        return findings;
+    }
+
+    /**
+     * @param findings The findings label.
+     */
+    public void setFindings(String findings) {
+        this.findings = findings;
+    }
+
+    /**
+     * @return The findings details label.
+     */
+    public String getFindingsDetails() {
+        return findingsDetails;
+    }
+
+    /**
+     * @param findingsDetails The findings details label.
+     */
+    public void setFindingsDetails(String findingsDetails) {
+        this.findingsDetails = findingsDetails;
     }
 }
