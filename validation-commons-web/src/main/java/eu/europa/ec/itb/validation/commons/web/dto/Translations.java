@@ -20,9 +20,8 @@ public class Translations {
     private String resultValidationTypeLabel;
     private String resultResultLabel;
     private String resultValue;
-    private String resultErrorsLabel;
-    private String resultWarningsLabel;
-    private String resultMessagesLabel;
+    private String resultFindingsLabel;
+    private String resultFindingsDetailsLabel;
     private String resultSubSectionDetailsTitle;
     private String viewReportItemsShowAll;
     private String viewReportItemsShowErrors;
@@ -58,9 +57,12 @@ public class Translations {
     public Translations(LocalisationHelper helper, TAR report, DomainConfig domainConfig) {
         setResultSectionTitle(helper.localise("validator.label.resultSectionTitle"));
         setResultValue(helper.localise("validator.label.result."+report.getResult().value().toLowerCase(Locale.ROOT)));
-        setResultErrorsLabel(helper.localise("validator.label.resultErrorsLabel"));
-        setResultWarningsLabel(helper.localise("validator.label.resultWarningsLabel"));
-        setResultMessagesLabel(helper.localise("validator.label.resultMessagesLabel"));
+        setResultFindingsLabel(helper.localise("validator.label.resultFindingsLabel"));
+        setResultFindingsDetailsLabel(helper.localise("validator.label.resultFindingsDetailsLabel",
+                ((report.getCounters() != null && report.getCounters().getNrOfErrors() != null)?report.getCounters().getNrOfErrors().intValue():0),
+                ((report.getCounters() != null && report.getCounters().getNrOfWarnings() != null)?report.getCounters().getNrOfWarnings().intValue():0),
+                ((report.getCounters() != null && report.getCounters().getNrOfAssertions() != null)?report.getCounters().getNrOfAssertions().intValue():0)
+        ));
         setResultDateLabel(helper.localise("validator.label.resultDateLabel"));
         setResultFileNameLabel(helper.localise("validator.label.resultFileNameLabel"));
         setResultValidationTypeLabel(helper.localise("validator.label.resultValidationTypeLabel"));
@@ -191,45 +193,31 @@ public class Translations {
     }
 
     /**
-     * @return The label value.
+     * @return The findings label.
      */
-    public String getResultErrorsLabel() {
-        return resultErrorsLabel;
+    public String getResultFindingsLabel() {
+        return resultFindingsLabel;
     }
 
     /**
-     * @param resultErrorsLabel The label value to set.
+     * @param resultFindingsLabel The findings label.
      */
-    public void setResultErrorsLabel(String resultErrorsLabel) {
-        this.resultErrorsLabel = resultErrorsLabel;
+    public void setResultFindingsLabel(String resultFindingsLabel) {
+        this.resultFindingsLabel = resultFindingsLabel;
     }
 
     /**
-     * @return The label value.
+     * @return The findings value.
      */
-    public String getResultWarningsLabel() {
-        return resultWarningsLabel;
+    public String getResultFindingsDetailsLabel() {
+        return resultFindingsDetailsLabel;
     }
 
     /**
-     * @param resultWarningsLabel The label value to set.
+     * @param resultFindingsDetailsLabel The findings value.
      */
-    public void setResultWarningsLabel(String resultWarningsLabel) {
-        this.resultWarningsLabel = resultWarningsLabel;
-    }
-
-    /**
-     * @return The label value.
-     */
-    public String getResultMessagesLabel() {
-        return resultMessagesLabel;
-    }
-
-    /**
-     * @param resultMessagesLabel The label value to set.
-     */
-    public void setResultMessagesLabel(String resultMessagesLabel) {
-        this.resultMessagesLabel = resultMessagesLabel;
+    public void setResultFindingsDetailsLabel(String resultFindingsDetailsLabel) {
+        this.resultFindingsDetailsLabel = resultFindingsDetailsLabel;
     }
 
     /**

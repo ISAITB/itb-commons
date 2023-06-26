@@ -6,22 +6,38 @@ import com.gitb.tr.BAR;
 import com.gitb.tr.TAR;
 import com.gitb.tr.TestAssertionReportType;
 import com.gitb.tr.TestStepReportType;
+import com.openhtmltopdf.extend.FSCacheEx;
+import com.openhtmltopdf.extend.FSCacheValue;
+import com.openhtmltopdf.extend.impl.FSDefaultCacheStore;
+import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+import com.openhtmltopdf.slf4j.Slf4jLogger;
+import com.openhtmltopdf.swing.NaiveUserAgent;
+import com.openhtmltopdf.util.XRLog;
 import eu.europa.ec.itb.validation.commons.Utils;
 import eu.europa.ec.itb.validation.commons.report.dto.ContextItem;
 import eu.europa.ec.itb.validation.commons.report.dto.Report;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportItem;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateMethodModelEx;
 import jakarta.xml.bind.JAXBElement;
-import net.sf.jasperreports.engine.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
@@ -29,41 +45,31 @@ import java.util.function.Function;
  */
 public class ReportGenerator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ReportGenerator.class);
-
-    /**
-     * Use the provided report file stream to generate the report's output.
-     *
-     * @param reportStream The stream for the report template to use.
-     * @param parameters The parameters to use for the report population.
-     * @param outputStream The stream on which to write the generated report.
-     * @throws JRException If the PDF file failed generation.
-     */
-    private void writeReport(InputStream reportStream, Map<String, Object> parameters, OutputStream outputStream) throws JRException {
-        JasperPrint jasperPrint = JasperFillManager.fillReport(reportStream, parameters, new JREmptyDataSource());
-        try {
-            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
-        } finally {
-            if (outputStream != null) {
-                try {
-                    outputStream.flush();
-                } catch (IOException e) {
-                    LOG.warn("Error while closing report stream", e);
-                }
-            }
-        }
+    static {
+        // Use SLF4J logging.
+        XRLog.setLoggerImpl(new Slf4jLogger());
     }
 
+    private static final Logger LOG = LoggerFactory.getLogger(ReportGenerator.class);
+    private final Map<String, TemplateMethodModelEx> extensionFunctions;
+    private final FSCacheEx<String, FSCacheValue> fontCache = new FSDefaultCacheStore();
+    private Template reportTemplate;
+
     /**
-     * Create a report based on a provided classpath location for the report template to use.
-     *
-     * @param reportPath The classpath of the report template to use.
-     * @param parameters The parameters for the report's population.
-     * @param outputStream The stream on which to write the report.
-     * @throws JRException If the PDF file failed generation.
+     * Constructor.
      */
-    private void writeClasspathReport(String reportPath, Map<String, Object> parameters, OutputStream outputStream) throws JRException {
-        writeReport(Thread.currentThread().getContextClassLoader().getResourceAsStream(reportPath), parameters, outputStream);
+    public ReportGenerator() {
+        extensionFunctions = Map.of(
+            "escape", arguments -> {
+                if (arguments != null && !arguments.isEmpty()) {
+                    var text = arguments.get(0);
+                    return StringEscapeUtils.escapeHtml4(String.valueOf(text));
+                }
+                return null;
+            }
+        );
+        // Preload the report template to use.
+        getTemplate();
     }
 
     /**
@@ -113,6 +119,80 @@ public class ReportGenerator {
     }
 
     /**
+     * Load the report template to use.
+     *
+     * @return The template.
+     */
+    private Template getTemplate() {
+        if (reportTemplate == null) {
+            var configuration = new Configuration(Configuration.VERSION_2_3_32);
+            configuration.setTemplateLoader(new ClassTemplateLoader(ReportGenerator.class, "/"));
+            try {
+                reportTemplate = configuration.getTemplate("reports/TAR.ftl");
+            } catch (IOException e) {
+                throw new IllegalStateException("Unable to load report template", e);
+            }
+        }
+        return reportTemplate;
+    }
+
+    private void loadFonts(PdfRendererBuilder builder) {
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeSans/FreeSans.ttf"), "FreeSans", 400, BaseRendererBuilder.FontStyle.NORMAL, true);
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeSans/FreeSansBold.ttf"), "FreeSans", 700, BaseRendererBuilder.FontStyle.NORMAL, true);
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeSans/FreeSansOblique.ttf"), "FreeSans", 400, BaseRendererBuilder.FontStyle.ITALIC, true);
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeSans/FreeSansOblique.ttf"), "FreeSans", 400, BaseRendererBuilder.FontStyle.OBLIQUE, true);
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeSans/FreeSansBoldOblique.ttf"), "FreeSans", 700, BaseRendererBuilder.FontStyle.ITALIC, true);
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeSans/FreeSansBoldOblique.ttf"), "FreeSans", 700, BaseRendererBuilder.FontStyle.OBLIQUE, true);
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeMono/FreeMono.ttf"), "FreeMono", 400, BaseRendererBuilder.FontStyle.NORMAL, true);
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeMono/FreeMonoBold.ttf"), "FreeMono", 700, BaseRendererBuilder.FontStyle.NORMAL, true);
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeMono/FreeMonoOblique.ttf"), "FreeMono", 400, BaseRendererBuilder.FontStyle.ITALIC, true);
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeMono/FreeMonoOblique.ttf"), "FreeMono", 400, BaseRendererBuilder.FontStyle.OBLIQUE, true);
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeMono/FreeMonoBoldOblique.ttf"), "FreeMono", 700, BaseRendererBuilder.FontStyle.ITALIC, true);
+        builder.useFont(() -> Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/FreeMono/FreeMonoBoldOblique.ttf"), "FreeMono", 700, BaseRendererBuilder.FontStyle.OBLIQUE, true);
+    }
+
+    /**
+     * Create a report based on a provided classpath location for the report template to use.
+     *
+     * @param parameters The parameters for the report's population.
+     * @param outputStream The stream on which to write the report.
+     */
+    private void writeClasspathReport(Map<String, Object> parameters, OutputStream outputStream) {
+        // Add custom extension functions.
+        parameters = Objects.requireNonNullElse(parameters, Collections.emptyMap());
+        parameters.putAll(extensionFunctions);
+        // Generate HTML report.
+        try {
+            var writer = new StringWriter();
+            getTemplate().process(parameters, writer);
+            writer.flush();
+            var tempHtmlString = writer.toString();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("### Report HTML - START ###\n\n{}\n\n### Report HTML - END ###", tempHtmlString);
+            }
+            // Convert to PDF.
+            var builder = new PdfRendererBuilder();
+            builder.useCacheStore(PdfRendererBuilder.CacheStore.PDF_FONT_METRICS, fontCache);
+            loadFonts(builder);
+            builder.useUriResolver(new NaiveUserAgent.DefaultUriResolver() {
+                @Override
+                public String resolveURI(String baseUri, String uri) {
+                    if (uri.startsWith("classpath:")) {
+                        // A predefined image.
+                        return Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(StringUtils.removeStart(uri, "classpath:"))).toString();
+                    }
+                    return super.resolveURI(baseUri, uri);
+                }
+            });
+            builder.withW3cDocument(new W3CDom().fromJsoup(Jsoup.parse(tempHtmlString)), "reports");
+            builder.toStream(outputStream);
+            builder.run();
+        } catch (Exception e) {
+            throw new IllegalStateException("Error while generating report", e);
+        }
+    }
+
+    /**
      * Write the report of an abstract report.
      *
      * @param reportType The input for the specific report type.
@@ -137,21 +217,20 @@ public class ReportGenerator {
             parameters.put("resultTypeLabel", labels.getResultType());
             parameters.put("dateLabel", labels.getDate());
             parameters.put("fileNameLabel", labels.getFileName());
-            parameters.put("errorsLabel", labels.getErrors());
-            parameters.put("warningsLabel", labels.getWarnings());
-            parameters.put("messagesLabel", labels.getMessages());
             parameters.put("testLabel", labels.getTest());
             parameters.put("locationLabel", labels.getLocation());
             parameters.put("pageLabel", labels.getPage());
             parameters.put("ofLabel", labels.getOf());
             parameters.put("assertionIdLabel", labels.getAssertionId());
+            parameters.put("resultFindingsLabel", labels.getFindings());
+            parameters.put("resultFindingsDetailsLabel", labels.getFindingsDetails());
             if (report.getReportItems() != null && !report.getReportItems().isEmpty()) {
                 parameters.put("reportItems", report.getReportItems());
             }
             if (report.getContextItems() != null && !report.getContextItems().isEmpty()) {
                 parameters.put("contextItems", report.getContextItems());
             }
-            writeClasspathReport("reports/TAR.jasper", parameters, outputStream);
+            writeClasspathReport(parameters, outputStream);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -205,7 +284,7 @@ public class ReportGenerator {
     <T extends TestStepReportType> Report fromTestStepReportType(T reportType, String title, boolean addContext) {
         Report report = new Report();
         if (reportType.getDate() != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss 'Z'");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             sdf.setTimeZone(TimeZone.getDefault());
             report.setReportDate(sdf.format(reportType.getDate().toGregorianCalendar().getTime()));
         }
@@ -217,9 +296,9 @@ public class ReportGenerator {
                     addContextItem(context, report.getContextItems(), "");
                 }
             }
-            long errors = 0;
-            long warnings = 0;
-            long messages = 0;
+            int errors = 0;
+            int warnings = 0;
+            int messages = 0;
             if (tarReport.getReports() != null && tarReport.getReports().getInfoOrWarningOrError() != null) {
                 for (JAXBElement<TestAssertionReportType> element : tarReport.getReports().getInfoOrWarningOrError()) {
                     if (element.getValue() instanceof BAR tarItem) {
@@ -245,13 +324,13 @@ public class ReportGenerator {
                     && tarReport.getCounters().getNrOfErrors() != null
                     && tarReport.getCounters().getNrOfWarnings() != null
                     && tarReport.getCounters().getNrOfAssertions() != null) {
-                errors = tarReport.getCounters().getNrOfErrors().longValue();
-                warnings = tarReport.getCounters().getNrOfWarnings().longValue();
-                messages = tarReport.getCounters().getNrOfAssertions().longValue();
+                errors = tarReport.getCounters().getNrOfErrors().intValue();
+                warnings = tarReport.getCounters().getNrOfWarnings().intValue();
+                messages = tarReport.getCounters().getNrOfAssertions().intValue();
             }
-            report.setErrorCount(String.valueOf(errors));
-            report.setWarningCount(String.valueOf(warnings));
-            report.setMessageCount(String.valueOf(messages));
+            report.setErrorCount(errors);
+            report.setWarningCount(warnings);
+            report.setMessageCount(messages);
         }
         if (report.getReportItems().isEmpty()) {
             report.setReportItems(null);

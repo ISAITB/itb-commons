@@ -42,7 +42,7 @@ body {
     color: #F0AD4E;
 }
 .report-item-icon.info-icon {
-    color: #5cb85c;
+    color: #3D8BE9;
 }
 .report-item-icon {
     padding: 0 4px;
@@ -94,7 +94,7 @@ body {
     background-color: #f3eed1;
 }
 .report-item-info {
-    background-color: #5cb85c;
+    background-color: #3D8BE9;
 }
 .report-item-info > .report-item-div {
     background-color: #ededed;

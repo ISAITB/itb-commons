@@ -129,9 +129,8 @@ class WebDomainConfigCacheTest {
                 Map.entry("validator.label.resultDateLabel", "resultDateLabel"),
                 Map.entry("validator.label.resultFileNameLabel", "resultFileNameLabel"),
                 Map.entry("validator.label.resultResultLabel", "resultResultLabel"),
-                Map.entry("validator.label.resultErrorsLabel", "resultErrorsLabel"),
-                Map.entry("validator.label.resultWarningsLabel", "resultWarningsLabel"),
-                Map.entry("validator.label.resultMessagesLabel", "resultMessagesLabel"),
+                Map.entry("validator.label.resultFindingsLabel", "resultFindingsLabel"),
+                Map.entry("validator.label.resultFindingsDetailsLabel", "resultFindingsDetailsLabel"),
                 Map.entry("validator.label.viewAnnotatedInputButton", "viewAnnotatedInputButton"),
                 Map.entry("validator.label.downloadReportButton", "downloadReportButton"),
                 Map.entry("validator.label.resultSubSectionDetailsTitle", "resultSubSectionDetailsTitle"),
@@ -161,9 +160,8 @@ class WebDomainConfigCacheTest {
         assertEquals("resultDateLabel", localisationHelper.localise("validator.label.resultDateLabel"));
         assertEquals("resultFileNameLabel", localisationHelper.localise("validator.label.resultFileNameLabel"));
         assertEquals("resultResultLabel", localisationHelper.localise("validator.label.resultResultLabel"));
-        assertEquals("resultErrorsLabel", localisationHelper.localise("validator.label.resultErrorsLabel"));
-        assertEquals("resultWarningsLabel", localisationHelper.localise("validator.label.resultWarningsLabel"));
-        assertEquals("resultMessagesLabel", localisationHelper.localise("validator.label.resultMessagesLabel"));
+        assertEquals("resultFindingsLabel", localisationHelper.localise("validator.label.resultFindingsLabel"));
+        assertEquals("resultFindingsDetailsLabel", localisationHelper.localise("validator.label.resultFindingsDetailsLabel"));
         assertEquals("viewAnnotatedInputButton", localisationHelper.localise("validator.label.viewAnnotatedInputButton"));
         assertEquals("downloadReportButton", localisationHelper.localise("validator.label.downloadReportButton"));
         assertEquals("resultSubSectionDetailsTitle", localisationHelper.localise("validator.label.resultSubSectionDetailsTitle"));

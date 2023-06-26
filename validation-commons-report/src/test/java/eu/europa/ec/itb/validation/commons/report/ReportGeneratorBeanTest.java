@@ -2,6 +2,7 @@ package eu.europa.ec.itb.validation.commons.report;
 
 import com.gitb.tr.TAR;
 import com.gitb.tr.TestResultType;
+import com.gitb.tr.ValidationCounters;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
@@ -14,8 +15,10 @@ import org.mockito.stubbing.Answer;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 
@@ -53,9 +56,8 @@ class ReportGeneratorBeanTest {
         labels.setResultType("ResultType");
         labels.setResult("Result");
         labels.setLocation("Location");
-        labels.setMessages("Messages");
-        labels.setWarnings("Warnings");
-        labels.setErrors("Errors");
+        labels.setFindings("Findings");
+        labels.setFindingsDetails("FindingsDetails");
         labels.setDate("Date");
         labels.setFileName("FileName");
         labels.setDetails("Details");
@@ -167,12 +169,18 @@ class ReportGeneratorBeanTest {
         var reportGenerator = mock(ReportGenerator.class);
         var successText = TestResultType.SUCCESS.value().toLowerCase(Locale.ROOT);
         var bean = createBean(reportGenerator);
-        var helper = getDefaultLabelMockHelper("validator.reportTitle", "validator.label.resultSubSectionOverviewTitle", "validator.label.resultSubSectionDetailsTitle",
+        var helper = getDefaultLabelMockHelper(List.of("validator.reportTitle", "validator.label.resultSubSectionOverviewTitle", "validator.label.resultSubSectionDetailsTitle",
                 "validator.label.resultDateLabel", "validator.label.resultResultLabel", "validator.label.resultFileNameLabel",
-                "validator.label.resultErrorsLabel", "validator.label.resultWarningsLabel", "validator.label.resultMessagesLabel" ,
+                "validator.label.resultFindingsLabel",
                 "validator.label.resultTestLabel", "validator.label.resultLocationLabel", "validator.label.pageLabel",
-                "validator.label.ofLabel", "validator.label.result."+successText);
-        var result = bean.getReportLabels(helper, TestResultType.SUCCESS);
+                "validator.label.ofLabel", "validator.label.result."+successText), List.of("validator.label.resultFindingsDetailsLabel"));
+        var tar = new TAR();
+        tar.setResult(TestResultType.SUCCESS);
+        tar.setCounters(new ValidationCounters());
+        tar.getCounters().setNrOfErrors(BigInteger.ZERO);
+        tar.getCounters().setNrOfWarnings(BigInteger.ZERO);
+        tar.getCounters().setNrOfAssertions(BigInteger.ZERO);
+        var result = bean.getReportLabels(helper, tar);
         assertNotNull(result);
         assertEquals("validator.reportTitle_translated", result.getTitle());
         assertEquals("validator.label.resultSubSectionOverviewTitle_translated", result.getOverview());
@@ -180,9 +188,8 @@ class ReportGeneratorBeanTest {
         assertEquals("validator.label.resultDateLabel_translated", result.getDate());
         assertEquals("validator.label.resultResultLabel_translated", result.getResult());
         assertEquals("validator.label.resultFileNameLabel_translated", result.getFileName());
-        assertEquals("validator.label.resultErrorsLabel_translated", result.getErrors());
-        assertEquals("validator.label.resultWarningsLabel_translated", result.getWarnings());
-        assertEquals("validator.label.resultMessagesLabel_translated", result.getMessages());
+        assertEquals("validator.label.resultFindingsLabel_translated", result.getFindings());
+        assertEquals("validator.label.resultFindingsDetailsLabel_translated", result.getFindingsDetails());
         assertEquals("validator.label.resultTestLabel_translated", result.getTest());
         assertEquals("validator.label.resultLocationLabel_translated", result.getLocation());
         assertEquals("validator.label.pageLabel_translated", result.getPage());
@@ -190,10 +197,13 @@ class ReportGeneratorBeanTest {
         assertEquals("validator.label.result."+successText+"_translated", result.getResultType());
     }
 
-    private LocalisationHelper getDefaultLabelMockHelper(String... keys) {
+    private LocalisationHelper getDefaultLabelMockHelper(List<String> keys, List<String> keysWithArgs) {
         var helper = mock(LocalisationHelper.class);
         for (var key: keys) {
-            when(helper.localise(key)).thenReturn(key+"_translated");
+            when(helper.localise(eq(key))).thenReturn(key+"_translated");
+        }
+        for (var key: keysWithArgs) {
+            when(helper.localise(eq(key), any(Object[].class))).thenReturn(key+"_translated");
         }
         return helper;
     }

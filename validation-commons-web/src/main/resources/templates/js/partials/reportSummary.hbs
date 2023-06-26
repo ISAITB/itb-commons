@@ -14,19 +14,11 @@
     </div>
     {{/if}}
     <div class="row">
+        <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultFindingsLabel}}</label>
+        <div><span class="form-control-static">{{data.translations.resultFindingsDetailsLabel}}</span></div>
+    </div>
+    <div class="row">
         <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultResultLabel}}</label>
         <div><span class="form-control-static overall-result {{data.resultValue}}">{{data.translations.resultValue}}</span></div>
-    </div>
-    <div class="row">
-        <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultErrorsLabel}}</label>
-        <div><span class="form-control-static">{{data.report.counters.nrOfErrors}}</span></div>
-    </div>
-    <div class="row">
-        <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultWarningsLabel}}</label>
-        <div><span class="form-control-static">{{data.report.counters.nrOfWarnings}}</span></div>
-    </div>
-    <div class="row">
-        <label class="col-sm-2 col-xs-3 control-label">{{data.translations.resultMessagesLabel}}</label>
-        <div><span class="form-control-static">{{data.report.counters.nrOfAssertions}}</span></div>
     </div>
 </div>

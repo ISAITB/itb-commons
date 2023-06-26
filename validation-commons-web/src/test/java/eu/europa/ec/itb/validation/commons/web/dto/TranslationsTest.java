@@ -18,15 +18,14 @@ class TranslationsTest {
     void testTranslations() {
         var localiser = mock(LocalisationHelper.class);
         when(localiser.localise(anyString())).then(call -> "TRANSLATED["+call.getArgument(0)+"]");
-        when(localiser.localise(anyString(), any())).then(call -> "TRANSLATED["+call.getArgument(0)+"]");
+        when(localiser.localise(anyString(), any(Object[].class))).then(call -> "TRANSLATED["+call.getArgument(0)+"]");
         var report = mock(TAR.class);
         when(report.getResult()).thenReturn(TestResultType.SUCCESS);
         var translations = new Translations(localiser, report, mock(DomainConfig.class));
         assertEquals("TRANSLATED[validator.label.resultSectionTitle]", translations.getResultSectionTitle());
         assertEquals("TRANSLATED[validator.label.result.success]", translations.getResultValue());
-        assertEquals("TRANSLATED[validator.label.resultErrorsLabel]", translations.getResultErrorsLabel());
-        assertEquals("TRANSLATED[validator.label.resultWarningsLabel]", translations.getResultWarningsLabel());
-        assertEquals("TRANSLATED[validator.label.resultMessagesLabel]", translations.getResultMessagesLabel());
+        assertEquals("TRANSLATED[validator.label.resultFindingsLabel]", translations.getResultFindingsLabel());
+        assertEquals("TRANSLATED[validator.label.resultFindingsDetailsLabel]", translations.getResultFindingsDetailsLabel());
         assertEquals("TRANSLATED[validator.label.resultDateLabel]", translations.getResultDateLabel());
         assertEquals("TRANSLATED[validator.label.resultFileNameLabel]", translations.getResultFileNameLabel());
         assertEquals("TRANSLATED[validator.label.resultValidationTypeLabel]", translations.getResultValidationTypeLabel());

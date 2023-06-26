@@ -20,6 +20,10 @@
         <appender-ref ref="FILE" />
     </logger>
 
+    <logger name="com.openhtmltopdf" level="ERROR" additivity="true">
+        <appender-ref ref="FILE" />
+    </logger>
+
     <logger name="FEEDBACK" level="INFO" additivity="true">
         <appender-ref ref="STDOUT" />
     </logger>
