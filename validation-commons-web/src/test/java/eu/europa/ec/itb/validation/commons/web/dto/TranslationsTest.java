@@ -18,7 +18,7 @@ class TranslationsTest {
     void testTranslations() {
         var localiser = mock(LocalisationHelper.class);
         when(localiser.localise(anyString())).then(call -> "TRANSLATED["+call.getArgument(0)+"]");
-        when(localiser.localise(anyString(), any())).then(call -> "TRANSLATED["+call.getArgument(0)+"]");
+        when(localiser.localise(anyString(), any(Object[].class))).then(call -> "TRANSLATED["+call.getArgument(0)+"]");
         var report = mock(TAR.class);
         when(report.getResult()).thenReturn(TestResultType.SUCCESS);
         var translations = new Translations(localiser, report, mock(DomainConfig.class));

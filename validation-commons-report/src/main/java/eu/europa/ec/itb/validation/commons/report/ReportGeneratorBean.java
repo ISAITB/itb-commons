@@ -94,7 +94,11 @@ public class ReportGeneratorBean {
         reportLabels.setAssertionId(helper.localise("validator.label.additionalInfoLabel"));
         reportLabels.setResultType(helper.localise("validator.label.result."+report.getResult().value().toLowerCase(Locale.ROOT)));
         reportLabels.setFindings(helper.localise("validator.label.resultFindingsLabel"));
-        reportLabels.setFindingsDetails(helper.localise("validator.label.resultFindingsDetailsLabel", report.getCounters().getNrOfErrors().intValue(), report.getCounters().getNrOfWarnings().intValue(), report.getCounters().getNrOfAssertions().intValue()));
+        reportLabels.setFindingsDetails(helper.localise("validator.label.resultFindingsDetailsLabel",
+                ((report.getCounters() != null && report.getCounters().getNrOfErrors() != null)?report.getCounters().getNrOfErrors().intValue():0),
+                ((report.getCounters() != null && report.getCounters().getNrOfWarnings() != null)?report.getCounters().getNrOfWarnings().intValue():0),
+                ((report.getCounters() != null && report.getCounters().getNrOfAssertions() != null)?report.getCounters().getNrOfAssertions().intValue():0)
+        ));
         return reportLabels;
     }
 

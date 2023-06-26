@@ -58,7 +58,11 @@ public class Translations {
         setResultSectionTitle(helper.localise("validator.label.resultSectionTitle"));
         setResultValue(helper.localise("validator.label.result."+report.getResult().value().toLowerCase(Locale.ROOT)));
         setResultFindingsLabel(helper.localise("validator.label.resultFindingsLabel"));
-        setResultFindingsDetailsLabel(helper.localise("validator.label.resultFindingsDetailsLabel", report.getCounters().getNrOfErrors().intValue(), report.getCounters().getNrOfAssertions().intValue(), report.getCounters().getNrOfAssertions().intValue()));
+        setResultFindingsDetailsLabel(helper.localise("validator.label.resultFindingsDetailsLabel",
+                ((report.getCounters() != null && report.getCounters().getNrOfErrors() != null)?report.getCounters().getNrOfErrors().intValue():0),
+                ((report.getCounters() != null && report.getCounters().getNrOfWarnings() != null)?report.getCounters().getNrOfWarnings().intValue():0),
+                ((report.getCounters() != null && report.getCounters().getNrOfAssertions() != null)?report.getCounters().getNrOfAssertions().intValue():0)
+        ));
         setResultDateLabel(helper.localise("validator.label.resultDateLabel"));
         setResultFileNameLabel(helper.localise("validator.label.resultFileNameLabel"));
         setResultValidationTypeLabel(helper.localise("validator.label.resultValidationTypeLabel"));
