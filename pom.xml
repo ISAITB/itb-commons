@@ -163,6 +163,7 @@
                         <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
                         <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
                         <nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
+                        <ossIndexWarnOnlyOnRemoteErrors>true</ossIndexWarnOnlyOnRemoteErrors>
                         <suppressionFiles>
                             <!-- The common suppressions to be shared with downstream projects. -->
                             <suppressionFile>eu/europa/ec/itb/owasp-suppressions.xml</suppressionFile>
