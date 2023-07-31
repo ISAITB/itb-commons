@@ -84,4 +84,18 @@
         <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
         <cve>CVE-2023-35116</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: thymeleaf-3.1.1.RELEASE.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.thymeleaf/thymeleaf@.*$</packageUrl>
+        <cve>CVE-2023-38286</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: thymeleaf-spring6-3.1.1.RELEASE.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.thymeleaf/thymeleaf\-spring6@.*$</packageUrl>
+        <cve>CVE-2023-38286</cve>
+    </suppress>
 </suppressions>
