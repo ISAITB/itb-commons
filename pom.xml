@@ -71,7 +71,7 @@
         <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
         <version.commonsCompress>1.23.0</version.commonsCompress>
         <version.commonsValidator>1.7</version.commonsValidator>
-        <version.springdoc>1.6.9</version.springdoc>
+        <version.springdoc>2.1.0</version.springdoc>
         <version.topbraid>1.4.2</version.topbraid>
         <version.freemarker>2.3.32</version.freemarker>
         <version.pdfbox>2.0.28</version.pdfbox>
@@ -460,7 +460,7 @@
             </dependency>
             <dependency>
                 <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-ui</artifactId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${version.springdoc}</version>
             </dependency>
             <dependency>
