@@ -620,7 +620,9 @@ function updateSubmitStatus() {
 	    submitDisabled = true,
 	    inputFile, uriInput, stringType, i;
 	$('#inputFileSubmit').prop('disabled', true);
-    submitDisabled = ((!inputType.length || inputType.val()) && (!inputTypeOption.length || inputTypeOption.val()))?false:true
+    if (!inputType.length || (inputType.val() && ((validationTypeOptions[inputType.val()].length == 0) || !inputTypeOption.length || inputTypeOption.val()))) {
+	    submitDisabled = false;
+	}
     if (!submitDisabled) {
         if (type == "fileType") {
             inputFile = $("#inputFileName");
