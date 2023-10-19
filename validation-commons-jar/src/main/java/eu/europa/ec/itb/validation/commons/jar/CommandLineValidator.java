@@ -7,6 +7,8 @@ import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -92,7 +94,17 @@ public class CommandLineValidator {
         // Start the application.
         ApplicationContext ctx = createContext(mainClass, commandLineArguments);
         // Post process config.
+        // Temporarily disable System.out to avoid printing unwanted messages by Spring (message on commons-logging.jar).
+        var defaultSystemOut = System.out;
+        System.setOut(new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) {
+                // No output.
+            }
+        }));
         ApplicationConfig config = ctx.getBean(ApplicationConfig.class);
+        // Restore System.out.
+        System.setOut(defaultSystemOut);
         if (!noOutput) {
             System.out.println(" Done.");
         }
