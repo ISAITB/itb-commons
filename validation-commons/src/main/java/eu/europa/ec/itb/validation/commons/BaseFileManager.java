@@ -144,12 +144,25 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @return The stored file.
      */
     public File getFileFromBase64(File targetFolder, String content, String contentType) {
+        return getFileFromBase64(targetFolder, content, contentType, null);
+    }
+
+    /**
+     * Create a file from the provided BASE64 content.
+     *
+     * @param targetFolder The folder within which to store the file.
+     * @param content The BASE64 content to parse.
+     * @param contentType The declared content type of the content (used to determine the file's extension).
+     * @param fileName The file name to use.
+     * @return The stored file.
+     */
+    public File getFileFromBase64(File targetFolder, String content, String contentType, String fileName) {
         if (targetFolder == null) {
             targetFolder = getWebTmpFolder();
         }
         File tempFile;
         try {
-            tempFile = createFile(targetFolder, getFileExtension(contentType)).toFile();
+            tempFile = createFile(targetFolder, getFileExtension(contentType), fileName).toFile();
             // Construct the string from its BASE64 encoded bytes.
             byte[] decodedBytes = Base64.getDecoder().decode(content);
             FileUtils.writeByteArrayToFile(tempFile, decodedBytes);
@@ -212,19 +225,36 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @throws IOException If the string cannot be parsed.
      */
     public File getFileFromURLOrBase64(File targetFolder, String urlOrBase64, String contentType, String artifactType) throws IOException {
+        return getFileFromURLOrBase64(targetFolder, urlOrBase64, contentType, artifactType, null);
+    }
+
+    /**
+     * Create a file from the provided string which is expected to either be a URL or a BASE64 encoded string. If the
+     * string is a URL then a remote call will be made to fetch its contents, otherwise a BASE64 decoding will take place
+     * to retrieve the file's bytes.
+     *
+     * @param targetFolder The folder within which to store the file.
+     * @param urlOrBase64 The string to parse as a URL or BASE64 content.
+     * @param contentType The content type to consider for the content to determine the stored file's extension.
+     * @param artifactType The type of validation artifact this file corresponds to.
+     * @param fileName The file name to use.
+     * @return The stored file.
+     * @throws IOException If the string cannot be parsed.
+     */
+    public File getFileFromURLOrBase64(File targetFolder, String urlOrBase64, String contentType, String artifactType, String fileName) throws IOException {
         if (targetFolder == null) {
             targetFolder = getWebTmpFolder();
         }
         File outputFile;
         try {
-            outputFile = getFileFromURL(targetFolder, urlOrBase64, getFileExtension(contentType), null, null, null, artifactType);
+            outputFile = getFileFromURL(targetFolder, urlOrBase64, getFileExtension(contentType), fileName, null, null, artifactType);
         } catch (MalformedURLException e) {
             // Exception means that the text is not a valid URL.
             try {
-                outputFile = getFileFromBase64(targetFolder, urlOrBase64, contentType);
+                outputFile = getFileFromBase64(targetFolder, urlOrBase64, contentType, fileName);
             } catch (Exception e2) {
                 // This likely means that the is not a valid BASE64 string. Try to get the value as a plain string.
-                outputFile = getFileFromString(targetFolder, urlOrBase64, contentType);
+                outputFile = getFileFromString(targetFolder, urlOrBase64, contentType, fileName);
             }
         }
         return outputFile;
