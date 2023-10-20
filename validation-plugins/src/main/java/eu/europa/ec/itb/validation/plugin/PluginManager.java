@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * the validator when requested.
  */
 @Component
-@ConditionalOnBean(PluginConfigProvider.class)
 public class PluginManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginManager.class);

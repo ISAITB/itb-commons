@@ -40,17 +40,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>isaitb</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <version.springBoot>3.1.4</version.springBoot>
+        <version.springBoot>3.1.5</version.springBoot>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
-        <version.gitbTypes>1.20.1</version.gitbTypes>
+        <version.gitbTypes>1.21.0</version.gitbTypes>
         <version.commonsLang>3.12.0</version.commonsLang>
         <version.commonsConfiguration>2.9.0</version.commonsConfiguration>
         <version.commonsIo>2.12.0</version.commonsIo>
         <version.commonsCsv>1.10.0</version.commonsCsv>
+        <version.webjarsLocator>0.53</version.webjarsLocator>
         <version.webjarsBootstrap>3.4.1</version.webjarsBootstrap>
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
-        <version.webjarsJQuery>3.5.1</version.webjarsJQuery>
+        <version.webjarsJQuery>3.7.1</version.webjarsJQuery>
         <version.jaxb>4.0.0</version.jaxb>
         <version.jaxb-impl>4.0.1</version.jaxb-impl>
         <version.geoip2>3.0.1</version.geoip2>
@@ -350,6 +351,11 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${version.gson}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.webjars</groupId>
+                <artifactId>webjars-locator-core</artifactId>
+                <version>${version.webjarsLocator}</version>
             </dependency>
             <dependency>
                 <groupId>org.webjars</groupId>
