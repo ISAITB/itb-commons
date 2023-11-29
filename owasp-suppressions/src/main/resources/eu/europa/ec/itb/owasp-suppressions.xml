@@ -98,4 +98,11 @@
         <packageUrl regex="true">^pkg:maven/org\.thymeleaf/thymeleaf\-spring6@.*$</packageUrl>
         <cve>CVE-2023-38286</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-web-6.0.13.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-web@.*$</packageUrl>
+        <vulnerabilityName>CVE-2023-34053</vulnerabilityName>
+    </suppress>
 </suppressions>
