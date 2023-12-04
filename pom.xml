@@ -160,8 +160,7 @@
                         </dependency>
                     </dependencies>
                     <configuration>
-<!--                        <nvdApiServerId>nvdApi</nvdApiServerId>-->
-                        <nvdApiKey>44c11ebb-09c8-4a02-92ee-23e16f59539a</nvdApiKey>
+                        <nvdApiServerId>nvdApi</nvdApiServerId>
                         <failBuildOnCVSS>0</failBuildOnCVSS>
                         <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
                         <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
