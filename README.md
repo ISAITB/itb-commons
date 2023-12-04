@@ -1,5 +1,4 @@
 ![BuildStatus](https://github.com/ISAITB/itb-commons/actions/workflows/main.yml/badge.svg)
-![Coverage](.github/badges/jacoco.svg)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ISAITB_itb-commons&metric=coverage)](https://sonarcloud.io/summary/overall?id=ISAITB_itb-commons)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ISAITB_itb-commons&metric=security_rating)](https://sonarcloud.io/summary/overall?id=ISAITB_itb-commons)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ISAITB_itb-commons&metric=sqale_rating)](https://sonarcloud.io/summary/overall?id=ISAITB_itb-commons)
