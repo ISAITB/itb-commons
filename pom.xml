@@ -97,7 +97,7 @@
         <!-- Version overrides in Spring Boot - START -->
         <version.snakeyaml>1.33</version.snakeyaml> <!-- Spring Boot override to resolve CVE-2022-25857 -->
         <version.protobuf>3.21.9</version.protobuf> <!-- Protobuf override for the Jena transitive dependency to resolve CVE-2022-3509 -->
-        <version.logback>1.4.13</version.logback> <!-- Logback override to resolve CVE-2023-6378 -->
+        <version.logback>1.4.14</version.logback> <!-- Logback override to resolve CVE-2023-6378 -->
         <!-- Version overrides in Spring Boot - END -->
     </properties>
 
