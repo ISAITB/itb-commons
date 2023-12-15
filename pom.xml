@@ -84,7 +84,7 @@
         <!-- Plugin versions -->
         <version.plugin.mavenCompilerPlugin>3.11.0</version.plugin.mavenCompilerPlugin>
         <version.plugin.mavenJarPlugin>3.3.0</version.plugin.mavenJarPlugin>
-        <version.plugin.dependencyCheckPlugin>9.0.5</version.plugin.dependencyCheckPlugin>
+        <version.plugin.dependencyCheckPlugin>9.0.6</version.plugin.dependencyCheckPlugin>
         <version.plugin.frontendMavenPlugin>1.12.1</version.plugin.frontendMavenPlugin>
         <version.plugin.jacocoMavenPlugin>0.8.10</version.plugin.jacocoMavenPlugin>
         <version.plugin.versionsMavenPlugin>2.16.0</version.plugin.versionsMavenPlugin>
