@@ -90,7 +90,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
      */
     @GetMapping(value = "/{domain}/input/{id}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
-    public FileSystemResource getInput(@PathVariable String domain, @PathVariable String id) {
+    public FileSystemResource getInput(@PathVariable("domain") String domain, @PathVariable("id") String id) {
         WebDomainConfig domainConfig = domainConfigCache.getConfigForDomainName(domain);
         if (domainConfig == null || !domainConfig.getChannels().contains(ValidatorChannel.FORM)) {
             throw new NotFoundException();
@@ -115,9 +115,9 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
      */
     @GetMapping(value = "/{domain}/report/{id}/xml", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
-    public FileSystemResource getReportXml(@PathVariable String domain,
-                                           @PathVariable String id,
-                                           @RequestParam(defaultValue = "false") Boolean aggregate,
+    public FileSystemResource getReportXml(@PathVariable("domain") String domain,
+                                           @PathVariable("id") String id,
+                                           @RequestParam(name="aggregate", defaultValue = "false") Boolean aggregate,
                                            HttpServletResponse response) {
         WebDomainConfig domainConfig = domainConfigCache.getConfigForDomainName(domain);
         if (domainConfig == null || !domainConfig.getChannels().contains(ValidatorChannel.FORM)) {
@@ -147,9 +147,9 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
      */
     @GetMapping(value = "/{domain}/report/{id}/pdf", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
-    public FileSystemResource getReportPdf(@PathVariable String domain,
-                                           @PathVariable String id,
-                                           @RequestParam(defaultValue = "false") Boolean aggregate,
+    public FileSystemResource getReportPdf(@PathVariable("domain") String domain,
+                                           @PathVariable("id") String id,
+                                           @RequestParam(name="aggregate", defaultValue = "false") Boolean aggregate,
                                            HttpServletRequest request,
                                            HttpServletResponse response) {
         WebDomainConfig domainConfig = domainConfigCache.getConfigForDomainName(domain);
@@ -189,9 +189,9 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
      */
     @GetMapping(value = "/{domain}/report/{id}/csv", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
-    public FileSystemResource getReportCsv(@PathVariable String domain,
-                                           @PathVariable String id,
-                                           @RequestParam(defaultValue = "false") Boolean aggregate,
+    public FileSystemResource getReportCsv(@PathVariable("domain") String domain,
+                                           @PathVariable("id") String id,
+                                           @RequestParam(name="aggregate", defaultValue = "false") Boolean aggregate,
                                            HttpServletRequest request,
                                            HttpServletResponse response) {
         WebDomainConfig domainConfig = domainConfigCache.getConfigForDomainName(domain);
@@ -223,8 +223,8 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
      */
     @DeleteMapping(value = "/{domain}/report/{id}")
     @ResponseBody
-    public void deleteReport(@PathVariable String domain,
-                             @PathVariable String id) {
+    public void deleteReport(@PathVariable("domain") String domain,
+                             @PathVariable("id") String id) {
         WebDomainConfig domainConfig = domainConfigCache.getConfigForDomainName(domain);
         if (domainConfig == null || !domainConfig.getChannels().contains(ValidatorChannel.FORM)) {
             throw new NotFoundException();
@@ -257,7 +257,7 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
      */
     @DeleteMapping(value = "/{domain}/input/{id}")
     @ResponseBody
-    public void deleteInput(@PathVariable String domain, @PathVariable String id) {
+    public void deleteInput(@PathVariable("domain") String domain, @PathVariable("id") String id) {
         WebDomainConfig domainConfig = domainConfigCache.getConfigForDomainName(domain);
         if (domainConfig == null || !domainConfig.getChannels().contains(ValidatorChannel.FORM)) {
             throw new NotFoundException();
