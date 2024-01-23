@@ -23,10 +23,12 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.*;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
@@ -139,6 +141,31 @@ public class Utils {
     }
 
     /**
+     * Create a secured SchemaFactory.
+     *
+     * @return The SchemaFactory to use.
+     */
+    public static SchemaFactory secureSchemaFactory() {
+        /*
+         * Properties advised by OWASP (XMLConstants.ACCESS_EXTERNAL_DTD, XMLConstants.ACCESS_EXTERNAL_SCHEMA),
+         * result in unsupported property errors. This factory method is nonetheless maintained to keep a single
+         * point where we create SchemaFactory instances in case future updates are needed.
+         */
+        return SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    }
+
+    /**
+     * Create a secured StAX XMLInputFactory.
+     *
+     * @return The XMLInputFactory to use.
+     */
+    public static XMLInputFactory secureXMLInputFactory() {
+        var factory = XMLInputFactory.newDefaultFactory();
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        return factory;
+    }
+
+    /**
      * Serialise the given XML source to the provided output stream.
      *
      * @param content The source.
@@ -178,7 +205,7 @@ public class Utils {
     }
 
     /**
-     * Read an XML file from the provided stream and record on each node the its line number for
+     * Read an XML file from the provided stream and record on each node its line number for
      * subsequent user as user data.
      *
      * @param is The input stream.
@@ -209,8 +236,7 @@ public class Utils {
              * @see DefaultHandler#startElement(String, String, String, Attributes)
              */
             @Override
-            public void startElement(final String uri, final String localName, final String qName, final Attributes attributes)
-                    throws SAXException {
+            public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
                 addTextIfNeeded();
                 final org.w3c.dom.Element el = doc.createElement(qName);
                 for (int i = 0; i < attributes.getLength(); i++) {
@@ -239,7 +265,7 @@ public class Utils {
              * @see DefaultHandler#characters(char[], int, int)
              */
             @Override
-            public void characters(final char[] ch, final int start, final int length) throws SAXException {
+            public void characters(final char[] ch, final int start, final int length) {
                 textBuffer.append(ch, start, length);
             }
 
@@ -247,10 +273,12 @@ public class Utils {
              * Add text under the current node.
              */
             private void addTextIfNeeded() {
-                if (textBuffer.length() > 0) {
+                if (!textBuffer.isEmpty()) {
                     final org.w3c.dom.Element el = elementStack.peek();
                     final Node textNode = doc.createTextNode(textBuffer.toString());
-                    el.appendChild(textNode);
+                    if (el != null) {
+                        el.appendChild(textNode);
+                    }
                     textBuffer.delete(0, textBuffer.length());
                 }
             }

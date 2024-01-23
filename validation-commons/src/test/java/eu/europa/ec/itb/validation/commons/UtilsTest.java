@@ -14,6 +14,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -92,12 +93,12 @@ class UtilsTest extends BaseTest {
         var child1 = childNodes.item(0);
         assertEquals("Child1", child1.getTextContent());
         assertNotNull(child1.getUserData(Utils.LINE_NUMBER_KEY_NAME));
-        assertTrue(child1.getUserData(Utils.LINE_NUMBER_KEY_NAME) instanceof String);
+        assertInstanceOf(String.class, child1.getUserData(Utils.LINE_NUMBER_KEY_NAME));
         assertEquals(2, Integer.parseInt((String) child1.getUserData(Utils.LINE_NUMBER_KEY_NAME)));
         var child2 = childNodes.item(1);
         assertEquals("Child2", child2.getTextContent());
         assertNotNull(child2.getUserData(Utils.LINE_NUMBER_KEY_NAME));
-        assertTrue(child2.getUserData(Utils.LINE_NUMBER_KEY_NAME) instanceof String);
+        assertInstanceOf(String.class, child2.getUserData(Utils.LINE_NUMBER_KEY_NAME));
         assertEquals(3, Integer.parseInt((String) child2.getUserData(Utils.LINE_NUMBER_KEY_NAME)));
     }
 
@@ -368,8 +369,8 @@ class UtilsTest extends BaseTest {
         var localiser = mock(LocalisationHelper.class);
         when(localiser.localise(eq("validator.label.reportItemTotalOccurrences"), any())).thenAnswer((a) -> {
             assertEquals(2, a.getArguments().length);
-            assertTrue(a.getArgument(0) instanceof String);
-            assertTrue(a.getArgument(1) instanceof Long);
+            assertInstanceOf(String.class, a.getArgument(0));
+            assertInstanceOf(Long.class, a.getArgument(1));
             return "Total "+ a.getArgument(1);
         });
         return localiser;
@@ -403,6 +404,20 @@ class UtilsTest extends BaseTest {
         when(config.getMaximumReportsForXmlOutput()).thenReturn(1L);
         Utils.limitReportItemsIfNeeded(report, config);
         assertEquals(1, report.getReports().getInfoOrWarningOrError().size());
+    }
+
+    @Test
+    void testSecureSchemaFactory() {
+        var result = Utils.secureSchemaFactory();
+        assertNotNull(result);
+    }
+
+    @Test
+    void testSecureXMLInputFactory() {
+        var result = Utils.secureXMLInputFactory();
+        assertNotNull(result);
+        assertInstanceOf(Boolean.class, result.getProperty(XMLInputFactory.SUPPORT_DTD));
+        assertFalse((Boolean) result.getProperty(XMLInputFactory.SUPPORT_DTD));
     }
 
 }
