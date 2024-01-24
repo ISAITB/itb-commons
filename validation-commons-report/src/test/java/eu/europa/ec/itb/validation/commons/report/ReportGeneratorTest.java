@@ -109,7 +109,7 @@ class ReportGeneratorTest {
     @Test
     void testWriteTARReportFromObject() {
         var pdfPath = Path.of(tmpPath.toString(), "report.pdf");
-        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(createTAR(), Files.newOutputStream(pdfPath), (report) -> mockReportLabels()));
+        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(createTAR(), Files.newOutputStream(pdfPath), (report) -> mockReportLabels(), false));
         assertTrue(Files.exists(pdfPath));
         assertTrue(Files.isRegularFile(pdfPath));
     }
@@ -121,7 +121,7 @@ class ReportGeneratorTest {
         var jaxbContext = JAXBContext.newInstance(TAR.class, TestCaseReportType.class, TestStepStatus.class);
         jaxbContext.createMarshaller().marshal(new JAXBElement<>(new QName("http://www.gitb.com/tr/v1/", "TestCaseReport"), TAR.class, report), Files.newOutputStream(xmlPath));
         var pdfPath = Path.of(tmpPath.toString(), "report.pdf");
-        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(Files.newInputStream(xmlPath), Files.newOutputStream(pdfPath), (r) -> mockReportLabels()));
+        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(Files.newInputStream(xmlPath), Files.newOutputStream(pdfPath), (r) -> mockReportLabels(), false));
         assertTrue(Files.exists(pdfPath));
         assertTrue(Files.isRegularFile(pdfPath));
     }

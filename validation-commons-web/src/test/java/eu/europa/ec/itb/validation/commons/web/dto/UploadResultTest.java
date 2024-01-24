@@ -51,6 +51,7 @@ class UploadResultTest {
         assertEquals(2L, result.getMaximumReportsForXmlOutput());
         assertEquals("LABEL[type1]", result.getValidationTypeLabel());
         assertFalse(result.isShowAggregateReport());
+        assertFalse(result.isRichTextReports());
 
         // Check message setting.
         var result2 = new UploadResult<>();

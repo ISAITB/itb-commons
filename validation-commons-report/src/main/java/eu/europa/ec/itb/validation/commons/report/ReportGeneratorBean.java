@@ -26,9 +26,10 @@ public class ReportGeneratorBean {
      * @param inFile The input XML report.
      * @param outFile The output PDF report.
      * @param helper The localisation helper to use for the report's labels.
+     * @param richTextReportItems Whether rich text report items are allowed.
      */
-    public void writeReport(File inFile, File outFile, LocalisationHelper helper) {
-        writeReport(inFile, outFile, tar -> getReportLabels(helper, tar));
+    public void writeReport(File inFile, File outFile, LocalisationHelper helper, boolean richTextReportItems) {
+        writeReport(inFile, outFile, tar -> getReportLabels(helper, tar), richTextReportItems);
     }
 
     /**
@@ -37,10 +38,11 @@ public class ReportGeneratorBean {
      * @param inFile The input XML report.
      * @param outFile The output PDF report.
      * @param labelProvider A function to provide the labels to use in the report.
+     * @param richTextReportItems Whether rich text report items are allowed.
      */
-    public void writeReport(File inFile, File outFile, Function<TAR, ReportLabels> labelProvider) {
+    public void writeReport(File inFile, File outFile, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
         try (FileInputStream fis = new FileInputStream(inFile); FileOutputStream fos = new FileOutputStream(outFile)) {
-            reportGenerator.writeTARReport(fis, fos, labelProvider);
+            reportGenerator.writeTARReport(fis, fos, labelProvider, richTextReportItems);
         } catch (Exception e) {
             throw new ValidatorException("validator.label.exception.unableToGeneratePDFReport", e);
         }
@@ -52,9 +54,10 @@ public class ReportGeneratorBean {
      * @param report The TAR report object as input.
      * @param outFile The output PDF report.
      * @param helper The localisation helper to use for the report's labels.
+     * @param richTextReportItems Whether rich text report items are allowed.
      */
-    public void writeReport(TAR report, File outFile, LocalisationHelper helper) {
-        writeReport(report, outFile, tar -> getReportLabels(helper, tar));
+    public void writeReport(TAR report, File outFile, LocalisationHelper helper, boolean richTextReportItems) {
+        writeReport(report, outFile, tar -> getReportLabels(helper, tar), richTextReportItems);
     }
 
     /**
@@ -63,10 +66,11 @@ public class ReportGeneratorBean {
      * @param report The TAR report object as input.
      * @param outFile The output PDF report.
      * @param labelProvider A function to provide the labels to use in the report.
+     * @param richTextReportItems Whether rich text report items are allowed.
      */
-    public void writeReport(TAR report, File outFile, Function<TAR, ReportLabels> labelProvider) {
+    public void writeReport(TAR report, File outFile, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
         try (FileOutputStream fos = new FileOutputStream(outFile)) {
-            reportGenerator.writeTARReport(report, fos, labelProvider);
+            reportGenerator.writeTARReport(report, fos, labelProvider, richTextReportItems);
         } catch (Exception e) {
             throw new ValidatorException("validator.label.exception.unableToGeneratePDFReport", e);
         }

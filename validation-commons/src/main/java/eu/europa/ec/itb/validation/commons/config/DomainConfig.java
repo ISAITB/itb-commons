@@ -44,6 +44,7 @@ public class DomainConfig {
     private Map<String, List<PluginInfo>> pluginPerTypeConfig;
     private final Map<String, Boolean> remoteArtefactStatus = new HashMap<>();
     private Map<String, ErrorResponseTypeEnum> remoteArtifactLoadErrorResponse;
+    private boolean richTextReports;
 
     private String reportId;
     private String reportName;
@@ -53,6 +54,16 @@ public class DomainConfig {
     private String reportCustomisationIdDefault;
     private String validationServiceName;
     private String validationServiceVersion;
+
+    /** @return Whether report items can have rich text content. */
+    public boolean isRichTextReports() {
+        return richTextReports;
+    }
+
+    /** @param richTextReports Whether report items can have rich text content. */
+    public void setRichTextReports(boolean richTextReports) {
+        this.richTextReports = richTextReports;
+    }
 
     /**
      * Apply configured metadata to the TAR report.

@@ -377,9 +377,13 @@ class UtilsTest extends BaseTest {
     }
 
     private BAR createBAR() {
+        return createBAR("description");
+    }
+
+    private BAR createBAR(String description) {
         var bar = new BAR();
         bar.setTest("test");
-        bar.setDescription("description");
+        bar.setDescription(description);
         bar.setType("type");
         bar.setLocation("location");
         bar.setValue("value");
@@ -420,4 +424,29 @@ class UtilsTest extends BaseTest {
         assertFalse((Boolean) result.getProperty(XMLInputFactory.SUPPORT_DTD));
     }
 
+    @Test
+    void testSanitizeInactive() {
+        var report = new TAR();
+        var objectFactory = new ObjectFactory();
+        report.setReports(new TestAssertionGroupReportsType());
+        report.getReports().getInfoOrWarningOrError().add(objectFactory.createTestAssertionGroupReportsTypeError(createBAR("<a href=\"something\">TEXT</a> <b>BOLD</b>")));
+        var config = mock(DomainConfig.class);
+        when(config.isRichTextReports()).thenReturn(false);
+
+        Utils.sanitizeIfNeeded(report, config);
+        assertEquals("<a href=\"something\">TEXT</a> <b>BOLD</b>", ((BAR)report.getReports().getInfoOrWarningOrError().get(0).getValue()).getDescription());
+    }
+
+    @Test
+    void testSanitizeActive() {
+        var report = new TAR();
+        var objectFactory = new ObjectFactory();
+        report.setReports(new TestAssertionGroupReportsType());
+        report.getReports().getInfoOrWarningOrError().add(objectFactory.createTestAssertionGroupReportsTypeError(createBAR("<a href=\"something\" target=\"_self\">TEXT</a> <b>BOLD</b>")));
+        var config = mock(DomainConfig.class);
+        when(config.isRichTextReports()).thenReturn(true);
+
+        Utils.sanitizeIfNeeded(report, config);
+        assertEquals("<a href=\"something\">TEXT</a> BOLD", ((BAR)report.getReports().getInfoOrWarningOrError().get(0).getValue()).getDescription());
+    }
 }

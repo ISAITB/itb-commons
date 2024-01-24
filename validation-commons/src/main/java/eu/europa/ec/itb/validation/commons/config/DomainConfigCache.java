@@ -269,6 +269,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setReportCustomisationIdDefault(config.getString("validator.report.customisationId"));
                     domainConfig.setReportCustomisationIds(ParseUtils.parseMap("validator.report.customisationId", config, domainConfig.getType()));
                     // Load optional report metadata - end.
+                    domainConfig.setRichTextReports(config.getBoolean("validator.richTextReports", false));
                     // Allow subclasses to extend the configuration as needed.
                     addDomainConfiguration(domainConfig, config);
                     completeValidationArtifactConfig(domainConfig);

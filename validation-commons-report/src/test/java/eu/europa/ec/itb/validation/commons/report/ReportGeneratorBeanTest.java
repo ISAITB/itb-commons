@@ -81,16 +81,16 @@ class ReportGeneratorBeanTest {
             assertTrue(result instanceof ReportLabels);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             return null;
-        }).when(reportGenerator).writeTARReport(any(TAR.class), any(), any());
+        }).when(reportGenerator).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
         var bean = createBean(reportGenerator);
-        assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), (report) -> labels));
-        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any());
+        assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), (report) -> labels, false));
+        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
         // Alternate call.
         reset(reportGenerator);
         var localiser = mock(LocalisationHelper.class);
         when(localiser.localise(anyString())).thenReturn("Label");
-        assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), localiser));
-        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any());
+        assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), localiser, false));
+        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
     }
 
     @Test
@@ -107,10 +107,10 @@ class ReportGeneratorBeanTest {
             assertTrue(result instanceof ReportLabels);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             throw new IllegalStateException();
-        }).when(reportGenerator).writeTARReport(any(TAR.class), any(), any());
+        }).when(reportGenerator).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
         var bean = createBean(reportGenerator);
-        assertThrows(ValidatorException.class, () -> bean.writeReport(tar, outputFile.toFile(), (report) -> labels));
-        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any());
+        assertThrows(ValidatorException.class, () -> bean.writeReport(tar, outputFile.toFile(), (report) -> labels, false));
+        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
     }
 
 
@@ -130,16 +130,16 @@ class ReportGeneratorBeanTest {
             assertTrue(result instanceof ReportLabels);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             return null;
-        }).when(reportGenerator).writeTARReport(any(FileInputStream.class), any(), any());
+        }).when(reportGenerator).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
         var bean = createBean(reportGenerator);
-        assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), (report) -> labels));
-        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any());
+        assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), (report) -> labels, false));
+        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
         // Alternate call.
         reset(reportGenerator);
         var localiser = mock(LocalisationHelper.class);
         when(localiser.localise(anyString())).thenReturn("Label");
-        assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), localiser));
-        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any());
+        assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), localiser, false));
+        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
     }
 
     @Test
@@ -158,10 +158,10 @@ class ReportGeneratorBeanTest {
             assertTrue(result instanceof ReportLabels);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             throw new IllegalStateException();
-        }).when(reportGenerator).writeTARReport(any(FileInputStream.class), any(), any());
+        }).when(reportGenerator).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
         var bean = createBean(reportGenerator);
-        assertThrows(ValidatorException.class, () -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), (report) -> labels));
-        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any());
+        assertThrows(ValidatorException.class, () -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), (report) -> labels, false));
+        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
     }
 
     @Test

@@ -78,6 +78,7 @@
         <version.pdfbox>2.0.28</version.pdfbox>
         <version.com.openhtmltopdf>1.0.10</version.com.openhtmltopdf>
         <version.org.jsoup>1.15.4</version.org.jsoup>
+        <version.owaspHtmlSanitizer>20220608.1</version.owaspHtmlSanitizer>
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
         <version.jena>4.3.2</version.jena>
         <version.libthrift>0.15.0</version.libthrift>
@@ -519,6 +520,11 @@
                 <groupId>org.apache.pdfbox</groupId>
                 <artifactId>pdfbox</artifactId>
                 <version>${version.pdfbox}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+                <artifactId>owasp-java-html-sanitizer</artifactId>
+                <version>${version.owaspHtmlSanitizer}</version>
             </dependency>
             <!-- Logback override - Start -->
             <dependency>

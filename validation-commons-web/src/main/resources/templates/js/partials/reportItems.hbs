@@ -10,7 +10,11 @@
                                 {{#case 'warning'}}<i class="fa fa-exclamation-triangle report-item-icon warning-icon item-info-warning"></i>{{/case}}
                                 {{#case 'info'}}<i class="fa fa-info-circle report-item-icon info-icon item-info-info"></i>{{/case}}
                             {{/switch}}
-                            <span class="item-info-text">{{value.description}}</span>
+                            {{#if ../data.richTextReports}}
+                                <span class="item-info-text item-info-text-rich">{{{value.description}}}</span>
+                            {{else}}
+                                <span class="item-info-text">{{value.description}}</span>
+                            {{/if}}
                             {{#if ../clickableItems}}
                                 <span style="display: none" class="item-info-location">{{value.location}}</span>
                             {{/if}}

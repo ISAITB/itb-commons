@@ -31,6 +31,17 @@ public class UploadResult <T extends Translations> {
     private String resultValue;
     private T translations;
     private List<String> additionalErrorMessages;
+    private boolean richTextReports;
+
+    /** @return Whether report items can have rich text content. */
+    public boolean isRichTextReports() {
+        return richTextReports;
+    }
+
+    /** @param richTextReports Whether report items can have rich text content. */
+    public void setRichTextReports(boolean richTextReports) {
+        this.richTextReports = richTextReports;
+    }
 
     /**
      * @return The (optional) error message to display.
@@ -255,6 +266,7 @@ public class UploadResult <T extends Translations> {
         setDate(detailedReport.getDate().toString());
         setResultValue(detailedReport.getResult().value());
         setTranslations(translations);
+        setRichTextReports(domainConfig.isRichTextReports());
         if (message == null && !domainConfig.checkRemoteArtefactStatus(validationType) && domainConfig.getResponseForRemoteArtefactLoadFailure(validationType) == ErrorResponseTypeEnum.WARN) {
             // We only treat the case where we need to report a warning. When needing to respond with an error this has already
             // been done before validation took place.
