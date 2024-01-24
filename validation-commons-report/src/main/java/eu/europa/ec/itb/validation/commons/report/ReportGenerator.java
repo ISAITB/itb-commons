@@ -37,7 +37,6 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
@@ -78,9 +77,10 @@ public class ReportGenerator {
      * @param inputStream The stream for the TAR XML report to use as input.
      * @param outputStream The stream on which to write the generated report.
      * @param labelProvider A function to provide the labels to use in the report.
+     * @param richTextReportItems Whether rich text report items are allowed.
      */
-    public void writeTARReport(InputStream inputStream, OutputStream outputStream, Function<TAR, ReportLabels> labelProvider) {
-        writeTARReport(inputStream, outputStream, true, labelProvider);
+    public void writeTARReport(InputStream inputStream, OutputStream outputStream, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
+        writeTARReport(inputStream, outputStream, true, labelProvider, richTextReportItems);
     }
 
     /**
@@ -89,9 +89,10 @@ public class ReportGenerator {
      * @param reportType The TAR report to use as input.
      * @param outputStream The stream on which to write the generated report.
      * @param labelProvider A function to provide the labels to use in the report.
+     * @param richTextReportItems Whether rich text report items are allowed.
      */
-    public void writeTARReport(TAR reportType, OutputStream outputStream, Function<TAR, ReportLabels> labelProvider) {
-        writeTARReport(reportType, outputStream, true, labelProvider);
+    public void writeTARReport(TAR reportType, OutputStream outputStream, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
+        writeTARReport(reportType, outputStream, true, labelProvider, richTextReportItems);
     }
 
     /**
@@ -101,9 +102,10 @@ public class ReportGenerator {
      * @param outputStream The stream on which to write the generated report.
      * @param addContext True if the context information from the TAR object should also be added to the PDF output.
      * @param labelProvider A function to provide the labels to use in the report.
+     * @param richTextReportItems Whether rich text report items are allowed.
      */
-    public void writeTARReport(TAR reportType, OutputStream outputStream, boolean addContext, Function<TAR, ReportLabels> labelProvider) {
-        writeTestStepReport(reportType, outputStream, addContext, labelProvider);
+    public void writeTARReport(TAR reportType, OutputStream outputStream, boolean addContext, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
+        writeTestStepReport(reportType, outputStream, addContext, labelProvider, richTextReportItems);
     }
 
     /**
@@ -113,9 +115,10 @@ public class ReportGenerator {
      * @param outputStream The stream on which to write the generated report.
      * @param addContext True if the context information from the TAR object should also be added to the PDF output.
      * @param labelProvider A function to provide the labels to use in the report.
+     * @param richTextReportItems Whether rich text report items are allowed.
      */
-    public void writeTARReport(InputStream inputStream, OutputStream outputStream, boolean addContext, Function<TAR, ReportLabels> labelProvider) {
-        writeTARReport(Utils.toTAR(inputStream), outputStream, addContext, labelProvider);
+    public void writeTARReport(InputStream inputStream, OutputStream outputStream, boolean addContext, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
+        writeTARReport(Utils.toTAR(inputStream), outputStream, addContext, labelProvider, richTextReportItems);
     }
 
     /**
@@ -199,8 +202,9 @@ public class ReportGenerator {
      * @param outputStream The stream on which to write the generated report.
      * @param addContext True if the context information from the TAR object should also be added to the PDF output.
      * @param labelProvider A function to provide the labels to use in the report.
+     * @param richTextReportItems Whether rich text report items are allowed.
      */
-    private <T extends TestStepReportType> void writeTestStepReport(T reportType, OutputStream outputStream, boolean addContext, Function<T, ReportLabels> labelProvider) {
+    private <T extends TestStepReportType> void writeTestStepReport(T reportType, OutputStream outputStream, boolean addContext, Function<T, ReportLabels> labelProvider, boolean richTextReportItems) {
         try {
             var labels = labelProvider.apply(reportType);
             Report report = fromTestStepReportType(reportType, labels.getTitle(), addContext);
@@ -224,6 +228,7 @@ public class ReportGenerator {
             parameters.put("assertionIdLabel", labels.getAssertionId());
             parameters.put("resultFindingsLabel", labels.getFindings());
             parameters.put("resultFindingsDetailsLabel", labels.getFindingsDetails());
+            parameters.put("richTextReportItems", richTextReportItems);
             if (report.getReportItems() != null && !report.getReportItems().isEmpty()) {
                 parameters.put("reportItems", report.getReportItems());
             }

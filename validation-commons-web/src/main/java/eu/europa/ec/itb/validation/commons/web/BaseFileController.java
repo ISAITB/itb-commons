@@ -165,7 +165,8 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
                 reportGenerator.writeReport(
                         reportFileXml,
                         reportFile,
-                        new LocalisationHelper(domainConfig, localeResolver.resolveLocale(request, response, domainConfig, appConfig))
+                        new LocalisationHelper(domainConfig, localeResolver.resolveLocale(request, response, domainConfig, appConfig)),
+                        domainConfig.isRichTextReports()
                 );
             } else {
                 throw new NotFoundException();

@@ -58,6 +58,8 @@ function registerReportEventListeners() {
     $(".downloadReportCSV").off().on("click", function(event) { downloadReportCSV(); event.preventDefault(); });
     $(".downloadReportCSVAggregate").off().on("click", function(event) { downloadReportCSVAggregate(); event.preventDefault(); });
     $(".toggleReportDisplay").off().on("click", toggleReportDisplay);
+    $(".item-info-text-rich a").off().on("click", function(event) { event.stopPropagation(); })
+    $(".item-info-text-rich a").attr("target", "_blank");
 }
 
 function doReload() {

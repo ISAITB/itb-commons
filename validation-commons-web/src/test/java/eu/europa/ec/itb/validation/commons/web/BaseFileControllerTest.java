@@ -136,7 +136,7 @@ class BaseFileControllerTest extends BaseTest {
         assertNotNull(result);
         assertEquals(expectedPdfFile, result.getFile().toPath());
         verify(servletResponse, times(1)).setHeader("Content-Disposition", "attachment; filename=report_"+reportUuid+".pdf");
-        verify(reportGenerator, times(1)).writeReport(eq(xmlFile.toFile()), eq(expectedPdfFile.toFile()), any(LocalisationHelper.class));
+        verify(reportGenerator, times(1)).writeReport(eq(xmlFile.toFile()), eq(expectedPdfFile.toFile()), any(LocalisationHelper.class), anyBoolean());
     }
 
     @Test

@@ -10,6 +10,8 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -39,6 +41,12 @@ import java.util.*;
 public class Utils {
 
     private static final JAXBContext tdlJaxbContext;
+    private final static PolicyFactory REPORT_ITEM_POLICY = (new HtmlPolicyBuilder())
+            .allowStandardUrlProtocols()
+            .allowElements("a")
+            .allowAttributes("href")
+            .onElements("a")
+            .toFactory();
 
     static {
         try {
@@ -597,6 +605,24 @@ public class Utils {
         // Apply detailed report limit for report items (if needed).
         if (report.getReports() != null && report.getReports().getInfoOrWarningOrError().size() > domainConfig.getMaximumReportsForXmlOutput()) {
             report.getReports().getInfoOrWarningOrError().subList(domainConfig.getMaximumReportsForXmlOutput().intValue(), report.getReports().getInfoOrWarningOrError().size()).clear();
+        }
+    }
+
+    /**
+     * In case report items with rich text descriptions are allowed ensure these are sanitized to only include expected
+     * content (links).
+     *
+     * @param report The report to sanitize (adapted through this call).
+     * @param domainConfig The applicable domain configuration.
+     * @param <R> The specific domain configuration subclass.
+     */
+    public static <R extends DomainConfig> void sanitizeIfNeeded(TAR report, R domainConfig) {
+        if (domainConfig.isRichTextReports() && report != null && report.getReports() != null) {
+            for (var reportItem: report.getReports().getInfoOrWarningOrError()) {
+                if (reportItem.getValue() instanceof BAR barItem) {
+                    barItem.setDescription(REPORT_ITEM_POLICY.sanitize(barItem.getDescription()));
+                }
+            }
         }
     }
 
