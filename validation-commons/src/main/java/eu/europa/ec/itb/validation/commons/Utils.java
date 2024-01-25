@@ -10,14 +10,14 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import org.apache.xerces.jaxp.validation.XMLSchemaFactory;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
+import org.w3c.dom.ls.LSResourceResolver;
+import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.XMLConstants;
@@ -26,11 +26,14 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.*;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Schema;
+import javax.xml.validation.Validator;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
@@ -149,17 +152,54 @@ public class Utils {
     }
 
     /**
-     * Create a secured SchemaFactory.
+     * Validate XML content using an XML Schema securely.
+     * <p/>
+     * Findings will be reported through the provided error handler which is also returned by this method.
      *
-     * @return The SchemaFactory to use.
+     * @param inputToValidate The input to validate.
+     * @param schemaToValidateWith The schema to use.
+     * @param errorHandler The error handler to configure (optional).
+     * @param resourceResolver The resource resolver to configure (optional).
+     * @param locale The locale to use for th parsing (optional).
      */
-    public static SchemaFactory secureSchemaFactory() {
+    public static void secureSchemaValidation(InputStream inputToValidate, InputStream schemaToValidateWith, ErrorHandler errorHandler, LSResourceResolver resourceResolver, Locale locale) {
         /*
-         * Properties advised by OWASP (XMLConstants.ACCESS_EXTERNAL_DTD, XMLConstants.ACCESS_EXTERNAL_SCHEMA),
-         * result in unsupported property errors. This factory method is nonetheless maintained to keep a single
-         * point where we create SchemaFactory instances in case future updates are needed.
+         * We create specifically a Xerces parser to allow localisation of output messages.
+         * The security configuration for the Xerces parser involves:
+         * - Setting the FEATURE_SECURE_PROCESSING to true.
+         * - Using a secured underlying parser (see secureXMLInputFactory()) that completely disables DTD processing.
+         * Xerces does not directly support the JAXP 1.5 features to disable XXE (ACCESS_EXTERNAL_DTD, ACCESS_EXTERNAL_SCHEMA)
+         * but we ensure secure processing by means of the secured underlying parser.
          */
-        return SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        XMLSchemaFactory factory = new XMLSchemaFactory();
+        if (errorHandler != null) {
+            factory.setErrorHandler(errorHandler);
+        }
+        if (resourceResolver != null) {
+            factory.setResourceResolver(resourceResolver);
+        }
+        Schema schema;
+        try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            schema = factory.newSchema(new StreamSource(schemaToValidateWith));
+        } catch (SAXException e) {
+            throw new IllegalStateException("Unable to configure schema", e);
+        }
+        Validator validator = schema.newValidator();
+        try {
+            if (locale != null) {
+                validator.setProperty("http://apache.org/xml/properties/locale", locale);
+            }
+            validator.setErrorHandler(factory.getErrorHandler());
+            validator.setResourceResolver(factory.getResourceResolver());
+        } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
+            throw new IllegalStateException("Unable to configure schema validator", e);
+        }
+        try {
+            validator.validate(new StAXSource(secureXMLInputFactory().createXMLStreamReader(inputToValidate)));
+        } catch (SAXException | IOException | XMLStreamException e) {
+            throw new IllegalStateException("Unable to validate input", e);
+        }
     }
 
     /**

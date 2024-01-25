@@ -10,17 +10,24 @@ import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.test.BaseTest;
 import org.apache.commons.lang3.LocaleUtils;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.ls.LSResourceResolver;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -31,8 +38,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class UtilsTest extends BaseTest {
 
@@ -411,9 +417,41 @@ class UtilsTest extends BaseTest {
     }
 
     @Test
-    void testSecureSchemaFactory() {
-        var result = Utils.secureSchemaFactory();
-        assertNotNull(result);
+    void testSecureSchemaValidator() throws IOException, SAXException, XMLStreamException {
+        var errorHandler = mock(ErrorHandler.class);
+        var resourceResolver = mock(LSResourceResolver.class);
+        // Test to ensure XXE is blocked.
+        String xmlToReject = """
+<?xml version="1.0"?>
+<!DOCTYPE replace [<!ENTITY xxe "Attack"> ]>
+<foo>
+  <bar>&xxe;</bar>
+</foo>
+                """;
+        assertThrows(IllegalStateException.class, () -> {
+            try (
+                    var inputStream = new ByteArrayInputStream(xmlToReject.getBytes(StandardCharsets.UTF_8));
+                    var schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/PurchaseOrder.xsd")
+            ) {
+                Utils.secureSchemaValidation(inputStream, schemaStream, errorHandler, resourceResolver, Locale.FRENCH);
+            }
+        });
+        // Test to ensure non-XXE content is not blocked.
+        String xmlToParse = """
+<?xml version="1.0"?>
+<foo>
+  <bar>TEXT</bar>
+</foo>
+                """;
+        assertDoesNotThrow(() -> {
+            try (
+                    var inputStream = new ByteArrayInputStream(xmlToParse.getBytes(StandardCharsets.UTF_8));
+                    var schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/PurchaseOrder.xsd")
+            ) {
+                Utils.secureSchemaValidation(inputStream, schemaStream, errorHandler, resourceResolver, Locale.FRENCH);
+            }
+        });
+        verify(errorHandler, atLeastOnce()).error(any(SAXParseException.class));
     }
 
     @Test
