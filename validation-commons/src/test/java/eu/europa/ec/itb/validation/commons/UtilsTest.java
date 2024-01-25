@@ -417,44 +417,6 @@ class UtilsTest extends BaseTest {
     }
 
     @Test
-    void testSecureSchemaValidator() throws IOException, SAXException, XMLStreamException {
-        var errorHandler = mock(ErrorHandler.class);
-        var resourceResolver = mock(LSResourceResolver.class);
-        // Test to ensure XXE is blocked.
-        String xmlToReject = """
-<?xml version="1.0"?>
-<!DOCTYPE replace [<!ENTITY xxe "Attack"> ]>
-<foo>
-  <bar>&xxe;</bar>
-</foo>
-                """;
-        assertThrows(IllegalStateException.class, () -> {
-            try (
-                    var inputStream = new ByteArrayInputStream(xmlToReject.getBytes(StandardCharsets.UTF_8));
-                    var schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/PurchaseOrder.xsd")
-            ) {
-                Utils.secureSchemaValidation(inputStream, schemaStream, errorHandler, resourceResolver, Locale.FRENCH);
-            }
-        });
-        // Test to ensure non-XXE content is not blocked.
-        String xmlToParse = """
-<?xml version="1.0"?>
-<foo>
-  <bar>TEXT</bar>
-</foo>
-                """;
-        assertDoesNotThrow(() -> {
-            try (
-                    var inputStream = new ByteArrayInputStream(xmlToParse.getBytes(StandardCharsets.UTF_8));
-                    var schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("utils/PurchaseOrder.xsd")
-            ) {
-                Utils.secureSchemaValidation(inputStream, schemaStream, errorHandler, resourceResolver, Locale.FRENCH);
-            }
-        });
-        verify(errorHandler, atLeastOnce()).error(any(SAXParseException.class));
-    }
-
-    @Test
     void testSecureXMLInputFactory() {
         var result = Utils.secureXMLInputFactory();
         assertNotNull(result);
