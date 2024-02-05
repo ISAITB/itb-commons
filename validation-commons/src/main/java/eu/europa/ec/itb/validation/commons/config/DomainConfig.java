@@ -5,6 +5,7 @@ import com.gitb.tr.ValidationOverview;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.artifact.ExternalArtifactSupport;
 import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
+import eu.europa.ec.itb.validation.commons.artifact.ValidationArtifactInfo;
 import eu.europa.ec.itb.validation.plugin.PluginInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -646,4 +647,28 @@ public class DomainConfig {
     public void setReportCustomisationIdDefault(String reportCustomisationIdDefault) {
         this.reportCustomisationIdDefault = reportCustomisationIdDefault;
     }
+
+    /**
+     * @return true if the domain defines any remote artifacts.
+     */
+    public boolean hasRemoteArtifacts() {
+        return getArtifactInfo().values().stream().anyMatch(TypedValidationArtifactInfo::hasRemoteArtifacts);
+    }
+
+    /**
+     * @return true if the domain defines any remote artifacts for the given validation type.
+     */
+    public boolean hasRemoteArtifacts(String validationType) {
+        TypedValidationArtifactInfo info = getArtifactInfo().get(validationType);
+        return info != null && info.hasRemoteArtifacts();
+    }
+
+    /**
+     * @return true if the domain defines any remote artifacts for the given validation type and artifact type.
+     */
+    public boolean hasRemoteArtifacts(String validationType, String artifactType) {
+        ValidationArtifactInfo info = getArtifactInfo().get(validationType).get(artifactType);
+        return info != null && info.getRemoteArtifacts() != null && !info.getRemoteArtifacts().isEmpty();
+    }
+
 }
