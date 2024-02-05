@@ -600,15 +600,17 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             preconfiguredLocalArtifactMap.put(key, files);
         }
         List<FileInfo> allFiles = new ArrayList<>(preconfiguredLocalArtifactMap.get(key));
-        // Remote files - these are already pre-processed as part of the bootstrap.
-        preconfiguredRemoteArtifactMap.computeIfAbsent(key, k -> {
-            logger.warn("Remote validation artifacts were not found to be cached. This is not normal as caching is done via the periodic reload.");
-            return getRemoteValidationArtifacts(domainConfig, validationType, artifactTypeToUse);
-        });
-        allFiles.addAll(preconfiguredRemoteArtifactMap.get(key));
-        // Check to see if we should stop the process due to remote artefact load failures.
-        if (!domainConfig.checkRemoteArtefactStatus(validationType) && domainConfig.getResponseForRemoteArtefactLoadFailure(validationType) == ErrorResponseTypeEnum.FAIL) {
-            throw new ValidatorException("validator.label.exception.failureToLoadRemoteArtefactsError");
+        if (domainConfig.hasRemoteArtifacts(validationType, artifactTypeToUse)) {
+            // Remote files - these are already pre-processed as part of the bootstrap.
+            preconfiguredRemoteArtifactMap.computeIfAbsent(key, k -> {
+                logger.warn("Remote validation artifacts were not found to be cached. This is not normal as caching is done via the periodic reload.");
+                return getRemoteValidationArtifacts(domainConfig, validationType, artifactTypeToUse);
+            });
+            allFiles.addAll(preconfiguredRemoteArtifactMap.get(key));
+            // Check to see if we should stop the process due to remote artefact load failures.
+            if (!domainConfig.checkRemoteArtefactStatus(validationType) && domainConfig.getResponseForRemoteArtefactLoadFailure(validationType) == ErrorResponseTypeEnum.FAIL) {
+                throw new ValidatorException("validator.label.exception.failureToLoadRemoteArtefactsError");
+            }
         }
         return allFiles;
     }
@@ -800,37 +802,43 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     public void resetRemoteFileCache() {
         logger.debug("Resetting remote validation artifact cache");
         for (DomainConfig domainConfig: domainConfigCache.getAllDomainConfigurations()) {
-            try {
-                // Get write lock for domain.
-                logger.debug("Waiting for lock to reset cache for [{}]", domainConfig.getDomainName());
-                getExternalDomainFileCacheLock(domainConfig.getDomainName()).writeLock().lock();
-                logger.debug("Locked cache for [{}]", domainConfig.getDomainName());
-                for (String validationType: domainConfig.getType()) {
-                    boolean downloadsSucceeded = true;
-                    try {
-                        // Empty cache folder.
-                        File remoteConfigFolder = new File(new File(getRemoteFileCacheFolder(), domainConfig.getDomainName()), validationType);
-                        FileUtils.deleteQuietly(remoteConfigFolder);
-                        TypedValidationArtifactInfo typedArtifactInfo = domainConfig.getArtifactInfo().get(validationType);
-                        for (String artifactType: typedArtifactInfo.getTypes()) {
-                            if (!downloadRemoteFilesForArtifactType(artifactType, validationType, remoteConfigFolder, domainConfig, typedArtifactInfo)) {
-                                downloadsSucceeded = false;
+            if (domainConfig.hasRemoteArtifacts()) {
+                ReentrantReadWriteLock domainLock = null;
+                try {
+                    // Get write lock for domain.
+                    logger.debug("Waiting for lock to reset cache for [{}]", domainConfig.getDomainName());
+                    domainLock = getExternalDomainFileCacheLock(domainConfig.getDomainName());
+                    domainLock.writeLock().lock();
+                    logger.debug("Locked cache for [{}]", domainConfig.getDomainName());
+                    for (String validationType: domainConfig.getType()) {
+                        boolean downloadsSucceeded = true;
+                        try {
+                            // Empty cache folder.
+                            File remoteConfigFolder = new File(new File(getRemoteFileCacheFolder(), domainConfig.getDomainName()), validationType);
+                            FileUtils.deleteQuietly(remoteConfigFolder);
+                            TypedValidationArtifactInfo typedArtifactInfo = domainConfig.getArtifactInfo().get(validationType);
+                            for (String artifactType: typedArtifactInfo.getTypes()) {
+                                if (!downloadRemoteFilesForArtifactType(artifactType, validationType, remoteConfigFolder, domainConfig, typedArtifactInfo)) {
+                                    downloadsSucceeded = false;
+                                }
                             }
+                        } finally {
+                            domainConfig.setRemoteArtefactStatus(validationType, downloadsSucceeded);
                         }
-                    } finally {
-                        domainConfig.setRemoteArtefactStatus(validationType, downloadsSucceeded);
                     }
+                } catch (ValidatorException e) {
+                    // Never allow configuration errors in one domain to prevent the others from being available.
+                    logger.error(String.format("Error while processing configuration for domain [%s]: %s", domainConfig.getDomainName(), e.getMessageForLog()), e);
+                } catch (Exception e) {
+                    // Never allow configuration errors in one domain to prevent the others from being available.
+                    logger.error(String.format("Error while processing configuration for domain [%s]", domainConfig.getDomainName()), e);
+                } finally {
+                    // Unlock domain.
+                    if (domainLock != null) {
+                        domainLock.writeLock().unlock();
+                    }
+                    logger.debug("Reset remote validation artifact cache for [{}]", domainConfig.getDomainName());
                 }
-            } catch (ValidatorException e) {
-                // Never allow configuration errors in one domain to prevent the others from being available.
-                logger.error(String.format("Error while processing configuration for domain [%s]: %s", domainConfig.getDomainName(), e.getMessageForLog()), e);
-            } catch (Exception e) {
-                // Never allow configuration errors in one domain to prevent the others from being available.
-                logger.error(String.format("Error while processing configuration for domain [%s]", domainConfig.getDomainName()), e);
-            } finally {
-                // Unlock domain.
-                getExternalDomainFileCacheLock(domainConfig.getDomainName()).writeLock().unlock();
-                logger.debug("Reset remote validation artifact cache for [{}]", domainConfig.getDomainName());
             }
         }
     }

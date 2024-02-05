@@ -63,6 +63,18 @@ public class TypedValidationArtifactInfo {
     }
 
     /**
+     * @return true in case any artifact type has remote artifacts.
+     */
+    public boolean hasRemoteArtifacts() {
+        for (ValidationArtifactInfo artifactInfo: perArtifactTypeMap.values()) {
+            if (artifactInfo.getRemoteArtifacts() != null && !artifactInfo.getRemoteArtifacts().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @return The overall support for externally-provided (user-provided) artifacts for all validation types and artifact types.
      */
     public ExternalArtifactSupport getOverallExternalArtifactSupport() {
