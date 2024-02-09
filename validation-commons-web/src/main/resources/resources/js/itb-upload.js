@@ -6,6 +6,7 @@ _state.listenerEvents['ADDED_EXTERNAL_ARTIFACT_INPUT'] = true;
 _state.listenerEvents['REMOVED_EXTERNAL_ARTIFACT_INPUT'] = true;
 _state.listenerEvents['RESET_EXTERNAL_ARTIFACT_INPUTS'] = true;
 _state.listenerEvents['INPUT_CONTENT_TYPE_CHANGED'] = true;
+_state.listenerEvents['EXTERNAL_ARTIFACT_CONTENT_TYPE_CHANGED'] = true;
 _state.listenerEvents['VALIDATION_TYPE_CHANGED'] = true;
 _state.listenerEvents['FORM_READY'] = true;
 _state.listenerEvents['SUBMIT_STATUS_VALIDATED'] = true;
@@ -563,6 +564,10 @@ function contentTypeChangedExternal(elementId){
             updateSubmitStatus();
 		}, 0);
 	}
+    var eventInfo = {
+        'elementId': elementId
+    }
+    notifyListeners('EXTERNAL_ARTIFACT_CONTENT_TYPE_CHANGED', eventInfo);
 	fileInputChanged(elementId);
 }
 
