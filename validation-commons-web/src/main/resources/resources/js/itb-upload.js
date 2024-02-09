@@ -34,7 +34,7 @@ $(document).ready(function() {
 
 function registerEventListeners() {
     $(".triggerFileUpload").on("click", triggerFileUpload);
-    $(".fileInputChanged").on("change", fileInputChanged);
+    $(".fileInputChanged").on("change input", fileInputChanged);
     $(".contentTypeChanged").on("change", contentTypeChanged);
     $(".validationTypeChanged").on("change", validationTypeChanged);
     $(".validationTypeOptionChanged").on("change", validationTypeOptionChanged);
@@ -481,6 +481,7 @@ function addExternal(artifactType) {
 		$('#stringToValidate-external_'+artifactType+'-'+indexInt).addClass('col-sm-11');
 	}
 	addElement(artifactType, placeholderTextForExternalArtifactFile(artifactType), true);
+    checkForSubmit();
 }
 
 function removeElement(artifactType, elementId) {
@@ -608,7 +609,7 @@ function addElement(artifactType, placeholderText, focus) {
     // Add event listeners.
     $(".contentTypeChangedExternal").off().on("change", function() { contentTypeChangedExternal($(this).attr("data-element-id")); });
     $(".triggerFileUploadExternal").off().on("click", function() { triggerFileUploadExternal($(this).attr("data-file-type")); });
-    $(".fileInputChangedExternal").off().on("change", function() { fileInputChangedExternal($(this).attr("data-element-id")); });
+    $(".fileInputChangedExternal").off().on("change input", function() { fileInputChangedExternal($(this).attr("data-element-id")); });
     $(".removeElement").off().on("click", function() { removeElement($(this).attr("data-artifact-type"), $(this).attr("data-element-id")); });
     if (focus) {
         $("#"+elementId+" input").focus();
@@ -673,11 +674,16 @@ function updateSubmitStatus() {
         }
         if (!submitDisabled) {
             for (i=0; i < _config.artifactTypes.length; i++) {
-                if (getExternalArtifactSupport({artifactType: _config.artifactTypes[i]}) == 'required') {
-                    submitDisabled = !externalElementHasValue(document.getElementsByName("contentType-external_"+_config.artifactTypes[i]));
-                    if (submitDisabled) {
-                        break;
-                    }
+                var supportType = getExternalArtifactSupport({artifactType: _config.artifactTypes[i]})
+                if (supportType == 'required') {
+                    submitDisabled = !externalArtifactHasValue(document.getElementsByName("contentType-external_"+_config.artifactTypes[i]));
+                }
+                if (!submitDisabled) {
+                    // Make sure any external artifact input that is active has a value.
+                    submitDisabled = externalArtifactIsIncludedButEmpty(document.getElementsByName("contentType-external_"+_config.artifactTypes[i]))
+                }
+                if (submitDisabled) {
+                    break;
                 }
             }
         }
@@ -689,7 +695,24 @@ function updateSubmitStatus() {
     }
 }
 
-function externalElementHasValue(elementExt) {
+function externalArtifactIsIncludedButEmpty(elementExt) {
+	if (elementExt.length > 0) {
+	    var i, type, id;
+	    for (i=0; i < elementExt.length; i++) {
+            type = elementExt[i].options[elementExt[i].selectedIndex].value;
+            id = elementExt[i].id.substring("contentType-".length, elementExt[i].id.length);
+            if ((type == "fileType" && !$("#inputFileName-"+id).val())
+                    || (type == "uriType" && !$("#uri-"+id).val())
+                    || (type == "stringType" && !getCodeMirrorNative('#text-editor-'+id).getDoc().getValue())
+               ) {
+                return true;
+            }
+	    }
+	}
+	return false;
+}
+
+function externalArtifactHasValue(elementExt) {
 	if (elementExt.length > 0) {
 	    var i, type, id;
 	    for (i=0; i < elementExt.length; i++) {
@@ -697,7 +720,7 @@ function externalElementHasValue(elementExt) {
             id = elementExt[i].id.substring("contentType-".length, elementExt[i].id.length);
             if ((type == "fileType" && $("#inputFileName-"+id).val())
                     || (type == "uriType" && $("#uri-"+id).val())
-                    || (type == "stringType" && getCodeMirrorNative('#text-editor').getDoc().getValue())
+                    || (type == "stringType" && getCodeMirrorNative('#text-editor-'+id).getDoc().getValue())
                ) {
                 return true;
             }
