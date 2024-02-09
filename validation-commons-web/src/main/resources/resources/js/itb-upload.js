@@ -507,6 +507,8 @@ function removeElement(artifactType, elementId) {
 		$('#fileToValidate-class-external_'+artifactType+'-'+indexInt).addClass('col-sm-12');
 		$('#uriToValidate-external_'+artifactType+'-'+indexInt).removeClass('col-sm-11');
 		$('#uriToValidate-external_'+artifactType+'-'+indexInt).addClass('col-sm-12');
+		$('#stringToValidate-external_'+artifactType+'-'+indexInt).removeClass('col-sm-11');
+		$('#stringToValidate-external_'+artifactType+'-'+indexInt).addClass('col-sm-12');
 	}
     maxInputs = maxExternalArtifacts(artifactType);
     if (maxInputs >= 0) {
