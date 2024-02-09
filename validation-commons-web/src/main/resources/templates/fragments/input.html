@@ -94,7 +94,7 @@
             </div>
         </div>
 
-        <div th:fragment="externalArtifactControl(artifactType, artifactLabel)" class="form-group" th:classappend="'externalClass_'+${artifactType}">
+        <div th:fragment="externalArtifactControl(artifactType, artifactLabel)" class="form-group hidden" th:classappend="'externalClass_'+${artifactType}">
             <label th:id="'externalLabel_'+${artifactType}" th:attr="for=${'externalAddButton_'+artifactType}" class="col-sm-2 control-label" th:text="${artifactLabel}">Artifact</label>
             <div class="col-sm-10" th:id="'externalDiv_'+${artifactType}">
                 <button th:id="'externalAddButton_'+${artifactType}" class="btn btn-default addExternalArtifact" type="button" th:attr="data-artifact-type=${artifactType}"><i class="fas fa-plus"></i></button>

@@ -9,6 +9,7 @@ _state.listenerEvents['INPUT_CONTENT_TYPE_CHANGED'] = true;
 _state.listenerEvents['VALIDATION_TYPE_CHANGED'] = true;
 _state.listenerEvents['FORM_READY'] = true;
 _state.listenerEvents['SUBMIT_STATUS_VALIDATED'] = true;
+_state.listenerEvents['BEFORE_SUBMIT'] = true;
 _state.listenerEvents['RESULTS_LOADED'] = true;
 _state.contentTypeValidators = {}
 
@@ -33,7 +34,7 @@ $(document).ready(function() {
 
 function registerEventListeners() {
     $(".triggerFileUpload").on("click", triggerFileUpload);
-    $(".fileInputChanged").on("change", fileInputChanged);
+    $(".fileInputChanged").on("change input", fileInputChanged);
     $(".contentTypeChanged").on("change", contentTypeChanged);
     $(".validationTypeChanged").on("change", validationTypeChanged);
     $(".validationTypeOptionChanged").on("change", validationTypeOptionChanged);
@@ -114,6 +115,9 @@ function configure(config) {
     if (config) {
         if (config.externalArtifactFileLabel) {
             _config.externalArtifactFileLabel = config.externalArtifactFileLabel;
+        }
+        if (config.externalArtifactTextLabel) {
+            _config.externalArtifactTextLabel = config.externalArtifactTextLabel;
         }
         if (config.externalArtifactURILabel) {
             _config.externalArtifactURILabel = config.externalArtifactURILabel;
@@ -382,9 +386,16 @@ function resetExternalArtifacts(previousValidationType) {
     }
     if (updateCheckbox) {
         if (showCheckbox) {
-            if ($(".includeExternalArtefacts").hasClass('hidden')) {
-                $("#externalArtefactsCheck").prop('checked', false);
-                $(".includeExternalArtefacts").removeClass('hidden');
+            if (hasPreconfiguredArtifacts(validationType)) {
+                if ($(".includeExternalArtefacts").hasClass('hidden')) {
+                    $("#externalArtefactsCheck").prop('checked', false);
+                    $(".includeExternalArtefacts").removeClass('hidden');
+                }
+            } else {
+                // Hide the checkbox and assume is is already checked.
+                $("#externalArtefactsCheck").prop('checked', true);
+                $(".includeExternalArtefacts").addClass('hidden');
+                showCheckbox = false;
             }
         } else {
             $(".includeExternalArtefacts").addClass('hidden');
@@ -403,7 +414,7 @@ function resetExternalArtifacts(previousValidationType) {
             supportType = getExternalArtifactSupport({validationType: validationType, artifactType: artifactType});
             if (!_config.initialExternalArtifactSetup && previousValidationType) {
                 previousSupport = getExternalArtifactSupport({validationType: previousValidationType, artifactType: artifactType});
-                updateControls = supportType != previousSupport
+                updateControls = supportType != previousSupport || hasPreconfiguredArtifacts(previousValidationType) != hasPreconfiguredArtifacts(validationType);
             }
         }
         if (updateControls) {
@@ -414,6 +425,8 @@ function resetExternalArtifacts(previousValidationType) {
                 $('#fileToValidate-class-external_'+artifactType+'-1').addClass('col-sm-12');
                 $('#uriToValidate-external_'+artifactType+'-1').removeClass('col-sm-11');
                 $('#uriToValidate-external_'+artifactType+'-1').addClass('col-sm-12');
+                $('#stringToValidate-external_'+artifactType+'-1').removeClass('col-sm-11');
+                $('#stringToValidate-external_'+artifactType+'-1').addClass('col-sm-12');
             }
             if (supportType == 'none' || showCheckbox) {
                 $('.externalClass_'+artifactType).addClass('hidden');
@@ -424,6 +437,10 @@ function resetExternalArtifacts(previousValidationType) {
     }
     _config.initialExternalArtifactSetup = false;
 	notifyListeners('RESET_EXTERNAL_ARTIFACT_INPUTS', {});
+}
+
+function hasPreconfiguredArtifacts(validationType) {
+    return preconfiguredArtifacts[validationType];
 }
 
 function maxExternalArtifacts(artifactType) {
@@ -471,8 +488,11 @@ function addExternal(artifactType) {
 		$('#fileToValidate-class-external_'+artifactType+'-'+indexInt).addClass('col-sm-11');
 		$('#uriToValidate-external_'+artifactType+'-'+indexInt).removeClass('col-sm-12');
 		$('#uriToValidate-external_'+artifactType+'-'+indexInt).addClass('col-sm-11');
+		$('#stringToValidate-external_'+artifactType+'-'+indexInt).removeClass('col-sm-12');
+		$('#stringToValidate-external_'+artifactType+'-'+indexInt).addClass('col-sm-11');
 	}
 	addElement(artifactType, placeholderTextForExternalArtifactFile(artifactType), true);
+    checkForSubmit();
 }
 
 function removeElement(artifactType, elementId) {
@@ -526,9 +546,20 @@ function contentTypeChangedExternal(elementId){
 	if (type == "uriType"){
 		$("#uriToValidate-"+elementId).removeClass('hidden');
 		$("#fileToValidate-"+elementId).addClass('hidden');
+		$("#stringToValidate-"+elementId).addClass('hidden');
 	} else if (type == "fileType"){
 		$("#fileToValidate-"+elementId).removeClass('hidden');
 		$("#uriToValidate-"+elementId).addClass('hidden');
+		$("#stringToValidate-"+elementId).addClass('hidden');
+	} else if (type == "stringType") {
+		$("#stringToValidate-"+elementId).removeClass('hidden');
+		$("#fileToValidate-"+elementId).addClass('hidden');
+		$("#uriToValidate-"+elementId).addClass('hidden');
+		setTimeout(function() {
+            var codeMirror = getCodeMirrorNative('#text-editor-'+elementId)
+            codeMirror.refresh();
+            updateSubmitStatus();
+		}, 0);
 	}
 	fileInputChanged(elementId);
 }
@@ -547,9 +578,10 @@ function addElement(artifactType, placeholderText, focus) {
 	elementId = "external_"+artifactType+"-"+(indexLast+1);
     $("<div class='row externalDiv_"+artifactType+"' id='"+elementId+"'>" +
     	"<div class='col-sm-2'>"+
-			"<select class='form-control contentTypeChangedExternal' id='contentType-"+elementId+"' data-element-id='"+elementId+"' name='contentType-external_"+artifactType+"'>"+
+			"<select class='form-control contentTypeExternal contentTypeChangedExternal' id='contentType-"+elementId+"' data-element-id='"+elementId+"' name='contentType-external_"+artifactType+"'>"+
 				"<option value='fileType' selected='true'>"+_config.externalArtifactFileLabel+"</option>"+
 				"<option value='uriType'>"+_config.externalArtifactURILabel+"</option>"+
+				"<option value='stringType'>"+_config.externalArtifactTextLabel+"</option>"+
 		    "</select>"+
 		"</div>"+
 		"<div class='col-sm-10'>" +
@@ -565,6 +597,10 @@ function addElement(artifactType, placeholderText, focus) {
                 "<div class='col-sm-11 hidden' id='uriToValidate-"+elementId+"'>"+
                     "<input type='url' class='form-control fileInputChangedExternal' id='uri-"+elementId+"' name='uri-external_"+artifactType+"' data-element-id='"+elementId+"'>"+
                 "</div>"+
+                "<div class='col-sm-11 hidden' id='stringToValidate-"+elementId+"'>"+
+                    "<textarea id='text-editor-"+elementId+"' class='form-control fileInputChangedExternal'></textarea>"+
+                    "<input type='hidden' id='text-editor-value-"+elementId+"' name='text-external_"+artifactType+"' data-element-id='"+elementId+"'>"+
+                "</div>"+
                 "<input type='file' class='inputFile fileInputChangedExternal' id='inputFile-"+elementId+"' name='inputFile-external_"+artifactType+"' data-element-id='"+elementId+"'/>" +
                 "<div class='col-sm-1'>" +
                     "<button class='btn btn-default removeElement' id='rmvButton-"+elementId+"' type='button' data-element-id='"+elementId+"' data-artifact-type='"+artifactType+"'><i class='far fa-trash-alt'></i></button>" +
@@ -572,10 +608,19 @@ function addElement(artifactType, placeholderText, focus) {
     		"</div>"+
 		"</div>"+
     "</div>").insertBefore("#externalAddButton_"+artifactType);
+    // Activate code editor.
+    if (document.getElementById("text-editor-"+elementId) !== null){
+        CodeMirror.fromTextArea(document.getElementById("text-editor-"+elementId), {
+            mode: _config.codeTypeObj,
+            lineNumbers: true
+        }).on('change', function(){
+            fileInputChangedExternal(elementId);
+        });
+    }
     // Add event listeners.
     $(".contentTypeChangedExternal").off().on("change", function() { contentTypeChangedExternal($(this).attr("data-element-id")); });
     $(".triggerFileUploadExternal").off().on("click", function() { triggerFileUploadExternal($(this).attr("data-file-type")); });
-    $(".fileInputChangedExternal").off().on("change", function() { fileInputChangedExternal($(this).attr("data-element-id")); });
+    $(".fileInputChangedExternal").off().on("change input", function() { fileInputChangedExternal($(this).attr("data-element-id")); });
     $(".removeElement").off().on("click", function() { removeElement($(this).attr("data-artifact-type"), $(this).attr("data-element-id")); });
     if (focus) {
         $("#"+elementId+" input").focus();
@@ -639,13 +684,32 @@ function updateSubmitStatus() {
             submitDisabled = !_state.contentTypeValidators[type]();
         }
         if (!submitDisabled) {
+            var noPreconfiguredArtifacts = !hasPreconfiguredArtifacts(getCompleteValidationType());
+            var externalArtifactValueExists = false;
+            var hasRequiredOrOptionalExternalArtefact = false;
             for (i=0; i < _config.artifactTypes.length; i++) {
-                if (getExternalArtifactSupport({artifactType: _config.artifactTypes[i]}) == 'required') {
-                    submitDisabled = !externalElementHasValue(document.getElementsByName("contentType-external_"+_config.artifactTypes[i]));
-                    if (submitDisabled) {
-                        break;
-                    }
+                var supportType = getExternalArtifactSupport({artifactType: _config.artifactTypes[i]});
+                var contentTypeElement = document.getElementsByName("contentType-external_"+_config.artifactTypes[i]);
+                var hasValue = externalArtifactHasValue(contentTypeElement);
+                if (!hasRequiredOrOptionalExternalArtefact && supportType != "none") {
+                    hasRequiredOrOptionalExternalArtefact = true;
                 }
+                if (!externalArtifactValueExists && hasValue) {
+                    externalArtifactValueExists = true;
+                }
+                if (supportType == 'required') {
+                    submitDisabled = !hasValue;
+                }
+                if (!submitDisabled) {
+                    // Make sure any external artifact input that is active has a value.
+                    submitDisabled = externalArtifactIsIncludedButEmpty(contentTypeElement)
+                }
+                if (submitDisabled) {
+                    break;
+                }
+            }
+            if (!submitDisabled && noPreconfiguredArtifacts && hasRequiredOrOptionalExternalArtefact && !externalArtifactValueExists) {
+                submitDisabled = true;
             }
         }
     }
@@ -656,13 +720,33 @@ function updateSubmitStatus() {
     }
 }
 
-function externalElementHasValue(elementExt) {
+function externalArtifactIsIncludedButEmpty(elementExt) {
 	if (elementExt.length > 0) {
 	    var i, type, id;
 	    for (i=0; i < elementExt.length; i++) {
             type = elementExt[i].options[elementExt[i].selectedIndex].value;
             id = elementExt[i].id.substring("contentType-".length, elementExt[i].id.length);
-            if (type == "fileType" && $("#inputFileName-"+id).val() || type == "uriType" && $("#uri-"+id).val()) {
+            if ((type == "fileType" && !$("#inputFileName-"+id).val())
+                    || (type == "uriType" && !$("#uri-"+id).val())
+                    || (type == "stringType" && !getCodeMirrorNative('#text-editor-'+id).getDoc().getValue())
+               ) {
+                return true;
+            }
+	    }
+	}
+	return false;
+}
+
+function externalArtifactHasValue(elementExt) {
+	if (elementExt.length > 0) {
+	    var i, type, id;
+	    for (i=0; i < elementExt.length; i++) {
+            type = elementExt[i].options[elementExt[i].selectedIndex].value;
+            id = elementExt[i].id.substring("contentType-".length, elementExt[i].id.length);
+            if ((type == "fileType" && $("#inputFileName-"+id).val())
+                    || (type == "uriType" && $("#uri-"+id).val())
+                    || (type == "stringType" && getCodeMirrorNative('#text-editor-'+id).getDoc().getValue())
+               ) {
                 return true;
             }
 	    }
@@ -1171,12 +1255,30 @@ function severityFilterChange(level) {
     }
 }
 
+function setOtherTextEditorValues() {
+    var externalContentTypes = $(".contentTypeExternal")
+    if (externalContentTypes) {
+        for (var i=0; i < externalContentTypes.length; i++) {
+            var externalContentType = $(externalContentTypes[i]);
+            var externalContentTypeValue = externalContentType.val();
+            var elementId = externalContentType.attr("data-element-id");
+            if (externalContentTypeValue == "stringType") {
+                $("#text-editor-value-"+elementId).val(getCodeMirrorNative("#text-editor-"+elementId).getDoc().getValue());
+            } else {
+                $("#text-editor-value-"+elementId).val('');
+            }
+        }
+    }
+}
+
 function doSubmit() {
     if ($('#contentType').val() == "stringType") {
         $("#text-editor-value").val(getCodeMirrorNative('#text-editor').getDoc().getValue());
     } else {
         $("#text-editor-value").val('');
     }
+    setOtherTextEditorValues();
+	notifyListeners('BEFORE_SUBMIT', {});
     $('#reportPlaceholder').empty();
     clearMessages();
 	waitingDialog.show(validatingInputMessage, {dialogSize: 'm'}, _config.isMinimalUI?'busy-modal-minimal':'busy-modal');
