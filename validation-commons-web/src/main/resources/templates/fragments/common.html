@@ -26,6 +26,10 @@
                         });
                     [/]
                 [/]
+                var preconfiguredArtifacts = {}
+                [# th:each="artifactInfoEntry : ${config.artifactInfo}"]
+                    preconfiguredArtifacts[[# th:text="${artifactInfoEntry.key}" /]] = [# th:text="${artifactInfoEntry.value.hasPreconfiguredArtifacts or artifactInfoEntry.value.hasRemoteArtifacts}" /];
+                [/]
             </script>
             <script th:attr="nonce=${nonce}" th:inline="javascript" th:if="${!minimalUI && javascriptExtensionExists}" th:utext="${localiser.localise('validator.javascriptExtension')}">
             </script>

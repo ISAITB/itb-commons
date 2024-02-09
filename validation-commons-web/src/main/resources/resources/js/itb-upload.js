@@ -386,9 +386,16 @@ function resetExternalArtifacts(previousValidationType) {
     }
     if (updateCheckbox) {
         if (showCheckbox) {
-            if ($(".includeExternalArtefacts").hasClass('hidden')) {
-                $("#externalArtefactsCheck").prop('checked', false);
-                $(".includeExternalArtefacts").removeClass('hidden');
+            if (hasPreconfiguredArtifacts(validationType)) {
+                if ($(".includeExternalArtefacts").hasClass('hidden')) {
+                    $("#externalArtefactsCheck").prop('checked', false);
+                    $(".includeExternalArtefacts").removeClass('hidden');
+                }
+            } else {
+                // Hide the checkbox and assume is is already checked.
+                $("#externalArtefactsCheck").prop('checked', true);
+                $(".includeExternalArtefacts").addClass('hidden');
+                showCheckbox = false;
             }
         } else {
             $(".includeExternalArtefacts").addClass('hidden');
@@ -407,7 +414,7 @@ function resetExternalArtifacts(previousValidationType) {
             supportType = getExternalArtifactSupport({validationType: validationType, artifactType: artifactType});
             if (!_config.initialExternalArtifactSetup && previousValidationType) {
                 previousSupport = getExternalArtifactSupport({validationType: previousValidationType, artifactType: artifactType});
-                updateControls = supportType != previousSupport
+                updateControls = supportType != previousSupport || hasPreconfiguredArtifacts(previousValidationType) != hasPreconfiguredArtifacts(validationType);
             }
         }
         if (updateControls) {
@@ -430,6 +437,10 @@ function resetExternalArtifacts(previousValidationType) {
     }
     _config.initialExternalArtifactSetup = false;
 	notifyListeners('RESET_EXTERNAL_ARTIFACT_INPUTS', {});
+}
+
+function hasPreconfiguredArtifacts(validationType) {
+    return preconfiguredArtifacts[validationType];
 }
 
 function maxExternalArtifacts(artifactType) {
@@ -673,18 +684,32 @@ function updateSubmitStatus() {
             submitDisabled = !_state.contentTypeValidators[type]();
         }
         if (!submitDisabled) {
+            var noPreconfiguredArtifacts = !hasPreconfiguredArtifacts(getCompleteValidationType());
+            var externalArtifactValueExists = false;
+            var hasRequiredOrOptionalExternalArtefact = false;
             for (i=0; i < _config.artifactTypes.length; i++) {
-                var supportType = getExternalArtifactSupport({artifactType: _config.artifactTypes[i]})
+                var supportType = getExternalArtifactSupport({artifactType: _config.artifactTypes[i]});
+                var contentTypeElement = document.getElementsByName("contentType-external_"+_config.artifactTypes[i]);
+                var hasValue = externalArtifactHasValue(contentTypeElement);
+                if (!hasRequiredOrOptionalExternalArtefact && supportType != "none") {
+                    hasRequiredOrOptionalExternalArtefact = true;
+                }
+                if (!externalArtifactValueExists && hasValue) {
+                    externalArtifactValueExists = true;
+                }
                 if (supportType == 'required') {
-                    submitDisabled = !externalArtifactHasValue(document.getElementsByName("contentType-external_"+_config.artifactTypes[i]));
+                    submitDisabled = !hasValue;
                 }
                 if (!submitDisabled) {
                     // Make sure any external artifact input that is active has a value.
-                    submitDisabled = externalArtifactIsIncludedButEmpty(document.getElementsByName("contentType-external_"+_config.artifactTypes[i]))
+                    submitDisabled = externalArtifactIsIncludedButEmpty(contentTypeElement)
                 }
                 if (submitDisabled) {
                     break;
                 }
+            }
+            if (!submitDisabled && noPreconfiguredArtifacts && hasRequiredOrOptionalExternalArtefact && !externalArtifactValueExists) {
+                submitDisabled = true;
             }
         }
     }
