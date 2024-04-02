@@ -43,7 +43,7 @@
         <version.springBoot>3.2.4</version.springBoot>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
         <version.gitbTypes>1.21.0</version.gitbTypes>
-        <version.commonsLang>3.12.0</version.commonsLang>
+        <version.commonsLang>3.14.0</version.commonsLang>
         <version.commonsConfiguration>2.10.1</version.commonsConfiguration>
         <version.commonsIo>2.12.0</version.commonsIo>
         <version.commonsCsv>1.10.0</version.commonsCsv>
