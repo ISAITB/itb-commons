@@ -44,6 +44,11 @@
             <artifactId>commons-csv</artifactId>
         </dependency>
         <dependency>
+            <!-- Use commons-codec as java.util.Base64 fails for chunked Base64 data. -->
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>

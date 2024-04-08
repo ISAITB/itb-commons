@@ -10,9 +10,11 @@ import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
 import eu.europa.ec.itb.validation.commons.config.ErrorResponseTypeEnum;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
+import jakarta.annotation.PostConstruct;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.w3c.dom.Document;
 
-import jakarta.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -164,7 +165,8 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         try {
             tempFile = createFile(targetFolder, getFileExtension(contentType), fileName).toFile();
             // Construct the string from its BASE64 encoded bytes.
-            byte[] decodedBytes = Base64.getDecoder().decode(content);
+            // Use commons-codec to make sure we support any kind of BASE64 formatting.
+            byte[] decodedBytes = Base64.decodeBase64(content);
             FileUtils.writeByteArrayToFile(tempFile, decodedBytes);
         } catch (IOException e) {
             throw new ValidatorException("validator.label.exception.base64", e);
