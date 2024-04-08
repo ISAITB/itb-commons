@@ -8,7 +8,6 @@ import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -73,8 +72,7 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
             String valueToProcess = content.getValue();
             if (content.getEmbeddingMethod() == ValueEmbeddingEnumeration.BASE_64 && explicitEmbeddingMethod != ValueEmbeddingEnumeration.BASE_64) {
                 // This is a URI or a plain text string encoded as BASE64.
-                // Use commons-codec to make sure we support any kind of BASE64 formatting.
-                valueToProcess = new String(Base64.decodeBase64(valueToProcess));
+                valueToProcess = new String(Utils.decodeBase64String(valueToProcess, true));
             }
             return validateContentToValidate(valueToProcess, explicitEmbeddingMethod, parentFolder);
         } else {
@@ -198,8 +196,7 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
             var fileContent = new FileContent();
             if (contentItem.getEmbeddingMethod() == ValueEmbeddingEnumeration.BASE_64 && explicitEmbeddingMethod != null && explicitEmbeddingMethod != ValueEmbeddingEnumeration.BASE_64) {
                 // This is a URI or a plain text string encoded as BASE64.
-                // Use commons-codec to make sure we support any kind of BASE64 formatting.
-                fileContent.setContent(new String(Base64.decodeBase64(contentItem.getValue())));
+                fileContent.setContent(new String(Utils.decodeBase64String(contentItem.getValue(), true)));
             } else {
                 fileContent.setContent(contentItem.getValue());
             }

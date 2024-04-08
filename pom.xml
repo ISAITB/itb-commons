@@ -72,7 +72,6 @@
         <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
         <version.commonsCompress>1.26.0</version.commonsCompress>
         <version.commonsValidator>1.7</version.commonsValidator>
-        <version.commonsCodec>1.16.1</version.commonsCodec>
         <version.springdoc>2.1.0</version.springdoc>
         <version.topbraid>1.4.2</version.topbraid>
         <version.freemarker>2.3.32</version.freemarker>
@@ -339,11 +338,6 @@
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
                 <version>${version.commonsBeanutils}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>${version.commonsCodec}</version>
             </dependency>
             <dependency>
                 <groupId>com.networknt</groupId>
