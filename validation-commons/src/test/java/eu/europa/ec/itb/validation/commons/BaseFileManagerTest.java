@@ -128,6 +128,20 @@ class BaseFileManagerTest extends BaseSpringTest {
     }
 
     @Test
+    void testGetFileFromBase64AsRFC2045() throws IOException {
+        var testContent = """
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Non tellus orci ac auctor augue. Etiam erat velit scelerisque in dictum. Quis enim lobortis scelerisque fermentum dui faucibus in ornare. Consequat nisl vel pretium lectus. Mattis rhoncus urna neque viverra justo nec ultrices. Eget felis eget nunc lobortis mattis aliquam. Venenatis a condimentum vitae sapien pellentesque habitant morbi. Pulvinar elementum integer enim neque volutpat ac tincidunt vitae. Eu feugiat pretium nibh ipsum consequat nisl vel. Aliquet porttitor lacus luctus accumsan tortor posuere. Malesuada nunc vel risus commodo viverra. Amet cursus sit amet dictum sit amet justo. Nisi scelerisque eu ultrices vitae auctor eu. Faucibus et molestie ac feugiat sed. Neque convallis a cras semper auctor. Adipiscing bibendum est ultricies integer quis auctor elit.
+
+In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed elementum tempus. In dictum non consectetur a erat nam. Aliquet nibh praesent tristique magna sit amet. Ac odio tempor orci dapibus. Feugiat scelerisque varius morbi enim nunc. Dignissim enim sit amet venenatis. Nisl nisi scelerisque eu ultrices vitae auctor eu augue ut. Posuere lorem ipsum dolor sit amet. Sapien et ligula ullamcorper malesuada proin libero nunc consequat. Mi eget mauris pharetra et ultrices neque ornare. Imperdiet proin fermentum leo vel orci porta. Nisi lacus sed viverra tellus in hac habitasse platea. Dignissim sodales ut eu sem integer. Neque egestas congue quisque egestas diam in arcu cursus euismod. Non quam lacus suspendisse faucibus interdum posuere lorem. Et netus et malesuada fames ac turpis egestas integer. Pellentesque eu tincidunt tortor aliquam nulla.                
+                """;
+        var targetFolder = Path.of(appConfig.getTmpFolder(), "base64test");
+        var result = fileManager.getFileFromBase64(targetFolder.toFile(), Base64.getMimeEncoder().encodeToString(testContent.getBytes(StandardCharsets.UTF_8)), "text/plain");
+        assertNotNull(result);
+        assertEquals(targetFolder, result.getParentFile().toPath(), "File not created under provided target folder.");
+        assertEquals(testContent, Files.readString(result.toPath()));
+    }
+
+    @Test
     void testGetFileFromBase64ForNullContentType() throws IOException {
         var testContent = "TEST";
         var targetFolder = Path.of(appConfig.getTmpFolder(), "web"); // Stored in web temp folder by default.

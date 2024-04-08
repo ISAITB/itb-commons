@@ -14,7 +14,6 @@ import jakarta.annotation.PostConstruct;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -158,6 +157,20 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @return The stored file.
      */
     public File getFileFromBase64(File targetFolder, String content, String contentType, String fileName) {
+        return getFileFromBase64(targetFolder, content, contentType, fileName, true);
+    }
+
+    /**
+     * Create a file from the provided BASE64 content.
+     *
+     * @param targetFolder The folder within which to store the file.
+     * @param content The BASE64 content to parse.
+     * @param contentType The declared content type of the content (used to determine the file's extension).
+     * @param fileName The file name to use.
+     * @param tryAlsoAsMimeEncoded In case of BAse64 parse failure, whether to also try to parse an Mime-encoded (RFC2045).
+     * @return The stored file.
+     */
+    private File getFileFromBase64(File targetFolder, String content, String contentType, String fileName, boolean tryAlsoAsMimeEncoded) {
         if (targetFolder == null) {
             targetFolder = getWebTmpFolder();
         }
@@ -165,8 +178,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         try {
             tempFile = createFile(targetFolder, getFileExtension(contentType), fileName).toFile();
             // Construct the string from its BASE64 encoded bytes.
-            // Use commons-codec to make sure we support any kind of BASE64 formatting.
-            byte[] decodedBytes = Base64.decodeBase64(content);
+            byte[] decodedBytes = Utils.decodeBase64String(content, tryAlsoAsMimeEncoded);
             FileUtils.writeByteArrayToFile(tempFile, decodedBytes);
         } catch (IOException e) {
             throw new ValidatorException("validator.label.exception.base64", e);
@@ -253,7 +265,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         } catch (MalformedURLException e) {
             // Exception means that the text is not a valid URL.
             try {
-                outputFile = getFileFromBase64(targetFolder, urlOrBase64, contentType, fileName);
+                outputFile = getFileFromBase64(targetFolder, urlOrBase64, contentType, fileName, false);
             } catch (Exception e2) {
                 // This likely means that the is not a valid BASE64 string. Try to get the value as a plain string.
                 outputFile = getFileFromString(targetFolder, urlOrBase64, contentType, fileName);
@@ -443,9 +455,9 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      *
      * @return The folder path.
      */
-	public File createTemporaryFolderPath() {
-		return createTemporaryFolderPath(getWebTmpFolder());
-	}
+    public File createTemporaryFolderPath() {
+        return createTemporaryFolderPath(getWebTmpFolder());
+    }
 
     /**
      * Create the path for a temporary folder beneath the provided parent folder.
@@ -453,11 +465,11 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param parentFolder The folder within which to create the temporary folder.
      * @return The folder path.
      */
-	public File createTemporaryFolderPath(File parentFolder) {
-		UUID folderUUID = UUID.randomUUID();
-		Path tmpFolder = Paths.get(parentFolder.getAbsolutePath(), folderUUID.toString());
-		return tmpFolder.toFile();
-	}
+    public File createTemporaryFolderPath(File parentFolder) {
+        UUID folderUUID = UUID.randomUUID();
+        Path tmpFolder = Paths.get(parentFolder.getAbsolutePath(), folderUUID.toString());
+        return tmpFolder.toFile();
+    }
 
     /**
      * Create the path to a file within the provided parent folder.
@@ -681,7 +693,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 }
             }
         } else {
-        	throw new ValidatorException("validator.label.exception.unableToFindValidationArtefact", ((fileOrFolder != null)? fileOrFolder.getPath(): ""));
+            throw new ValidatorException("validator.label.exception.unableToFindValidationArtefact", ((fileOrFolder != null)? fileOrFolder.getPath(): ""));
         }
         return fileInfo;
     }

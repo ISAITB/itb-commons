@@ -611,4 +611,28 @@ public class Utils {
         }
     }
 
+    /**
+     * Decode the provided BASE64 string to a byte array.
+     *
+     * @param encodedString The BASE64-encoded string to decode.
+     * @param tryAlsoAsMimeEncoded Whether in case the string does not decode considering RFC4648 an attempt should be made using RFC2045 (Mime-encoded).
+     * @return The resulting bytes.
+     * @throws IllegalArgumentException In case the string could not be parsed as BASE64.
+     */
+    public static byte[] decodeBase64String(String encodedString, boolean tryAlsoAsMimeEncoded) {
+        byte[] decodedBytes;
+        try {
+            // Try using RFC4648
+            decodedBytes = Base64.getDecoder().decode(encodedString);
+        } catch (IllegalArgumentException e) {
+            if (tryAlsoAsMimeEncoded) {
+                // Try using RFC2045.
+                decodedBytes = Base64.getMimeDecoder().decode(encodedString);
+            } else {
+                throw e;
+            }
+        }
+        return decodedBytes;
+    }
+
 }
