@@ -59,7 +59,7 @@
         <version.cxf>4.0.4</version.cxf>
         <version.xerces>2.12.2</version.xerces>
         <version.saxon>12.2</version.saxon>
-        <version.tika>2.8.0</version.tika>
+        <version.tika>2.9.2</version.tika>
         <version.helgerSchematron>7.1.3</version.helgerSchematron>
         <version.jaxWs>4.0.0</version.jaxWs>
         <version.jws>3.0.0</version.jws>
@@ -79,6 +79,7 @@
         <version.com.openhtmltopdf>1.0.10</version.com.openhtmltopdf>
         <version.org.jsoup>1.15.4</version.org.jsoup>
         <version.owaspHtmlSanitizer>20220608.1</version.owaspHtmlSanitizer>
+        <version.bouncycastle>1.78</version.bouncycastle>
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
         <version.jena>4.3.2</version.jena>
         <version.libthrift>0.15.0</version.libthrift>
@@ -548,6 +549,26 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
                 <version>${version.plugin.junit-jupiter-engine}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>${version.bouncycastle}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcmail-jdk18on</artifactId>
+                <version>${version.bouncycastle}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk18on</artifactId>
+                <version>${version.bouncycastle}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcutil-jdk18on</artifactId>
+                <version>${version.bouncycastle}</version>
             </dependency>
             <!-- Logback override - Start -->
             <dependency>
