@@ -73,7 +73,7 @@
         <version.commonsCompress>1.26.0</version.commonsCompress>
         <version.commonsValidator>1.7</version.commonsValidator>
         <version.springdoc>2.1.0</version.springdoc>
-        <version.topbraid>1.4.2</version.topbraid>
+        <version.topbraid>1.4.3</version.topbraid>
         <version.freemarker>2.3.32</version.freemarker>
         <version.pdfbox>2.0.28</version.pdfbox>
         <version.com.openhtmltopdf>1.0.10</version.com.openhtmltopdf>
@@ -81,7 +81,7 @@
         <version.owaspHtmlSanitizer>20220608.1</version.owaspHtmlSanitizer>
         <version.bouncycastle>1.78</version.bouncycastle>
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
-        <version.jena>4.3.2</version.jena>
+        <version.jena>4.10.0</version.jena>
         <version.libthrift>0.15.0</version.libthrift>
         <!-- Plugin versions -->
         <version.plugin.mavenCompilerPlugin>3.11.0</version.plugin.mavenCompilerPlugin>
