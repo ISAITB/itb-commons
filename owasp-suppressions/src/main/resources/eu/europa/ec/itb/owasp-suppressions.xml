@@ -112,4 +112,11 @@
         <packageUrl regex="true">^pkg:maven/org\.webjars/bootstrap@.*$</packageUrl>
         <vulnerabilityName>CVE-2018-14040</vulnerabilityName>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-web-6.1.5.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-web@.*$</packageUrl>
+        <vulnerabilityName>CVE-2024-22262</vulnerabilityName>
+    </suppress>
 </suppressions>
