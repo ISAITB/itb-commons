@@ -40,7 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>isaitb</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <version.springBoot>3.2.4</version.springBoot>
+        <version.springBoot>3.2.5</version.springBoot>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
         <version.gitbTypes>1.21.0</version.gitbTypes>
         <version.commonsLang>3.14.0</version.commonsLang>
@@ -97,10 +97,6 @@
         <version.plugin.mavenResourcesPlugin>3.3.1</version.plugin.mavenResourcesPlugin>
         <version.plugin.mavenAntRunPlugin>3.1.0</version.plugin.mavenAntRunPlugin>
         <version.plugin.junit-jupiter-engine>5.10.1</version.plugin.junit-jupiter-engine>
-        <!-- Version overrides in Spring Boot - START -->
-        <version.protobuf>3.21.9</version.protobuf> <!-- Protobuf override for the Jena transitive dependency to resolve CVE-2022-3509 -->
-        <version.logback>1.4.14</version.logback> <!-- Logback override to resolve CVE-2023-6378 -->
-        <!-- Version overrides in Spring Boot - END -->
     </properties>
 
     <repositories>
@@ -248,13 +244,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Dependency overrides to be revisited if needed - START -->
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>${version.protobuf}</version>
-            </dependency>
-            <!-- Dependency overrides to be revisited if needed - STOP -->
             <dependency>
                 <groupId>eu.europa.ec.itb</groupId>
                 <artifactId>gitb-types-jakarta</artifactId>
@@ -570,18 +559,6 @@
                 <artifactId>bcutil-jdk18on</artifactId>
                 <version>${version.bouncycastle}</version>
             </dependency>
-            <!-- Logback override - Start -->
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${version.logback}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>${version.logback}</version>
-            </dependency>
-            <!-- Logback override - End -->
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
