@@ -79,7 +79,7 @@
         <version.com.openhtmltopdf>1.0.10</version.com.openhtmltopdf>
         <version.org.jsoup>1.15.4</version.org.jsoup>
         <version.owaspHtmlSanitizer>20220608.1</version.owaspHtmlSanitizer>
-        <version.bouncycastle>1.78</version.bouncycastle>
+        <version.bouncycastle>1.78.1</version.bouncycastle>
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
         <version.jena>4.10.0</version.jena>
         <version.libthrift>0.15.0</version.libthrift>
