@@ -130,7 +130,11 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
             validationType = defaultValidationType;
         } else {
             if (!domainConfig.getType().contains(validationType)) {
-                throw new ValidatorException("validator.label.exception.validationTypeInvalid", validationType, domainConfig.getDomainName(), String.join(", ", domainConfig.getType()));
+                // Check also whether the validation type is a configured alias.
+                validationType = domainConfig.resolveAlias(validationType);
+                if (validationType == null) {
+                    throw new ValidatorException("validator.label.exception.validationTypeInvalid", validationType, domainConfig.getDomainName(), String.join(", ", domainConfig.getType()));
+                }
             }
         }
         return validationType;

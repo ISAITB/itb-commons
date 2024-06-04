@@ -195,5 +195,4 @@ public abstract class BaseUploadController <X extends WebDomainConfig, Y extends
             translations.put(jsonPrefix+"."+propertyPostfix, localisationHelper.localise(messageKey));
         }
     }
-
 }
