@@ -692,7 +692,7 @@ public class DomainConfig {
 
     /**
      * Resolve the validation type for the provided alias.
-     * <p/>
+     * <p>
      * A null value will be returned if there are no aliases,
      * if the provided value is not an alias, or if the aliased validation type does not exist.
      *
