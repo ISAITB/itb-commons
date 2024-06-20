@@ -691,7 +691,9 @@ public class DomainConfig {
     }
 
     /**
-     * Resolve the validation type for the provided alias. A null value will be returned if there are no aliases,
+     * Resolve the validation type for the provided alias.
+     * <p/>
+     * A null value will be returned if there are no aliases,
      * if the provided value is not an alias, or if the aliased validation type does not exist.
      *
      * @param alias the type alias to be resolved.

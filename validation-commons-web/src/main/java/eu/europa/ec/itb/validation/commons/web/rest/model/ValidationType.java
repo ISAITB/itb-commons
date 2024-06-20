@@ -57,7 +57,7 @@ public class ValidationType {
     }
 
     /**
-      * @param aliases The list of aliases for the type
+      * @param aliases The list of aliases for the configured validation types.
      */
     public void setAliases(List<String> aliases) {
         this.aliases = aliases;
