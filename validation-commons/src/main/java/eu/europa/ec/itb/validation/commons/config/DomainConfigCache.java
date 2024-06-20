@@ -184,6 +184,8 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
 
                     List<String> declaredValidationTypes = Arrays.stream(Objects.requireNonNull(StringUtils.split(config.getString("validator.type"), ','), "No validation types were configured")).map(String::trim).toList();
                     Map<String, List<String>> validationTypeOptions = new HashMap<>();
+                    // Initialise Aliases
+                    Map<String, String> typeAliases = new HashMap<>(ParseUtils.parseMap("validator.typeAlias", config));
                     for (Map.Entry<String,String> entry: ParseUtils.parseMap("validator.typeOptions", config, declaredValidationTypes).entrySet()) {
                         validationTypeOptions.put(entry.getKey(), Arrays.stream(StringUtils.split(entry.getValue(), ',')).map(String::trim).toList());
                     }
@@ -202,16 +204,27 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                             }
                         }
                     }
+
                     domainConfig.setType(validationTypes);
                     domainConfig.setDeclaredType(declaredValidationTypes);
                     domainConfig.setValidationTypeOptions(validationTypeOptions);
+                    domainConfig.setValidationTypeAlias(typeAliases);
+
+                    if (domainConfig.getValidationTypeAlias() != null) {
+                        for (String alias: domainConfig.getValidationTypeAlias().keySet()) {
+                            if (domainConfig.resolveAlias(alias) == null) {
+                                logger.warn("Invalid configuration for domain [{}]. Alias [{}] points to missing (full) validation type [{}].", domain, alias, domainConfig.getValidationTypeAlias().get(alias));
+                            }
+                        }
+                    }
+
                     // add default validation type
                     String defaultType = config.getString("validator.defaultType");
                     if (defaultType != null && !defaultType.isBlank()) {
                         if (validationTypes.contains(defaultType)) {
                             domainConfig.setDefaultType(defaultType);
                         } else {
-                            logger.warn("Failed to initialise configuration for domain [{}]. Default type [{}] is not a full type.", domain, defaultType);
+                            logger.warn("Invalid configuration for domain [{}]. Default type [{}] is not a (full) validation type.", domain, defaultType);
                         }
                     }
                     // if one validation type is provided and missing or invalid default validation type
