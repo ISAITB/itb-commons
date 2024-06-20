@@ -1,7 +1,10 @@
 package eu.europa.ec.itb.validation.commons.web.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.List;
 
 /**
  * A supported validation type for a specific domain.
@@ -14,6 +17,9 @@ public class ValidationType {
     private String type;
     @Schema(description = "The validation type's description.")
     private String description;
+    @Schema(description = "The validation type aliases for this type.")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private List<String> aliases;
 
     /**
      * @return The validation type identifier.
@@ -43,4 +49,17 @@ public class ValidationType {
         this.description = description;
     }
 
+    /**
+     * @return The validation type aliases.
+     */
+    public List<String> getAliases() {
+        return this.aliases;
+    }
+
+    /**
+      * @param aliases The list of aliases for the type
+     */
+    public void setAliases(List<String> aliases) {
+        this.aliases = aliases;
+    }
 }

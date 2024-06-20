@@ -76,4 +76,17 @@ class DomainConfigTest {
         assertEquals("defaultProfile", report.getOverview().getProfileID());
         assertEquals("defaultCustomisation", report.getOverview().getCustomizationID());
     }
+
+    @Test
+    void testTypeAlias() {
+        var config = new DomainConfig();
+        config.setType(List.of("type1.option1", "type1.option2", "type2"));
+
+        assertNull(config.resolveAlias("type1_latest"));
+        config.setValidationTypeAlias(Map.of("type1_latest", "type1.option2"));
+        assertEquals("type1.option2", config.resolveAlias("type1_latest"));
+
+        config.setValidationTypeAlias(Map.of("type1_latest", "type.option3"));
+        assertNull(config.resolveAlias("type1_latest"));
+    }
 }

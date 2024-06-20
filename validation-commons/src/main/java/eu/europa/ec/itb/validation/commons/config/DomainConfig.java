@@ -28,6 +28,7 @@ public class DomainConfig {
     private List<String> declaredType;
     private String defaultType;
     private Map<String, List<String>> validationTypeOptions;
+    private Map<String, String> validationTypeAlias;
     private Set<ValidatorChannel> channels = new HashSet<>();
     private Map<String, TypedValidationArtifactInfo> artifactInfo;
     private Long maximumReportsForDetailedOutput;
@@ -284,10 +285,21 @@ public class DomainConfig {
     }
 
     /**
+     * @return Map of the validation type aliases.
+     */
+    public Map<String, String> getValidationTypeAlias() {
+        return this.validationTypeAlias;
+    }
+
+    /**
      * @param validationTypeOptions Map of validation type to the list of its options.
      */
     public void setValidationTypeOptions(Map<String, List<String>> validationTypeOptions) {
         this.validationTypeOptions = validationTypeOptions;
+    }
+
+    public void setValidationTypeAlias(Map<String, String> validationTypeAlias) {
+        this.validationTypeAlias = validationTypeAlias;
     }
 
     /**
@@ -537,6 +549,13 @@ public class DomainConfig {
     }
 
     /**
+     * @return True if this domain defines aliases for its validation types.
+     */
+    public boolean hasValidationTypeAlias() {
+        return !validationTypeAlias.isEmpty();
+    }
+
+    /**
      * @return The identifier to include in the TAR report (/TestStepReport/id).
      */
     public String getReportId() {
@@ -671,4 +690,19 @@ public class DomainConfig {
         return info != null && info.getRemoteArtifacts() != null && !info.getRemoteArtifacts().isEmpty();
     }
 
+    /**
+     * Resolve the validation type for the provided alias. A null value will be returned if there are no aliases,
+     * if the provided value is not an alias, or if the aliased validation type does not exist.
+     *
+     * @param alias the type alias to be resolved.
+     * @return a full validation type.
+     */
+    public String resolveAlias(String alias) {
+        if (this.validationTypeAlias != null) {
+            var resolvedAlias = this.validationTypeAlias.get(alias);
+            return this.type.contains(resolvedAlias) ? resolvedAlias : null;
+        } else {
+            return null;
+        }
+    }
 }

@@ -4,9 +4,8 @@ import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Object providing the information on the validator's supported domains and validation types.
@@ -59,8 +58,17 @@ public class ApiInfo {
         var localisationHelper = new LocalisationHelper(config, Locale.ENGLISH);
         for (String type: config.getType()) {
             ValidationType typeInfo = new ValidationType();
+            List<String> typeAliases = config.getValidationTypeAlias()
+                    .entrySet()
+                    .stream()
+                    .filter(entry -> Objects.equals(entry.getValue(), type))
+                    .map(Map.Entry::getKey).toList();
+
             typeInfo.setType(type);
             typeInfo.setDescription(config.getCompleteTypeOptionLabel(type, localisationHelper));
+            if (!typeAliases.isEmpty()) {
+                typeInfo.setAliases(typeAliases);
+            }
             info.getValidationTypes().add(typeInfo);
         }
         return info;
