@@ -40,7 +40,7 @@ import java.util.*;
 public class Utils {
 
     private static final JAXBContext tdlJaxbContext;
-    private final static PolicyFactory REPORT_ITEM_POLICY = (new HtmlPolicyBuilder())
+    private static final PolicyFactory REPORT_ITEM_POLICY = (new HtmlPolicyBuilder())
             .allowStandardUrlProtocols()
             .allowElements("a")
             .allowAttributes("href")
