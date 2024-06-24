@@ -8,9 +8,10 @@ import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import java.lang.System;
 import java.math.BigInteger;
 import java.util.GregorianCalendar;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class JsonConfigTest {
 
@@ -61,7 +62,7 @@ class JsonConfigTest {
     @Test
     void testSerialize() throws JsonProcessingException, DatatypeConfigurationException {
         var mapper = JsonConfig.objectMapper();
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(createTAR()));
+        assertNotNull(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(createTAR()));
     }
 
 }

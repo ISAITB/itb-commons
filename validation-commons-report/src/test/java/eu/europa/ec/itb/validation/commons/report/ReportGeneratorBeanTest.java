@@ -75,15 +75,15 @@ class ReportGeneratorBeanTest {
         var reportGenerator = mock(ReportGenerator.class);
         doAnswer((Answer<?>) invocation -> {
             assertSame(tar, invocation.getArgument(0));
-            assertTrue(invocation.getArgument(1) instanceof FileOutputStream);
-            assertTrue(invocation.getArgument(2) instanceof Function);
+            assertInstanceOf(FileOutputStream.class, invocation.getArgument(1));
+            assertInstanceOf(Function.class, invocation.getArgument(2));
             var result = ((Function)invocation.getArgument(2)).apply(null);
-            assertTrue(result instanceof ReportLabels);
+            assertInstanceOf(ReportLabels.class, result);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             return null;
         }).when(reportGenerator).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
         var bean = createBean(reportGenerator);
-        assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), (report) -> labels, false));
+        assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), report -> labels, false));
         verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
         // Alternate call.
         reset(reportGenerator);
@@ -101,15 +101,15 @@ class ReportGeneratorBeanTest {
         var reportGenerator = mock(ReportGenerator.class);
         doAnswer((Answer<?>) invocation -> {
             assertSame(tar, invocation.getArgument(0));
-            assertTrue(invocation.getArgument(1) instanceof FileOutputStream);
-            assertTrue(invocation.getArgument(2) instanceof Function);
+            assertInstanceOf(FileOutputStream.class, invocation.getArgument(1));
+            assertInstanceOf(Function.class, invocation.getArgument(2));
             var result = ((Function)invocation.getArgument(2)).apply(null);
-            assertTrue(result instanceof ReportLabels);
+            assertInstanceOf(ReportLabels.class, result);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             throw new IllegalStateException();
         }).when(reportGenerator).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
         var bean = createBean(reportGenerator);
-        assertThrows(ValidatorException.class, () -> bean.writeReport(tar, outputFile.toFile(), (report) -> labels, false));
+        assertThrows(ValidatorException.class, () -> bean.writeReport(tar, outputFile.toFile(), report -> labels, false));
         verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
     }
 
@@ -123,16 +123,16 @@ class ReportGeneratorBeanTest {
         var outputFile = Path.of(tmpPath.toString(), "report.pdf");
         var reportGenerator = mock(ReportGenerator.class);
         doAnswer((Answer<?>) invocation -> {
-            assertTrue(invocation.getArgument(0) instanceof FileInputStream);
-            assertTrue(invocation.getArgument(1) instanceof FileOutputStream);
-            assertTrue(invocation.getArgument(2) instanceof Function);
+            assertInstanceOf(FileInputStream.class, invocation.getArgument(0));
+            assertInstanceOf(FileOutputStream.class, invocation.getArgument(1));
+            assertInstanceOf(Function.class, invocation.getArgument(2));
             var result = ((Function)invocation.getArgument(2)).apply(null);
-            assertTrue(result instanceof ReportLabels);
+            assertInstanceOf(ReportLabels.class, result);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             return null;
         }).when(reportGenerator).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
         var bean = createBean(reportGenerator);
-        assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), (report) -> labels, false));
+        assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), report -> labels, false));
         verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
         // Alternate call.
         reset(reportGenerator);
@@ -151,16 +151,16 @@ class ReportGeneratorBeanTest {
         var outputFile = Path.of(tmpPath.toString(), "report.pdf");
         var reportGenerator = mock(ReportGenerator.class);
         doAnswer((Answer<?>) invocation -> {
-            assertTrue(invocation.getArgument(0) instanceof FileInputStream);
-            assertTrue(invocation.getArgument(1) instanceof FileOutputStream);
-            assertTrue(invocation.getArgument(2) instanceof Function);
+            assertInstanceOf(FileInputStream.class, invocation.getArgument(0));
+            assertInstanceOf(FileOutputStream.class, invocation.getArgument(1));
+            assertInstanceOf(Function.class, invocation.getArgument(2));
             var result = ((Function)invocation.getArgument(2)).apply(null);
-            assertTrue(result instanceof ReportLabels);
+            assertInstanceOf(ReportLabels.class, result);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             throw new IllegalStateException();
         }).when(reportGenerator).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
         var bean = createBean(reportGenerator);
-        assertThrows(ValidatorException.class, () -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), (report) -> labels, false));
+        assertThrows(ValidatorException.class, () -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), report -> labels, false));
         verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
     }
 

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -30,7 +31,7 @@ public class TypedValidationArtifactInfo {
      * @return The artifact's information.
      */
     public ValidationArtifactInfo get(String artifactType) {
-        return perArtifactTypeMap.get(StringUtils.defaultString(artifactType, DEFAULT_TYPE));
+        return perArtifactTypeMap.get(Objects.toString(artifactType, DEFAULT_TYPE));
     }
 
     /**
@@ -40,7 +41,7 @@ public class TypedValidationArtifactInfo {
      * @param artifactInfo The type's information.
      */
     public void add(String artifactType, ValidationArtifactInfo artifactInfo) {
-        perArtifactTypeMap.put(StringUtils.defaultString(artifactType, DEFAULT_TYPE), artifactInfo);
+        perArtifactTypeMap.put(Objects.toString(artifactType, DEFAULT_TYPE), artifactInfo);
     }
 
     /**

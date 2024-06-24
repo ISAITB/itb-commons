@@ -5,7 +5,6 @@ import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Object providing the information on the validator's supported domains and validation types.

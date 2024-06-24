@@ -67,7 +67,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
 
     /**
      * Initialisation method to load all domain configurations.
-     *
+     * <p>
      * Additional customisations can be included by overriding the init() method.
      */
     @PostConstruct
@@ -212,7 +212,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
 
                     if (domainConfig.getValidationTypeAlias() != null) {
                         for (String alias: domainConfig.getValidationTypeAlias().keySet()) {
-                            if (domainConfig.resolveAlias(alias) == null) {
+                            if (domainConfig.resolveAlias(alias) == null && logger.isWarnEnabled()) {
                                 logger.warn("Invalid configuration for domain [{}]. Alias [{}] points to missing (full) validation type [{}].", domain, alias, domainConfig.getValidationTypeAlias().get(alias));
                             }
                         }
@@ -606,7 +606,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
             if (!domainConfig.getArtifactInfo().containsKey(validationType)) {
                 domainConfig.getArtifactInfo().put(validationType, new TypedValidationArtifactInfo());
             }
-            domainConfig.getArtifactInfo().get(validationType).add(StringUtils.defaultString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE), info);
+            domainConfig.getArtifactInfo().get(validationType).add(Objects.toString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE), info);
         }
     }
 
