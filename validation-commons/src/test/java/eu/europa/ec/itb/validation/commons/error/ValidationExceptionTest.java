@@ -12,7 +12,7 @@ class ValidationExceptionTest {
     @Test
     void testDefaultMessage() {
         var ex = new ValidatorException(new IllegalStateException());
-        assertEquals(ValidatorException.MESSAGE_DEFAULT, ex.getMessage());
+        assertEquals("An unexpected error was raised during validation.", ex.getMessage());
         assertFalse(ex.isLocalised());
     }
 
