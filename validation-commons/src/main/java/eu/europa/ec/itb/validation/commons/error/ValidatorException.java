@@ -16,6 +16,7 @@ public class ValidatorException extends RuntimeException {
 
     private final transient Object[] messageParams;
     private final boolean localised;
+    private final String originalMessage;
 
     /**
      * @param cause The root cause.
@@ -64,6 +65,7 @@ public class ValidatorException extends RuntimeException {
      */
     public ValidatorException(String message, Throwable cause, boolean localised, Object... messageParams) {
         super(message, cause);
+        this.originalMessage = message;
         this.messageParams = messageParams;
         this.localised = localised;
     }
@@ -86,7 +88,7 @@ public class ValidatorException extends RuntimeException {
      * @return The message to include in log files.
      */
     public String getMessageForLog() {
-        return isLocalised()?getMessage():new LocalisationHelper(Locale.ENGLISH).localise(getMessage(), getMessageParams());
+        return getLocalisedMessage(new LocalisationHelper(Locale.ENGLISH));
     }
 
     /**
@@ -94,7 +96,27 @@ public class ValidatorException extends RuntimeException {
      * @return The message to display to users.
      */
     public String getMessageForDisplay(LocalisationHelper helper) {
-        return isLocalised()?getMessage():helper.localise(getMessage(), getMessageParams());
+        return getLocalisedMessage(helper);
+    }
+
+    /**
+     * Localise the message based on the provided localisation helper.
+     *
+     * @param helper The helper to use.
+     * @return The localised message.
+     */
+    private String getLocalisedMessage(LocalisationHelper helper) {
+        return isLocalised()?originalMessage:helper.localise(originalMessage, getMessageParams());
+    }
+
+    /**
+     * Make sure the stacktrace returns the localised message when printed in logs.
+     *
+     * @return The localised message.
+     */
+    @Override
+    public String getMessage() {
+        return getMessageForLog();
     }
 
 }
