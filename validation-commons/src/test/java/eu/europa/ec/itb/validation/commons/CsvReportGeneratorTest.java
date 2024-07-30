@@ -117,7 +117,7 @@ class CsvReportGeneratorTest extends BaseTest {
         var localiser = createLocaliser();
         var domainConfig = createDomainConfig(true);
         var exception = assertThrows(ValidatorException.class, () -> reporter.writeReport(tarFileAsFile, tmpFolderAsFile, localiser, domainConfig));
-        assertEquals("Unable to generate CSV report", exception.getMessage());
+        assertEquals("Unable to generate CSV report.", exception.getMessage());
     }
 
 }

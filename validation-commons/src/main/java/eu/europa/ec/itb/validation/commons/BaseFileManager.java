@@ -16,6 +16,7 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -261,7 +262,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         }
         File outputFile;
         try {
-            outputFile = getFileFromURL(targetFolder, urlOrBase64, getFileExtension(contentType), fileName, null, null, artifactType);
+            outputFile = getFileFromURL(targetFolder, urlOrBase64, getFileExtension(contentType), fileName, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType)).getFile();
         } catch (MalformedURLException e) {
             // Exception means that the text is not a valid URL.
             try {
@@ -283,7 +284,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @throws IOException If the file could not be retrieved or stored.
      */
     public File getFileFromURL(File targetFolder, String url) throws IOException {
-        return getFileFromURL(targetFolder, url, null, null, null, null, null);
+        return getFileFromURL(targetFolder, url, null, null, null, null, null, null).getFile();
     }
 
     /**
@@ -296,7 +297,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @throws IOException If the file could not be retrieved or stored.
      */
     public File getFileFromURL(File targetFolder, String url, String fileName) throws IOException {
-        return getFileFromURL(targetFolder, url, null, fileName, null, null, null);
+        return getFileFromURL(targetFolder, url, null, fileName, null, null, null, null).getFile();
     }
 
     /**
@@ -310,7 +311,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @throws IOException If the file could not be retrieved or stored.
      */
     public File getFileFromURL(File targetFolder, String url, String extension, String fileName) throws IOException {
-        return getFileFromURL(targetFolder, url, extension, fileName, null, null, null);
+        return getFileFromURL(targetFolder, url, extension, fileName, null, null, null, null).getFile();
     }
 
     /**
@@ -325,7 +326,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @throws IOException If the file could not be retrieved or stored.
      */
     public File getFileFromURL(File targetFolder, String url, String extension, String fileName, String artifactType) throws IOException {
-        return getFileFromURL(targetFolder, url, extension, fileName, null, null, artifactType);
+        return getFileFromURL(targetFolder, url, extension, fileName, null, null, artifactType, null).getFile();
     }
 
     /**
@@ -338,10 +339,11 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param preprocessorFile An optional file for a preprocessing resource to be used to determine the final loaded file.
      * @param preprocessorOutputExtension The file extension for the file produced via preprocessing (if applicable).
      * @param artifactType The type of validation artifact.
-     * @return The stored file.
+     * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
+     * @return The stored file and the returned content type from the remote URI.
      * @throws IOException If the file could not be retrieved or stored.
      */
-    public File getFileFromURL(File targetFolder, String url, String extension, String fileName, File preprocessorFile, String preprocessorOutputExtension, String artifactType) throws IOException {
+    public FileInfo getFileFromURL(File targetFolder, String url, String extension, String fileName, File preprocessorFile, String preprocessorOutputExtension, String artifactType, List<String> acceptedContentTypes) throws IOException {
         URL urlObj = new URL(url);
         if (fileName == null) {
             fileName = FilenameUtils.getName(urlObj.getPath());
@@ -349,9 +351,17 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         if (extension == null) {
             extension = FilenameUtils.getExtension(urlObj.getPath());
         }
-        Path targetFilePath = createFile(targetFolder, extension, fileName);
-        try (InputStream in = getInputStreamFromURL(url)){
-            Files.copy(in, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
+        StreamInfo streamInfo = null;
+        Path targetFilePath;
+        try {
+            streamInfo = getInputStreamFromURL(url, acceptedContentTypes);
+            if (StringUtils.isEmpty(extension) && streamInfo.contentType().isPresent()) {
+                extension = getFileExtension(streamInfo.contentType().get());
+            }
+            targetFilePath = createFile(targetFolder, extension, fileName);
+            Files.copy(streamInfo.stream(), targetFilePath, StandardCopyOption.REPLACE_EXISTING);
+        } finally {
+            if (streamInfo != null) IOUtils.close(streamInfo.stream());
         }
         File targetFile = targetFilePath.toFile();
         if (preprocessorFile != null && preprocessor != null) {
@@ -359,7 +369,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             FileUtils.deleteQuietly(targetFile);
             targetFile = processedFile;
         }
-        return targetFile;
+        return new FileInfo(targetFile, streamInfo.contentType().orElse(null));
     }
 
     /**
@@ -443,11 +453,12 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * Open an input stream to read the contents of the provided URL.
      *
      * @param url The URL to load.
+     * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
      * @return The input stream.
      */
-    public InputStream getInputStreamFromURL(String url) {
+    public StreamInfo getInputStreamFromURL(String url, List<String> acceptedContentTypes) {
         // Read the resource from the provided URI.
-        return urlReader.stream(URI.create(StringUtils.defaultString(url).trim()));
+        return urlReader.stream(URI.create(StringUtils.defaultString(url).trim()), acceptedContentTypes);
     }
 
     /**
@@ -913,7 +924,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 if (artifactInfo.getPreProcessorPath() != null) {
                     preprocessorFile = Paths.get(config.getResourceRoot(), domain, artifactInfo.getPreProcessorPath()).toFile();
                 }
-                getFileFromURL(remoteConfigPath, artifactInfo.getUrl(), null, null, preprocessorFile, artifactInfo.getPreProcessorOutputExtension(), artifactType);
+                getFileFromURL(remoteConfigPath, artifactInfo.getUrl(), null, null, preprocessorFile, artifactInfo.getPreProcessorOutputExtension(), artifactType, StringUtils.isEmpty(artifactInfo.getType())?null:List.of(artifactInfo.getType()));
             }
         }
     }
@@ -1067,7 +1078,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                     case URI:
                         // Read the string from the provided URI.
                         try {
-                            file = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType);
+                            file = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType)).getFile();
                         } catch (IOException e) {
                             throw new ValidatorException("validator.label.exception.unableToProcessURI", e);
                         }
@@ -1079,7 +1090,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 }
             } else {
                 try {
-                    file = getFileFromURLOrBase64(targetFolder, content, null, artifactType);
+                    file = getFileFromURLOrBase64(targetFolder, content, contentType, artifactType);
                 } catch (IOException e) {
                     throw new ValidatorException("validator.label.exception.unableToSaveContent", e);
                 }

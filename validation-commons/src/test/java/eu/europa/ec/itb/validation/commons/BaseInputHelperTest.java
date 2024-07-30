@@ -100,8 +100,8 @@ class BaseInputHelperTest extends BaseSpringTest {
             assertEquals("CONTENT", invocationOnMock.getArgument(1));
             return createFileWithContents(Path.of(appConfig.getTmpFolder(), "file"), "CONTENT").toFile();
         });
-        inputHelper.validateContentToValidate(request, "input1", null, Path.of(appConfig.getTmpFolder()).toFile());
-        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any());
+        inputHelper.validateContentToValidate(request, "input1", null, null, Path.of(appConfig.getTmpFolder()).toFile());
+        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -115,8 +115,8 @@ class BaseInputHelperTest extends BaseSpringTest {
             assertEquals("CONTENT", invocationOnMock.getArgument(1));
             return createFileWithContents(Path.of(appConfig.getTmpFolder(), "file"), "CONTENT").toFile();
         });
-        inputHelper.validateContentToValidate(request, "input1", ValueEmbeddingEnumeration.STRING, Path.of(appConfig.getTmpFolder()).toFile());
-        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any());
+        inputHelper.validateContentToValidate(request, "input1", ValueEmbeddingEnumeration.STRING, null, Path.of(appConfig.getTmpFolder()).toFile());
+        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -130,8 +130,8 @@ class BaseInputHelperTest extends BaseSpringTest {
             assertEquals(Base64.getEncoder().encodeToString("CONTENT".getBytes(StandardCharsets.UTF_8)), invocationOnMock.getArgument(1));
             return createFileWithContents(Path.of(appConfig.getTmpFolder(), "file"), "CONTENT").toFile();
         });
-        inputHelper.validateContentToValidate(request, "input1", ValueEmbeddingEnumeration.BASE_64, Path.of(appConfig.getTmpFolder()).toFile());
-        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any());
+        inputHelper.validateContentToValidate(request, "input1", ValueEmbeddingEnumeration.BASE_64, null, Path.of(appConfig.getTmpFolder()).toFile());
+        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -141,7 +141,7 @@ class BaseInputHelperTest extends BaseSpringTest {
         request.getInput().get(0).setName("input1");
         request.getInput().get(0).setEmbeddingMethod(ValueEmbeddingEnumeration.STRING);
         request.getInput().get(0).setValue("CONTENT");
-        assertThrows(ValidatorException.class, () -> inputHelper.validateContentToValidate(request, "inputX", null, Path.of(appConfig.getTmpFolder()).toFile()));
+        assertThrows(ValidatorException.class, () -> inputHelper.validateContentToValidate(request, "inputX", null, null, Path.of(appConfig.getTmpFolder()).toFile()));
     }
 
     @Test
@@ -215,7 +215,7 @@ class BaseInputHelperTest extends BaseSpringTest {
                 Arguments.arguments("type2", "type1", "type1"),
                 Arguments.arguments("type2", "type2", null));
     }
-    
+
     @Test
     void testValidateValidationTypeWithSeveralTypesAndDefaultNotFound() {
         var domainConfig = new DomainConfig();

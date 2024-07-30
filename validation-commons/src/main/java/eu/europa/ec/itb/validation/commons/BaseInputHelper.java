@@ -55,10 +55,11 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
      * @param validateRequest The request's parameters.
      * @param inputName The name of the input for the content to validate.
      * @param explicitEmbeddingMethod The embedding method provided as an explicit choice.
+     * @param contentSyntax The input's content syntax.
      * @param parentFolder The folder within which to create the resulting file.
      * @return The file to validate.
      */
-    public File validateContentToValidate(ValidateRequest validateRequest, String inputName, ValueEmbeddingEnumeration explicitEmbeddingMethod, File parentFolder) {
+    public File validateContentToValidate(ValidateRequest validateRequest, String inputName, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder) {
         List<AnyContent> listContentToValidate = Utils.getInputFor(validateRequest, inputName);
         if (!listContentToValidate.isEmpty()) {
             AnyContent content = listContentToValidate.get(0);
@@ -74,7 +75,7 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
                 // This is a URI or a plain text string encoded as BASE64.
                 valueToProcess = new String(Utils.decodeBase64String(valueToProcess, true));
             }
-            return validateContentToValidate(valueToProcess, explicitEmbeddingMethod, parentFolder);
+            return validateContentToValidate(valueToProcess, explicitEmbeddingMethod, contentSyntax, parentFolder);
         } else {
             throw new ValidatorException("validator.label.exception.noContentProvided", inputName);
         }
@@ -85,11 +86,12 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
      *
      * @param value The content to validate.
      * @param explicitEmbeddingMethod The embedding method provided as an explicit choice used to determine the handling approach for the provided content.
+     * @param contentSyntax The input's content syntax.
      * @param parentFolder The folder within which to create the resulting file.
      * @return The file to validate.
      */
-    public File validateContentToValidate(String value, ValueEmbeddingEnumeration explicitEmbeddingMethod, File parentFolder) {
-        return fileManager.storeFileContent(parentFolder, value, explicitEmbeddingMethod, null);
+    public File validateContentToValidate(String value, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder) {
+        return fileManager.storeFileContent(parentFolder, value, explicitEmbeddingMethod, contentSyntax, null);
     }
 
     /**

@@ -548,15 +548,15 @@ function contentTypeChangedExternal(elementId){
 	var type = $('#contentType-'+elementId).val();
 	if (type == "uriType"){
 		$("#uriToValidate-"+elementId).removeClass('hidden');
-		$("#fileToValidate-"+elementId).addClass('hidden');
+		$("#fileToValidate-class-"+elementId).addClass('hidden');
 		$("#stringToValidate-"+elementId).addClass('hidden');
 	} else if (type == "fileType"){
-		$("#fileToValidate-"+elementId).removeClass('hidden');
+		$("#fileToValidate-class-"+elementId).removeClass('hidden');
 		$("#uriToValidate-"+elementId).addClass('hidden');
 		$("#stringToValidate-"+elementId).addClass('hidden');
 	} else if (type == "stringType") {
 		$("#stringToValidate-"+elementId).removeClass('hidden');
-		$("#fileToValidate-"+elementId).addClass('hidden');
+		$("#fileToValidate-class-"+elementId).addClass('hidden');
 		$("#uriToValidate-"+elementId).addClass('hidden');
 		setTimeout(function() {
             var codeMirror = getCodeMirrorNative('#text-editor-'+elementId)
