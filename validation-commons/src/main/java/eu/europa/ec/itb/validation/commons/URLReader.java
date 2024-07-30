@@ -5,8 +5,12 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.*;
-import java.util.List;
+import java.net.ProxySelector;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 
 /**
  * Component responsible of reading a stream from a given URL.
@@ -22,33 +26,21 @@ public class URLReader {
      * @throws ValidatorException If the URL cannot be read.
      */
     InputStream stream(URI uri) {
-        Proxy proxy = getProxy(uri);
         try {
-            URLConnection connection;
-            if (proxy == null) {
-                connection = uri.toURL().openConnection();
-            } else {
-                connection = uri.toURL().openConnection(proxy);
-            }
-            return connection.getInputStream();
-        } catch (IOException e) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .GET()
+                    .build();
+            return HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(10))
+                    .followRedirects(HttpClient.Redirect.ALWAYS)
+                    .proxy(ProxySelector.getDefault())
+                    .build()
+                    .send(request, HttpResponse.BodyHandlers.ofInputStream())
+                    .body();
+        } catch (IOException | InterruptedException e) {
             throw new ValidatorException("validator.label.exception.unableToReadURI", e, uri.toString());
         }
-    }
-
-    /**
-     * Get the proxy for the given URI.
-     *
-     * @param uri The URI.
-     * @return The proxy (or null).
-     */
-    Proxy getProxy(URI uri) {
-        Proxy proxy = null;
-        List<Proxy> proxies = ProxySelector.getDefault().select(uri);
-        if (proxies != null && !proxies.isEmpty()) {
-            proxy = proxies.get(0);
-        }
-        return proxy;
     }
 
 }
