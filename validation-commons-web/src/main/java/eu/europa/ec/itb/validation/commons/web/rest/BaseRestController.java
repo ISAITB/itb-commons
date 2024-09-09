@@ -26,9 +26,11 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.print.attribute.standard.Media;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -98,6 +100,32 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
     ) {
         var domainConfig = validateDomain(domain);
         return ApiInfo.fromDomainConfig(domainConfig);
+    }
+
+    /**
+     * Check if the validator is responding to requests.
+     *
+     * @param domain The domain.
+     * @return A 200 status code.
+     */
+    @Operation(summary = "Check if the validator is responding to requests",
+            description = "Check if the API for the given domain is available to respond to requests. " +
+                    "Can also be used as a general healthcheck, by not specifying a domain." +
+                    "This request does not return a body. Only a 200 status code if the healthcheck passes.")
+    @ApiResponse(responseCode = "200", description = "Success", content = { @Content(schema = @Schema()) })
+    @ApiResponse(responseCode = "500", description = "Error (If a problem occurred with processing the request)", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Not found (for an invalid domain value)", content = @Content)
+    @GetMapping(value = {"/api/healthcheck", "/{domain}/api/healthcheck"}, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity healthcheck(
+            @Parameter(name = "domain", description = "A fixed value corresponding to the specific validation domain.",
+            examples = {
+                    @ExampleObject(name="order", summary="Sample 'order' configuration", value="order", description = "The domain value to use for the demo 'order' validator."),
+                    @ExampleObject(name="any", summary="Generic 'any' configuration", value = "any", description = "The domain value to use for the generic 'any' validator used to validate content with user-provided validation artefacts.")
+            })
+            @PathVariable(value = "domain", required = false) String domain
+    ) {
+        if (domain != null && !domain.isEmpty()) validateDomain(domain);
+        return ResponseEntity.ok().build();
     }
 
     /**
