@@ -103,9 +103,9 @@ class BaseRestControllerTest {
     }
 
     @Test
-    void testHealthcheck() {
-        assertEquals(HttpStatusCode.valueOf(200), controller.healthcheck("domain1Name").getStatusCode());
-        assertEquals(HttpStatusCode.valueOf(200), controller.healthcheck("").getStatusCode());
+    void testHealthCheck() {
+        assertEquals(HttpStatusCode.valueOf(200), controller.healthCheck("domain1Name").getStatusCode());
+        assertEquals(HttpStatusCode.valueOf(200), controller.healthCheck("").getStatusCode());
     }
 
     @Test
