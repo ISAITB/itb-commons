@@ -30,7 +30,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import javax.print.attribute.standard.Media;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -116,7 +115,7 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
     @ApiResponse(responseCode = "500", description = "Error (If a problem occurred with processing the request)", content = @Content)
     @ApiResponse(responseCode = "404", description = "Not found (for an invalid domain value)", content = @Content)
     @GetMapping(value = {"/api/healthcheck", "/{domain}/api/healthcheck"}, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity healthcheck(
+    public ResponseEntity<Void> healthCheck(
             @Parameter(name = "domain", description = "A fixed value corresponding to the specific validation domain.",
             examples = {
                     @ExampleObject(name="order", summary="Sample 'order' configuration", value="order", description = "The domain value to use for the demo 'order' validator."),
