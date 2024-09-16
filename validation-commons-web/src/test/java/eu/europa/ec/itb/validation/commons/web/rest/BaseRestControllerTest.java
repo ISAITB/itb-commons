@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatusCode;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -98,6 +100,12 @@ class BaseRestControllerTest {
         assertEquals("Description of type1", result.getValidationTypes().get(0).getDescription());
         assertEquals("type2", result.getValidationTypes().get(1).getType());
         assertEquals("Description of type2", result.getValidationTypes().get(1).getDescription());
+    }
+
+    @Test
+    void testHealthcheck() {
+        assertEquals(HttpStatusCode.valueOf(200), controller.healthcheck("domain1Name").getStatusCode());
+        assertEquals(HttpStatusCode.valueOf(200), controller.healthcheck("").getStatusCode());
     }
 
     @Test
