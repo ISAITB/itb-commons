@@ -71,7 +71,7 @@ class LocalisationHelperTest {
     }
 
     @Test
-    void testInitializeLocaliser() throws IllegalArgumentException, IllegalAccessException {
+    void testInitializeLocaliser() throws IllegalArgumentException {
         LocalisationHelper localiser = new LocalisationHelper(this.config, Locale.ENGLISH);
         assertNotNull(localiser);
         DomainConfig configWithoutLocaleTranslations = new WebDomainConfig();

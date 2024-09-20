@@ -59,11 +59,13 @@ class BaseInputHelperTest extends BaseSpringTest {
     private BaseFileManager<ApplicationConfig> fileManager;
 
     @BeforeEach
+    @Override
     protected void setup() throws IOException {
         super.setup();
     }
 
     @AfterEach
+    @Override
     protected void teardown() {
         super.teardown();
         reset(fileManager);

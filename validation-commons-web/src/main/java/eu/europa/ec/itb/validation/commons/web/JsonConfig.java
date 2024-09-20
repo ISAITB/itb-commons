@@ -22,7 +22,11 @@ import java.util.List;
  * This is not a Spring Bean configuration class to avoid side effects to the
  * ObjectMapper used internally by Spring Boot.
  */
-public class JsonConfig {
+public final class JsonConfig {
+
+    private JsonConfig() {
+        // Private constructor to prevent instantiation.
+    }
 
     /**
      * Create the Jackson ObjectMapper.

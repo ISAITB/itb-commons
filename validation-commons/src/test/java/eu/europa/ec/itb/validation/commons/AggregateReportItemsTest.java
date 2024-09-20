@@ -48,7 +48,7 @@ class AggregateReportItemsTest {
         List<JAXBElement<TestAssertionReportType>> elements = getReportElements();
         var reportItems = new AggregateReportItems(objectFactory, localiser);
         for (var element: elements) {
-            reportItems.updateForReportItem(element, (e) -> "Same string");
+            reportItems.updateForReportItem(element, e -> "Same string");
         }
         var result = reportItems.getReportItems();
         assertNotNull(result);
@@ -76,7 +76,7 @@ class AggregateReportItemsTest {
 
     private LocalisationHelper getLocalisationHelper() {
         var localiser = mock(LocalisationHelper.class);
-        when(localiser.localise(eq("validator.label.reportItemTotalOccurrences"), any())).thenAnswer((a) -> {
+        when(localiser.localise(eq("validator.label.reportItemTotalOccurrences"), any())).thenAnswer(a -> {
             assertEquals(2, a.getArguments().length);
             assertTrue(a.getArgument(0) instanceof String);
             assertTrue(a.getArgument(1) instanceof Long);

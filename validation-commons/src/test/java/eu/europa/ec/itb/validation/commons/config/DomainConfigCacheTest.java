@@ -246,21 +246,21 @@ class DomainConfigCacheTest extends BaseSpringTest {
     @Test
     void testObtainBundleNames() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         // The common name is 'labels'
-        List<String> fileNames_1 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "labels_en_UK");
+        List<String> fileNames1 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "labels_en_UK");
         // The common name is 'labels'
-        List<String> fileNames_2 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "labels");
+        List<String> fileNames2 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "labels");
         // It should not find a correct match and return null.
-        List<String> fileNames_3 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "_labels_en_UK");
+        List<String> fileNames3 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "_labels_en_UK");
         // It should not find a correct match and return null.
-        List<String> fileNames_4 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "labelsof_en_UK", "wrongName");
+        List<String> fileNames4 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES", "labelsof_en_UK", "wrongName");
         // The common name is 'labels'.
-        List<String> fileNames_5 = List.of("labels_en_US", "labels", "labels_es_ES");
+        List<String> fileNames5 = List.of("labels_en_US", "labels", "labels_es_ES");
         // The common name is 'labels'.
-        List<String> fileNames_6 = List.of("labels_en", "labels_fr_FR", "labels_es_ES", "labels_en_US");
+        List<String> fileNames6 = List.of("labels_en", "labels_fr_FR", "labels_es_ES", "labels_en_US");
         // The common name is 'my_labels'.
-        List<String> fileNames_7 = List.of("my_labels_en_US", "my_labels_fr_FR", "my_labels_es_ES");
+        List<String> fileNames7 = List.of("my_labels_en_US", "my_labels_fr_FR", "my_labels_es_ES");
         // The common name is '_labels'.
-        List<String> fileNames_8 = List.of("_labels_en_US", "_labels_fr", "_labels_es_ES");
+        List<String> fileNames8 = List.of("_labels_en_US", "_labels_fr", "_labels_es_ES");
         // The common name is 'labels'.
         List<String> fileNames_9 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES");
         // The common name is '_my__labels'
@@ -269,14 +269,14 @@ class DomainConfigCacheTest extends BaseSpringTest {
         Method obtainBundleNamesMethod = ReflectionUtils.findMethod(configCache.getClass(), "obtainBundleName", List.class);
         assertNotNull(obtainBundleNamesMethod);
         obtainBundleNamesMethod.setAccessible(Boolean.TRUE);
-        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_1)));
-        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_2)));
-        assertNull(obtainBundleNamesMethod.invoke(configCache, fileNames_3));
-        assertNull(obtainBundleNamesMethod.invoke(configCache, fileNames_4));
-        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_5)));
-        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_6)));
-        assertTrue("my_labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_7)));
-        assertTrue("_labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_8)));
+        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames1)));
+        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames2)));
+        assertNull(obtainBundleNamesMethod.invoke(configCache, fileNames3));
+        assertNull(obtainBundleNamesMethod.invoke(configCache, fileNames4));
+        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames5)));
+        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames6)));
+        assertTrue("my_labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames7)));
+        assertTrue("_labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames8)));
         assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_9)));
         assertTrue("_my__labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_10)));
     }

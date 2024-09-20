@@ -1,7 +1,6 @@
 package eu.europa.ec.itb.validation.commons.test;
 
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;

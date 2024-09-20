@@ -74,12 +74,14 @@ class BaseFileManagerTest extends BaseSpringTest {
     private BaseFileManager<ApplicationConfig> fileManager;
 
     @BeforeEach
+    @Override
     protected void setup() throws IOException {
         super.setup();
         fileManager.init();
     }
 
     @AfterEach
+    @Override
     protected void teardown() {
         super.teardown();
         fileManager.init();
@@ -331,7 +333,6 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
 
     @Test
     void testGetFileFromStringNoTargetFolder() throws IOException {
-//        var targetFolder = Path.of(appConfig.getTmpFolder(), "string_test");
         var result = fileManager.getFileFromString(null, "TEST");
         assertNotNull(result);
         assertEquals(Path.of(appConfig.getTmpFolder(), "web"), result.getParentFile().toPath());
@@ -482,7 +483,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     }
 
     @Test
-    void testGetPreconfiguredValidationArtifactsFromOtherDomainsNotAllowed() throws IOException {
+    void testGetPreconfiguredValidationArtifactsFromOtherDomainsNotAllowed() {
         when(appConfig.isRestrictResourcesToDomain()).thenReturn(true);
         when(domainConfigCache.isInDomainFolder(any(), any())).thenCallRealMethod();
 
@@ -676,13 +677,13 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     @Test
     void testInit() throws IOException {
         var existingFile = createFileWithContents(Path.of(tmpFolder.toString(), "existingFile.txt"), "DATA");
-        var fileManager = mock(BaseFileManager.class);
-        fileManager.domainConfigCache = domainConfigCache;
-        doReturn(tmpFolder.toFile()).when(fileManager).getTempFolder();
-        doCallRealMethod().when(fileManager).init();
-        fileManager.init();
+        var testFileManager = mock(BaseFileManager.class);
+        testFileManager.domainConfigCache = domainConfigCache;
+        doReturn(tmpFolder.toFile()).when(testFileManager).getTempFolder();
+        doCallRealMethod().when(testFileManager).init();
+        testFileManager.init();
         assertTrue(Files.notExists(existingFile));
-        verify(fileManager, times(1)).resetRemoteFileCache();
+        verify(testFileManager, times(1)).resetRemoteFileCache();
     }
 
     static class TestPreprocessor implements ArtifactPreprocessor {
