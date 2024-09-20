@@ -181,9 +181,9 @@ class BaseFileControllerTest extends BaseTest {
 
     @Test
     void testDomainNotExists() {
-        var configCache = mock(WebDomainConfigCache.class);
-        when(configCache.getConfigForDomainName(any())).thenReturn(null);
-        var controller = createController(appConfig, fileManager, configCache, reportGenerator);
+        var testConfigCache = mock(WebDomainConfigCache.class);
+        when(testConfigCache.getConfigForDomainName(any())).thenReturn(null);
+        var controller = createController(appConfig, fileManager, testConfigCache, reportGenerator);
         assertThrows(NotFoundException.class, () -> controller.getInput("domain1", "UUID"));
         assertThrows(NotFoundException.class, () -> controller.getReportXml("domain1", "UUID", false, mock(HttpServletResponse.class)));
         assertThrows(NotFoundException.class, () -> controller.getReportPdf("domain1", "UUID", false, mock(HttpServletRequest.class), mock(HttpServletResponse.class)));

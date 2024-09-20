@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "A set of user-provided schemas to apply to the validation.")
 public class SchemaInfo {
 
-    @Schema(required = true, description = "The schema to apply.")
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The schema to apply.")
     private String schema;
     @Schema(description = "The way in which to interpret the value for schema. If not provided, the method will be determined from the schema value itself.", allowableValues = FileContent.EMBEDDING_STRING+","+FileContent.EMBEDDING_URL+","+FileContent.EMBEDDING_BASE_64)
     private String embeddingMethod;

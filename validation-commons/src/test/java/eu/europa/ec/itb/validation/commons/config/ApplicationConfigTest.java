@@ -44,6 +44,7 @@ class ApplicationConfigTest extends BaseTest {
     private ApplicationConfig appConfig;
 
     @BeforeEach
+    @Override
     protected void setup() throws IOException {
         super.setup();
         var resourceRoot = Path.of(tmpFolder.toString(), "resourceRoot");

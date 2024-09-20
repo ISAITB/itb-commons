@@ -40,7 +40,7 @@ class BaseRestControllerTest {
         when(domain1.getChannels()).thenReturn(Set.of(ValidatorChannel.REST_API));
         when(domain1.getType()).thenReturn(List.of("type1", "type2"));
         when(domain1.getDefaultLocale()).thenReturn(Locale.ENGLISH);
-        when(domain1.getCompleteTypeOptionLabel(anyString(), any(LocalisationHelper.class))).thenAnswer((x) -> "Description of " + x.getArgument(0));
+        when(domain1.getCompleteTypeOptionLabel(anyString(), any(LocalisationHelper.class))).thenAnswer(x -> "Description of " + x.getArgument(0));
 
         var domain2 = mock(WebDomainConfig.class);
         when(domain2.getDomain()).thenReturn("domain2");
@@ -49,7 +49,7 @@ class BaseRestControllerTest {
         when(domain2.getDomainName()).thenReturn("domain2Name");
         when(domain2.getType()).thenReturn(List.of("type1", "type2"));
         when(domain2.getDefaultLocale()).thenReturn(Locale.ENGLISH);
-        when(domain2.getCompleteTypeOptionLabel(anyString(), any(LocalisationHelper.class))).thenAnswer((x) -> "Description of " + x.getArgument(0));
+        when(domain2.getCompleteTypeOptionLabel(anyString(), any(LocalisationHelper.class))).thenAnswer(x -> "Description of " + x.getArgument(0));
 
         var domain3 = mock(WebDomainConfig.class);
         when(domain3.getDomain()).thenReturn("domain3");
@@ -58,7 +58,7 @@ class BaseRestControllerTest {
         when(domain3.getDomainName()).thenReturn("domain3Name");
         when(domain3.getType()).thenReturn(List.of("type1", "type2"));
         when(domain3.getDefaultLocale()).thenReturn(Locale.ENGLISH);
-        when(domain3.getCompleteTypeOptionLabel(anyString(), any(LocalisationHelper.class))).thenAnswer((x) -> "Description of " + x.getArgument(0));
+        when(domain3.getCompleteTypeOptionLabel(anyString(), any(LocalisationHelper.class))).thenAnswer(x -> "Description of " + x.getArgument(0));
 
         controller = new BaseRestController<>() {};
         controller.domainConfigs = mock(DomainConfigCache.class);
@@ -123,7 +123,7 @@ class BaseRestControllerTest {
         when(schemaInfo1.toFileContent()).thenReturn(new FileContent());
         var domainConfig = mock(WebDomainConfig.class);
         var file = mock(File.class);
-        var result = controller.getExternalSchemas(domainConfig, List.of(schemaInfo1), "type1", "artifactType1", file);
+        controller.getExternalSchemas(domainConfig, List.of(schemaInfo1), "type1", "artifactType1", file);
         verify(controller.inputHelper, times(1)).validateExternalArtifacts(any(WebDomainConfig.class), anyList(), eq("type1"), eq("artifactType1"), eq(file));
         verify(schemaInfo1, times(1)).toFileContent();
     }
@@ -146,7 +146,7 @@ class BaseRestControllerTest {
         var config = mock(WebDomainConfig.class);
         when(config.getMaximumReportsForXmlOutput()).thenReturn(5L);
         report.setName("name");
-        controller.tarObjectMapper = new JsonConfig().objectMapper();
+        controller.tarObjectMapper = JsonConfig.objectMapper();
         try (var out = new ByteArrayOutputStream()) {
             controller.writeReportAsJson(out, report, config);
             var reportString = out.toString();

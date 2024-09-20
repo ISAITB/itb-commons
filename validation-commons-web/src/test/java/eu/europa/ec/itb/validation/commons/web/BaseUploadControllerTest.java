@@ -121,7 +121,7 @@ class BaseUploadControllerTest {
         when(config.getDeclaredType()).thenReturn(List.of("type1", "type2"));
         when(config.getDeclaredType()).thenReturn(List.of("type1", "type2"));
         when(config.getValidationTypeOptions()).thenReturn(Map.of("type1", List.of("option1", "option2")));
-        when(helper.localise(anyString())).then((args) -> args.getArguments()[0] + " [TRANSLATED]");
+        when(helper.localise(anyString())).then(args -> args.getArguments()[0] + " [TRANSLATED]");
         when(helper.propertyExists(anyString())).thenReturn(true);
         var typeRelated = List.of(Pair.of("configA", "jsonA"));
         var typeAndOptionRelated = List.of(Pair.of("otherConfigA", "otherJsonA"));

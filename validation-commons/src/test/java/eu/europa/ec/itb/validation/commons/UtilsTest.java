@@ -84,11 +84,12 @@ class UtilsTest extends BaseTest {
 
     @Test
     void testReadXMLWithLineNumber() throws IOException, SAXException {
-        String xml =
-            "<parent>\n"+
-                "<child>Child1</child>\n"+
-                "<child>Child2</child>\n"+
-            "</parent>";
+        String xml = """
+               <parent>
+                  <child>Child1</child>
+                  <child>Child2</child>
+               </parent>
+               """;
         var result = Utils.readXMLWithLineNumbers(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         assertNotNull(result);
         var childNodes = result.getDocumentElement().getElementsByTagName("child");
@@ -370,7 +371,7 @@ class UtilsTest extends BaseTest {
 
     private LocalisationHelper getLocalisationHelper() {
         var localiser = mock(LocalisationHelper.class);
-        when(localiser.localise(eq("validator.label.reportItemTotalOccurrences"), any())).thenAnswer((a) -> {
+        when(localiser.localise(eq("validator.label.reportItemTotalOccurrences"), any())).thenAnswer(a -> {
             assertEquals(2, a.getArguments().length);
             assertInstanceOf(String.class, a.getArgument(0));
             assertInstanceOf(Long.class, a.getArgument(1));

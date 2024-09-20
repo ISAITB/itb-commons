@@ -5,7 +5,6 @@ import com.gitb.core.ValueEmbeddingEnumeration;
 import com.gitb.tbs.TestStepStatus;
 import com.gitb.tr.*;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
-import jakarta.xml.bind.DatatypeConverter;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
@@ -22,8 +21,6 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.GregorianCalendar;
 
@@ -143,12 +140,6 @@ class ReportGeneratorTest {
         when(mock.getTest()).thenReturn("test");
         when(mock.getTitle()).thenReturn("title");
         return mock;
-    }
-
-    private String digest(Path path) throws NoSuchAlgorithmException, IOException {
-        var md = MessageDigest.getInstance("MD5");
-        md.update(Files.readAllBytes(path));
-        return DatatypeConverter.printHexBinary(md.digest());
     }
 
     @Test

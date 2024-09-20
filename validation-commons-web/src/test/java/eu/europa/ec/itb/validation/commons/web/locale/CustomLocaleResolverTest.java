@@ -1,7 +1,6 @@
 package eu.europa.ec.itb.validation.commons.web.locale;
 
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
-import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;

@@ -1,6 +1,5 @@
 package eu.europa.ec.itb.validation.commons;
 
-
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
@@ -18,8 +17,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class CsvReportGeneratorTest extends BaseTest {
-
-    private CsvReportGenerator reportGenerator;
 
     private CsvReportGenerator createBean(ApplicationConfig appConfig) {
         var bean = new CsvReportGenerator();

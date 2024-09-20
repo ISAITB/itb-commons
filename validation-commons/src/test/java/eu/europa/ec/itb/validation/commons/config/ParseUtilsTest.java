@@ -34,7 +34,7 @@ class ParseUtilsTest {
                 "key.1.subKey1", "B",
                 "key.1.subKey2", "3,4"
         ));
-        var result = ParseUtils.parseValueList("key", config, (values) -> new DataHolder(values.get("subKey1"), Arrays.stream(values.get("subKey2").split(",")).map(Integer::valueOf).collect(Collectors.toList())));
+        var result = ParseUtils.parseValueList("key", config, values -> new DataHolder(values.get("subKey1"), Arrays.stream(values.get("subKey2").split(",")).map(Integer::valueOf).toList()));
         assertEquals(2, result.size());
         result.sort(Comparator.comparing(v -> v.v1));
         assertEquals("A", result.get(0).v1);
@@ -55,7 +55,7 @@ class ParseUtilsTest {
                 "key.type2.0.subKey1", "B",
                 "key.type2.0.subKey2", "3,4"
         ));
-        var result = ParseUtils.parseTypedValueList("key", List.of("type1", "type2"), config, (values) -> new DataHolder(values.get("subKey1"), Arrays.stream(values.get("subKey2").split(",")).map(Integer::valueOf).collect(Collectors.toList())));
+        var result = ParseUtils.parseTypedValueList("key", List.of("type1", "type2"), config, values -> new DataHolder(values.get("subKey1"), Arrays.stream(values.get("subKey2").split(",")).map(Integer::valueOf).toList()));
         assertEquals(2, result.size());
         assertEquals(1, result.get("type1").size());
         assertEquals("A", result.get("type1").get(0).v1);
