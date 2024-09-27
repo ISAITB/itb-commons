@@ -82,6 +82,11 @@
         <version.bouncycastle>1.78.1</version.bouncycastle>
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
         <version.jena>4.10.0</version.jena>
+        <!--
+            Set to resolve CVE-2024-7254 by fixing the transitive dependency through jena-arq. Jena-arq v4.10.0
+            relies on protobuf v3.*.
+        -->
+        <version.protobuf>3.25.5</version.protobuf>
         <version.libthrift>0.15.0</version.libthrift>
         <!-- Plugin versions -->
         <version.plugin.mavenCompilerPlugin>3.11.0</version.plugin.mavenCompilerPlugin>
@@ -558,6 +563,11 @@
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcutil-jdk18on</artifactId>
                 <version>${version.bouncycastle}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${version.protobuf}</version>
             </dependency>
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
             <dependency>
