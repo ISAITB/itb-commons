@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URLClassLoader;
+import java.net.http.HttpClient;
 import java.util.*;
 
 /**
@@ -56,6 +57,17 @@ public class DomainConfig {
     private String reportCustomisationIdDefault;
     private String validationServiceName;
     private String validationServiceVersion;
+    private HttpClient.Version httpVersion;
+
+    /** @return The protocol version to use HTTP requests. **/
+    public HttpClient.Version getHttpVersion() {
+        return httpVersion;
+    }
+
+    /** @param httpVersion The protocol version to use for HTTP requests. **/
+    public void setHttpVersion(HttpClient.Version httpVersion) {
+        this.httpVersion = httpVersion;
+    }
 
     /** @return Whether report items can have rich text content. */
     public boolean isRichTextReports() {

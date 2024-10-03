@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,9 +58,10 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
      * @param explicitEmbeddingMethod The embedding method provided as an explicit choice.
      * @param contentSyntax The input's content syntax.
      * @param parentFolder The folder within which to create the resulting file.
+     * @param httpVersion The HTTP version to use.
      * @return The file to validate.
      */
-    public File validateContentToValidate(ValidateRequest validateRequest, String inputName, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder) {
+    public File validateContentToValidate(ValidateRequest validateRequest, String inputName, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder, HttpClient.Version httpVersion) {
         List<AnyContent> listContentToValidate = Utils.getInputFor(validateRequest, inputName);
         if (!listContentToValidate.isEmpty()) {
             AnyContent content = listContentToValidate.get(0);
@@ -75,7 +77,7 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
                 // This is a URI or a plain text string encoded as BASE64.
                 valueToProcess = new String(Utils.decodeBase64String(valueToProcess, true));
             }
-            return validateContentToValidate(valueToProcess, explicitEmbeddingMethod, contentSyntax, parentFolder);
+            return validateContentToValidate(valueToProcess, explicitEmbeddingMethod, contentSyntax, parentFolder, httpVersion);
         } else {
             throw new ValidatorException("validator.label.exception.noContentProvided", inputName);
         }
@@ -88,10 +90,11 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
      * @param explicitEmbeddingMethod The embedding method provided as an explicit choice used to determine the handling approach for the provided content.
      * @param contentSyntax The input's content syntax.
      * @param parentFolder The folder within which to create the resulting file.
+     * @param httpVersion The HTTP version to use.
      * @return The file to validate.
      */
-    public File validateContentToValidate(String value, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder) {
-        return fileManager.storeFileContent(parentFolder, value, explicitEmbeddingMethod, contentSyntax, null);
+    public File validateContentToValidate(String value, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder, HttpClient.Version httpVersion) {
+        return fileManager.storeFileContent(parentFolder, value, explicitEmbeddingMethod, contentSyntax, null, httpVersion);
     }
 
     /**
@@ -231,7 +234,7 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
      * @return The list of stored files.
      */
     public List<FileInfo> getExternalArtifactInfo(AnyContent containerContent, R domainConfig, String validationType, String artifactType, String artifactContentInputName, String artifactEmbeddingMethodInputName, File parentFolder) {
-        return fileManager.getExternalValidationArtifacts(domainConfig, validationType, artifactType, parentFolder, toExternalArtifactContents(containerContent, artifactContentInputName, artifactEmbeddingMethodInputName));
+        return fileManager.getExternalValidationArtifacts(domainConfig, validationType, artifactType, parentFolder, toExternalArtifactContents(containerContent, artifactContentInputName, artifactEmbeddingMethodInputName), domainConfig.getHttpVersion());
     }
 
     /**
@@ -263,7 +266,7 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
                     throw new ValidatorException("validator.label.exception.validationTypeDoesNotExpectUserArtefactsWithParam", validationType, artifactType);
                 }
             }
-            artifacts = fileManager.getExternalValidationArtifacts(domainConfig, validationType, artifactType, parentFolder, externalArtifacts);
+            artifacts = fileManager.getExternalValidationArtifacts(domainConfig, validationType, artifactType, parentFolder, externalArtifacts, domainConfig.getHttpVersion());
         }
         return artifacts;
     }
