@@ -29,6 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
@@ -102,8 +103,8 @@ class BaseInputHelperTest extends BaseSpringTest {
             assertEquals("CONTENT", invocationOnMock.getArgument(1));
             return createFileWithContents(Path.of(appConfig.getTmpFolder(), "file"), "CONTENT").toFile();
         });
-        inputHelper.validateContentToValidate(request, "input1", null, null, Path.of(appConfig.getTmpFolder()).toFile());
-        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any(), any());
+        inputHelper.validateContentToValidate(request, "input1", null, null, Path.of(appConfig.getTmpFolder()).toFile(), HttpClient.Version.HTTP_2);
+        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -117,8 +118,8 @@ class BaseInputHelperTest extends BaseSpringTest {
             assertEquals("CONTENT", invocationOnMock.getArgument(1));
             return createFileWithContents(Path.of(appConfig.getTmpFolder(), "file"), "CONTENT").toFile();
         });
-        inputHelper.validateContentToValidate(request, "input1", ValueEmbeddingEnumeration.STRING, null, Path.of(appConfig.getTmpFolder()).toFile());
-        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any(), any());
+        inputHelper.validateContentToValidate(request, "input1", ValueEmbeddingEnumeration.STRING, null, Path.of(appConfig.getTmpFolder()).toFile(), HttpClient.Version.HTTP_2);
+        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -132,8 +133,8 @@ class BaseInputHelperTest extends BaseSpringTest {
             assertEquals(Base64.getEncoder().encodeToString("CONTENT".getBytes(StandardCharsets.UTF_8)), invocationOnMock.getArgument(1));
             return createFileWithContents(Path.of(appConfig.getTmpFolder(), "file"), "CONTENT").toFile();
         });
-        inputHelper.validateContentToValidate(request, "input1", ValueEmbeddingEnumeration.BASE_64, null, Path.of(appConfig.getTmpFolder()).toFile());
-        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any(), any());
+        inputHelper.validateContentToValidate(request, "input1", ValueEmbeddingEnumeration.BASE_64, null, Path.of(appConfig.getTmpFolder()).toFile(), HttpClient.Version.HTTP_2);
+        verify(fileManager, times(1)).storeFileContent(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -143,7 +144,7 @@ class BaseInputHelperTest extends BaseSpringTest {
         request.getInput().get(0).setName("input1");
         request.getInput().get(0).setEmbeddingMethod(ValueEmbeddingEnumeration.STRING);
         request.getInput().get(0).setValue("CONTENT");
-        assertThrows(ValidatorException.class, () -> inputHelper.validateContentToValidate(request, "inputX", null, null, Path.of(appConfig.getTmpFolder()).toFile()));
+        assertThrows(ValidatorException.class, () -> inputHelper.validateContentToValidate(request, "inputX", null, null, Path.of(appConfig.getTmpFolder()).toFile(), HttpClient.Version.HTTP_2));
     }
 
     @Test
@@ -328,7 +329,7 @@ class BaseInputHelperTest extends BaseSpringTest {
         content.getItem().get(2).setName("method");
         content.getItem().get(2).setEmbeddingMethod(ValueEmbeddingEnumeration.STRING);
         content.getItem().get(2).setValue("STRING");
-        when(fileManager.getExternalValidationArtifacts(any(), any(), any(), any(), any())).thenAnswer((Answer<List<FileContent>>) invocationOnMock -> {
+        when(fileManager.getExternalValidationArtifacts(any(), any(), any(), any(), any(), any())).thenAnswer((Answer<List<FileContent>>) invocationOnMock -> {
             List<FileContent> fileContents = invocationOnMock.getArgument(4);
             assertNotNull(fileContents);
             assertEquals(1, fileContents.size());
@@ -336,7 +337,7 @@ class BaseInputHelperTest extends BaseSpringTest {
             return Collections.emptyList();
         });
         inputHelper.getExternalArtifactInfo(content, new DomainConfig(), "type1", "artifact1", "content", "method", Path.of(appConfig.getTmpFolder()).toFile());
-        verify(fileManager, times(1)).getExternalValidationArtifacts(any(), any(), any(), any(), any());
+        verify(fileManager, times(1)).getExternalValidationArtifacts(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -401,9 +402,9 @@ class BaseInputHelperTest extends BaseSpringTest {
         externalArtifacts.add(new FileContent());
         externalArtifacts.get(0).setContent("CONTENT");
         externalArtifacts.get(0).setEmbeddingMethod(ValueEmbeddingEnumeration.STRING);
-        when(fileManager.getExternalValidationArtifacts(any(), any(), any(), any(), any())).thenAnswer((Answer<List<FileInfo>>) invocationOnMock -> Collections.emptyList());
+        when(fileManager.getExternalValidationArtifacts(any(), any(), any(), any(), any(), any())).thenAnswer((Answer<List<FileInfo>>) invocationOnMock -> Collections.emptyList());
         inputHelper.validateExternalArtifacts(domainConfig, externalArtifacts, "type1", "artifact1", Path.of(appConfig.getTmpFolder()).toFile());
-        verify(fileManager, times(1)).getExternalValidationArtifacts(any(), any(), any(), any(), any());
+        verify(fileManager, times(1)).getExternalValidationArtifacts(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -417,9 +418,9 @@ class BaseInputHelperTest extends BaseSpringTest {
         externalArtifacts.add(new FileContent());
         externalArtifacts.get(0).setContent("CONTENT");
         externalArtifacts.get(0).setEmbeddingMethod(ValueEmbeddingEnumeration.STRING);
-        when(fileManager.getExternalValidationArtifacts(any(), any(), any(), any(), any())).thenAnswer((Answer<List<FileInfo>>) invocationOnMock -> Collections.emptyList());
+        when(fileManager.getExternalValidationArtifacts(any(), any(), any(), any(), any(), any())).thenAnswer((Answer<List<FileInfo>>) invocationOnMock -> Collections.emptyList());
         inputHelper.validateExternalArtifacts(domainConfig, externalArtifacts, "type1", "artifact1", Path.of(appConfig.getTmpFolder()).toFile());
-        verify(fileManager, times(1)).getExternalValidationArtifacts(any(), any(), any(), any(), any());
+        verify(fileManager, times(1)).getExternalValidationArtifacts(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -443,9 +444,9 @@ class BaseInputHelperTest extends BaseSpringTest {
         content.getItem().get(2).setValue("STRING");
         ValidateRequest request = new ValidateRequest();
         request.getInput().add(content);
-        when(fileManager.getExternalValidationArtifacts(any(), any(), any(), any(), any())).thenAnswer((Answer<List<FileInfo>>) invocationOnMock -> Collections.emptyList());
+        when(fileManager.getExternalValidationArtifacts(any(), any(), any(), any(), any(), any())).thenAnswer((Answer<List<FileInfo>>) invocationOnMock -> Collections.emptyList());
         inputHelper.validateExternalArtifacts(domainConfig, request, "container", "content", "method", "type1", "artifact1", Path.of(appConfig.getTmpFolder()).toFile());
-        verify(fileManager, times(1)).getExternalValidationArtifacts(any(), any(), any(), any(), any());
+        verify(fileManager, times(1)).getExternalValidationArtifacts(any(), any(), any(), any(), any(), any());
     }
 
     @Test

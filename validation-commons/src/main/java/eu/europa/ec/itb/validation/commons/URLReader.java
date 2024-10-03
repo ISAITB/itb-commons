@@ -26,13 +26,15 @@ public class URLReader {
      *
      * @param uri The URL.
      * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
+     * @param httpVersion The HTTP version to use.
      * @return The data of the response (stream and content type).
      * @throws ValidatorException If the URL cannot be read.
      */
-    StreamInfo stream(URI uri, List<String> acceptedContentTypes) {
+    StreamInfo stream(URI uri, List<String> acceptedContentTypes, HttpClient.Version httpVersion) {
         try {
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(uri)
+                    .version(httpVersion)
                     .GET();
             if (acceptedContentTypes != null && !acceptedContentTypes.isEmpty()) {
                 List<String> nonEmptyContentTypes = acceptedContentTypes.stream().filter(value -> value != null && !value.isBlank()).toList();

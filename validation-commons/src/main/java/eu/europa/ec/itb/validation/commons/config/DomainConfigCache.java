@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.http.HttpClient;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -283,6 +284,14 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setReportCustomisationIds(ParseUtils.parseMap("validator.report.customisationId", config, domainConfig.getType()));
                     // Load optional report metadata - end.
                     domainConfig.setRichTextReports(config.getBoolean("validator.richTextReports", false));
+                    // HTTP version - start.
+                    var httpVersionString = config.getString("validator.httpVersion", "2");
+                    if (httpVersionString.equals("1.1")) {
+                        domainConfig.setHttpVersion(HttpClient.Version.HTTP_1_1);
+                    } else {
+                        domainConfig.setHttpVersion(HttpClient.Version.HTTP_2);
+                    }
+                    // HTTP version - end.
                     // Allow subclasses to extend the configuration as needed.
                     addDomainConfiguration(domainConfig, config);
                     completeValidationArtifactConfig(domainConfig);

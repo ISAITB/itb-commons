@@ -33,6 +33,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -205,11 +206,12 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      *
      * @param targetFolder The folder within which to create the file.
      * @param urlOrBase64 The string to parse as a URL or BASE64 content.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file.
      * @throws IOException If the string cannot be parsed.
      */
-    public File getFileFromURLOrBase64(File targetFolder, String urlOrBase64) throws IOException {
-        return getFileFromURLOrBase64(targetFolder, urlOrBase64, null, null);
+    public File getFileFromURLOrBase64(File targetFolder, String urlOrBase64, HttpClient.Version httpVersion) throws IOException {
+        return getFileFromURLOrBase64(targetFolder, urlOrBase64, null, null, httpVersion);
     }
 
     /**
@@ -220,11 +222,12 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param targetFolder The folder within which to create the file.
      * @param urlOrBase64 The string to parse as a URL or BASE64 content.
      * @param contentType The content type to consider for the content to determine the stored file's extension.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file.
      * @throws IOException If the string cannot be parsed.
      */
-    public File getFileFromURLOrBase64(File targetFolder, String urlOrBase64, String contentType) throws IOException {
-        return getFileFromURLOrBase64(targetFolder, urlOrBase64, contentType, null);
+    public File getFileFromURLOrBase64(File targetFolder, String urlOrBase64, String contentType, HttpClient.Version httpVersion) throws IOException {
+        return getFileFromURLOrBase64(targetFolder, urlOrBase64, contentType, null, httpVersion);
     }
 
     /**
@@ -236,11 +239,12 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param urlOrBase64 The string to parse as a URL or BASE64 content.
      * @param contentType The content type to consider for the content to determine the stored file's extension.
      * @param artifactType The type of validation artifact this file corresponds to.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file.
      * @throws IOException If the string cannot be parsed.
      */
-    public File getFileFromURLOrBase64(File targetFolder, String urlOrBase64, String contentType, String artifactType) throws IOException {
-        return getFileFromURLOrBase64(targetFolder, urlOrBase64, contentType, artifactType, null);
+    public File getFileFromURLOrBase64(File targetFolder, String urlOrBase64, String contentType, String artifactType, HttpClient.Version httpVersion) throws IOException {
+        return getFileFromURLOrBase64(targetFolder, urlOrBase64, contentType, artifactType, null, httpVersion);
     }
 
     /**
@@ -253,16 +257,17 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param contentType The content type to consider for the content to determine the stored file's extension.
      * @param artifactType The type of validation artifact this file corresponds to.
      * @param fileName The file name to use.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file.
      * @throws IOException If the string cannot be parsed.
      */
-    public File getFileFromURLOrBase64(File targetFolder, String urlOrBase64, String contentType, String artifactType, String fileName) throws IOException {
+    public File getFileFromURLOrBase64(File targetFolder, String urlOrBase64, String contentType, String artifactType, String fileName, HttpClient.Version httpVersion) throws IOException {
         if (targetFolder == null) {
             targetFolder = getWebTmpFolder();
         }
         File outputFile;
         try {
-            outputFile = getFileFromURL(targetFolder, urlOrBase64, getFileExtension(contentType), fileName, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType)).getFile();
+            outputFile = getFileFromURL(targetFolder, urlOrBase64, getFileExtension(contentType), fileName, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion).getFile();
         } catch (MalformedURLException e) {
             // Exception means that the text is not a valid URL.
             try {
@@ -280,11 +285,12 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      *
      * @param targetFolder The folder to store the file in.
      * @param url The URL to load.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file.
      * @throws IOException If the file could not be retrieved or stored.
      */
-    public File getFileFromURL(File targetFolder, String url) throws IOException {
-        return getFileFromURL(targetFolder, url, null, null, null, null, null, null).getFile();
+    public File getFileFromURL(File targetFolder, String url, HttpClient.Version httpVersion) throws IOException {
+        return getFileFromURL(targetFolder, url, null, null, null, null, null, null, httpVersion).getFile();
     }
 
     /**
@@ -293,11 +299,12 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param targetFolder The folder to store the file in.
      * @param url The URL to load.
      * @param fileName The name of the file to use.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file.
      * @throws IOException If the file could not be retrieved or stored.
      */
-    public File getFileFromURL(File targetFolder, String url, String fileName) throws IOException {
-        return getFileFromURL(targetFolder, url, null, fileName, null, null, null, null).getFile();
+    public File getFileFromURL(File targetFolder, String url, String fileName, HttpClient.Version httpVersion) throws IOException {
+        return getFileFromURL(targetFolder, url, null, fileName, null, null, null, null, httpVersion).getFile();
     }
 
     /**
@@ -307,11 +314,12 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param url The URL to load.
      * @param extension The file extension for the created file.
      * @param fileName The name of the file to use.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file.
      * @throws IOException If the file could not be retrieved or stored.
      */
-    public File getFileFromURL(File targetFolder, String url, String extension, String fileName) throws IOException {
-        return getFileFromURL(targetFolder, url, extension, fileName, null, null, null, null).getFile();
+    public File getFileFromURL(File targetFolder, String url, String extension, String fileName, HttpClient.Version httpVersion) throws IOException {
+        return getFileFromURL(targetFolder, url, extension, fileName, null, null, null, null, httpVersion).getFile();
     }
 
     /**
@@ -322,11 +330,12 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param extension The file extension for the created file.
      * @param fileName The name of the file to use.
      * @param artifactType The type of validation artifact.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file.
      * @throws IOException If the file could not be retrieved or stored.
      */
-    public File getFileFromURL(File targetFolder, String url, String extension, String fileName, String artifactType) throws IOException {
-        return getFileFromURL(targetFolder, url, extension, fileName, null, null, artifactType, null).getFile();
+    public File getFileFromURL(File targetFolder, String url, String extension, String fileName, String artifactType, HttpClient.Version httpVersion) throws IOException {
+        return getFileFromURL(targetFolder, url, extension, fileName, null, null, artifactType, null, httpVersion).getFile();
     }
 
     /**
@@ -340,10 +349,11 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param preprocessorOutputExtension The file extension for the file produced via preprocessing (if applicable).
      * @param artifactType The type of validation artifact.
      * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file and the returned content type from the remote URI.
      * @throws IOException If the file could not be retrieved or stored.
      */
-    public FileInfo getFileFromURL(File targetFolder, String url, String extension, String fileName, File preprocessorFile, String preprocessorOutputExtension, String artifactType, List<String> acceptedContentTypes) throws IOException {
+    public FileInfo getFileFromURL(File targetFolder, String url, String extension, String fileName, File preprocessorFile, String preprocessorOutputExtension, String artifactType, List<String> acceptedContentTypes, HttpClient.Version httpVersion) throws IOException {
         URL urlObj = new URL(url);
         if (fileName == null) {
             fileName = FilenameUtils.getName(urlObj.getPath());
@@ -354,7 +364,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         StreamInfo streamInfo = null;
         Path targetFilePath;
         try {
-            streamInfo = getInputStreamFromURL(url, acceptedContentTypes);
+            streamInfo = getInputStreamFromURL(url, acceptedContentTypes, httpVersion);
             if (StringUtils.isEmpty(extension) && streamInfo.contentType().isPresent()) {
                 extension = getFileExtension(streamInfo.contentType().get());
             }
@@ -454,11 +464,12 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      *
      * @param url The URL to load.
      * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
+     * @param httpVersion The HTTP version to use.
      * @return The input stream.
      */
-    public StreamInfo getInputStreamFromURL(String url, List<String> acceptedContentTypes) {
+    public StreamInfo getInputStreamFromURL(String url, List<String> acceptedContentTypes, HttpClient.Version httpVersion) {
         // Read the resource from the provided URI.
-        return urlReader.stream(URI.create(StringUtils.defaultString(url).trim()), acceptedContentTypes);
+        return urlReader.stream(URI.create(StringUtils.defaultString(url).trim()), acceptedContentTypes, httpVersion);
     }
 
     /**
@@ -741,14 +752,15 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param artifactType The artifact type.
      * @param parentFolder The folder within which to create a temporary folder to store all external artifacts.
      * @param externalArtifactContents The contents of the artifacts to consider, store and preprocess (if applicable).
+     * @param httpVersion The HTTP version to use.
      * @return The list of artifacts to use.
      */
-    public List<FileInfo> getExternalValidationArtifacts(DomainConfig domainConfig, String validationType, String artifactType, File parentFolder, List<FileContent> externalArtifactContents) {
+    public List<FileInfo> getExternalValidationArtifacts(DomainConfig domainConfig, String validationType, String artifactType, File parentFolder, List<FileContent> externalArtifactContents, HttpClient.Version httpVersion) {
         List<FileInfo> externalArtifactFiles = new ArrayList<>();
         if (externalArtifactContents != null && !externalArtifactContents.isEmpty()) {
             File externalArtifactFolder = new File(parentFolder, UUID.randomUUID().toString());
             for (FileContent externalArtifact: externalArtifactContents) {
-                File file = storeFileContent(externalArtifactFolder, externalArtifact, artifactType);
+                File file = storeFileContent(externalArtifactFolder, externalArtifact, artifactType, httpVersion);
                 externalArtifactFiles.add(new FileInfo(file, getContentTypeForFile(file, externalArtifact.getContentType())));
             }
         }
@@ -893,7 +905,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         try {
             artifactType = Objects.toString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
             File remoteFolderForType = new File(remoteConfigFolder, artifactType);
-            downloadRemoteFiles(domainConfig.getDomain(), typedArtifactInfo.get(artifactType).getRemoteArtifacts(), remoteFolderForType, artifactType);
+            downloadRemoteFiles(domainConfig.getDomain(), typedArtifactInfo.get(artifactType).getRemoteArtifacts(), remoteFolderForType, artifactType, domainConfig.getHttpVersion());
             // Update cache map.
             String key = domainConfig.getDomainName() + "|" + validationType + "|" + Objects.toString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
             preconfiguredRemoteArtifactMap.put(key, getRemoteValidationArtifacts(domainConfig, validationType, artifactType));
@@ -915,16 +927,17 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param remoteFiles The list of information per remote file to be loaded.
      * @param remoteConfigPath The folder in which to store the resulting files.
      * @param artifactType The artifact type in question.
+     * @param httpVersion The HTTP version to use.
      * @throws IOException If a processing error occurs.
      */
-    private void downloadRemoteFiles(String domain, List<RemoteValidationArtifactInfo> remoteFiles, File remoteConfigPath, String artifactType) throws IOException {
+    private void downloadRemoteFiles(String domain, List<RemoteValidationArtifactInfo> remoteFiles, File remoteConfigPath, String artifactType, HttpClient.Version httpVersion) throws IOException {
         if (remoteFiles != null) {
             for (RemoteValidationArtifactInfo artifactInfo: remoteFiles) {
                 File preprocessorFile = null;
                 if (artifactInfo.getPreProcessorPath() != null) {
                     preprocessorFile = Paths.get(config.getResourceRoot(), domain, artifactInfo.getPreProcessorPath()).toFile();
                 }
-                getFileFromURL(remoteConfigPath, artifactInfo.getUrl(), null, null, preprocessorFile, artifactInfo.getPreProcessorOutputExtension(), artifactType, StringUtils.isEmpty(artifactInfo.getType())?null:List.of(artifactInfo.getType()));
+                getFileFromURL(remoteConfigPath, artifactInfo.getUrl(), null, null, preprocessorFile, artifactInfo.getPreProcessorOutputExtension(), artifactType, StringUtils.isEmpty(artifactInfo.getType())?null:List.of(artifactInfo.getType()), httpVersion);
             }
         }
     }
@@ -1060,9 +1073,10 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param embeddingMethod The method determining how the content string is to be handled.
      * @param contentType The type of the content (as a mime type).
      * @param artifactType The artifact type.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file.
      */
-    public File storeFileContent(File targetFolder, String content, ValueEmbeddingEnumeration embeddingMethod, String contentType, String artifactType) {
+    public File storeFileContent(File targetFolder, String content, ValueEmbeddingEnumeration embeddingMethod, String contentType, String artifactType, HttpClient.Version httpVersion) {
         File file;
         if (content != null) {
             if (embeddingMethod != null) {
@@ -1078,7 +1092,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                     case URI:
                         // Read the string from the provided URI.
                         try {
-                            file = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType)).getFile();
+                            file = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion).getFile();
                         } catch (IOException e) {
                             throw new ValidatorException("validator.label.exception.unableToProcessURI", e);
                         }
@@ -1090,7 +1104,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 }
             } else {
                 try {
-                    file = getFileFromURLOrBase64(targetFolder, content, contentType, artifactType);
+                    file = getFileFromURLOrBase64(targetFolder, content, contentType, artifactType, httpVersion);
                 } catch (IOException e) {
                     throw new ValidatorException("validator.label.exception.unableToSaveContent", e);
                 }
@@ -1108,10 +1122,11 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param content The content string (can be a URL, BASE64 string or the content directly).
      * @param embeddingMethod The method determining how the content string is to be handled.
      * @param artifactType The artifact type.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file.
      */
-    public File storeFileContent(File targetFolder, String content, ValueEmbeddingEnumeration embeddingMethod, String artifactType) {
-        return storeFileContent(targetFolder, content, embeddingMethod, null, artifactType);
+    public File storeFileContent(File targetFolder, String content, ValueEmbeddingEnumeration embeddingMethod, String artifactType, HttpClient.Version httpVersion) {
+        return storeFileContent(targetFolder, content, embeddingMethod, null, artifactType, httpVersion);
     }
 
     /**
@@ -1120,10 +1135,11 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param targetFolder The folder within which to create the file.
      * @param content The content's information (can be a URL, BASE64 string or the content directly).
      * @param artifactType The artifact type.
+     * @param httpVersion The HTTP version to use.
      * @return The stored file.
      */
-    public File storeFileContent(File targetFolder, FileContent content, String artifactType) {
-        return storeFileContent(targetFolder, content.getContent(), content.getEmbeddingMethod(), content.getContentType(), artifactType);
+    public File storeFileContent(File targetFolder, FileContent content, String artifactType, HttpClient.Version httpVersion) {
+        return storeFileContent(targetFolder, content.getContent(), content.getEmbeddingMethod(), content.getContentType(), artifactType, httpVersion);
     }
 
 }
