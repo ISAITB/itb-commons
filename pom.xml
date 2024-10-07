@@ -43,10 +43,10 @@
         <version.springBoot>3.3.4</version.springBoot>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
         <version.gitbTypes>1.23.1</version.gitbTypes>
-        <version.commonsLang>3.14.0</version.commonsLang>
+        <version.commonsLang>3.17.0</version.commonsLang>
         <version.commonsConfiguration>2.11.0</version.commonsConfiguration>
-        <version.commonsIo>2.12.0</version.commonsIo>
-        <version.commonsCsv>1.10.0</version.commonsCsv>
+        <version.commonsIo>2.17.0</version.commonsIo>
+        <version.commonsCsv>1.12.0</version.commonsCsv>
         <version.webjarsLocator>0.53</version.webjarsLocator>
         <version.webjarsBootstrap>3.4.1</version.webjarsBootstrap>
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
@@ -70,8 +70,8 @@
         <version.jayway>2.9.0</version.jayway>
         <version.gson>2.9.0</version.gson>
         <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
-        <version.commonsCompress>1.26.0</version.commonsCompress>
-        <version.commonsValidator>1.7</version.commonsValidator>
+        <version.commonsCompress>1.27.1</version.commonsCompress>
+        <version.commonsValidator>1.9.0</version.commonsValidator>
         <version.springdoc>2.6.0</version.springdoc>
         <version.topbraid>1.4.3</version.topbraid>
         <version.freemarker>2.3.32</version.freemarker>
