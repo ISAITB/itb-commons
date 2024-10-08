@@ -161,4 +161,11 @@
         <packageUrl regex="true">^pkg:maven/org\.glassfish\.jaxb/jaxb-runtime@.*$</packageUrl>
         <cve>CVE-2024-9329</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jakarta.json-2.0.1.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.glassfish/jakarta\.json@.*$</packageUrl>
+        <cve>CVE-2024-9329</cve>
+    </suppress>
 </suppressions>
