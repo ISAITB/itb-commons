@@ -182,4 +182,11 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring-.*@.*$</packageUrl>
         <vulnerabilityName>CVE-2024-38820</vulnerabilityName>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-security-web-6.3.3.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-web@.*$</packageUrl>
+        <vulnerabilityName>CVE-2024-38821</vulnerabilityName>
+    </suppress>
 </suppressions>
