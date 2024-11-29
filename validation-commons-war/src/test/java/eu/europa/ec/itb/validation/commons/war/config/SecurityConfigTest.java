@@ -1,6 +1,7 @@
 package eu.europa.ec.itb.validation.commons.war.config;
 
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
+import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ class SecurityConfigTest {
             return mock(ApplicationConfig.class);
         }
         @Bean
-        WebDomainConfigCache<?> webDomainConfigCache() {
+        WebDomainConfigCache<WebDomainConfig> webDomainConfigCache() {
             return mock(WebDomainConfigCache.class);
         }
         @Controller

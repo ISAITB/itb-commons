@@ -101,7 +101,7 @@
         <version.plugin.mavenJavadocPlugin>3.5.0</version.plugin.mavenJavadocPlugin>
         <version.plugin.mavenResourcesPlugin>3.3.1</version.plugin.mavenResourcesPlugin>
         <version.plugin.mavenAntRunPlugin>3.1.0</version.plugin.mavenAntRunPlugin>
-        <version.plugin.junit-jupiter-engine>5.10.1</version.plugin.junit-jupiter-engine>
+        <version.plugin.junit-jupiter-engine>5.11.3</version.plugin.junit-jupiter-engine>
     </properties>
 
     <repositories>
@@ -209,7 +209,7 @@
                     <dependencies>
                         <dependency>
                             <groupId>org.junit.jupiter</groupId>
-                            <artifactId>junit-jupiter-engine</artifactId>
+                                <artifactId>junit-jupiter-engine</artifactId>
                             <version>${version.plugin.junit-jupiter-engine}</version>
                         </dependency>
                     </dependencies>
