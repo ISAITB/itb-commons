@@ -72,7 +72,7 @@
         <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
         <version.commonsCompress>1.27.1</version.commonsCompress>
         <version.commonsValidator>1.9.0</version.commonsValidator>
-        <version.springdoc>2.6.0</version.springdoc>
+        <version.springdoc>2.7.0</version.springdoc>
         <version.topbraid>1.4.3</version.topbraid>
         <version.freemarker>2.3.32</version.freemarker>
         <version.pdfbox>2.0.31</version.pdfbox>
