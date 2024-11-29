@@ -34,7 +34,7 @@ class SecurityConfigEmbeddingTest {
             return mock(ApplicationConfig.class);
         }
         @Bean
-        WebDomainConfigCache<?> webDomainConfigCache() {
+        WebDomainConfigCache<WebDomainConfig> webDomainConfigCache() {
             var cache = mock(WebDomainConfigCache.class);
             var domainConfig = mock(WebDomainConfig.class);
             when(domainConfig.isSupportUserInterfaceEmbedding()).thenReturn(true);
