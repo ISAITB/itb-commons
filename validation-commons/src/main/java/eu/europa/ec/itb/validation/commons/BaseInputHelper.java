@@ -61,7 +61,7 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
      * @param httpVersion The HTTP version to use.
      * @return The file to validate.
      */
-    public File validateContentToValidate(ValidateRequest validateRequest, String inputName, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder, HttpClient.Version httpVersion) {
+    public FileInfo validateContentToValidate(ValidateRequest validateRequest, String inputName, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder, HttpClient.Version httpVersion) {
         List<AnyContent> listContentToValidate = Utils.getInputFor(validateRequest, inputName);
         if (!listContentToValidate.isEmpty()) {
             AnyContent content = listContentToValidate.get(0);
@@ -93,7 +93,7 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
      * @param httpVersion The HTTP version to use.
      * @return The file to validate.
      */
-    public File validateContentToValidate(String value, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder, HttpClient.Version httpVersion) {
+    public FileInfo validateContentToValidate(String value, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder, HttpClient.Version httpVersion) {
         return fileManager.storeFileContent(parentFolder, value, explicitEmbeddingMethod, contentSyntax, null, httpVersion);
     }
 
