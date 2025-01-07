@@ -273,8 +273,8 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_or_base64_test");
         var result = fileManager.getFileFromURLOrBase64(targetFolder.toFile(), Base64.getEncoder().encodeToString("TEST".getBytes(StandardCharsets.UTF_8)), HttpClient.Version.HTTP_2);
         assertNotNull(result);
-        assertEquals(targetFolder, result.getParentFile().toPath());
-        assertEquals("TEST", Files.readString(result.toPath()));
+        assertEquals(targetFolder, result.getFile().getParentFile().toPath());
+        assertEquals("TEST", Files.readString(result.getFile().toPath()));
     }
 
     @Test
@@ -282,8 +282,8 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         var targetFolder = Path.of(appConfig.getTmpFolder(), "web");
         var result = fileManager.getFileFromURLOrBase64(null, Base64.getEncoder().encodeToString("TEST".getBytes(StandardCharsets.UTF_8)), HttpClient.Version.HTTP_2);
         assertNotNull(result);
-        assertEquals(targetFolder, result.getParentFile().toPath());
-        assertEquals("TEST", Files.readString(result.toPath()));
+        assertEquals(targetFolder, result.getFile().getParentFile().toPath());
+        assertEquals("TEST", Files.readString(result.getFile().toPath()));
     }
 
     @Test
@@ -291,8 +291,8 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_or_base64_test");
         var result = fileManager.getFileFromURLOrBase64(targetFolder.toFile(), Base64.getEncoder().encodeToString("TEST".getBytes(StandardCharsets.UTF_8)), "text/plain", HttpClient.Version.HTTP_2);
         assertNotNull(result);
-        assertEquals(targetFolder, result.getParentFile().toPath());
-        assertEquals("TEST", Files.readString(result.toPath()));
+        assertEquals(targetFolder, result.getFile().getParentFile().toPath());
+        assertEquals("TEST", Files.readString(result.getFile().toPath()));
     }
 
     @Test
@@ -300,8 +300,8 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_or_base64_test");
         var result = fileManager.getFileFromURLOrBase64(targetFolder.toFile(), Base64.getEncoder().encodeToString("TEST".getBytes(StandardCharsets.UTF_8)), "text/plain", null, HttpClient.Version.HTTP_2);
         assertNotNull(result);
-        assertEquals(targetFolder, result.getParentFile().toPath());
-        assertEquals("TEST", Files.readString(result.toPath()));
+        assertEquals(targetFolder, result.getFile().getParentFile().toPath());
+        assertEquals("TEST", Files.readString(result.getFile().toPath()));
     }
 
     @Test
@@ -310,8 +310,8 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         when(urlReader.stream(any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getFileFromURLOrBase64(targetFolder.toFile(), "http://test.com", "text/plain", null, HttpClient.Version.HTTP_2);
         assertNotNull(result);
-        assertEquals(targetFolder, result.getParentFile().toPath());
-        assertEquals("TEST", Files.readString(result.toPath()));
+        assertEquals(targetFolder, result.getFile().getParentFile().toPath());
+        assertEquals("TEST", Files.readString(result.getFile().toPath()));
     }
 
     @Test
@@ -319,8 +319,8 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_or_base64_test");
         var result = fileManager.getFileFromURLOrBase64(targetFolder.toFile(), " TEST ", "text/plain", null, HttpClient.Version.HTTP_2);
         assertNotNull(result);
-        assertEquals(targetFolder, result.getParentFile().toPath());
-        assertEquals(" TEST ", Files.readString(result.toPath()));
+        assertEquals(targetFolder, result.getFile().getParentFile().toPath());
+        assertEquals(" TEST ", Files.readString(result.getFile().toPath()));
     }
 
     @Test
