@@ -82,7 +82,6 @@
         <version.bouncycastle>1.78.1</version.bouncycastle>
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
         <version.jena>5.2.0</version.jena>
-        <version.libthrift>0.15.0</version.libthrift>
         <!-- Plugin versions -->
         <version.plugin.mavenCompilerPlugin>3.11.0</version.plugin.mavenCompilerPlugin>
         <version.plugin.mavenJarPlugin>3.3.0</version.plugin.mavenJarPlugin>
@@ -498,11 +497,6 @@
                 <groupId>org.apache.jena</groupId>
                 <artifactId>jena-rdfconnection</artifactId>
                 <version>${version.jena}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.thrift</groupId>
-                <artifactId>libthrift</artifactId>
-                <version>${version.libthrift}</version>
             </dependency>
             <dependency>
                 <groupId>com.openhtmltopdf</groupId>
