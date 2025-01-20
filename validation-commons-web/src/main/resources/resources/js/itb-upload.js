@@ -1192,7 +1192,7 @@ function localeChanged() {
 }
 
 function reportTypeChange(aggregate) {
-    if (aggregate) {
+    if (aggregate == "true") {
         $('#reportItemsAggregated').removeClass('hidden');
         $('#reportItemsDetailed').addClass('hidden');
         $('#reportTypeSelectText').text($('#reportTypeSelectAggregatedText').text());
