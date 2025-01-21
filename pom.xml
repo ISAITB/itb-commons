@@ -56,7 +56,7 @@
         <version.jaxb-impl>4.0.4</version.jaxb-impl>
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
-        <version.cxf>4.0.5</version.cxf>
+        <version.cxf>4.1.0</version.cxf>
         <version.xerces>2.12.2</version.xerces>
         <version.saxon>12.4</version.saxon>
         <version.tika>2.9.2</version.tika>
