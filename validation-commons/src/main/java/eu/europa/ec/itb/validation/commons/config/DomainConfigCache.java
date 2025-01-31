@@ -89,7 +89,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     loader.close();
                 }
             } catch (Exception ex) {
-                // Do nothing. Only try to prevent the method from crashing if an exceptio is thrown. 
+                // Do nothing. Only try to prevent the method from crashing if an exception is thrown.
             }
         }
     }
@@ -159,11 +159,11 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      * @return The domain configuration.
      */
     public T getConfigForDomain(String domain) {
-        T domainConfig = domainConfigs.get(domain);
-        if (domainConfig == null) {
+        T domainConfigToReturn = domainConfigs.get(domain);
+        if (domainConfigToReturn == null) {
             String[] files = Paths.get(appConfig.getResourceRoot(), domain).toFile().list(propertyFilter);
             if (files == null || files.length == 0) {
-                domainConfig = undefinedDomainConfig;
+                domainConfigToReturn = undefinedDomainConfig;
             } else {
                 try {
                     CompositeConfiguration config = new CompositeConfiguration();
@@ -177,7 +177,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     }
                     importAdditionalProperties(config, domain);
                     
-                    domainConfig = newDomainConfig();
+                    T domainConfig = newDomainConfig();
                     domainConfig.setDefined(true);
                     domainConfig.setDomain(domain);
                     domainConfig.setDomainName(appConfig.getDomainIdToDomainName().get(domain));
@@ -186,7 +186,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     List<String> declaredValidationTypes = Arrays.stream(Objects.requireNonNull(StringUtils.split(config.getString("validator.type"), ','), "No validation types were configured")).map(String::trim).toList();
                     Map<String, List<String>> validationTypeOptions = new HashMap<>();
                     // Initialise Aliases
-                    Map<String, String> typeAliases = new HashMap<>(ParseUtils.parseMap("validator.typeAlias", config));
+                    Map<String, String> typeAliases = ParseUtils.parseMap("validator.typeAlias", config);
                     for (Map.Entry<String,String> entry: ParseUtils.parseMap("validator.typeOptions", config, declaredValidationTypes).entrySet()) {
                         validationTypeOptions.put(entry.getKey(), Arrays.stream(StringUtils.split(entry.getValue(), ',')).map(String::trim).toList());
                     }
@@ -205,7 +205,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                             }
                         }
                     }
-
+                    processValidationTypeGroups(declaredValidationTypes, domainConfig, config);
                     domainConfig.setType(validationTypes);
                     domainConfig.setDeclaredType(declaredValidationTypes);
                     domainConfig.setValidationTypeOptions(validationTypeOptions);
@@ -298,19 +298,56 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     // Add resource bundles to the domain configuration.
                     addResourceBundlesConfiguration(domainConfig, config);
                     logger.info("Loaded configuration for domain [{}]", domain);
+                    domainConfigToReturn = domainConfig;
                 } catch (Exception e) {
                     // Make sure a domain's invalid configuration never fails the overall startup of the validator.
-                    logger.warn(String.format("Failed to initialise configuration for domain [%s]", domain), e);
-                    domainConfig = null;
-                } finally {
-                    if (domainConfig == null) {
-                        domainConfig = undefinedDomainConfig;
-                    }
-                    domainConfigs.put(domain, domainConfig);
+                    logger.warn("Failed to initialise configuration for domain [{}]", domain, e);
+                    domainConfigToReturn = undefinedDomainConfig;
                 }
             }
+            domainConfigs.put(domain, domainConfigToReturn);
         }
-        return domainConfig;
+        return domainConfigToReturn;
+    }
+
+    /**
+     * Process any configured validation type groups.
+     *
+     * @param declaredValidationTypes The declared validation types.
+     * @param domainConfig The domain configuration.
+     * @param config The property configuration.
+     */
+    private void processValidationTypeGroups(List<String> declaredValidationTypes, DomainConfig domainConfig, Configuration config) {
+        Set<String> typesToCheck = new HashSet<>(declaredValidationTypes);
+        Set<String> typesChecked = new HashSet<>();
+        // Parse validation type groups while ignoring invalid entries
+        Map<String, List<String>> validationTypeGroups = ParseUtils.parseListMap("validator.typeGroup", config, Optional.of((entry) -> {
+            if (typesToCheck.contains(entry.getValue())) {
+                typesToCheck.remove(entry.getValue());
+                typesChecked.add(entry.getValue());
+                return true;
+            } else if (typesChecked.contains(entry.getValue())) {
+                logger.warn("Type [{}] is mapped to multiple groups. Only the first mapping will be used.", entry.getValue());
+                return false;
+            } else {
+                logger.warn("Unknown type [{}] declared in group [{}] will be ignored.", entry.getValue(), entry.getKey());
+                return false;
+            }
+        }));
+        if (!validationTypeGroups.isEmpty()) {
+            if (!typesToCheck.isEmpty()) {
+                throw new IllegalStateException("When using validation type groups, all declared types must be mapped to groups. Types found not to be grouped were: %s".formatted(typesToCheck));
+            }
+            String declaredPresentationType = config.getString("validator.typeGroupPresentation", GroupPresentationEnum.INLINE.getIdentifier());
+            GroupPresentationEnum.of(declaredPresentationType).ifPresentOrElse(
+                    domainConfig::setGroupPresentation,
+                    () -> {
+                        logger.warn("Found unsupported group presentation type [{}] and will use [{}] instead.", declaredPresentationType, GroupPresentationEnum.INLINE.getIdentifier());
+                        domainConfig.setGroupPresentation(GroupPresentationEnum.INLINE);
+                    }
+            );
+            domainConfig.setValidationTypeGroups(validationTypeGroups);
+        }
     }
 
     /**
@@ -328,7 +365,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
         if ((importPropertiesPath = resolveFilePathForDomain(domain, importPropertiesStringPath)) != null) {
             addConfigurationFromFile(importPropertiesPath, config);
         } else {
-            throw new IllegalStateException("Resources are restricted to domain. Their paths should be relative to domain folder. Unable to load property file [" + importPropertiesPath + "]");
+            throw new IllegalStateException("Resources are restricted to domain. Their paths should be relative to domain folder.");
         }
     }
 
@@ -360,10 +397,8 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      */
     public boolean isInDomainFolder(String domain, String localFile) {
     	Path domainRootPath = Paths.get(appConfig.getResourceRoot(), domain);
-        Path localFilePath;
-    	if (Path.of(localFile).isAbsolute()) {
-            localFilePath = Path.of(localFile);
-        } else {
+        Path localFilePath = Path.of(localFile);
+    	if (!localFilePath.isAbsolute()) {
             localFilePath = Paths.get(appConfig.getResourceRoot(), domain, localFile.trim());
         }
     	Path domainRootCanonicalPath;
@@ -382,15 +417,13 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      *
      * @param domain The domain's identifier (folder name).
      * @param localFile The file path to check.
-     * @return The absolute, cannonical file path if it is allowed, null otherwise.
+     * @return The absolute, canonical file path if it is allowed, null otherwise.
      */
     private Path resolveFilePathForDomain(String domain, String localFile) {
-        Path localFilePath;
-        if (appConfig.isRestrictResourcesToDomain() && Path.of(localFile).isAbsolute()) {
+        Path localFilePath = Path.of(localFile);
+        if (appConfig.isRestrictResourcesToDomain() && localFilePath.isAbsolute()) {
             return null;
-        } else if (Path.of(localFile).isAbsolute()) {
-            localFilePath = Path.of(localFile);
-        } else {
+        } else if (!localFilePath.isAbsolute()) {
             localFilePath = Paths.get(appConfig.getResourceRoot(), domain, localFile.trim());
         }        
     	Path localFileCanonicalPath;
@@ -634,22 +667,15 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
 
     /**
      * Filter to select files based on their extension.
+     *
+     * @param ext The extension.
      */
-    private static class ExtensionFilter implements FilenameFilter {
-
-        private final String ext;
-
-        /**
-         * @param ext The extension.
-         */
-        ExtensionFilter(String ext) {
-            this.ext = ext;
-        }
+    private record ExtensionFilter(String ext) implements FilenameFilter {
 
         /**
          * Check to see if the file matches.
          *
-         * @param dir The processed directory.
+         * @param dir  The processed directory.
          * @param name The file name.
          * @return True for a match.
          */

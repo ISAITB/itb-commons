@@ -7,6 +7,7 @@ import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Base domain configuration class for validators that are web applications.
@@ -174,6 +175,43 @@ public class WebDomainConfig extends DomainConfig {
     }
 
     /**
+     * Get the group of the provided validation type.
+     *
+     * @param type The type.
+     * @return The group or an empty string if this type does noe belong to a group.
+     */
+    public String getGroupOfValidationType(String type) {
+        var groups = getValidationTypeGroups();
+        if (groups != null) {
+            return groups.entrySet().stream()
+                    .filter(entry -> entry.getValue().stream()
+                            .anyMatch(currentType -> Objects.equals(currentType, type)))
+                    .findAny()
+                    .map(Map.Entry::getKey)
+                    .orElse("");
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Get the label to display for a given validation type group.
+     *
+     * @param group The group.
+     * @param helper The localisation helper to use.
+     * @return The label to display.
+     */
+    public String getValidationTypeGroupLabel(String group, LocalisationHelper helper) {
+        String text;
+        if (helper.propertyExists(String.format("validator.typeGroupLabel.%s", group))) {
+            text = helper.localise(String.format("validator.typeGroupLabel.%s", group));
+        } else {
+            text = group;
+        }
+        return text;
+    }
+
+    /**
      * The label for an option of a validation type.
      *
      * @param type The validation type.
@@ -194,17 +232,31 @@ public class WebDomainConfig extends DomainConfig {
     }
 
     /**
-     * @return the hidden type list
+     * @return The hidden type list.
      */
     public List<String> getHiddenTypes() {
         return hiddenType;
     }
 
     /**
-     * @param hiddenTypes
+     * @param hiddenTypes The hidden type list.
      */
     public void setHiddenTypes(List<String> hiddenTypes) {
         this.hiddenType = hiddenTypes;
+    }
+
+    /**
+     * Check to see if the requested group should be hidden.
+     *
+     * @param group The group.
+     * @return The check result.
+     */
+    public boolean isHiddenGroup(String group) {
+        var groupMap = getValidationTypeGroups();
+        if (groupMap != null && groupMap.containsKey(group)) {
+            return groupMap.get(group).stream().filter(type -> !isHiddenType(type)).findAny().isEmpty();
+        }
+        return false;
     }
 
     /**
@@ -226,6 +278,12 @@ public class WebDomainConfig extends DomainConfig {
                 .count() > 1;
     }
 
+    /**
+     * Get the options that should be displayed for the provided type.
+     *
+     * @param type The type.
+     * @return The list of options.
+     */
     public List<String> getVisibleValidationTypeOptions(String type) {
         List<String> typeOptions = new ArrayList<>();
 
@@ -234,5 +292,23 @@ public class WebDomainConfig extends DomainConfig {
         }
 
         return typeOptions.stream().filter(option -> !isHiddenType(type + '.' + option)).toList();
+    }
+
+    /**
+     * Check whether the domain configuration defines groups that have split presentation.
+     *
+     * @return The check result.
+     */
+    public boolean hasSplitGroups() {
+        return !getValidationTypeGroups().isEmpty() && getGroupPresentation() == GroupPresentationEnum.SPLIT;
+    }
+
+    /**
+     * Check whether the domain configuration defines groups that have inline presentation.
+     *
+     * @return The check result.
+     */
+    public boolean hasInlineGroups() {
+        return !getValidationTypeGroups().isEmpty() && getGroupPresentation() == GroupPresentationEnum.INLINE;
     }
 }
