@@ -37,6 +37,7 @@ function registerEventListeners() {
     $(".triggerFileUpload").on("click", triggerFileUpload);
     $(".fileInputChanged").on("change input", fileInputChanged);
     $(".contentTypeChanged").on("change", contentTypeChanged);
+    $(".validationTypeGroupChanged").on("change", validationTypeGroupChanged);
     $(".validationTypeChanged").on("change", validationTypeChanged);
     $(".validationTypeOptionChanged").on("change", validationTypeOptionChanged);
     $(".toggleExternalArtefacts").on("click", toggleExternalArtefacts);
@@ -238,6 +239,28 @@ function getCompleteValidationType() {
         }
     }
     return typeToUse;
+}
+
+function validationTypeGroupChanged() {
+    var selectedGroup = $('#validationTypeGroup').val();
+    var validationTypeSelect = $('#validationType');
+    var validationTypes = validationTypeSelect.find('option');
+    var i;
+    for (i = 1; i < validationTypes.length; i++) {
+        var validationType = $(validationTypes[i]);
+        if (validationType.attr('data-group') == selectedGroup) {
+            validationType.removeClass('hidden');
+        } else {
+            validationType.addClass('hidden');
+        }
+    }
+    $(validationTypes[0]).prop('selected', true);
+    $('#validationTypeDiv').removeClass('hidden');
+    var optionDiv = $('#validationTypeOptionDiv');
+    if (optionDiv) {
+        optionDiv.addClass('hidden');
+    }
+    validationTypeChanged();
 }
 
 function validationTypeChanged() {

@@ -30,6 +30,7 @@ public class DomainConfig {
     private String defaultType;
     private Map<String, List<String>> validationTypeOptions;
     private Map<String, String> validationTypeAlias;
+    private Map<String, List<String>> validationTypeGroups;
     private Set<ValidatorChannel> channels = new HashSet<>();
     private Map<String, TypedValidationArtifactInfo> artifactInfo;
     private Long maximumReportsForDetailedOutput;
@@ -58,6 +59,7 @@ public class DomainConfig {
     private String validationServiceName;
     private String validationServiceVersion;
     private HttpClient.Version httpVersion;
+    private GroupPresentationEnum groupPresentation;
 
     /** @return The protocol version to use HTTP requests. **/
     public HttpClient.Version getHttpVersion() {
@@ -294,6 +296,37 @@ public class DomainConfig {
      */
     public Map<String, List<String>> getValidationTypeOptions() {
         return validationTypeOptions;
+    }
+
+    /**
+     * @return Map of validation type groups to the types (simple - not full types) they contain.
+     */
+    public Map<String, List<String>> getValidationTypeGroups() {
+        if (validationTypeGroups == null) {
+            validationTypeGroups = new LinkedHashMap<>();
+        }
+        return validationTypeGroups;
+    }
+
+    /**
+     * @param validationTypeGroups Map of validation type groups to the types (simple - not full types) they contain.
+     */
+    public void setValidationTypeGroups(Map<String, List<String>> validationTypeGroups) {
+        this.validationTypeGroups = validationTypeGroups;
+    }
+
+    /**
+     * @return The presentation approach for groups.
+     */
+    public GroupPresentationEnum getGroupPresentation() {
+        return groupPresentation;
+    }
+
+    /**
+     * @param groupPresentation The presentation approach for groups.
+     */
+    public void setGroupPresentation(GroupPresentationEnum groupPresentation) {
+        this.groupPresentation = groupPresentation;
     }
 
     /**

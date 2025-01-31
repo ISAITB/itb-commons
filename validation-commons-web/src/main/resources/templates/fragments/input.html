@@ -58,24 +58,43 @@
             </div>
         </div>
 
-        <div th:fragment="mainFormValidationType(config)" class="form-group" th:if="${config.hasMultipleNonHiddenValidationTypes()}">
-            <label for="validationType" class="col-sm-2 control-label" th:text="${localiser.localise('validator.label.typeLabel')}">Validate as</label>
-            <div th:class="${config.hasValidationTypeOptions()}? col-sm-5 : col-sm-10">
-                <select class="form-control validationTypeChanged" id="validationType" name="validationTypeInternal">
-                    <option value="" selected="true" disabled="true"></option>
-                    <option th:each="type : ${config.declaredType}" th:if="!${config.isHiddenType(type)}" th:text="${config.getValidationTypeLabel(type, localiser)}" th:attr="value=${type}">Type</option>
-                </select>
-            </div>
-            <div id="validationTypeOptionDiv" th:if="${config.hasValidationTypeOptions()}" class="col-sm-5 hidden">
-                <div id="validationTypeOptionLabelDiv" style="float:left; width:auto; padding-right:30px;">
-                    <label id="validationTypeOptionLabelLabel" for="validationTypeOption" class="control-label" th:text="${localiser.localise('validator.label.optionLabel')}">Option</label>
-                </div>
-                <div id="validationTypeOptionSelectDiv" style="overflow:hidden; width:auto;">
-                    <select class="form-control validationTypeOptionChanged" id="validationTypeOption" name="validationTypeOptionInternal">
+        <th:block th:fragment="mainFormValidationType(config)" th:if="${config.hasMultipleNonHiddenValidationTypes()}">
+            <div class="form-group" th:if="${config.hasSplitGroups()}">
+                <label for="validationTypeGroup" class="col-sm-2 control-label" th:text="${localiser.localise('validator.label.typeGroupLabel')}">Group</label>
+                <div class="col-sm-10">
+                    <select class="form-control validationTypeGroupChanged" id="validationTypeGroup" name="validationTypeGroupInternal">
+                        <option value="" selected="true" disabled="true"></option>
+                        <option th:each="groupEntry : ${config.getValidationTypeGroups().entrySet()}" th:if="!${config.isHiddenGroup(groupEntry.getKey())}" th:text="${config.getValidationTypeGroupLabel(groupEntry.getKey(), localiser)}" th:attr="value=${groupEntry.getKey()}">Group</option>
                     </select>
                 </div>
             </div>
-        </div>
+            <div id="validationTypeDiv" class="form-group" th:classappend="${config.hasSplitGroups()?'hidden':''}">
+                <label for="validationType" class="col-sm-2 control-label" th:text="${localiser.localise('validator.label.typeLabel')}">Validate as</label>
+                <div th:class="${config.hasValidationTypeOptions()}? col-sm-5 : col-sm-10">
+                    <select th:switch="${config.hasInlineGroups()}" class="form-control validationTypeChanged" id="validationType" name="validationTypeInternal">
+                        <th:block th:case="true">
+                            <option value="" selected="true" disabled="true"></option>
+                            <optgroup th:each="groupEntry : ${config.getValidationTypeGroups().entrySet()}" th:if="!${config.isHiddenGroup(groupEntry.getKey())}" th:attr="label=${config.getValidationTypeGroupLabel(groupEntry.getKey(), localiser)}">
+                                <option th:each="type : ${groupEntry.getValue()}" th:if="!${config.isHiddenType(type)}" th:text="${config.getValidationTypeLabel(type, localiser)}" th:attr="value=${type}">Type</option>
+                            </optgroup>
+                        </th:block>
+                        <th:block th:case="false">
+                            <option value="" selected="true" disabled="true"></option>
+                            <option th:each="type : ${config.declaredType}" th:if="!${config.isHiddenType(type)}" th:text="${config.getValidationTypeLabel(type, localiser)}" th:attr="value=${type},data-group=${config.getGroupOfValidationType(type)}">Type</option>
+                        </th:block>
+                    </select>
+                </div>
+                <div id="validationTypeOptionDiv" th:if="${config.hasValidationTypeOptions()}" class="col-sm-5 hidden">
+                    <div id="validationTypeOptionLabelDiv" style="float:left; width:auto; padding-right:30px;">
+                        <label id="validationTypeOptionLabelLabel" for="validationTypeOption" class="control-label" th:text="${localiser.localise('validator.label.optionLabel')}">Option</label>
+                    </div>
+                    <div id="validationTypeOptionSelectDiv" style="overflow:hidden; width:auto;">
+                        <select class="form-control validationTypeOptionChanged" id="validationTypeOption" name="validationTypeOptionInternal">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </th:block>
 
         <th:block th:fragment="mainForm(config)">
             <div th:replace="~{fragments/input :: messagePlaceholder()}"/>

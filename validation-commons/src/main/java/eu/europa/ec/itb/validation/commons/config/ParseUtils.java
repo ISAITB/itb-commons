@@ -2,6 +2,7 @@ package eu.europa.ec.itb.validation.commons.config;
 
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -65,7 +66,7 @@ public class ParseUtils {
      * @return The map.
      */
     public static Map<String, String> parseMap(String commonKey, Configuration config) {
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         Iterator<String> mapKeys = config.getKeys(commonKey);
         while (mapKeys.hasNext()) {
             String fullKey = mapKeys.next();
@@ -244,6 +245,35 @@ public class ParseUtils {
                 map.put(key, obj);
             }
         });
+        return map;
+    }
+
+    /**
+     * Parse a map of lists.
+     *
+     * @param commonKey The common property key.
+     * @param config The configuration properties.
+     * @param validateFn An optional function to validate whether a value should be included in the resulting map.
+     * @return The parsed map.
+     */
+    public static Map<String, List<String>> parseListMap(String commonKey, Configuration config, Optional<Function<Pair<String, String>, Boolean>> validateFn) {
+        Map<String, List<String>> map = new LinkedHashMap<>();
+        Iterator<String> mapKeys = config.getKeys(commonKey);
+        var validateFnToUse = validateFn.orElse((key) -> true);
+        while (mapKeys.hasNext()) {
+            String fullKey = mapKeys.next();
+            String keyExtension = StringUtils.substringAfter(fullKey, commonKey+".");
+            String[] valuesForKey = StringUtils.split(config.getString(fullKey), ',');
+            List<String> validatedValuesForKey = Arrays.stream(valuesForKey)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .map(String::trim)
+                    .filter((value) -> validateFnToUse.apply(Pair.of(keyExtension, value)))
+                    .toList();
+            if (!validatedValuesForKey.isEmpty()) {
+                map.put(keyExtension, validatedValuesForKey);
+            }
+        }
         return map;
     }
 
