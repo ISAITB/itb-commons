@@ -224,13 +224,13 @@
                         <licenseMerges>
                             <licenseMerge>Apache License, Version 2.0|The Apache Software License, Version 2.0|Apache-2.0|Apache License 2.0|Apache 2|The Apache License, Version 2.0|Apache License|Apache License version 2.0|Apache 2.0|Apache License v2.0|Apache License v2|Apache License Version 2.0</licenseMerge>
                             <licenseMerge>Eclipse Public License - v1.0|Eclipse Public License - v 1.0</licenseMerge>
-                            <licenseMerge>Eclipse Public License - v1.0|EPL 2.0</licenseMerge>
+                            <licenseMerge>Eclipse Public License - v2.0|EPL 2.0|Eclipse Public License 2.0</licenseMerge>
                             <licenseMerge>GNU Lesser General Public License (LGPL), Version 2.1|GNU Lesser General Public License (LGPL), version 2.1 or later|LGPL 2.1|GNU Lesser General Public License|LGPL, v2.1 or later</licenseMerge>
                             <licenseMerge>GNU Lesser General Public License (LGPL), Version 3.0|GNU LESSER GENERAL PUBLIC LICENSE, version 3 (LGPL-3.0)</licenseMerge>
                             <licenseMerge>Eclipse Distribution License - v1.0|EDL 1.0|Eclipse Distribution License - v 1.0</licenseMerge>
                             <licenseMerge>MIT License|The MIT License|MIT|The MIT License (MIT)</licenseMerge>
                             <licenseMerge>GNU General Public License (GPL), Version 3|GENERAL PUBLIC LICENSE, version 3 (GPL-3.0)</licenseMerge>
-                            <licenseMerge>GNU General Public License (GPL), Version 2 (with Classpath Exception)|GPL2 w/ CPE</licenseMerge>
+                            <licenseMerge>GNU General Public License (GPL), Version 2 (with Classpath Exception)|GPL2 w/ CPE|GNU General Public License, version 2 with the GNU Classpath Exception</licenseMerge>
                             <licenseMerge>European Union Public Licence (EUPL) Version 1.2</licenseMerge>
                             <licenseMerge>Mozilla Public License Version 2.0</licenseMerge>
                             <licenseMerge>Mozilla Public License Version 1.1</licenseMerge>
