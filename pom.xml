@@ -219,6 +219,7 @@
                         <excludedGroups>eu.europa.ec.itb.commons|eu.europa.ec.itb.xml|eu.europa.ec.itb.shacl|eu.europa.ec.itb.json|eu.europa.ec.itb.csv|com.github.ISAITB</excludedGroups>
                         <excludedScopes>test</excludedScopes>
                         <failOnMissing>true</failOnMissing>
+                        <failOnBlacklist>true</failOnBlacklist>
                         <overrideFile>${project.basedir}/etc/licence/overrides.txt</overrideFile>
                         <licenseMerges>
                             <licenseMerge>Apache License, Version 2.0|The Apache Software License, Version 2.0|Apache-2.0|Apache License 2.0|Apache 2|The Apache License, Version 2.0|Apache License|Apache License version 2.0|Apache 2.0|Apache License v2.0|Apache License v2|Apache License Version 2.0</licenseMerge>
@@ -241,6 +242,27 @@
                             <licenseMerge>UnRAR License|UnRar License</licenseMerge>
                             <licenseMerge>JDOM License|Similar to Apache License but with the acknowledgment clause removed</licenseMerge>
                         </licenseMerges>
+                        <includedLicenses>
+                            <includedLicense>Apache License, Version 2.0</includedLicense>
+                            <includedLicense>Eclipse Public License - v1.0</includedLicense>
+                            <includedLicense>Eclipse Public License - v1.0</includedLicense>
+                            <includedLicense>GNU Lesser General Public License (LGPL), Version 2.1</includedLicense>
+                            <includedLicense>GNU Lesser General Public License (LGPL), Version 3.0</includedLicense>
+                            <includedLicense>Eclipse Distribution License - v1.0</includedLicense>
+                            <includedLicense>MIT License</includedLicense>
+                            <includedLicense>GNU General Public License (GPL), Version 3</includedLicense>
+                            <includedLicense>GNU General Public License (GPL), Version 2 (with Classpath Exception)</includedLicense>
+                            <includedLicense>European Union Public Licence (EUPL) Version 1.2</includedLicense>
+                            <includedLicense>Mozilla Public License Version 2.0</includedLicense>
+                            <includedLicense>Mozilla Public License Version 1.1</includedLicense>
+                            <includedLicense>The 0-Clause BSD License</includedLicense>
+                            <includedLicense>The 2-Clause BSD License</includedLicense>
+                            <includedLicense>The 3-Clause BSD License</includedLicense>
+                            <includedLicense>The 3-Clause BSD No Nuclear License</includedLicense>
+                            <includedLicense>Common Public License 1.0</includedLicense>
+                            <includedLicense>UnRAR License</includedLicense>
+                            <includedLicense>JDOM License</includedLicense>
+                        </includedLicenses>
                     </configuration>
                     <!--
                         To generate the complete third party licence file run `mvn license:aggregate-add-third-party`
