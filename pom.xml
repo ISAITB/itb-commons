@@ -262,6 +262,7 @@
                             <includedLicense>Common Public License 1.0</includedLicense>
                             <includedLicense>UnRAR License</includedLicense>
                             <includedLicense>JDOM License</includedLicense>
+                            <includedLicense>Bouncy Castle Licence</includedLicense>
                         </includedLicenses>
                     </configuration>
                     <!--
