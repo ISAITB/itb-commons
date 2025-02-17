@@ -10,6 +10,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import net.sf.saxon.TransformerFactoryImpl;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.w3c.dom.Document;
@@ -101,7 +102,7 @@ public class Utils {
      * @return The factory to use.
      */
     public static TransformerFactory secureTransformerFactory() {
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        TransformerFactory transformerFactory = TransformerFactoryImpl.newInstance();
         transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
         transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
         return transformerFactory;
