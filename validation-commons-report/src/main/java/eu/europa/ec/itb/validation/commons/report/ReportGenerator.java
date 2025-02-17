@@ -12,6 +12,7 @@ import com.openhtmltopdf.extend.impl.FSDefaultCacheStore;
 import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.openhtmltopdf.slf4j.Slf4jLogger;
+import com.openhtmltopdf.svgsupport.BatikSVGDrawer;
 import com.openhtmltopdf.swing.NaiveUserAgent;
 import com.openhtmltopdf.util.XRLog;
 import eu.europa.ec.itb.validation.commons.Utils;
@@ -175,6 +176,7 @@ public class ReportGenerator {
             }
             // Convert to PDF.
             var builder = new PdfRendererBuilder();
+            builder.useSVGDrawer(new BatikSVGDrawer());
             builder.useCacheStore(PdfRendererBuilder.CacheStore.PDF_FONT_METRICS, fontCache);
             loadFonts(builder);
             builder.useUriResolver(new NaiveUserAgent.DefaultUriResolver() {

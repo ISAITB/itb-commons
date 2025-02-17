@@ -579,6 +579,11 @@
                 <version>${version.com.openhtmltopdf}</version>
             </dependency>
             <dependency>
+                <groupId>com.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-svg-support</artifactId>
+                <version>${version.com.openhtmltopdf}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>${version.org.jsoup}</version>
