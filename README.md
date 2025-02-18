@@ -1,3 +1,5 @@
+![Banner](https://www.itb.ec.europa.eu/files/banners/itb_banner.png)
+
 # ITB commons
 
 ![BuildStatus](https://github.com/ISAITB/itb-commons/actions/workflows/main.yml/badge.svg)
