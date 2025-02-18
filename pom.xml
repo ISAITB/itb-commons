@@ -80,6 +80,7 @@
         <version.org.jsoup>1.15.4</version.org.jsoup>
         <version.owaspHtmlSanitizer>20220608.1</version.owaspHtmlSanitizer>
         <version.bouncycastle>1.78.1</version.bouncycastle>
+        <version.batik>1.17</version.batik>
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
         <version.jena>5.2.0</version.jena>
         <!-- Plugin versions -->
@@ -623,6 +624,23 @@
                 <artifactId>bcutil-jdk18on</artifactId>
                 <version>${version.bouncycastle}</version>
             </dependency>
+            <!-- Override for Batik in openhtmltopdf-svg-support - START -->
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>batik-transcoder</artifactId>
+                <version>${version.batik}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>batik-codec</artifactId>
+                <version>${version.batik}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>batik-ext</artifactId>
+                <version>${version.batik}</version>
+            </dependency>
+            <!-- END -->
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
