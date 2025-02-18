@@ -29,6 +29,7 @@ build. These libraries are used as-is, with no modifications to source code.
 | GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf Core Renderer | com.openhtmltopdf:openhtmltopdf-core | 1.0.10 | https://github.com/danfickle/openhtmltopdf/openhtmltopdf-core |
 | GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf PDF Rendering (Apache PDF-BOX 2) | com.openhtmltopdf:openhtmltopdf-pdfbox | 1.0.10 | https://github.com/danfickle/openhtmltopdf/openhtmltopdf-pdfbox |
 | GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf slf4j Support | com.openhtmltopdf:openhtmltopdf-slf4j | 1.0.10 | https://github.com/danfickle/openhtmltopdf/openhtmltopdf-slf4j |
+| GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf SVG Support | com.openhtmltopdf:openhtmltopdf-svg-support | 1.0.10 | https://github.com/danfickle/openhtmltopdf/openhtmltopdf-svg-support |
 | Eclipse Distribution License - v1.0 | Old JAXB Core | com.sun.xml.bind:jaxb-core | 4.0.5 | https://eclipse-ee4j.github.io/jaxb-ri/ |
 | Eclipse Distribution License - v1.0 | Old JAXB Runtime | com.sun.xml.bind:jaxb-impl | 4.0.4 | https://eclipse-ee4j.github.io/jaxb-ri/ |
 | Apache License, Version 2.0 | Apache Commons Codec | commons-codec:commons-codec | 1.17.2 | https://commons.apache.org/proper/commons-codec/ |
@@ -49,10 +50,14 @@ build. These libraries are used as-is, with no modifications to source code.
 | Eclipse Distribution License - v1.0 | Jakarta XML Binding API | jakarta.xml.bind:jakarta.xml.bind-api | 4.0.2 | https://github.com/jakartaee/jaxb-api/jakarta.xml.bind-api |
 | Eclipse Distribution License - v1.0 | Jakarta SOAP with Attachments API | jakarta.xml.soap:jakarta.xml.soap-api | 3.0.2 | https://github.com/jakartaee/saaj-api |
 | Eclipse Distribution License - v1.0 | Jakarta XML Web Services API | jakarta.xml.ws:jakarta.xml.ws-api | 4.0.2 | https://github.com/jakartaee/jax-ws-api |
+| Mozilla Public License Version 2.0 | Saxon-HE | net.sf.saxon:Saxon-HE | 12.4 | http://www.saxonica.com/ |
 | Apache License, Version 2.0 | Apache Commons Configuration | org.apache.commons:commons-configuration2 | 2.11.0 | https://commons.apache.org/proper/commons-configuration/ |
 | Apache License, Version 2.0 | Apache Commons CSV | org.apache.commons:commons-csv | 1.12.0 | https://commons.apache.org/proper/commons-csv/ |
 | Apache License, Version 2.0 | Apache Commons Lang | org.apache.commons:commons-lang3 | 3.17.0 | https://commons.apache.org/proper/commons-lang/ |
 | Apache License, Version 2.0 | Apache Commons Text | org.apache.commons:commons-text | 1.12.0 | https://commons.apache.org/proper/commons-text |
+| Apache License, Version 2.0 | Apache HttpClient | org.apache.httpcomponents.client5:httpclient5 | 5.4.1 | https://hc.apache.org/httpcomponents-client-5.4.x/5.4.1/httpclient5/ |
+| Apache License, Version 2.0 | Apache HttpComponents Core HTTP/1.1 | org.apache.httpcomponents.core5:httpcore5 | 5.3.2 | https://hc.apache.org/httpcomponents-core-5.3.x/5.3.2/httpcore5/ |
+| Apache License, Version 2.0 | Apache HttpComponents Core HTTP/2 | org.apache.httpcomponents.core5:httpcore5-h2 | 5.3.2 | https://hc.apache.org/httpcomponents-core-5.3.x/5.3.2/httpcore5-h2/ |
 | Apache License, Version 2.0 | Apache Log4j API | org.apache.logging.log4j:log4j-api | 2.24.3 | https://logging.apache.org/log4j/2.x/log4j/log4j-api/ |
 | Apache License, Version 2.0 | Log4j API to SLF4J Adapter | org.apache.logging.log4j:log4j-to-slf4j | 2.24.3 | https://logging.apache.org/log4j/2.x/log4j/log4j-to-slf4j/ |
 | Apache License, Version 2.0 | Apache FontBox | org.apache.pdfbox:fontbox | 2.0.31 | http://pdfbox.apache.org/ |
@@ -61,6 +66,25 @@ build. These libraries are used as-is, with no modifications to source code.
 | Apache License, Version 2.0 | tomcat-embed-core | org.apache.tomcat.embed:tomcat-embed-core | 10.1.34 | https://tomcat.apache.org/ |
 | Apache License, Version 2.0 | tomcat-embed-el | org.apache.tomcat.embed:tomcat-embed-el | 10.1.34 | https://tomcat.apache.org/ |
 | Apache License, Version 2.0 | tomcat-embed-websocket | org.apache.tomcat.embed:tomcat-embed-websocket | 10.1.34 | https://tomcat.apache.org/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-anim | org.apache.xmlgraphics:batik-anim | 1.17 | http://xmlgraphics.apache.org/batik/batik-anim/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-awt-util | org.apache.xmlgraphics:batik-awt-util | 1.17 | http://xmlgraphics.apache.org/batik/batik-awt-util/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-bridge | org.apache.xmlgraphics:batik-bridge | 1.17 | http://xmlgraphics.apache.org/batik/batik-bridge/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-codec | org.apache.xmlgraphics:batik-codec | 1.17 | http://xmlgraphics.apache.org/batik/batik-codec/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-constants | org.apache.xmlgraphics:batik-constants | 1.17 | http://xmlgraphics.apache.org/batik/batik-constants/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-css | org.apache.xmlgraphics:batik-css | 1.17 | http://xmlgraphics.apache.org/batik/batik-css/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-dom | org.apache.xmlgraphics:batik-dom | 1.17 | http://xmlgraphics.apache.org/batik/batik-dom/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-ext | org.apache.xmlgraphics:batik-ext | 1.17 | http://xmlgraphics.apache.org/batik/batik-ext/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-gvt | org.apache.xmlgraphics:batik-gvt | 1.17 | http://xmlgraphics.apache.org/batik/batik-gvt/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-i18n | org.apache.xmlgraphics:batik-i18n | 1.17 | http://xmlgraphics.apache.org/batik/batik-i18n/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-parser | org.apache.xmlgraphics:batik-parser | 1.17 | http://xmlgraphics.apache.org/batik/batik-parser/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-script | org.apache.xmlgraphics:batik-script | 1.17 | http://xmlgraphics.apache.org/batik/batik-script/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-shared-resources | org.apache.xmlgraphics:batik-shared-resources | 1.17 | http://xmlgraphics.apache.org/batik/batik-shared-resources/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-svg-dom | org.apache.xmlgraphics:batik-svg-dom | 1.17 | http://xmlgraphics.apache.org/batik/batik-svg-dom/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-svggen | org.apache.xmlgraphics:batik-svggen | 1.17 | http://xmlgraphics.apache.org/batik/batik-svggen/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-transcoder | org.apache.xmlgraphics:batik-transcoder | 1.17 | http://xmlgraphics.apache.org/batik/batik-transcoder/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-util | org.apache.xmlgraphics:batik-util | 1.17 | http://xmlgraphics.apache.org/batik/batik-util/ |
+| Apache License, Version 2.0 | org.apache.xmlgraphics:batik-xml | org.apache.xmlgraphics:batik-xml | 1.17 | http://xmlgraphics.apache.org/batik/batik-xml/ |
+| Apache License, Version 2.0 | Apache XML Graphics Commons | org.apache.xmlgraphics:xmlgraphics-commons | 2.6 | http://xmlgraphics.apache.org/commons/ |
 | Eclipse Public License - v1.0 | AspectJ weaver | org.aspectj:aspectjweaver | 1.9.6 | https://www.eclipse.org/aspectj/ |
 | Apache License, Version 2.0 | attoparser | org.attoparser:attoparser | 2.0.7.RELEASE | https://www.attoparser.org |
 | MIT License | Checker Qual | org.checkerframework:checker-qual | 3.43.0 | https://checkerframework.org/ |
@@ -104,7 +128,10 @@ build. These libraries are used as-is, with no modifications to source code.
 | Apache License, Version 2.0 | Swagger UI | org.webjars:swagger-ui | 5.18.2 | https://www.webjars.org |
 | MIT License | webjars-locator-core | org.webjars:webjars-locator-core | 0.53 | http://webjars.org |
 | MIT License | webjars-locator-lite | org.webjars:webjars-locator-lite | 1.0.1 | https://webjars.org |
+| Apache License, Version 2.0 | XML Resolver | org.xmlresolver:xmlresolver | 5.2.2 | https://github.com/xmlresolver/xmlresolver |
 | Apache License, Version 2.0 | SnakeYAML | org.yaml:snakeyaml | 2.3 | https://bitbucket.org/snakeyaml/snakeyaml |
+| Apache License, Version 2.0, The SAX License, The W3C License | XML Commons External Components XML APIs | xml-apis:xml-apis | 1.4.01 | http://xml.apache.org/commons/components/external/ |
+| Apache License, Version 2.0 | XML Commons External Components XML APIs Extensions | xml-apis:xml-apis-ext | 1.3.04 | http://xml.apache.org/commons/components/external/ |
 
 ## Specific licences
 
