@@ -127,22 +127,23 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
      * @return The type of validation (validated).
      */
     public String validateValidationType(R domainConfig, String validationType) {
-        if (validationType == null) {
+        String validationTypeToUse = validationType;
+        if (validationTypeToUse == null) {
             String defaultValidationType = domainConfig.getDefaultType();
             if (defaultValidationType == null) {
                 throw new ValidatorException("validator.label.exception.validationTypeMissing", domainConfig.getDomainName(), String.join(", ", domainConfig.getType()));
             }
-            validationType = defaultValidationType;
+            validationTypeToUse = defaultValidationType;
         } else {
-            if (!domainConfig.getType().contains(validationType)) {
+            if (!domainConfig.getType().contains(validationTypeToUse)) {
                 // Check also whether the validation type is a configured alias.
-                validationType = domainConfig.resolveAlias(validationType);
-                if (validationType == null) {
+                validationTypeToUse = domainConfig.resolveAlias(validationTypeToUse);
+                if (validationTypeToUse == null) {
                     throw new ValidatorException("validator.label.exception.validationTypeInvalid", validationType, domainConfig.getDomainName(), String.join(", ", domainConfig.getType()));
                 }
             }
         }
-        return validationType;
+        return validationTypeToUse;
     }
 
     /**
