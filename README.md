@@ -10,6 +10,7 @@
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=ISAITB_itb-commons&metric=vulnerabilities)](https://sonarcloud.io/summary/overall?id=ISAITB_itb-commons)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ISAITB_itb-commons&metric=bugs)](https://sonarcloud.io/summary/overall?id=ISAITB_itb-commons)
 [![licence](https://img.shields.io/github/license/ISAITB/itb-commons.svg?color=blue)](https://github.com/ISAITB/itb-commons/blob/master/LICENCE.txt)
+[![Gurubase](https://img.shields.io/badge/Gurubase-Ask%20ITB%20Guru-006BFF)](https://gurubase.io/g/itb)
 
 The **ITB commons** project includes the modules used to define common libraries shared across ITB validators. Each module is set to 
 produce a separate JAR that can be included as a dependency via Maven.
