@@ -60,7 +60,7 @@
         <version.xerces>2.12.2</version.xerces>
         <version.saxon>12.4</version.saxon>
         <version.tika>2.9.2</version.tika>
-        <version.helgerSchematron>8.0.5</version.helgerSchematron>
+        <version.helgerSchematron>8.0.6</version.helgerSchematron>
         <version.jaxWs>4.0.2</version.jaxWs>
         <version.jws>3.0.0</version.jws>
         <version.commonsBeanutils>1.9.4</version.commonsBeanutils>
