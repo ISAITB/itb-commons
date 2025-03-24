@@ -40,7 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>isaitb</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <version.springBoot>3.4.3</version.springBoot>
+        <version.springBoot>3.4.4</version.springBoot>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
         <version.gitbTypes>1.25.1</version.gitbTypes>
         <version.commonsLang>3.17.0</version.commonsLang>
