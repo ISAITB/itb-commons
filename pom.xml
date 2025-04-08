@@ -4,7 +4,7 @@
     <groupId>eu.europa.ec.itb.commons</groupId>
     <artifactId>commons</artifactId>
     <packaging>pom</packaging>
-    <version>1.8.0-SNAPSHOT</version>
+    <version>1.8.0</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Common utilities, parent build definitions, and foundation classes for all validators.</description>
 
@@ -98,6 +98,7 @@
         <version.plugin.mavenAntRunPlugin>3.1.0</version.plugin.mavenAntRunPlugin>
         <version.plugin.junit-jupiter-engine>5.11.3</version.plugin.junit-jupiter-engine>
         <version.plugin.license-maven-plugin>2.5.0</version.plugin.license-maven-plugin>
+        <version.plugin.versions-maven-plugin>2.18.0</version.plugin.versions-maven-plugin>
     </properties>
 
     <repositories>
@@ -273,6 +274,23 @@
 
                         In specific validator projects based on the itb-commons, similarly use `mvn license:aggregate-add-third-party`
                     -->
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${version.plugin.versions-maven-plugin}</version>
+                    <configuration>
+                        <generateBackupPoms>false</generateBackupPoms>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>none</phase>
+                            <!--
+                                Run manually with `mvn versions:set -DnewVersion=1.9.0`
+                                For a new development cycle run `mvn versions:set -DnewVersion=1.10.0-SNAPSHOT`
+                            -->
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
