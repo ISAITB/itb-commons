@@ -274,6 +274,23 @@
                         In specific validator projects based on the itb-commons, similarly use `mvn license:aggregate-add-third-party`
                     -->
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${version.plugin.versions-maven-plugin}</version>
+                    <configuration>
+                        <generateBackupPoms>false</generateBackupPoms>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>none</phase>
+                            <!--
+                                Run manually with `mvn versions:set -DnewVersion=1.9.0`
+                                For a new development cycle run `mvn versions:set -DnewVersion=1.10.0-SNAPSHOT`
+                            -->
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
