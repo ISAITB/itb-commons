@@ -98,6 +98,7 @@
         <version.plugin.mavenAntRunPlugin>3.1.0</version.plugin.mavenAntRunPlugin>
         <version.plugin.junit-jupiter-engine>5.11.3</version.plugin.junit-jupiter-engine>
         <version.plugin.license-maven-plugin>2.5.0</version.plugin.license-maven-plugin>
+        <version.plugin.versions-maven-plugin>2.18.0</version.plugin.versions-maven-plugin>
     </properties>
 
     <repositories>
