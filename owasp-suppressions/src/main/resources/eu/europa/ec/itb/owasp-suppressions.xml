@@ -224,4 +224,11 @@
         <packageUrl regex="true">^pkg:maven/org\.webjars/bootstrap@.*$</packageUrl>
         <vulnerabilityName>CVE-2025-1647</vulnerabilityName>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-security-core-6.4.5.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-.*@.*$</packageUrl>
+        <vulnerabilityName>CVE-2025-41232</vulnerabilityName>
+    </suppress>
 </suppressions>
