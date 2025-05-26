@@ -2,17 +2,15 @@ package eu.europa.ec.itb.validation.commons.web.filters;
 
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -25,11 +23,11 @@ import java.util.List;
 public class HeaderFilter<Y extends WebDomainConfig, X extends WebDomainConfigCache<Y>> extends OncePerRequestFilter {
 
     private final List<RequestMatcher> configurablyAllowed = List.of(
-            new AntPathRequestMatcher("/**/upload", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/**/upload", HttpMethod.POST.name()),
-            new AntPathRequestMatcher("/**/uploadm", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/**/uploadm", HttpMethod.POST.name()),
-            new AntPathRequestMatcher("/**/error", HttpMethod.POST.name())
+            new RequestMatcher("/upload", HttpMethod.GET.name()),
+            new RequestMatcher("/upload", HttpMethod.POST.name()),
+            new RequestMatcher("/uploadm", HttpMethod.GET.name()),
+            new RequestMatcher("/uploadm", HttpMethod.POST.name()),
+            new RequestMatcher("/error", HttpMethod.POST.name())
     );
 
     /**
@@ -71,4 +69,5 @@ public class HeaderFilter<Y extends WebDomainConfig, X extends WebDomainConfigCa
     private boolean matches(Collection<RequestMatcher> matchers, HttpServletRequest request) {
         return matchers.stream().anyMatch(matcher -> matcher.matches(request));
     }
+
 }
