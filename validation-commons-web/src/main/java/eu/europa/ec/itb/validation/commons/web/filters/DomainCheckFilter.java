@@ -8,8 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -33,8 +31,8 @@ import static eu.europa.ec.itb.validation.commons.web.Constants.MDC_DOMAIN;
 @Order(1)
 public class DomainCheckFilter <Y extends WebDomainConfig, X extends WebDomainConfigCache<Y>> extends OncePerRequestFilter {
 
-    private final RequestMatcher normalUIPath = new AntPathRequestMatcher("/**/upload");
-    private final RequestMatcher minimalUIPath = new AntPathRequestMatcher("/**/uploadm");
+    private final RequestMatcher normalUIPath = new RequestMatcher("/upload");
+    private final RequestMatcher minimalUIPath = new RequestMatcher("/uploadm");
 
     @Autowired
     private X domainConfigs;
