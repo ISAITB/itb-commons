@@ -94,11 +94,11 @@
         <version.plugin.versionsMavenPlugin>2.16.0</version.plugin.versionsMavenPlugin>
         <version.plugin.mavenEnforcerPlugin>3.3.0</version.plugin.mavenEnforcerPlugin>
         <version.plugin.mavenReleasePlugin>3.0.1</version.plugin.mavenReleasePlugin>
-        <version.plugin.mavenSurefirePlugin>3.2.5</version.plugin.mavenSurefirePlugin>
+        <version.plugin.mavenSurefirePlugin>3.5.3</version.plugin.mavenSurefirePlugin>
         <version.plugin.mavenJavadocPlugin>3.5.0</version.plugin.mavenJavadocPlugin>
         <version.plugin.mavenResourcesPlugin>3.3.1</version.plugin.mavenResourcesPlugin>
         <version.plugin.mavenAntRunPlugin>3.1.0</version.plugin.mavenAntRunPlugin>
-        <version.plugin.junit-jupiter-engine>5.11.3</version.plugin.junit-jupiter-engine>
+        <version.plugin.junit-jupiter-engine>5.12.2</version.plugin.junit-jupiter-engine>
         <version.plugin.license-maven-plugin>2.5.0</version.plugin.license-maven-plugin>
         <version.plugin.versions-maven-plugin>2.18.0</version.plugin.versions-maven-plugin>
     </properties>
