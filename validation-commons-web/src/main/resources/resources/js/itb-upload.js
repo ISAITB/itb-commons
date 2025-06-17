@@ -109,6 +109,22 @@ function registerTemplateHelpers() {
             }
         }
         return value;
+      },
+      'contains': function(str, search) {
+        if (typeof str === 'string') {
+            return str.indexOf(search) != -1;
+        }
+        return false;
+      },
+      'locationToShow': function(str) {
+        if (str != undefined) {
+            const separatorIndex = str.indexOf("|");
+            if (separatorIndex >= 0 && separatorIndex < str.length - 1) {
+                return str.substring(separatorIndex + 1);
+            } else {
+                return str;
+            }
+        }
       }
     });
 }
@@ -1132,7 +1148,12 @@ function downloadReportCSVAggregate() {
 function getLineFromPositionString(positionString) {
     var line = 0, positionParts;
     if (positionString) {
-        positionParts = positionString.trim().split(':');
+        let positionStringToUse = positionString.trim();
+        const separatorIndex = positionStringToUse.indexOf("|");
+        if (separatorIndex != -1) {
+            positionStringToUse = positionStringToUse.substring(0, separatorIndex);
+        }
+        positionParts = positionStringToUse.split(':');
         if (positionParts.length == 3) {
             if (!isNaN(positionParts[1])) {
                 line = parseInt(positionParts[1]);
