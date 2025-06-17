@@ -85,6 +85,8 @@
         <version.jena>5.2.0</version.jena>
         <!-- Override the transitive httpclient5 version to resolve CVE-2025-27820 -->
         <version.httpclient5>5.4.4</version.httpclient5>
+        <!-- Override transitive Tomcat version to resolve CVE-2025-49125 and CVE-2025-48988. -->
+        <version.tomcat>10.1.42</version.tomcat>
         <!-- Plugin versions -->
         <version.plugin.mavenCompilerPlugin>3.11.0</version.plugin.mavenCompilerPlugin>
         <version.plugin.mavenJarPlugin>3.3.0</version.plugin.mavenJarPlugin>
@@ -666,6 +668,23 @@
                 <artifactId>httpclient5</artifactId>
                 <version>${version.httpclient5}</version>
             </dependency>
+            <!-- Overriding Tomcat version to resolve CVEs (as a precaution. To be revisited when upgrading Spring Boot version. -->
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>${version.tomcat}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-el</artifactId>
+                <version>${version.tomcat}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <version>${version.tomcat}</version>
+            </dependency>
+            <!-- END -->
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
