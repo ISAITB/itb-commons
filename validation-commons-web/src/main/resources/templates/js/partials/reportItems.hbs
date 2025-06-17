@@ -20,8 +20,8 @@
                             {{/if}}
                         </div>
                     </div>
-                    {{#if (and (not ../clickableItems) value.location)}}
-                        <div class="col-xs-12 report-item-test"><span class="report-item-test-label">{{../data.translations.resultLocationLabel}}</span><span>{{value.location}}</span></div>
+                    {{#if (or (and (not ../clickableItems) value.location) (and ../clickableItems (contains value.location '|')))}}
+                        <div class="col-xs-12 report-item-test"><span class="report-item-test-label">{{../data.translations.resultLocationLabel}}</span><span>{{locationToShow value.location}}</span></div>
                     {{/if}}
                     {{#if value.test}}
                         <div class="col-xs-12 report-item-test"><span class="report-item-test-label">{{../data.translations.resultTestLabel}}</span><span>{{value.test}}</span></div>
