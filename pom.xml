@@ -221,7 +221,7 @@
                     <version>${version.plugin.license-maven-plugin}</version>
                     <configuration>
                         <fileTemplate>${project.basedir}/etc/licence/third-party-licence-template.ftl</fileTemplate>
-                        <thirdPartyFilename>THIRD_PARTY_LICENCES.md</thirdPartyFilename>
+                        <thirdPartyFilename>NOTICE.md</thirdPartyFilename>
                         <excludedGroups>eu.europa.ec.itb.commons|eu.europa.ec.itb.xml|eu.europa.ec.itb.shacl|eu.europa.ec.itb.json|eu.europa.ec.itb.csv|com.github.ISAITB</excludedGroups>
                         <excludedScopes>test</excludedScopes>
                         <failOnMissing>true</failOnMissing>
