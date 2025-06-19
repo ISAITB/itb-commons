@@ -146,7 +146,7 @@ Use the following Maven commands to carry out typical actions:
 
 This software is shared using the [European Union Public Licence (EUPL) version 1.2](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12).
 
-Third-party library licences and attributions are listed in [THIRD_PARTY_LICENCES.md](THIRD_PARTY_LICENCES.md).
+Third-party library licences and attributions are listed in [NOTICE.md](NOTICE.md).
 
 # Legal notice
 
