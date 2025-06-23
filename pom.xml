@@ -40,7 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>isaitb</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <version.springBoot>3.5.0</version.springBoot>
+        <version.springBoot>3.5.3</version.springBoot>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
         <version.gitbTypes>1.26.0</version.gitbTypes>
         <version.commonsLang>3.17.0</version.commonsLang>
@@ -56,7 +56,7 @@
         <version.jaxb-impl>4.0.4</version.jaxb-impl>
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
-        <version.cxf>4.1.0</version.cxf>
+        <version.cxf>4.1.2</version.cxf>
         <version.xerces>2.12.2</version.xerces>
         <version.saxon>12.4</version.saxon>
         <version.tika>2.9.3</version.tika>
@@ -85,8 +85,6 @@
         <version.jena>5.2.0</version.jena>
         <!-- Override the transitive httpclient5 version to resolve CVE-2025-27820 -->
         <version.httpclient5>5.4.4</version.httpclient5>
-        <!-- Override transitive Tomcat version to resolve CVE-2025-49125 and CVE-2025-48988. -->
-        <version.tomcat>10.1.42</version.tomcat>
         <!-- Plugin versions -->
         <version.plugin.mavenCompilerPlugin>3.11.0</version.plugin.mavenCompilerPlugin>
         <version.plugin.mavenJarPlugin>3.3.0</version.plugin.mavenJarPlugin>
@@ -667,22 +665,6 @@
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
                 <version>${version.httpclient5}</version>
-            </dependency>
-            <!-- Overriding Tomcat version to resolve CVEs (as a precaution. To be revisited when upgrading Spring Boot version. -->
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-core</artifactId>
-                <version>${version.tomcat}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-el</artifactId>
-                <version>${version.tomcat}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-websocket</artifactId>
-                <version>${version.tomcat}</version>
             </dependency>
             <!-- END -->
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
