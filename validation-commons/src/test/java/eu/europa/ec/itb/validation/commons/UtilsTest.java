@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -454,5 +455,11 @@ class UtilsTest extends BaseTest {
         assertFalse(Utils.isValidUrl("http://"));
         assertTrue(Utils.isValidUrl("http://foo.com"));
         assertTrue(Utils.isValidUrl("https://foo.com:9090"));
+    }
+
+    @Test
+    void testParseUrl() {
+        assertDoesNotThrow(() -> Utils.parseUrl("http://foo.com"));
+        assertThrows(MalformedURLException.class, () -> Utils.parseUrl("foo"));
     }
 }

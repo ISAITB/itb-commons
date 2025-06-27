@@ -49,8 +49,10 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -668,6 +670,21 @@ public class Utils {
             return uri.getScheme() != null && uri.getHost() != null;
         } catch (URISyntaxException e) {
             return false;
+        }
+    }
+
+    /**
+     * Parse the provided string into a URL.
+     *
+     * @param value The value to parse.
+     * @return The URL.
+     * @throws MalformedURLException If the provided URL is invalid.
+     */
+    public static URL parseUrl(String value) throws MalformedURLException {
+        try {
+            return URI.create(value).toURL();
+        } catch (IllegalArgumentException e) {
+            throw new MalformedURLException(e.getMessage());
         }
     }
 
