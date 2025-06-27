@@ -56,7 +56,7 @@ public class RequestMatcher {
      */
     public boolean matches(HttpServletRequest request) {
         String requestPath = request.getRequestURI();
-        return method.map((m) -> m.equalsIgnoreCase(request.getMethod())).orElse(true) && requestPath.endsWith(pathEnding);
+        return method.map(m -> m.equalsIgnoreCase(request.getMethod())).orElse(true) && requestPath.endsWith(pathEnding);
     }
 
 }

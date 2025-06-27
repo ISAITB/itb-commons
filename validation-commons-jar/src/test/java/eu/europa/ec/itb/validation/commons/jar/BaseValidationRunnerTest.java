@@ -23,6 +23,7 @@ class BaseValidationRunnerTest extends BaseTest {
         return new BaseValidationRunner<>() {
             @Override
             protected void bootstrapInternal(String[] args, File parentFolder) {
+                // Do nothing.
             }
         };
     }

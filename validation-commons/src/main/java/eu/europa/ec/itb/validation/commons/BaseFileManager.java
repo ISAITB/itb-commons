@@ -380,7 +380,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @throws IOException If the file could not be retrieved or stored.
      */
     public FileInfo getFileFromURL(File targetFolder, String url, String extension, String fileName, File preprocessorFile, String preprocessorOutputExtension, String artifactType, List<String> acceptedContentTypes, HttpClient.Version httpVersion) throws IOException {
-        URL urlObj = new URL(url);
+        URL urlObj = URI.create(url).toURL();
         if (fileName == null) {
             fileName = FilenameUtils.getName(urlObj.getPath());
         }

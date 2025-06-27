@@ -15,17 +15,18 @@
 
 package eu.europa.ec.itb.validation.commons.jar;
 
+import eu.europa.ec.itb.validation.commons.Utils;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import jakarta.annotation.PostConstruct;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -105,12 +106,7 @@ public abstract class BaseValidationRunner<X extends DomainConfig> implements Va
      * @return True if it is a URL.
      */
     protected boolean isValidURL(String value) {
-        try {
-            new URL(value);
-            return true;
-        } catch (MalformedURLException e) {
-            return false;
-        }
+        return Utils.isValidUrl(value);
     }
 
     /**

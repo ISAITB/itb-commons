@@ -274,7 +274,7 @@ public class ParseUtils {
     public static Map<String, List<String>> parseListMap(String commonKey, Configuration config, Optional<Function<Pair<String, String>, Boolean>> validateFn) {
         Map<String, List<String>> map = new LinkedHashMap<>();
         Iterator<String> mapKeys = config.getKeys(commonKey);
-        var validateFnToUse = validateFn.orElse((key) -> true);
+        var validateFnToUse = validateFn.orElse(key -> true);
         while (mapKeys.hasNext()) {
             String fullKey = mapKeys.next();
             String keyExtension = StringUtils.substringAfter(fullKey, commonKey+".");
@@ -283,7 +283,7 @@ public class ParseUtils {
                     .filter(Objects::nonNull)
                     .distinct()
                     .map(String::trim)
-                    .filter((value) -> validateFnToUse.apply(Pair.of(keyExtension, value)))
+                    .filter(value -> validateFnToUse.apply(Pair.of(keyExtension, value)))
                     .toList();
             if (!validatedValuesForKey.isEmpty()) {
                 map.put(keyExtension, validatedValuesForKey);

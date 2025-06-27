@@ -262,9 +262,9 @@ class DomainConfigCacheTest extends BaseSpringTest {
         // The common name is '_labels'.
         List<String> fileNames8 = List.of("_labels_en_US", "_labels_fr", "_labels_es_ES");
         // The common name is 'labels'.
-        List<String> fileNames_9 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES");
+        List<String> fileNames9 = List.of("labels_en_US", "labels_fr_FR", "labels_es_ES");
         // The common name is '_my__labels'
-        List<String> fileNames_10 = List.of("_my__labels_en_US", "_my__labels_fr_FR", "_my__labels_es_ES", "_my__labels_es");
+        List<String> fileNames10 = List.of("_my__labels_en_US", "_my__labels_fr_FR", "_my__labels_es_ES", "_my__labels_es");
         DomainConfigCache configCache = createDomainConfigCache();
         Method obtainBundleNamesMethod = ReflectionUtils.findMethod(configCache.getClass(), "obtainBundleName", List.class);
         assertNotNull(obtainBundleNamesMethod);
@@ -277,8 +277,8 @@ class DomainConfigCacheTest extends BaseSpringTest {
         assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames6)));
         assertTrue("my_labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames7)));
         assertTrue("_labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames8)));
-        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_9)));
-        assertTrue("_my__labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames_10)));
+        assertTrue("labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames9)));
+        assertTrue("_my__labels".contentEquals((String)obtainBundleNamesMethod.invoke(configCache, fileNames10)));
     }
 
     @Test

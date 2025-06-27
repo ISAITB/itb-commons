@@ -336,7 +336,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
         Set<String> typesToCheck = new HashSet<>(declaredValidationTypes);
         Set<String> typesChecked = new HashSet<>();
         // Parse validation type groups while ignoring invalid entries
-        Map<String, List<String>> validationTypeGroups = ParseUtils.parseListMap("validator.typeGroup", config, Optional.of((entry) -> {
+        Map<String, List<String>> validationTypeGroups = ParseUtils.parseListMap("validator.typeGroup", config, Optional.of(entry -> {
             if (typesToCheck.contains(entry.getValue())) {
                 typesToCheck.remove(entry.getValue());
                 typesChecked.add(entry.getValue());
