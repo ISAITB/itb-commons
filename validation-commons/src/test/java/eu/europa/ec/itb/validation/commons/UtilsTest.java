@@ -447,4 +447,12 @@ class UtilsTest extends BaseTest {
         Utils.sanitizeIfNeeded(report, config);
         assertEquals("<a href=\"something\">TEXT</a> BOLD", ((BAR)report.getReports().getInfoOrWarningOrError().get(0).getValue()).getDescription());
     }
+
+    @Test
+    void testIIsValidUrl() {
+        assertFalse(Utils.isValidUrl("foo"));
+        assertFalse(Utils.isValidUrl("http://"));
+        assertTrue(Utils.isValidUrl("http://foo.com"));
+        assertTrue(Utils.isValidUrl("https://foo.com:9090"));
+    }
 }

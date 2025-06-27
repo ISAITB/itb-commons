@@ -18,7 +18,9 @@ package eu.europa.ec.itb.validation.commons.war.webhook;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import eu.europa.ec.itb.validation.commons.Utils;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +34,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import jakarta.annotation.PostConstruct;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,11 +75,8 @@ public class WebHook {
         // Gathering the properties to report usage
         ApplicationConfig.Webhook webhookConfig = config.getWebhook();
         this.url = webhookConfig.getStatistics();
-        try {
-            new URL(this.url);
-        }catch(Exception ex) {
-            throw new MalformedURLException(
-                    "The following URL for the usage statistics service is not valid: " + this.url);
+        if (!Utils.isValidUrl(this.url)) {
+            throw new MalformedURLException("The following URL for the usage statistics service is not valid: " + this.url);
         }
         this.secret = webhookConfig.getStatisticsSecret();
         if(this.secret == null){

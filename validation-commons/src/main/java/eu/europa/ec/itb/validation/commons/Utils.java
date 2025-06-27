@@ -49,6 +49,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -652,6 +654,21 @@ public class Utils {
             }
         }
         return decodedBytes;
+    }
+
+    /**
+     * Check to see if the provided string is a valid URL.
+     *
+     * @param value The value to check.
+     * @return The check result.
+     */
+    public static boolean isValidUrl(String value) {
+        try {
+            URI uri = new URI(value);
+            return uri.getScheme() != null && uri.getHost() != null;
+        } catch (URISyntaxException e) {
+            return false;
+        }
     }
 
 }
