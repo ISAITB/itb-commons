@@ -37,19 +37,19 @@ This product depends on software developed by third parties as listed in the fol
 | Apache License, Version 2.0 | OWASP Java HTML Sanitizer | com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer | 20220608.1 | https://github.com/OWASP/java-html-sanitizer/owasp-java-html-sanitizer |
 | Apache License, Version 2.0 | MaxMind DB Reader | com.maxmind.db:maxmind-db | 2.0.0 | http://dev.maxmind.com/ |
 | Apache License, Version 2.0 | MaxMind GeoIP2 API | com.maxmind.geoip2:geoip2 | 3.0.1 | https://dev.maxmind.com/geoip?lang=en |
-| GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf Core Renderer | com.openhtmltopdf:openhtmltopdf-core | 1.0.10 | https://github.com/danfickle/openhtmltopdf/openhtmltopdf-core |
-| GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf PDF Rendering (Apache PDF-BOX 2) | com.openhtmltopdf:openhtmltopdf-pdfbox | 1.0.10 | https://github.com/danfickle/openhtmltopdf/openhtmltopdf-pdfbox |
-| GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf slf4j Support | com.openhtmltopdf:openhtmltopdf-slf4j | 1.0.10 | https://github.com/danfickle/openhtmltopdf/openhtmltopdf-slf4j |
-| GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf SVG Support | com.openhtmltopdf:openhtmltopdf-svg-support | 1.0.10 | https://github.com/danfickle/openhtmltopdf/openhtmltopdf-svg-support |
 | Eclipse Distribution License - v1.0 | Old JAXB Core | com.sun.xml.bind:jaxb-core | 4.0.5 | https://eclipse-ee4j.github.io/jaxb-ri/ |
 | Eclipse Distribution License - v1.0 | Old JAXB Runtime | com.sun.xml.bind:jaxb-impl | 4.0.4 | https://eclipse-ee4j.github.io/jaxb-ri/ |
 | Apache License, Version 2.0 | Apache Commons Codec | commons-codec:commons-codec | 1.18.0 | https://commons.apache.org/proper/commons-codec/ |
 | Apache License, Version 2.0 | Apache Commons IO | commons-io:commons-io | 2.17.0 | https://commons.apache.org/proper/commons-io/ |
-| Apache License, Version 2.0 | Apache Commons Logging | commons-logging:commons-logging | 1.2 | http://commons.apache.org/proper/commons-logging/ |
 | Apache License, Version 2.0 | Apache Commons Logging | commons-logging:commons-logging | 1.3.2 | https://commons.apache.org/proper/commons-logging/ |
-| Apache License, Version 2.0 | PDFBox-Graphics2d | de.rototor.pdfbox:graphics2d | 0.32 | https://github.com/rototor/pdfbox-graphics2d/graphics2d |
+| Apache License, Version 2.0 | Apache Commons Logging | commons-logging:commons-logging | 1.3.5 | https://commons.apache.org/proper/commons-logging/ |
+| Apache License, Version 2.0 | PDFBox-Graphics2d | de.rototor.pdfbox:graphics2d | 3.0.1 | https://github.com/rototor/pdfbox-graphics2d/graphics2d |
 | European Union Public Licence (EUPL) Version 1.2 | gitb-types-jakarta | eu.europa.ec.itb:gitb-types-jakarta | 1.26.0 | https://interoperable-europe.ec.europa.eu/collection/interoperability-test-bed-repository/solution/interoperability-test-bed/gitb-types-jakarta |
 | MIT License | ClassGraph | io.github.classgraph:classgraph | 4.8.149 | https://github.com/classgraph/classgraph |
+| GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf Core Renderer | io.github.openhtmltopdf:openhtmltopdf-core | 1.1.28 | https://github.com/openhtmltopdf/openhtmltopdf/openhtmltopdf-core |
+| GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf PDF Rendering (Apache PDF-BOX 3) | io.github.openhtmltopdf:openhtmltopdf-pdfbox | 1.1.28 | https://github.com/openhtmltopdf/openhtmltopdf/openhtmltopdf-pdfbox |
+| GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf slf4j Support | io.github.openhtmltopdf:openhtmltopdf-slf4j | 1.1.28 | https://github.com/openhtmltopdf/openhtmltopdf/openhtmltopdf-slf4j |
+| GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf SVG Support | io.github.openhtmltopdf:openhtmltopdf-svg-support | 1.1.28 | https://github.com/openhtmltopdf/openhtmltopdf/openhtmltopdf-svg-support |
 | Apache License, Version 2.0 | micrometer-commons | io.micrometer:micrometer-commons | 1.15.1 | https://github.com/micrometer-metrics/micrometer |
 | Apache License, Version 2.0 | micrometer-observation | io.micrometer:micrometer-observation | 1.15.1 | https://github.com/micrometer-metrics/micrometer |
 | Apache License, Version 2.0 | swagger-annotations-jakarta | io.swagger.core.v3:swagger-annotations-jakarta | 2.2.25 | https://github.com/swagger-api/swagger-core/modules/swagger-annotations-jakarta |
@@ -71,9 +71,10 @@ This product depends on software developed by third parties as listed in the fol
 | Apache License, Version 2.0 | Apache HttpComponents Core HTTP/2 | org.apache.httpcomponents.core5:httpcore5-h2 | 5.3.4 | https://hc.apache.org/httpcomponents-core-5.3.x/5.3.4/httpcore5-h2/ |
 | Apache License, Version 2.0 | Apache Log4j API | org.apache.logging.log4j:log4j-api | 2.24.3 | https://logging.apache.org/log4j/2.x/log4j/log4j-api/ |
 | Apache License, Version 2.0 | Log4j API to SLF4J Adapter | org.apache.logging.log4j:log4j-to-slf4j | 2.24.3 | https://logging.apache.org/log4j/2.x/log4j/log4j-to-slf4j/ |
-| Apache License, Version 2.0 | Apache FontBox | org.apache.pdfbox:fontbox | 2.0.31 | http://pdfbox.apache.org/ |
-| Apache License, Version 2.0 | Apache PDFBox | org.apache.pdfbox:pdfbox | 2.0.31 | https://www.apache.org/pdfbox-parent/pdfbox/ |
-| Apache License, Version 2.0 | Apache XmpBox | org.apache.pdfbox:xmpbox | 2.0.24 | https://www.apache.org/pdfbox-parent/xmpbox/ |
+| Apache License, Version 2.0 | Apache FontBox | org.apache.pdfbox:fontbox | 3.0.5 | http://pdfbox.apache.org/ |
+| Apache License, Version 2.0 | Apache PDFBox | org.apache.pdfbox:pdfbox | 3.0.5 | https://www.apache.org/pdfbox-parent/pdfbox/ |
+| Apache License, Version 2.0 | Apache PDFBox io | org.apache.pdfbox:pdfbox-io | 3.0.5 | https://www.apache.org/pdfbox-parent/pdfbox-io/ |
+| Apache License, Version 2.0 | Apache XmpBox | org.apache.pdfbox:xmpbox | 3.0.3 | https://www.apache.org/pdfbox-parent/xmpbox/ |
 | Apache License, Version 2.0 | tomcat-embed-core | org.apache.tomcat.embed:tomcat-embed-core | 10.1.42 | https://tomcat.apache.org/ |
 | Apache License, Version 2.0 | tomcat-embed-el | org.apache.tomcat.embed:tomcat-embed-el | 10.1.42 | https://tomcat.apache.org/ |
 | Apache License, Version 2.0 | tomcat-embed-websocket | org.apache.tomcat.embed:tomcat-embed-websocket | 10.1.42 | https://tomcat.apache.org/ |
@@ -95,7 +96,7 @@ This product depends on software developed by third parties as listed in the fol
 | Apache License, Version 2.0 | org.apache.xmlgraphics:batik-transcoder | org.apache.xmlgraphics:batik-transcoder | 1.17 | http://xmlgraphics.apache.org/batik/batik-transcoder/ |
 | Apache License, Version 2.0 | org.apache.xmlgraphics:batik-util | org.apache.xmlgraphics:batik-util | 1.17 | http://xmlgraphics.apache.org/batik/batik-util/ |
 | Apache License, Version 2.0 | org.apache.xmlgraphics:batik-xml | org.apache.xmlgraphics:batik-xml | 1.17 | http://xmlgraphics.apache.org/batik/batik-xml/ |
-| Apache License, Version 2.0 | Apache XML Graphics Commons | org.apache.xmlgraphics:xmlgraphics-commons | 2.6 | http://xmlgraphics.apache.org/commons/ |
+| Apache License, Version 2.0 | Apache XML Graphics Commons | org.apache.xmlgraphics:xmlgraphics-commons | 2.9 | http://xmlgraphics.apache.org/commons/ |
 | Eclipse Public License - v1.0 | AspectJ weaver | org.aspectj:aspectjweaver | 1.9.6 | https://www.eclipse.org/aspectj/ |
 | Apache License, Version 2.0 | attoparser | org.attoparser:attoparser | 2.0.7.RELEASE | https://www.attoparser.org |
 | MIT License | Checker Qual | org.checkerframework:checker-qual | 3.5.0 | https://checkerframework.org |
@@ -4259,11 +4260,30 @@ The Apache Software Foundation (http://www.apache.org/).
 Copyright (c) 2009-2025 Jonathan Hedley <https://jsoup.org/>
 ```
 
-### Openhtmltopdf (com.openhtmltopdf.*)
+### Openhtmltopdf (io.github.openhtmltopdf.*)
 
 ```
 Copyright (c) 2004, 2005 Joshua Marinacci, Torbjoern Gannholm
 Copyright (c) 2006 Wisconsin Court System
+
+OPEN HTML TO PDF XML/CSS RENDERER LICENSE COMMENTS
+Copyright (C) 2016 Patrick Wright and others
+https://openhtmltopdf.com
+
+All source code to OPEN HTML TO PDF itself is licensed under the GNU Lesser General
+Public License (LGPL); you can redistribute it and/or modify it under the terms
+of the GNU Lesser General Public License as published by the Free Software
+Foundation, either version 2.1 of the License, or (at your option) any later version.
+A copy of the LGPL can be found
+on the website of the Free Software Foundation, at
+https://www.gnu.org/copyleft/lesser.html, and in our distributions under
+LICENSE-LGPL-2.1.txt or LICENSE-LGPL-3.txt.
+
+OPEN HTML TO PDF relies on several other free or open source projects in
+order to build and run. All currently used libraries are thought to have licenses compatible with the LGPL.
+However, there are several jars under the obsolete-archive folder that are no longer used
+and their licenses are out of the scope of this document. Please check the license before
+using any of those jars.
 ```
 
 ### OWASP HTML Sanitizer (com.googlecode.owasp-java-html-sanitizer.*)

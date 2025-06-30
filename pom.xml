@@ -75,8 +75,8 @@
         <version.springdoc>2.7.0</version.springdoc>
         <version.topbraid>1.4.4</version.topbraid>
         <version.freemarker>2.3.32</version.freemarker>
-        <version.pdfbox>2.0.31</version.pdfbox>
-        <version.com.openhtmltopdf>1.0.10</version.com.openhtmltopdf>
+        <version.pdfbox>3.0.5</version.pdfbox>
+        <version.openhtmltopdf>1.1.28</version.openhtmltopdf>
         <version.org.jsoup>1.15.4</version.org.jsoup>
         <version.owaspHtmlSanitizer>20220608.1</version.owaspHtmlSanitizer>
         <version.bouncycastle>1.78.1</version.bouncycastle>
@@ -585,24 +585,24 @@
                 <version>${version.jena}</version>
             </dependency>
             <dependency>
-                <groupId>com.openhtmltopdf</groupId>
+                <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-core</artifactId>
-                <version>${version.com.openhtmltopdf}</version>
+                <version>${version.openhtmltopdf}</version>
             </dependency>
             <dependency>
-                <groupId>com.openhtmltopdf</groupId>
+                <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-pdfbox</artifactId>
-                <version>${version.com.openhtmltopdf}</version>
+                <version>${version.openhtmltopdf}</version>
             </dependency>
             <dependency>
-                <groupId>com.openhtmltopdf</groupId>
+                <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-slf4j</artifactId>
-                <version>${version.com.openhtmltopdf}</version>
+                <version>${version.openhtmltopdf}</version>
             </dependency>
             <dependency>
-                <groupId>com.openhtmltopdf</groupId>
+                <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-svg-support</artifactId>
-                <version>${version.com.openhtmltopdf}</version>
+                <version>${version.openhtmltopdf}</version>
             </dependency>
             <dependency>
                 <groupId>org.jsoup</groupId>

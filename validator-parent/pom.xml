@@ -82,9 +82,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.openhtmltopdf</groupId>
+                <groupId>io.github.openhtmltopdf</groupId>
                 <artifactId>openhtmltopdf-pdfbox</artifactId>
-                <version>${version.com.openhtmltopdf}</version>
+                <version>${version.openhtmltopdf}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>

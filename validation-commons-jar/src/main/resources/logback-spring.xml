@@ -20,7 +20,7 @@
         <appender-ref ref="FILE" />
     </logger>
 
-    <logger name="com.openhtmltopdf" level="ERROR" additivity="true">
+    <logger name="io.github.openhtmltopdf" level="ERROR" additivity="true">
         <appender-ref ref="FILE" />
     </logger>
 
