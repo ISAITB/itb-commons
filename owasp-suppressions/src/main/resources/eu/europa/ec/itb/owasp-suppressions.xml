@@ -238,4 +238,11 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring-.*@.*$</packageUrl>
         <vulnerabilityName>CVE-2025-41234</vulnerabilityName>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: gson-2.9.0.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.code\.gson/gson@.*$</packageUrl>
+        <vulnerabilityName>CVE-2025-53864</vulnerabilityName>
+    </suppress>
 </suppressions>
