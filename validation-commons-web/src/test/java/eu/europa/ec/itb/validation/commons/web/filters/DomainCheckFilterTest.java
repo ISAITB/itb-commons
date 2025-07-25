@@ -55,15 +55,24 @@ class DomainCheckFilterTest {
         domainConfigsField.set(filter, domainConfigCache);
     }
 
-    private HttpServletRequest getRequest(String path, String expectedDomainName, Boolean expectedMinimalFlag) {
+    private HttpServletRequest getRequest(String path, String expectedDomainName, Boolean expectedMinimalFlag, String expectedSubmitSource) {
         var request = mock(HttpServletRequest.class);
         when(request.getRequestURI()).thenReturn(path);
         when(request.getServletPath()).thenReturn(path);
+        if ("self".equals(expectedSubmitSource)) {
+            when(request.getHeader(Constants.SUBMIT_SOURCE_HEADER)).thenReturn("self");
+        }
         doAnswer(call -> {
             if (WebDomainConfig.DOMAIN_CONFIG_REQUEST_ATTRIBUTE.equals(call.getArgument(0))) {
                 assertSame(domainConfigCache.getConfigForDomainName(expectedDomainName), call.getArgument(1));
             } else if (Constants.IS_MINIMAL.equals(call.getArgument(0))) {
                 assertEquals(expectedMinimalFlag, call.getArgument(1));
+            } else if (Constants.IS_SELF_SUBMITTED.equals(call.getArgument(0))) {
+                if (expectedSubmitSource == null) {
+                    assertFalse(() -> call.getArgument(1));
+                } else {
+                    assertTrue(() -> call.getArgument(1));
+                }
             } else {
                 fail("Unexpected call to setAttribute");
             }
@@ -74,43 +83,55 @@ class DomainCheckFilterTest {
 
     @Test
     void testValidateDomainNoForm() {
-        var request = getRequest("/domainWithoutForm/upload", null, false);
+        var request = getRequest("/domainWithoutForm/upload", null, false, "self");
         assertThrows(NotFoundException.class, () -> filter.doFilterInternal(request, mock(HttpServletResponse.class), mock(FilterChain.class)));
     }
 
     @Test
     void testValidateDomainNull() {
-        var request = getRequest("/nullDomain/upload", null, false);
+        var request = getRequest("/nullDomain/upload", null, false, "self");
         assertThrows(NotFoundException.class, () -> filter.doFilterInternal(request, mock(HttpServletResponse.class), mock(FilterChain.class)));
     }
 
     @Test
     void testValidateDomainNotDefined() {
-        var request = getRequest("/domainNotDefined/upload", null, false);
+        var request = getRequest("/domainNotDefined/upload", null, false, "self");
         assertThrows(NotFoundException.class, () -> filter.doFilterInternal(request, mock(HttpServletResponse.class), mock(FilterChain.class)));
     }
 
     @Test
     void testValidateDomainForMinimalUIOK() {
-        var request = getRequest("/domainWithForm/uploadm", "domainWithForm", true);
+        var request = getRequest("/domainWithForm/uploadm", "domainWithForm", true, "self");
+        assertDoesNotThrow(() -> filter.doFilterInternal(request, mock(HttpServletResponse.class), mock(FilterChain.class)));
+    }
+
+    @Test
+    void testValidateDomainForMinimalEmbeddedUIOK() {
+        var request = getRequest("/domainWithForm/uploadm", "domainWithForm", true, "self");
+        assertDoesNotThrow(() -> filter.doFilterInternal(request, mock(HttpServletResponse.class), mock(FilterChain.class)));
+    }
+
+    @Test
+    void testValidateDomainForMinimalEmbeddedUIResultsOK() {
+        var request = getRequest("/domainWithForm/uploadm", "domainWithForm", true, null);
         assertDoesNotThrow(() -> filter.doFilterInternal(request, mock(HttpServletResponse.class), mock(FilterChain.class)));
     }
 
     @Test
     void testValidateDomainForMinimalUINOK() {
-        var request = getRequest("/domainWithoutMinimalUI/uploadm", null, true);
+        var request = getRequest("/domainWithoutMinimalUI/uploadm", null, true, "self");
         assertThrows(NotFoundException.class, () -> filter.doFilterInternal(request, mock(HttpServletResponse.class), mock(FilterChain.class)));
     }
 
     @Test
     void testUnableToDetermineDomain() {
-        var request = getRequest("///uploadm", null, true);
+        var request = getRequest("///uploadm", null, true, "self");
         assertThrows(NotFoundException.class, () -> filter.doFilterInternal(request, mock(HttpServletResponse.class), mock(FilterChain.class)));
     }
 
     @Test
     void testUnexpectedError() {
-        var request = getRequest("/domainWithNPE/uploadm", "domainWithNPE", true);
+        var request = getRequest("/domainWithNPE/uploadm", "domainWithNPE", true, "self");
         assertThrows(NotFoundException.class, () -> filter.doFilterInternal(request, mock(HttpServletResponse.class), mock(FilterChain.class)));
     }
 

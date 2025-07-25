@@ -85,8 +85,10 @@ public class ParseUtils {
         Iterator<String> mapKeys = config.getKeys(commonKey);
         while (mapKeys.hasNext()) {
             String fullKey = mapKeys.next();
-            String extensionKey = StringUtils.substringAfter(fullKey, commonKey+".");
-            map.put(extensionKey, StringUtils.defaultString(config.getString(fullKey)).trim());
+            if (!fullKey.equals(commonKey)) {
+                String extensionKey = StringUtils.substringAfter(fullKey, commonKey+".");
+                map.put(extensionKey, StringUtils.defaultString(config.getString(fullKey)).trim());
+            }
         }
         return map;
     }

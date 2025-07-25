@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static eu.europa.ec.itb.validation.commons.web.Constants.IS_MINIMAL;
+import static eu.europa.ec.itb.validation.commons.web.Constants.IS_SELF_SUBMITTED;
 
 /**
  * Abstract super class of all controllers for validator UI forms.
@@ -132,6 +133,16 @@ public abstract class BaseUploadController <X extends WebDomainConfig, Y extends
      */
     public boolean isMinimalUI(HttpServletRequest request) {
         return Objects.requireNonNullElse((Boolean) request.getAttribute(IS_MINIMAL), Boolean.FALSE);
+    }
+
+    /**
+     * Check to see if this is a form submission from the validator's own UI.
+     *
+     * @param request The current request.
+     * @return The check result.
+     */
+    public boolean isOwnSubmission(HttpServletRequest request) {
+        return Objects.requireNonNullElse((Boolean) request.getAttribute(IS_SELF_SUBMITTED), Boolean.FALSE);
     }
 
     /**

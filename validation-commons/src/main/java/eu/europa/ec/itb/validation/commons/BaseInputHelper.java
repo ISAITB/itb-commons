@@ -22,6 +22,7 @@ import eu.europa.ec.itb.validation.commons.artifact.ExternalArtifactSupport;
 import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
+import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,9 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
 
     @Autowired
     protected Z appConfig = null;
+
+    @Autowired
+    protected DomainConfigCache<R> domainConfigs = null;
 
     /**
      * Validate and return the embedding method for a given input of a validation call.
@@ -113,14 +117,13 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
     }
 
     /**
-     * Validation of the validation type linked to the specific request.
+     * Extract the validation type for SOAP validation calls.
      *
-     * @param domainConfig The domain's configuration.
-     * @param validateRequest The request's parameters.
-     * @param inputName The name of the input from which the validation type will be read.
-     * @return The type of validation.
+     * @param validateRequest The SOAP request.
+     * @param inputName The input name to look for.
+     * @return The validation type.
      */
-    public String validateValidationType(R domainConfig, ValidateRequest validateRequest, String inputName) {
+    private String extractValidationType(ValidateRequest validateRequest, String inputName) {
         List<AnyContent> listValidationType = Utils.getInputFor(validateRequest, inputName);
         String validationType = null;
         if (!listValidationType.isEmpty()) {
@@ -131,7 +134,54 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
                 throw new ValidatorException("validator.label.exception.stringEmbeddingMethodForValidationType", content.getEmbeddingMethod());
             }
         }
-        return validateValidationType(domainConfig, validationType);
+        return validationType;
+    }
+
+    /**
+     * Validation of the validation type linked to the specific request.
+     *
+     * @param requestedDomain The requested domain.
+     * @param resolvedDomainConfig The resolved domain's configuration (differs if aliased).
+     * @param validateRequest The request's parameters.
+     * @param inputName The name of the input from which the validation type will be read.
+     * @return The type of validation.
+     */
+    public String validateValidationType(String requestedDomain, R resolvedDomainConfig, ValidateRequest validateRequest, String inputName) {
+        String requestedValidationType = extractValidationType(validateRequest, inputName);
+        String validationTypeToUse = determineValidationType(requestedValidationType, requestedDomain, resolvedDomainConfig);
+        return validateValidationType(resolvedDomainConfig, validationTypeToUse);
+    }
+
+    /**
+     * Determine the validation type to consider, taking into account domain aliases and default types.
+     *
+     * @param requestedValidationType The requested type.
+     * @param requestedDomain The requested domain.
+     * @param resolvedDomainConfig The resolved domain from the requested one (differs if it was aliased).
+     * @return The validation type to consider.
+     */
+    public String determineValidationType(String requestedValidationType, String requestedDomain, DomainConfig resolvedDomainConfig) {
+        if (requestedDomain.equals(resolvedDomainConfig.getDomainName())) {
+            return requestedValidationType;
+        } else {
+            // This case means that the requested domain is an alias of the resolved one.
+            var requestedDomainConfig = domainConfigs.getConfigForDomainName(requestedDomain, true, false);
+            if (requestedValidationType == null) {
+                // If no validation type was provided we need to resolve it and find its aliased type on the target domain.
+                String defaultValidationType = requestedDomainConfig.getDefaultType();
+                if (defaultValidationType == null) {
+                    throw new ValidatorException("validator.label.exception.validationTypeMissing", requestedDomainConfig.getDomainName(), String.join(", ", requestedDomainConfig.getType()));
+                } else {
+                    requestedValidationType = defaultValidationType;
+                }
+            }
+            // The validation type to use will either be the one defined by an alias or the same type.
+            if (requestedDomainConfig.getDomainTypeAlias() == null) {
+                return requestedValidationType;
+            } else {
+                return requestedDomainConfig.getDomainTypeAlias().getOrDefault(requestedValidationType, requestedValidationType);
+            }
+        }
     }
 
     /**
