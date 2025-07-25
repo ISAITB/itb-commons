@@ -178,6 +178,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      * Extension point (by default empty) to do additional configuration if needed.
      */
     protected void init() {
+        // Empty by default.
     }
 
     /**
@@ -236,7 +237,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
         } else {
             if (resolveAlias && config.getDomainAlias() != null) {
                 // Domain is an alias for another one.
-                return getConfigForDomainName(config.getDomainAlias(), warnIfNotFound, resolveAlias);
+                return getConfigForDomainName(config.getDomainAlias(), warnIfNotFound, true);
             } else {
                 return config;
             }

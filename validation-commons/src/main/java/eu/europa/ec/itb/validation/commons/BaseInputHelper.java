@@ -25,6 +25,7 @@ import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -259,9 +260,9 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
             if (!item.getItem().isEmpty()) {
                 collectExternalArtifactContents(item.getItem(), artifactContentInputName, artifactEmbeddingMethodInputName, results);
             }
-            if (StringUtils.equals(item.getName(), artifactContentInputName)) {
+            if (Strings.CS.equals(item.getName(), artifactContentInputName)) {
                 contentItems.add(item);
-            } else if (StringUtils.equals(item.getName(), artifactEmbeddingMethodInputName)) {
+            } else if (Strings.CS.equals(item.getName(), artifactEmbeddingMethodInputName)) {
                 explicitEmbeddingMethod = getEmbeddingMethod(item);
             } else {
                 otherItems.add(item);
@@ -287,7 +288,7 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
 
     /**
      * Method used to drive the extraction of external (user-provided) validation artifacts from a given set of inputs.
-     *
+     * <p>
      * This method allows specific validators to add additional processing of such artifacts via subclass extensions.
      *
      * @param containerContent The input that contains all information linked to a given artifact.

@@ -26,7 +26,7 @@ import java.util.Map;
 
 /**
  * Class used to load the configuration needed to support plugins.
- *
+ * <p>
  * The implementation of this class would differ based on how plugins are loaded from
  * a configuration file.
  */
@@ -37,7 +37,7 @@ public class DomainPluginConfigProvider<T extends DomainConfig> implements Plugi
 
     /**
      * The plugin classifier is used to split plugin implementations in sets.
-     *
+     * <p>
      * In this case the classifier is constructed from the domain and validation type
      * combination.
      *

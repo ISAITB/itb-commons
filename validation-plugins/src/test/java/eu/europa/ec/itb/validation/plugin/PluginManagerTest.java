@@ -83,7 +83,7 @@ class PluginManagerTest {
             assertNotNull(result);
             assertEquals(1, result.length);
             assertEquals("id", result[0].getName());
-            assertTrue(result[0] instanceof PluginAdapter);
+            assertInstanceOf(PluginAdapter.class, result[0]);
             assertNotNull(result[0].getModuleDefinition(new Void()));
             assertNotNull(result[0].getModuleDefinition(new Void()).getModule());
             assertEquals("id", result[0].getModuleDefinition(new Void()).getModule().getId());

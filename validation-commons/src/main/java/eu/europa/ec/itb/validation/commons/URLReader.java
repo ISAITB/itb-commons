@@ -17,6 +17,7 @@ package eu.europa.ec.itb.validation.commons;
 
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -69,7 +70,7 @@ public class URLReader {
             }
             Optional<String> contentType = response.headers().firstValue("Content-Type")
                     .map(value -> {
-                        if (StringUtils.contains(value, ";")) {
+                        if (Strings.CS.contains(value, ";")) {
                             String[] parts = StringUtils.split(value, ";");
                             return parts[0].trim();
                         } else {

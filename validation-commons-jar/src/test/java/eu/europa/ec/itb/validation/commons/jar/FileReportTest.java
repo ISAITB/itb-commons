@@ -11,7 +11,6 @@ import java.math.BigInteger;
 import java.util.GregorianCalendar;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileReportTest {
 

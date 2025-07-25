@@ -66,7 +66,7 @@ public abstract class StatisticReporting {
                 File geoipDbFile = new File(geoipDbFilePath);
                 this.reader = new DatabaseReader.Builder(geoipDbFile).build();
             } catch(Exception ex) {
-                logger.warn(String.format("Error accessing Geolocation database file at: %s", geoipDbFilePath), ex);
+                logger.warn("Error accessing Geolocation database file at: {}", geoipDbFilePath, ex);
                 // deactivate the country resolution if the database cannot be read
                 this.config.getWebhook().setStatisticsEnableCountryDetection(Boolean.FALSE);
             }
@@ -101,9 +101,9 @@ public abstract class StatisticReporting {
             CountryResponse response = this.reader.country(address);
             countryISO = response.getCountry().getIsoCode();
         } catch (AddressNotFoundException ex){
-            logger.warn(String.format("Unable to resolve country for ip: %s", ip));
+            logger.warn("Unable to resolve country for ip: {}", ip);
         } catch (Exception ex){
-            logger.warn(String.format("Error when resolving country for ip: %s", ip), ex);
+            logger.warn("Error when resolving country for ip: {}", ip, ex);
         }
         return countryISO;
     }

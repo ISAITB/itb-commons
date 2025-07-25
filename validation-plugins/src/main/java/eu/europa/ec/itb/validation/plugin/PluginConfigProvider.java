@@ -20,7 +20,7 @@ import java.util.Map;
 
 /**
  * Provider of the configuration needed to load plugins.
- *
+ * <p>
  * The configuration is currently provided in a map of unique classifiers that point to
  * an array of PluginInfo objects. These represent the plugin JAR and classes to load implementations
  * from.
@@ -29,7 +29,7 @@ public interface PluginConfigProvider {
 
     /**
      * Get the map of plugin classifiers to plugin information (JARs and classes per JAR).
-     *
+     * <p>
      * Classifiers are unique keys to determine sets of plugins (determined by the caller).
      *
      * @return The plugin configuration map.

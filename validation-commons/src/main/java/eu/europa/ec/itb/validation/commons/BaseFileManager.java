@@ -878,10 +878,10 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                     }
                 } catch (ValidatorException e) {
                     // Never allow configuration errors in one domain to prevent the others from being available.
-                    logger.error(String.format("Error while processing configuration for domain [%s]: %s", domainConfig.getDomainName(), e.getMessageForLog()), e);
+                    logger.error("Error while processing configuration for domain [{}]: {}", domainConfig.getDomainName(), e.getMessageForLog(), e);
                 } catch (Exception e) {
                     // Never allow configuration errors in one domain to prevent the others from being available.
-                    logger.error(String.format("Error while processing configuration for domain [%s]", domainConfig.getDomainName()), e);
+                    logger.error("Error while processing configuration for domain [{}]", domainConfig.getDomainName(), e);
                 } finally {
                     // Unlock domain.
                     if (domainLock != null) {
@@ -938,10 +938,10 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             result = true;
         } catch (ValidatorException e) {
             // Never allow configuration errors in one validation type to prevent the others from being available.
-            logger.error(String.format("Error while processing configuration for type [%s] of domain [%s]: %s", validationType, domainConfig.getDomainName(), e.getMessageForLog()), e);
+            logger.error("Error while processing configuration for type [{}] of domain [{}]: {}", validationType, domainConfig.getDomainName(), e.getMessageForLog(), e);
         } catch (Exception e) {
             // Never allow configuration errors in one validation type to prevent the others from being available.
-            logger.error(String.format("Error while processing configuration for type [%s] of domain [%s]", validationType, domainConfig.getDomainName()), e);
+            logger.error("Error while processing configuration for type [{}] of domain [{}]", validationType, domainConfig.getDomainName(), e);
         }
         return result;
     }

@@ -50,16 +50,17 @@ class ReportItemComparatorTest {
     private JAXBElement<TestAssertionReportType> createBAR(String description, ReportItemComparatorTest.Severity severity) {
         var bar = new BAR();
         bar.setDescription(description);
-        switch (severity) {
-            case ERROR: return objectFactory.createTestAssertionGroupReportsTypeError(bar);
-            case WARNING: return objectFactory.createTestAssertionGroupReportsTypeWarning(bar);
-            case OTHER: return new JAXBElement<>(new QName("http://www.gitb.com/tr/v1/", "other"), TestAssertionReportType.class, TestAssertionGroupReportsType.class, bar);
-            default:  return objectFactory.createTestAssertionGroupReportsTypeInfo(bar);
-        }
+        return switch (severity) {
+            case ERROR -> objectFactory.createTestAssertionGroupReportsTypeError(bar);
+            case WARNING -> objectFactory.createTestAssertionGroupReportsTypeWarning(bar);
+            case OTHER ->
+                    new JAXBElement<>(new QName("http://www.gitb.com/tr/v1/", "other"), TestAssertionReportType.class, TestAssertionGroupReportsType.class, bar);
+            default -> objectFactory.createTestAssertionGroupReportsTypeInfo(bar);
+        };
     }
 
     enum Severity {
-        ERROR, WARNING,MESSAGE,OTHER;
+        ERROR, WARNING,MESSAGE,OTHER
     }
 
 }

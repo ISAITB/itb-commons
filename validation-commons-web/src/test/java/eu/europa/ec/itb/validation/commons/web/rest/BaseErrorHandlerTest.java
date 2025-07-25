@@ -20,7 +20,7 @@ class BaseErrorHandlerTest {
         var result = new BaseErrorHandler().handleNotFound(exception, mock(WebRequest.class));
         assertNotNull(result);
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        assertTrue(result.getBody() instanceof ErrorInfo);
+        assertInstanceOf(ErrorInfo.class, result.getBody());
         assertEquals("The requested resource could not be found", ((ErrorInfo) result.getBody()).getMessage());
     }
 
@@ -31,7 +31,7 @@ class BaseErrorHandlerTest {
         var result = new BaseErrorHandler().handleValidatorException(exception, mock(WebRequest.class));
         assertNotNull(result);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertTrue(result.getBody() instanceof ErrorInfo);
+        assertInstanceOf(ErrorInfo.class, result.getBody());
         assertEquals("Message", ((ErrorInfo) result.getBody()).getMessage());
     }
 
@@ -41,7 +41,7 @@ class BaseErrorHandlerTest {
         var result = new BaseErrorHandler().handleUnexpectedErrors(exception, mock(WebRequest.class));
         assertNotNull(result);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertTrue(result.getBody() instanceof ErrorInfo);
+        assertInstanceOf(ErrorInfo.class, result.getBody());
         assertEquals("An unexpected error occurred during validation", ((ErrorInfo) result.getBody()).getMessage());
     }
 

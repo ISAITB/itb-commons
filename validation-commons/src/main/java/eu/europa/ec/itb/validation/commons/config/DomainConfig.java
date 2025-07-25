@@ -165,7 +165,7 @@ public class DomainConfig {
         if (validationType == null) {
             return true;
         } else {
-            return Boolean.TRUE.equals(remoteArtefactStatus.computeIfAbsent(validationType, key -> Boolean.TRUE));
+            return remoteArtefactStatus.computeIfAbsent(validationType, key -> Boolean.TRUE);
         }
     }
 
