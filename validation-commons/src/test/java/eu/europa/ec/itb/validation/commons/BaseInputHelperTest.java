@@ -8,6 +8,7 @@ import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.artifact.ValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
+import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import eu.europa.ec.itb.validation.commons.test.BaseSpringTest;
 import eu.europa.ec.itb.validation.commons.test.BaseTestConfiguration;
@@ -52,12 +53,18 @@ class BaseInputHelperTest extends BaseSpringTest {
         public BaseFileManager<ApplicationConfig> fileManager() {
             return mock(BaseFileManager.class);
         }
+        @Bean
+        public DomainConfigCache<DomainConfig> domainConfigCache() {
+            return mock(DomainConfigCache.class);
+        }
     }
 
     @Autowired
     private BaseInputHelper<ApplicationConfig, BaseFileManager<ApplicationConfig>, DomainConfig> inputHelper;
     @Autowired
     private BaseFileManager<ApplicationConfig> fileManager;
+    @Autowired
+    private DomainConfigCache<DomainConfig> domainConfigCache;
 
     @BeforeEach
     @Override
@@ -150,33 +157,36 @@ class BaseInputHelperTest extends BaseSpringTest {
     @Test
     void testValidateValidationTypeForValidateRequest() {
         var domainConfig = new DomainConfig();
+        domainConfig.setDomainName("test");
         domainConfig.setType(List.of("type1"));
         var request = new ValidateRequest();
         request.getInput().add(new AnyContent());
         request.getInput().get(0).setName("type");
         request.getInput().get(0).setValue("type1");
         request.getInput().get(0).setEmbeddingMethod(ValueEmbeddingEnumeration.STRING);
-        var result = inputHelper.validateValidationType(domainConfig, request, "type");
+        var result = inputHelper.validateValidationType(domainConfig.getDomainName(), domainConfig, request, "type");
         assertEquals("type1", result);
     }
 
     @Test
     void testValidateValidationTypeForValidateRequestWrongEmbeddingMethod() {
         var domainConfig = new DomainConfig();
+        domainConfig.setDomainName("test");
         domainConfig.setType(List.of("type1"));
         var request = new ValidateRequest();
         request.getInput().add(new AnyContent());
         request.getInput().get(0).setName("type");
         request.getInput().get(0).setValue("type1");
         request.getInput().get(0).setEmbeddingMethod(ValueEmbeddingEnumeration.BASE_64);
-        assertThrows(ValidatorException.class, () -> inputHelper.validateValidationType(domainConfig, request, "type"));
+        assertThrows(ValidatorException.class, () -> inputHelper.validateValidationType(domainConfig.getDomainName(), domainConfig, request, "type"));
     }
 
     @Test
     void testValidateValidationTypeForValidateRequestNoMatchNok() {
         var domainConfig = new DomainConfig();
+        domainConfig.setDomainName("test");
         domainConfig.setType(List.of("type1", "type2"));
-        assertThrows(ValidatorException.class, () -> inputHelper.validateValidationType(domainConfig, new ValidateRequest(), "input"));
+        assertThrows(ValidatorException.class, () -> inputHelper.validateValidationType(domainConfig.getDomainName(), domainConfig, new ValidateRequest(), "input"));
     }
 
     @Test
@@ -470,5 +480,31 @@ class BaseInputHelperTest extends BaseSpringTest {
         assertTrue(inputHelper.supportsExternalArtifacts(map, "artifact1"));
         map.clear();
         assertFalse(inputHelper.supportsExternalArtifacts(map, "artifact1"));
+    }
+
+    @Test
+    void testDetermineValidationType() {
+        DomainConfig domain1 = new DomainConfig();
+        domain1.setDomainName("domain1");
+        domain1.setType(List.of("type1"));
+        DomainConfig domain2 = new DomainConfig();
+        domain2.setDomainName("domain2");
+        domain2.setDomainAlias("domain1");
+        domain2.setDefaultType("alias1");
+        domain2.setDomainTypeAlias(Map.of("alias1", "type1"));
+        domain2.setType(List.of("alias1"));
+
+        when(domainConfigCache.getConfigForDomainName("domain1", true, false)).thenReturn(domain1);
+        when(domainConfigCache.getConfigForDomainName("domain2", true, false)).thenReturn(domain2);
+
+        assertEquals("type1", inputHelper.determineValidationType("type1", "domain1", domain1));
+        assertEquals("type1", inputHelper.determineValidationType("alias1", "domain2", domain1));
+        assertEquals("type1", inputHelper.determineValidationType("type1", "domain2", domain1));
+        assertEquals("type1", inputHelper.determineValidationType(null, "domain2", domain1));
+
+        domain2.setDomainTypeAlias(null);
+        assertEquals("xxx", inputHelper.determineValidationType("xxx", "domain2", domain1));
+        domain2.setDefaultType(null);
+        assertThrows(ValidatorException.class, () -> inputHelper.determineValidationType(null, "domain2", domain1));
     }
 }

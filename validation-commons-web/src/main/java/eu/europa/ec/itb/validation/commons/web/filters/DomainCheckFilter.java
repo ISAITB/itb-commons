@@ -32,12 +32,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static eu.europa.ec.itb.validation.commons.web.Constants.IS_MINIMAL;
-import static eu.europa.ec.itb.validation.commons.web.Constants.MDC_DOMAIN;
+import static eu.europa.ec.itb.validation.commons.web.Constants.*;
 
 /**
  * Filter to validate a given request for the validator's user interface. It checks that the requested domain is valid,
- * recording it for downstream use, and also ensured that the type of interface requested is supported.
+ * recording it for downstream use, and also ensures that the type of interface requested is supported.
  *
  * @param <Y> The type of web domain configuration.
  * @param <X> The type of web domain configuration cache.
@@ -76,6 +75,8 @@ public class DomainCheckFilter <Y extends WebDomainConfig, X extends WebDomainCo
                 var domainConfig = validateDomain(domainName, isMinimal);
                 request.setAttribute(WebDomainConfig.DOMAIN_CONFIG_REQUEST_ATTRIBUTE, domainConfig);
             }
+            // Record whether this is a form submission from the validator's own UI.
+            setSelfSubmittedFlag(request);
         }
         filterChain.doFilter(request, response);
     }
@@ -91,6 +92,10 @@ public class DomainCheckFilter <Y extends WebDomainConfig, X extends WebDomainCo
     private Y validateDomain(String domain, boolean isMinimal) {
         try {
             var config = domainConfigs.getConfigForDomainName(domain);
+            if (config.getDomainAlias() != null) {
+                // The requested domain is marked as an alias of another domain.
+                config = domainConfigs.getConfigForDomainName(config.getDomainAlias());
+            }
             if (config == null || !config.isDefined() || !config.getChannels().contains(ValidatorChannel.FORM)) {
                 logger.error(String.format("The following domain does not exist: %s", domain));
                 throw new NotFoundException();
@@ -117,6 +122,17 @@ public class DomainCheckFilter <Y extends WebDomainConfig, X extends WebDomainCo
     private void setMinimalUIFlag(HttpServletRequest request, boolean isMinimal) {
         if (request.getAttribute(IS_MINIMAL) == null) {
             request.setAttribute(IS_MINIMAL, isMinimal);
+        }
+    }
+
+    /**
+     * Record whether a submission was originated from the validator's own upload form UI.
+     *
+     * @param request The request to check and update.
+     */
+    private void setSelfSubmittedFlag(HttpServletRequest request) {
+        if (request.getAttribute(IS_SELF_SUBMITTED) == null) {
+            request.setAttribute(IS_SELF_SUBMITTED, "self".equals(request.getHeader(SUBMIT_SOURCE_HEADER)));
         }
     }
 

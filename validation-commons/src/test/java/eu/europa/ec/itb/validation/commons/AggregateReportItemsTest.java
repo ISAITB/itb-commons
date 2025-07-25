@@ -78,8 +78,8 @@ class AggregateReportItemsTest {
         var localiser = mock(LocalisationHelper.class);
         when(localiser.localise(eq("validator.label.reportItemTotalOccurrences"), any())).thenAnswer(a -> {
             assertEquals(2, a.getArguments().length);
-            assertTrue(a.getArgument(0) instanceof String);
-            assertTrue(a.getArgument(1) instanceof Long);
+            assertInstanceOf(String.class, a.getArgument(0));
+            assertInstanceOf(Long.class, a.getArgument(1));
             return "Total "+ a.getArgument(1);
         });
         return localiser;
@@ -89,11 +89,11 @@ class AggregateReportItemsTest {
         var bar = new BAR();
         bar.setDescription(description);
         bar.setLocation(location);
-        switch (severity) {
-            case ERROR: return objectFactory.createTestAssertionGroupReportsTypeError(bar);
-            case WARNING: return objectFactory.createTestAssertionGroupReportsTypeWarning(bar);
-            default:  return objectFactory.createTestAssertionGroupReportsTypeInfo(bar);
-        }
+        return switch (severity) {
+            case ERROR -> objectFactory.createTestAssertionGroupReportsTypeError(bar);
+            case WARNING -> objectFactory.createTestAssertionGroupReportsTypeWarning(bar);
+            default -> objectFactory.createTestAssertionGroupReportsTypeInfo(bar);
+        };
     }
 
     enum Severity {

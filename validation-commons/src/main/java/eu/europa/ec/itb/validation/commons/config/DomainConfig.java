@@ -45,6 +45,8 @@ public class DomainConfig {
     private String defaultType;
     private Map<String, List<String>> validationTypeOptions;
     private Map<String, String> validationTypeAlias;
+    private String domainAlias;
+    private Map<String, String> domainTypeAlias;
     private Map<String, List<String>> validationTypeGroups;
     private Set<ValidatorChannel> channels = new HashSet<>();
     private Map<String, TypedValidationArtifactInfo> artifactInfo;
@@ -163,7 +165,7 @@ public class DomainConfig {
         if (validationType == null) {
             return true;
         } else {
-            return Boolean.TRUE.equals(remoteArtefactStatus.computeIfAbsent(validationType, key -> Boolean.TRUE));
+            return remoteArtefactStatus.computeIfAbsent(validationType, key -> Boolean.TRUE);
         }
     }
 
@@ -358,8 +360,39 @@ public class DomainConfig {
         this.validationTypeOptions = validationTypeOptions;
     }
 
+    /**
+     * @param validationTypeAlias Map of the validation type aliases.
+     */
     public void setValidationTypeAlias(Map<String, String> validationTypeAlias) {
         this.validationTypeAlias = validationTypeAlias;
+    }
+
+    /**
+     * @return The domain of which the current domain is considered as an alias.
+     */
+    public String getDomainAlias() {
+        return domainAlias;
+    }
+
+    /**
+     * @param domainAlias The domain of which the current domain is considered as an alias.
+     */
+    public void setDomainAlias(String domainAlias) {
+        this.domainAlias = domainAlias;
+    }
+
+    /**
+     * @return Map of the validation type aliases in an aliased domain.
+     */
+    public Map<String, String> getDomainTypeAlias() {
+        return domainTypeAlias;
+    }
+
+    /**
+     * @param domainTypeAlias Map of the validation type aliases in an aliased domain.
+     */
+    public void setDomainTypeAlias(Map<String, String> domainTypeAlias) {
+        this.domainTypeAlias = domainTypeAlias;
     }
 
     /**

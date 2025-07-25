@@ -27,8 +27,12 @@ public class Constants {
 
     /** The flag determining if the UI is a minimal one or a normal one. */
     public static final String IS_MINIMAL = "isMinimal";
+    /** The flag determining if a form submission came from the validator's own UI. */
+    public static final String IS_SELF_SUBMITTED = "isSelfSubmitted";
     /** The header that signifies whether a received request was an ajax one. */
     public static final String AJAX_REQUEST_HEADER = "X-Requested-With";
+    /** Custom header to identify the source of a form submission ('self' or other). */
+    public static final String SUBMIT_SOURCE_HEADER = "X-Submit-Source";
     /** Constant for the name of the domain config Thymeleaf template parameter. */
     public static final String PARAM_DOMAIN_CONFIG = "config";
     /** Constant for the name of the app config Thymeleaf template parameter. */

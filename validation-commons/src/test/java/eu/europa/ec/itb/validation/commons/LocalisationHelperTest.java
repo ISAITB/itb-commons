@@ -75,7 +75,7 @@ class LocalisationHelperTest {
         LocalisationHelper localiser = new LocalisationHelper(this.config, Locale.ENGLISH);
         assertNotNull(localiser);
         DomainConfig configWithoutLocaleTranslations = new WebDomainConfig();
-        Map<String, String> domainProperties = new HashMap<String, String>();
+        Map<String, String> domainProperties = new HashMap<>();
         configWithoutLocaleTranslations.setDomainProperties(domainProperties);
         LocalisationHelper localiserWithoutLocaleTranslations = new LocalisationHelper(configWithoutLocaleTranslations, Locale.ENGLISH);
         assertNotNull(localiserWithoutLocaleTranslations);
@@ -142,7 +142,7 @@ class LocalisationHelperTest {
     @Test
     void testWithoutLocalTranslations() {
         DomainConfig configWithoutLocaleTranslations = new WebDomainConfig();
-        Map<String, String> domainProperties = new HashMap<String, String>();
+        Map<String, String> domainProperties = new HashMap<>();
         domainProperties.put("test", "testDefaultDomain");
         domainProperties.put("testParameterised1", "Test1 %d");
         configWithoutLocaleTranslations.setDomainProperties(domainProperties);

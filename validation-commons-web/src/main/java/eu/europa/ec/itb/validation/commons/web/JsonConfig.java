@@ -33,7 +33,7 @@ import java.util.List;
 
 /**
  * Configuration for the serialisation of TAR reports to JSON.
- *
+ * <p> <p>
  * This is not a Spring Bean configuration class to avoid side effects to the
  * ObjectMapper used internally by Spring Boot.
  */

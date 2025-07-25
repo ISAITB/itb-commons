@@ -25,6 +25,7 @@
 
     <logger name="eu.europa.ec" level="INFO" additivity="true"/>
     <logger name="org.springframework.core.LocalVariableTableParameterNameDiscoverer" level="ERROR"/>
+    <logger name="com.openhtmltopdf" level="WARN" additivity="true"/>
     <logger name="io.github.openhtmltopdf" level="WARN" additivity="true"/>
 
     <springProfile name="!dev">

@@ -40,7 +40,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>isaitb</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <version.springBoot>3.5.3</version.springBoot>
+        <version.springBoot>3.5.4</version.springBoot>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
         <version.gitbTypes>1.26.0</version.gitbTypes>
         <version.commonsLang>3.18.0</version.commonsLang>
@@ -59,7 +59,7 @@
         <version.cxf>4.1.2</version.cxf>
         <version.xerces>2.12.2</version.xerces>
         <version.saxon>12.4</version.saxon>
-        <version.tika>2.9.3</version.tika>
+        <version.tika>3.2.1</version.tika>
         <version.helgerSchematron>8.0.6</version.helgerSchematron>
         <version.jaxWs>4.0.2</version.jaxWs>
         <version.jws>3.0.0</version.jws>
@@ -226,7 +226,7 @@
                         <failOnBlacklist>true</failOnBlacklist>
                         <overrideFile>${project.basedir}/etc/licence/overrides.txt</overrideFile>
                         <licenseMerges>
-                            <licenseMerge>Apache License, Version 2.0|The Apache Software License, Version 2.0|Apache-2.0|Apache License 2.0|Apache 2|The Apache License, Version 2.0|Apache License|Apache License version 2.0|Apache 2.0|Apache License v2.0|Apache License v2|Apache License Version 2.0</licenseMerge>
+                            <licenseMerge>Apache License, Version 2.0|The Apache Software License, Version 2.0|Apache-2.0|Apache License 2.0|Apache 2|The Apache License, Version 2.0|Apache License|Apache License version 2.0|Apache 2.0|Apache License v2.0|Apache License v2|Apache License Version 2.0|The Apache Software License, version 2.0</licenseMerge>
                             <licenseMerge>Eclipse Public License - v1.0|Eclipse Public License - v 1.0</licenseMerge>
                             <licenseMerge>Eclipse Public License - v2.0|EPL 2.0|Eclipse Public License 2.0</licenseMerge>
                             <licenseMerge>GNU Lesser General Public License (LGPL), Version 2.1|GNU Lesser General Public License (LGPL), version 2.1 or later|LGPL 2.1|GNU Lesser General Public License|LGPL, v2.1 or later</licenseMerge>

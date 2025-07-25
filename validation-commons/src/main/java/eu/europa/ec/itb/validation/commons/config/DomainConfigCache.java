@@ -88,8 +88,73 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      */
     @PostConstruct
     public void initBase() {
-        getAllDomainConfigurations();
+        // Initialise all domain configurations at startup.
+        List<T> configs = getAllDomainConfigurations();
+        // Validate common cross-domain configurations.
+        validateDomainAliases(configs);
+        // Add extension point for validator-specific configurations.
         init();
+    }
+
+    /**
+     * Called once all domains have been loaded to make sure that any cross-domain aliases are correct.
+     *
+     * @param configs The domain configurations to validate.
+     */
+    private void validateDomainAliases(List<T> configs) {
+        for (var config: configs) {
+            if (config.getDomainAlias() != null) {
+                var otherConfig = getConfigForDomainName(config.getDomainAlias(), false, true);
+                if (otherConfig == null) {
+                    // We could not find the referenced domain.
+                    logger.warn("Domain [{}] was configured as an alias for non-existent domain [{}]. Domain alias configurations will be ignored.", config.getDomainName(), config.getDomainAlias());
+                    config.setDomainAlias(null);
+                    config.getDomainTypeAlias().clear();
+                } else {
+                    /*
+                     * Aliased domain exists. Make sure that all validation types of the current domain have their equivalents
+                     * in the other domain:
+                     * - Types with domain aliases point to existing types of the other domain.
+                     * - Types without aliases exist with the exact same name in the other domain.
+                     */
+                    Set<String> validationTypesToCheck = new TreeSet<>(config.getType());
+                    // First check the declared aliases to ensure they match types in the target domain.
+                    Set<String> aliasesToRemove = new HashSet<>();
+                    for (var aliasEntry: config.getDomainTypeAlias().entrySet()) {
+                        if (!otherConfig.getType().contains(aliasEntry.getValue())) {
+                            // Check also aliases in the other domain.
+                            if (otherConfig.resolveAlias(aliasEntry.getValue()) == null) {
+                                logger.warn("Domain [{}] defines for validation type [{}] an alias of [{}] that was not found in domain [{}]. The alias will be ignored.", config.getDomainName(), aliasEntry.getKey(), aliasEntry.getValue(), otherConfig.getDomainName());
+                                aliasesToRemove.add(aliasEntry.getKey());
+                            } else {
+                                // No need to check this validation type as the defined alias was valid.
+                                validationTypesToCheck.remove(aliasEntry.getKey());
+                            }
+                        } else {
+                            // No need to check this validation type as the defined alias was valid.
+                            validationTypesToCheck.remove(aliasEntry.getKey());
+                        }
+                    }
+                    aliasesToRemove.forEach(config.getDomainTypeAlias()::remove);
+                    // Now check the remaining validation types for aliases. These will be the ones that did not have a (valid) alias.
+                    boolean hasAliasProblems = false;
+                    for (var validationType: validationTypesToCheck) {
+                        if (!otherConfig.getType().contains(validationType)) {
+                            // Check also aliases in the other domain.
+                            if (otherConfig.resolveAlias(validationType) == null) {
+                                logger.warn("Domain [{}] is an alias of [{}] but no corresponding validation type could be found for [{}]. You need to either define a valid alias for this type or ensure that the same type exists in domain [{}].", config.getDomain(), otherConfig.getDomainName(), validationType, otherConfig.getDomainName());
+                                hasAliasProblems = true;
+                            }
+                        }
+                    }
+                    if (hasAliasProblems) {
+                        logger.warn("Domain [{}] is an alias of [{}] but does not correctly alias all its validation types. The domain alias configuration will ignored.", config.getDomainName(), otherConfig.getDomainName());
+                        config.setDomainAlias(null);
+                        config.getDomainTypeAlias().clear();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -113,6 +178,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      * Extension point (by default empty) to do additional configuration if needed.
      */
     protected void init() {
+        // Empty by default.
     }
 
     /**
@@ -157,14 +223,35 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      * Get a domain configuration by its public name.
      *
      * @param domainName The domain's name.
+     * @param warnIfNotFound Log a warning if the domain is not found.
+     * @param resolveAlias Whether a domain alias will be resolved (if defined).
+     * @return The domain configuration.
+     */
+    public T getConfigForDomainName(String domainName, boolean warnIfNotFound, boolean resolveAlias) {
+        T config = getConfigForDomain(appConfig.getDomainNameToDomainId().getOrDefault(domainName, ""));
+        if (config == null) {
+            if (warnIfNotFound) {
+                logger.warn("Invalid domain name [{}].", domainName);
+            }
+            return null;
+        } else {
+            if (resolveAlias && config.getDomainAlias() != null) {
+                // Domain is an alias for another one.
+                return getConfigForDomainName(config.getDomainAlias(), warnIfNotFound, true);
+            } else {
+                return config;
+            }
+        }
+    }
+
+    /**
+     * Get a domain configuration by its public name logging a warning if it is not found and resolving aliases.
+     *
+     * @param domainName The domain's name.
      * @return The domain configuration.
      */
     public T getConfigForDomainName(String domainName) {
-        T config = getConfigForDomain(appConfig.getDomainNameToDomainId().getOrDefault(domainName, ""));
-        if (config == null) {
-            logger.warn("Invalid domain name [{}].", domainName);
-        }
-        return config;
+        return getConfigForDomainName(domainName, true, true);
     }
 
     /**
@@ -173,7 +260,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
      * @param domain The domain identifier.
      * @return The domain configuration.
      */
-    public T getConfigForDomain(String domain) {
+    protected T getConfigForDomain(String domain) {
         T domainConfigToReturn = domainConfigs.get(domain);
         if (domainConfigToReturn == null) {
             String[] files = Paths.get(appConfig.getResourceRoot(), domain).toFile().list(propertyFilter);
@@ -226,6 +313,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     domainConfig.setValidationTypeOptions(validationTypeOptions);
                     domainConfig.setValidationTypeAlias(typeAliases);
 
+                    // Validate validation type aliases.
                     if (domainConfig.getValidationTypeAlias() != null) {
                         for (String alias: domainConfig.getValidationTypeAlias().keySet()) {
                             if (domainConfig.resolveAlias(alias) == null && logger.isWarnEnabled()) {
@@ -234,7 +322,24 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                         }
                     }
 
-                    // add default validation type
+                    // Domain aliases - start
+                    domainConfig.setDomainAlias(config.getString("validator.domainAlias", null));
+                    if (domainConfig.getDomainAlias() != null) {
+                        Map<String, String> domainTypeAliases = ParseUtils.parseMap("validator.domainAlias", config);
+                        // Check to see that the aliased types for the current domain are valid.
+                        Set<String> aliasesToRemove = new HashSet<>();
+                        for (var alias: domainTypeAliases.keySet()) {
+                            if (!domainConfig.getType().contains(alias)) {
+                                logger.warn("Invalid configuration for domain [{}]. Domain validation type alias [{}] is not an existing (full) validation type.", domain, alias);
+                                aliasesToRemove.add(alias);
+                            }
+                        }
+                        aliasesToRemove.forEach(domainTypeAliases::remove);
+                        domainConfig.setDomainTypeAlias(domainTypeAliases);
+                    }
+                    // Domain aliases - end
+
+                    // Add default validation type
                     String defaultType = config.getString("validator.defaultType");
                     if (defaultType != null && !defaultType.isBlank()) {
                         if (validationTypes.contains(defaultType)) {

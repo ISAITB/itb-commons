@@ -51,7 +51,7 @@ public class CustomLocaleResolver {
             if (config.getAvailableLocales().size() > 1 && appConfig != null && request != null) {
                 String cookieName = appConfig.getIdentifier() + "." + config.getDomainName() +  "." + "locale";
                 String requestedLanguage = request.getParameter("lang");
-                if (requestedLanguage != null && !requestedLanguage.isEmpty() && !requestedLanguage.isBlank()) {
+                if (requestedLanguage != null && !requestedLanguage.isBlank()) {
                     // case in which the locale has been inserted in the request.
                     var requestedLocale = LocaleUtils.toLocale(requestedLanguage);
                     if (config.getAvailableLocales().contains(requestedLocale)) {

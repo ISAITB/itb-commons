@@ -19,7 +19,7 @@ import java.io.File;
 
 /**
  * Common interface for classes responsible for executing a validation run.
- *
+ * <p>
  * This interface is used primarily as a marker to lookup the appropriate Spring bean to use.
  * @see CommandLineValidator#start(Class, String[], String)
  */

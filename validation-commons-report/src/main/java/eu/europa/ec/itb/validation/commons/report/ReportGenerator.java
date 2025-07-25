@@ -41,6 +41,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateMethodModelEx;
 import jakarta.xml.bind.JAXBElement;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.W3CDom;
@@ -178,7 +179,7 @@ public class ReportGenerator {
      */
     private void writeClasspathReport(Map<String, Object> parameters, OutputStream outputStream) {
         // Add custom extension functions.
-        parameters = Objects.requireNonNullElse(parameters, Collections.emptyMap());
+        parameters = Objects.requireNonNullElseGet(parameters, HashMap::new);
         parameters.putAll(extensionFunctions);
         // Generate HTML report.
         try {
@@ -199,7 +200,7 @@ public class ReportGenerator {
                 public String resolveURI(String baseUri, String uri) {
                     if (uri.startsWith("classpath:")) {
                         // A predefined image.
-                        return Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(StringUtils.removeStart(uri, "classpath:"))).toString();
+                        return Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(Strings.CS.removeStart(uri, "classpath:"))).toString();
                     }
                     return super.resolveURI(baseUri, uri);
                 }

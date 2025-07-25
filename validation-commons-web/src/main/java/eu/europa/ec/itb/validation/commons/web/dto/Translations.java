@@ -23,7 +23,7 @@ import java.util.Locale;
 
 /**
  * Class to hold translations for display on the web UI following a validation.
- *
+ * <p>
  * This class holds text translations that are common to all validators.
  */
 public class Translations {

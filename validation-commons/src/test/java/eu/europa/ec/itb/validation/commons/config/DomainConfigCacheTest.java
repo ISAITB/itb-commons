@@ -28,7 +28,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -52,6 +51,8 @@ class DomainConfigCacheTest extends BaseSpringTest {
             createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain2", "config.properties"), Files.readString(Paths.get(ClassLoader.getSystemResource("testDomainConfigs/domain2.properties").toURI())));
             createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain3", "config.properties"), Files.readString(Paths.get(ClassLoader.getSystemResource("testDomainConfigs/domain3.properties").toURI())));
             createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain4", "config.properties"), Files.readString(Paths.get(ClassLoader.getSystemResource("testDomainConfigs/domain4.properties").toURI())));
+            createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain5a", "config.properties"), Files.readString(Paths.get(ClassLoader.getSystemResource("testDomainConfigs/domain5a.properties").toURI())));
+            createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain5b", "config.properties"), Files.readString(Paths.get(ClassLoader.getSystemResource("testDomainConfigs/domain5b.properties").toURI())));
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
@@ -395,5 +396,17 @@ class DomainConfigCacheTest extends BaseSpringTest {
         domain.setLocaleTranslationsLoader(loader);
         assertDoesNotThrow(cache::close);
         verify(loader, times(1)).close();
+    }
+
+    @Test
+    void testDomainAliases() {
+        when(appConfig.getDomain()).thenReturn(Set.of("domain5a", "domain5b"));
+        when(appConfig.getDomainNameToDomainId()).thenReturn(Map.of("domain5a", "domain5a", "domain5b", "domain5b"));
+        when(appConfig.getDomainIdToDomainName()).thenReturn(Map.of("domain5a", "domain5a", "domain5b", "domain5b"));
+        var configCache = createDomainConfigCache();
+        configCache.initBase();
+        var domain5b = configCache.getConfigForDomainName("domain5a");
+        assertNotNull(domain5b);
+        assertEquals("domain5b", domain5b.getDomainName());
     }
 }

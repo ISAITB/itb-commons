@@ -54,7 +54,7 @@ public abstract class BaseValidationRunner<X extends DomainConfig> implements Va
 
     /**
      * Initialisation method to determine if the domain configurations are well-defined.
-     *
+     * <p>
      * When used via the command line a validator must define only one domain.
      */
     @PostConstruct

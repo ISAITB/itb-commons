@@ -47,7 +47,7 @@ public class HeaderFilter<Y extends WebDomainConfig, X extends WebDomainConfigCa
 
     /**
      * Applies custom headers to responses.
-     *
+     * <p>
      * {{@inheritDoc}}
      */
     @Override

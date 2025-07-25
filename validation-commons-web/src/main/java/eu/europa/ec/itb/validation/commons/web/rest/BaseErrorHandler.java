@@ -31,11 +31,11 @@ import java.util.Locale;
 
 /**
  * Handle all errors linked to validator REST API calls.
- *
+ * <p>
  * The validator explicitly raises NotFoundException for cases of invalid requested domains. Once the validation
  * is allowed to proceed all errors that are expected can be reported back to users are raised as ValidatorExceptions.
  * All other exceptions are considered unexpected and are raised with a generic error message.
- *
+ * <p>
  * This class is expected to be subclassed and set as {@link org.springframework.web.bind.annotation.ControllerAdvice}
  * on the REST endpoint implementation class.
  *
@@ -57,7 +57,7 @@ public class BaseErrorHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {NotFoundException.class})
     protected ResponseEntity<Object> handleNotFound(NotFoundException ex, WebRequest request) {
         if (LOG.isWarnEnabled()) {
-            LOG.warn(String.format("Caught NotFoundException for domain [%s]", ex.getRequestedDomain()), ex);
+            LOG.warn("Caught NotFoundException for domain [{}]", ex.getRequestedDomain(), ex);
         }
         return handleExceptionInternal(ex, new ErrorInfo("The requested resource could not be found"), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
@@ -72,7 +72,7 @@ public class BaseErrorHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {ValidatorException.class})
     protected ResponseEntity<Object> handleValidatorException(ValidatorException ex, WebRequest request) {
         if (LOG.isErrorEnabled()) {
-            LOG.error(String.format("Caught ValidatorException: %s", ex.getMessageForLog()), ex);
+            LOG.error("Caught ValidatorException: {}", ex.getMessageForLog(), ex);
         }
         return handleExceptionInternal(ex, new ErrorInfo(ex.getMessageForDisplay(new LocalisationHelper(Locale.ENGLISH))), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }

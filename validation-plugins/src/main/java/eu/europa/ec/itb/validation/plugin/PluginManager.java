@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class used to provide plugin support for validators.
- *
+ * <p>
  * The job of this class is to load the plugin implementations from the configuration and to provide them to
  * the validator when requested.
  */
@@ -89,7 +89,7 @@ public class PluginManager {
                 pluginCache.put(cacheKey, plugins.toArray(new ValidationPlugin[0]));
             }
         } catch (Exception e) {
-            LOG.warn(String.format("Failed to initialise plugins for classifier [%s]. Considering no plugins for this case.", cacheKey), e);
+            LOG.warn("Failed to initialise plugins for classifier [{}]. Considering no plugins for this case.", cacheKey, e);
             pluginCache.put(cacheKey, new ValidationPlugin[0]);
         }
         return pluginsFound;

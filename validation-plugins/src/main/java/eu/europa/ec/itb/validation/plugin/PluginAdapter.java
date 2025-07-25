@@ -32,11 +32,11 @@ import java.util.List;
 
 /**
  * Adapter for plugin implementations to allow them to be called from the current validator.
- *
+ * <p>
  * An adapter is needed given that plugins may not always be using the latest version of the
  * GITB types library. In addition, reuse of the current classloader's classes is not possible
  * because we want to enforce isolation between the plugin's classes and those of the validator.
- *
+ * <p>
  * The job of this adapter is to wrap the plugin by creating objects and making calls based on
  * reflection. The expected API is that of the ValidationService that should always be backwards
  * compatible. This means that classes and method names are looked up by name as they are not expected

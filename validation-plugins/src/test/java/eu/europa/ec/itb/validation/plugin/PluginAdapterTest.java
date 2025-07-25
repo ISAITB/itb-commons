@@ -14,7 +14,6 @@ import org.mockito.stubbing.Answer;
 import java.math.BigInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class PluginAdapterTest {
@@ -109,9 +108,9 @@ class PluginAdapterTest {
         assertEquals(BigInteger.ONE, response.getReport().getCounters().getNrOfWarnings());
         assertEquals(BigInteger.ONE, response.getReport().getCounters().getNrOfAssertions());
         assertEquals(3, response.getReport().getReports().getInfoOrWarningOrError().size());
-        assertTrue(response.getReport().getReports().getInfoOrWarningOrError().get(0).getValue() instanceof BAR);
-        assertTrue(response.getReport().getReports().getInfoOrWarningOrError().get(1).getValue() instanceof BAR);
-        assertTrue(response.getReport().getReports().getInfoOrWarningOrError().get(2).getValue() instanceof BAR);
+        assertInstanceOf(BAR.class, response.getReport().getReports().getInfoOrWarningOrError().get(0).getValue());
+        assertInstanceOf(BAR.class, response.getReport().getReports().getInfoOrWarningOrError().get(1).getValue());
+        assertInstanceOf(BAR.class, response.getReport().getReports().getInfoOrWarningOrError().get(2).getValue());
         assertEquals("id1", ((BAR)response.getReport().getReports().getInfoOrWarningOrError().get(0).getValue()).getAssertionID());
         assertEquals("id2", ((BAR)response.getReport().getReports().getInfoOrWarningOrError().get(1).getValue()).getAssertionID());
         assertEquals("id3", ((BAR)response.getReport().getReports().getInfoOrWarningOrError().get(2).getValue()).getAssertionID());
