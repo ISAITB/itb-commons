@@ -139,12 +139,11 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     // Now check the remaining validation types for aliases. These will be the ones that did not have a (valid) alias.
                     boolean hasAliasProblems = false;
                     for (var validationType: validationTypesToCheck) {
-                        if (!otherConfig.getType().contains(validationType)) {
-                            // Check also aliases in the other domain.
-                            if (otherConfig.resolveAlias(validationType) == null) {
-                                logger.warn("Domain [{}] is an alias of [{}] but no corresponding validation type could be found for [{}]. You need to either define a valid alias for this type or ensure that the same type exists in domain [{}].", config.getDomain(), otherConfig.getDomainName(), validationType, otherConfig.getDomainName());
-                                hasAliasProblems = true;
-                            }
+                        // Check also aliases in the other domain.
+                        if (!otherConfig.getType().contains(validationType)
+                                && otherConfig.resolveAlias(validationType) == null) {
+                            logger.warn("Domain [{}] is an alias of [{}] but no corresponding validation type could be found for [{}]. You need to either define a valid alias for this type or ensure that the same type exists in domain [{}].", config.getDomain(), otherConfig.getDomainName(), validationType, otherConfig.getDomainName());
+                            hasAliasProblems = true;
                         }
                     }
                     if (hasAliasProblems) {
