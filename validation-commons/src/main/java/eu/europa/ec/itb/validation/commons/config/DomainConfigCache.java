@@ -105,7 +105,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
         for (var config: configs) {
             if (config.getDomainAlias() != null) {
                 var otherConfig = getConfigForDomainName(config.getDomainAlias(), false, true);
-                if (otherConfig == null) {
+                if (otherConfig == null || !otherConfig.isDefined()) {
                     // We could not find the referenced domain.
                     logger.warn("Domain [{}] was configured as an alias for non-existent domain [{}]. Domain alias configurations will be ignored.", config.getDomainName(), config.getDomainAlias());
                     config.setDomainAlias(null);
@@ -121,7 +121,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                     // First check the declared aliases to ensure they match types in the target domain.
                     Set<String> aliasesToRemove = new HashSet<>();
                     for (var aliasEntry: config.getDomainTypeAlias().entrySet()) {
-                        if (!otherConfig.getType().contains(aliasEntry.getValue())) {
+                        if (otherConfig.getType() != null && !otherConfig.getType().contains(aliasEntry.getValue())) {
                             // Check also aliases in the other domain.
                             if (otherConfig.resolveAlias(aliasEntry.getValue()) == null) {
                                 logger.warn("Domain [{}] defines for validation type [{}] an alias of [{}] that was not found in domain [{}]. The alias will be ignored.", config.getDomainName(), aliasEntry.getKey(), aliasEntry.getValue(), otherConfig.getDomainName());
