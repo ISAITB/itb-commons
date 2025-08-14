@@ -96,6 +96,15 @@ public class PluginManager {
     }
 
     /**
+     * @return Whether plugins exist.
+     */
+    public boolean hasPlugins() {
+        return pluginCache.values()
+                .stream()
+                .anyMatch(plugins -> plugins != null && plugins.length > 0);
+    }
+
+    /**
      * Get the plugins to consider for the given classifier.
      *
      * @param classifier The classifier to determine which plugins to return.

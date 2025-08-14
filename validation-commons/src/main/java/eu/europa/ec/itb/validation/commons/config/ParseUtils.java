@@ -168,13 +168,26 @@ public class ParseUtils {
      * @return The map.
      */
     public static Map<String, Boolean> parseBooleanMap(String key, Configuration config, List<String> types, boolean defaultIfMissing) {
+        return parseBooleanMap(key, config, types, (type) -> defaultIfMissing);
+    }
+
+    /**
+     * Parse a map of boolean values per validation type.
+     *
+     * @param key The common property key.
+     * @param config The configuration properties.
+     * @param types The validation types.
+     * @param defaultValueProvider A function to provide the default value for missing properties (per validation type).
+     * @return The map.
+     */
+    public static Map<String, Boolean> parseBooleanMap(String key, Configuration config, List<String> types, Function<String, Boolean> defaultValueProvider) {
         Map<String, Boolean> map = new HashMap<>();
         for (String type: types) {
             boolean value;
             try {
-                value = config.getBoolean(key+"."+type, defaultIfMissing);
+                value = config.getBoolean(key+"."+type, defaultValueProvider.apply(type));
             } catch (Exception e) {
-                value = defaultIfMissing;
+                value = defaultValueProvider.apply(type);
             }
             map.put(type, value);
         }
