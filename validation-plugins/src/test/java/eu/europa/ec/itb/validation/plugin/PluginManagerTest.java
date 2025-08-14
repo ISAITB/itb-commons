@@ -32,18 +32,22 @@ class PluginManagerTest {
     void testPluginLoadingEmptyPluginList() throws Exception {
         var provider = mock(PluginConfigProvider.class);
         when(provider.getPluginInfoPerType()).thenReturn(Map.of("domain1|type1", Collections.emptyList()));
-        var result = createPluginManager(provider).getPlugins("domain1|type1");
+        var manager = createPluginManager(provider);
+        var result = manager.getPlugins("domain1|type1");
         assertNotNull(result);
         assertEquals(0, result.length);
+        assertFalse(manager.hasPlugins());
     }
 
     @Test
     void testPluginLoadingNoClassifier() throws Exception {
         var provider = mock(PluginConfigProvider.class);
         when(provider.getPluginInfoPerType()).thenReturn(Map.of("domain1|type1", Collections.emptyList()));
-        var result = createPluginManager(provider).getPlugins("domainX|typeX");
+        var manager = createPluginManager(provider);
+        var result = manager.getPlugins("domainX|typeX");
         assertNotNull(result);
         assertEquals(0, result.length);
+        assertFalse(manager.hasPlugins());
     }
 
     @Test
@@ -58,9 +62,11 @@ class PluginManagerTest {
             config.get("domain1|type1").get(0).setPluginClasses(List.of("org.test.Plugin"));
             return config;
         });
-        var result = createPluginManager(provider).getPlugins("domain1|type1");
+        var manager = createPluginManager(provider);
+        var result = manager.getPlugins("domain1|type1");
         assertNotNull(result);
         assertEquals(0, result.length);
+        assertFalse(manager.hasPlugins());
     }
 
     @Test
@@ -90,6 +96,7 @@ class PluginManagerTest {
             assertNotNull(result[0].validate(new ValidateRequest()));
             assertNotNull(result[0].validate(new ValidateRequest()).getReport());
             assertEquals(TestResultType.SUCCESS, result[0].validate(new ValidateRequest()).getReport().getResult());
+            assertTrue(manager.hasPlugins());
         } finally {
             if (manager != null) {
                 var destroyMethod = PluginManager.class.getDeclaredMethod("destroy");
