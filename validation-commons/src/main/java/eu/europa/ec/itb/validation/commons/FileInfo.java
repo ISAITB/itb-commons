@@ -16,6 +16,8 @@
 package eu.europa.ec.itb.validation.commons;
 
 import java.io.File;
+import java.net.URI;
+import java.util.Objects;
 
 /**
  * Record information on a file.
@@ -24,6 +26,7 @@ public class FileInfo {
 
     private final File file;
     private final String type;
+    private final URI source;
 
     /**
      * Constructor.
@@ -41,8 +44,20 @@ public class FileInfo {
      * @param type The type string (artifact type).
      */
     public FileInfo(File file, String type) {
-        this.file = file;
+        this(file, type, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param file The file.
+     * @param type The type string (artifact type).
+     * @param source The source from which this file was loaded.
+     */
+    public FileInfo(File file, String type, URI source) {
+        this.file = Objects.requireNonNull(file);
         this.type = type;
+        this.source = Objects.requireNonNullElseGet(source, file::toURI);
     }
 
     /**
@@ -57,5 +72,12 @@ public class FileInfo {
      */
     public String getType() {
         return type;
+    }
+
+    /**
+     * @return The source from which the file was loaded.
+     */
+    public URI getSource() {
+        return source;
     }
 }

@@ -17,9 +17,10 @@ package eu.europa.ec.itb.validation.commons;
 
 import com.gitb.core.*;
 import com.gitb.tbs.TestStepStatus;
-import com.gitb.tr.ObjectFactory;
 import com.gitb.tr.*;
+import com.gitb.tr.ObjectFactory;
 import com.gitb.vs.ValidateRequest;
+import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -53,6 +54,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -686,6 +688,20 @@ public class Utils {
         } catch (IllegalArgumentException e) {
             throw new MalformedURLException(e.getMessage());
         }
+    }
+
+    /**
+     * Check to see whether the provided file is under the domain root folder.
+     *
+     * @param fileToCheck The file to check.
+     * @param domainConfig The domain configuration.
+     * @return The check result.
+     */
+    public static boolean isUnderDomain(Path fileToCheck, ApplicationConfig appConfig, DomainConfig domainConfig) {
+        Path pathToCheck = fileToCheck.toAbsolutePath().normalize();
+        Path appResourceRoot = Path.of(appConfig.getResourceRoot()).toAbsolutePath().normalize();
+        Path domainResourceRoot = appResourceRoot.resolve(domainConfig.getDomain()).toAbsolutePath().normalize();
+        return pathToCheck.startsWith(domainResourceRoot) || !appConfig.isRestrictResourcesToDomain() && pathToCheck.startsWith(appResourceRoot);
     }
 
 }
