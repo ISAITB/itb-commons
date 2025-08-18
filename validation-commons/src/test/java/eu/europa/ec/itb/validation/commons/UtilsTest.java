@@ -6,6 +6,7 @@ import com.gitb.core.UsageEnumeration;
 import com.gitb.core.ValueEmbeddingEnumeration;
 import com.gitb.tr.*;
 import com.gitb.vs.ValidateRequest;
+import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.test.BaseTest;
 import org.apache.commons.lang3.LocaleUtils;
@@ -461,5 +462,21 @@ class UtilsTest extends BaseTest {
     void testParseUrl() {
         assertDoesNotThrow(() -> Utils.parseUrl("http://foo.com"));
         assertThrows(MalformedURLException.class, () -> Utils.parseUrl("foo"));
+    }
+
+    @Test
+    void testIsUnderDomain() {
+        var appConfig = new ApplicationConfig() {};
+        appConfig.setResourceRoot(Path.of("/parent").toString());
+        var domainConfig = new DomainConfig();
+        domainConfig.setDomain("domain1");
+        assertTrue(Utils.isUnderDomain(Path.of("/parent/domain1/file"), appConfig, domainConfig));
+        assertTrue(Utils.isUnderDomain(Path.of("/parent/domain1/path1/path2/file"), appConfig, domainConfig));
+        assertFalse(Utils.isUnderDomain(Path.of("/parent/domain1/../file"), appConfig, domainConfig));
+        assertFalse(Utils.isUnderDomain(Path.of("/parent/file"), appConfig, domainConfig));
+        appConfig.setRestrictResourcesToDomain(false);
+        assertTrue(Utils.isUnderDomain(Path.of("/parent/domain1/../file"), appConfig, domainConfig));
+        assertTrue(Utils.isUnderDomain(Path.of("/parent/file"), appConfig, domainConfig));
+        assertFalse(Utils.isUnderDomain(Path.of("/parent/../file"), appConfig, domainConfig));
     }
 }
