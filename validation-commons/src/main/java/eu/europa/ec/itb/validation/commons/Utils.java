@@ -17,8 +17,8 @@ package eu.europa.ec.itb.validation.commons;
 
 import com.gitb.core.*;
 import com.gitb.tbs.TestStepStatus;
-import com.gitb.tr.ObjectFactory;
 import com.gitb.tr.*;
+import com.gitb.tr.ObjectFactory;
 import com.gitb.vs.ValidateRequest;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import jakarta.xml.bind.JAXBContext;

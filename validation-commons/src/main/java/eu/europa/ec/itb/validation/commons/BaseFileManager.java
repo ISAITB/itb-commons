@@ -47,6 +47,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.nio.file.Files;
@@ -405,7 +406,13 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             FileUtils.deleteQuietly(targetFile);
             targetFile = processedFile;
         }
-        return new FileInfo(targetFile, streamInfo.contentType().orElse(null));
+        URI source = null;
+        try {
+            source = urlObj.toURI();
+        } catch (URISyntaxException e) {
+            // No need to handle this - the URL parsing in the beginning fo the method already ensures this error will never be raised.
+        }
+        return new FileInfo(targetFile, streamInfo.contentType().orElse(null), source);
     }
 
     /**
@@ -795,7 +802,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         if (preprocessor != null && domainConfig.getArtifactInfo().get(validationType).get(artifactType).getExternalArtifactPreProcessorPath() != null) {
             filesToReturn = new ArrayList<>();
             for (FileInfo fileInfo: externalArtifactFiles) {
-                filesToReturn.add(new FileInfo(preprocessFile(domainConfig, fileInfo.getFile(), domainConfig.getArtifactInfo().get(validationType).get(artifactType).getExternalArtifactPreProcessorPath(), domainConfig.getArtifactInfo().get(validationType).get(artifactType).getExternalArtifactPreProcessorOutputExtension())));
+                filesToReturn.add(new FileInfo(preprocessFile(domainConfig, fileInfo.getFile(), domainConfig.getArtifactInfo().get(validationType).get(artifactType).getExternalArtifactPreProcessorPath(), domainConfig.getArtifactInfo().get(validationType).get(artifactType).getExternalArtifactPreProcessorOutputExtension()), fileInfo.getType(), fileInfo.getSource()));
             }
         } else {
             filesToReturn = externalArtifactFiles;
@@ -931,10 +938,10 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         try {
             artifactType = Objects.toString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
             File remoteFolderForType = new File(remoteConfigFolder, artifactType);
-            downloadRemoteFiles(domainConfig.getDomain(), typedArtifactInfo.get(artifactType).getRemoteArtifacts(), remoteFolderForType, artifactType, domainConfig.getHttpVersion());
+            List<FileInfo> downloadedFiles = downloadRemoteFiles(domainConfig.getDomain(), typedArtifactInfo.get(artifactType).getRemoteArtifacts(), remoteFolderForType, artifactType, domainConfig.getHttpVersion());
             // Update cache map.
             String key = domainConfig.getDomainName() + "|" + validationType + "|" + Objects.toString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
-            preconfiguredRemoteArtifactMap.put(key, getRemoteValidationArtifacts(domainConfig, validationType, artifactType));
+            preconfiguredRemoteArtifactMap.put(key, downloadedFiles);
             result = true;
         } catch (ValidatorException e) {
             // Never allow configuration errors in one validation type to prevent the others from being available.
@@ -954,18 +961,21 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param remoteConfigPath The folder in which to store the resulting files.
      * @param artifactType The artifact type in question.
      * @param httpVersion The HTTP version to use.
+     * @return The list of downloaded files.
      * @throws IOException If a processing error occurs.
      */
-    private void downloadRemoteFiles(String domain, List<RemoteValidationArtifactInfo> remoteFiles, File remoteConfigPath, String artifactType, HttpClient.Version httpVersion) throws IOException {
+    private List<FileInfo> downloadRemoteFiles(String domain, List<RemoteValidationArtifactInfo> remoteFiles, File remoteConfigPath, String artifactType, HttpClient.Version httpVersion) throws IOException {
+        List<FileInfo> files = new ArrayList<>();
         if (remoteFiles != null) {
             for (RemoteValidationArtifactInfo artifactInfo: remoteFiles) {
                 File preprocessorFile = null;
                 if (artifactInfo.getPreProcessorPath() != null) {
                     preprocessorFile = Paths.get(config.getResourceRoot(), domain, artifactInfo.getPreProcessorPath()).toFile();
                 }
-                getFileFromURL(remoteConfigPath, artifactInfo.getUrl(), null, null, preprocessorFile, artifactInfo.getPreProcessorOutputExtension(), artifactType, StringUtils.isEmpty(artifactInfo.getType())?null:List.of(artifactInfo.getType()), httpVersion);
+                files.add(getFileFromURL(remoteConfigPath, artifactInfo.getUrl(), null, null, preprocessorFile, artifactInfo.getPreProcessorOutputExtension(), artifactType, StringUtils.isEmpty(artifactInfo.getType())?null:List.of(artifactInfo.getType()), httpVersion));
             }
         }
+        return files;
     }
 
     /**
@@ -1123,7 +1133,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                         } catch (IOException e) {
                             throw new ValidatorException("validator.label.exception.unableToProcessURI", e);
                         }
-                        file = new FileInfo(loadedFile.getFile(), getContentTypeForFile(loadedFile, contentType));
+                        file = new FileInfo(loadedFile.getFile(), getContentTypeForFile(loadedFile, contentType), loadedFile.getSource());
                         break;
                     default: // BASE_64
                         // Construct the string from its BASE64 encoded bytes.
@@ -1137,7 +1147,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 } catch (IOException e) {
                     throw new ValidatorException("validator.label.exception.unableToSaveContent", e);
                 }
-                file = new FileInfo(loadedFile.getFile(), getContentTypeForFile(loadedFile, contentType));
+                file = new FileInfo(loadedFile.getFile(), getContentTypeForFile(loadedFile, contentType), loadedFile.getSource());
             }
         } else {
             throw new ValidatorException("validator.label.exception.unableToSaveEmpty");
