@@ -15,10 +15,13 @@
 
 package eu.europa.ec.itb.validation.commons.config;
 
+import eu.europa.ec.itb.validation.commons.Utils;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -328,6 +331,49 @@ public class ParseUtils {
             }
         }
         return map;
+    }
+
+    /**
+     * Parse the mapping of full validation type to file path location. The mapped files must be under the domain configuration folder
+     * of (if permitted) the application resources folder.
+     *
+     * @param key The common key prefix.
+     * @param config The configuration.
+     * @param entryDescription The description for the mapping entries to use when reporting errors.
+     * @param appConfig The application configuration.
+     * @param domainConfig The domain configuration.
+     * @return The map.
+     */
+    public static Map<String, Path> parseFileMap(String key, Configuration config, String entryDescription, ApplicationConfig appConfig, DomainConfig domainConfig) {
+        List<Pair<String, Path>> mappingList = ParseUtils.parseValueList(key, config, (entry) -> {
+            String uri = entry.get("uri");
+            String file = entry.get("file");
+            if (StringUtils.isNotBlank(uri) && StringUtils.isNotBlank(file)) {
+                uri = uri.trim();
+                if (!uri.toLowerCase().startsWith("http://") && !uri.toLowerCase().startsWith("https://")) {
+                    // OWL import
+                    throw new IllegalStateException("%s mapping for URI [%s] does not start with 'http://' or 'https://'".formatted(entryDescription, uri));
+                }
+                file = file.trim();
+                Path resourcePath = Path.of(appConfig.getResourceRoot(), domainConfig.getDomain(), file);
+                if (!Files.exists(resourcePath)) {
+                    throw new IllegalStateException("%s mapping for URI [%s] points to a non-existent file [%s]".formatted(entryDescription, uri, file));
+                } else if (Utils.isUnderDomain(resourcePath, appConfig, domainConfig)) {
+                    throw new IllegalStateException("%s mapping for URI [%s] points to an invalid location [%s]".formatted(entryDescription, uri, file));
+                }
+                return Pair.of(uri, resourcePath);
+            } else {
+                throw new IllegalStateException("Invalid %s mappings. Each element must include [uri] and [file] properties".formatted(entryDescription));
+            }
+        });
+        Map<String, Path> mappingMap = new HashMap<>();
+        mappingList.forEach(entry -> {
+            if (mappingMap.containsKey(entry.getKey())) {
+                throw new IllegalStateException("Invalid %s mappings. URI [%s] defined multiple times".formatted(entryDescription, entry.getKey()));
+            }
+            mappingMap.put(entry.getKey(), entry.getValue());
+        });
+        return mappingMap;
     }
 
 }
