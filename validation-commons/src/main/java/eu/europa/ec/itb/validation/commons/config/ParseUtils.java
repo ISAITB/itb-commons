@@ -358,7 +358,7 @@ public class ParseUtils {
                 Path resourcePath = Path.of(appConfig.getResourceRoot(), domainConfig.getDomain(), file);
                 if (!Files.exists(resourcePath)) {
                     throw new IllegalStateException("%s mapping for URI [%s] points to a non-existent file [%s]".formatted(entryDescription, uri, file));
-                } else if (Utils.isUnderDomain(resourcePath, appConfig, domainConfig)) {
+                } else if (!Utils.isUnderDomain(resourcePath, appConfig, domainConfig)) {
                     throw new IllegalStateException("%s mapping for URI [%s] points to an invalid location [%s]".formatted(entryDescription, uri, file));
                 }
                 return Pair.of(uri, resourcePath);
