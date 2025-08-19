@@ -27,6 +27,7 @@
     <logger name="org.springframework.core.LocalVariableTableParameterNameDiscoverer" level="ERROR"/>
     <logger name="com.openhtmltopdf" level="WARN" additivity="true"/>
     <logger name="io.github.openhtmltopdf" level="WARN" additivity="true"/>
+    <logger name="org.apache.pdfbox.pdmodel.font.PDType1Font" level="ERROR" additivity="true"/>
 
     <springProfile name="!dev">
         <root level="INFO">
