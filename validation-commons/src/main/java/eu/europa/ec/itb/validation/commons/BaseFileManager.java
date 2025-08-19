@@ -972,10 +972,22 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                 if (artifactInfo.getPreProcessorPath() != null) {
                     preprocessorFile = Paths.get(config.getResourceRoot(), domain, artifactInfo.getPreProcessorPath()).toFile();
                 }
-                files.add(getFileFromURL(remoteConfigPath, artifactInfo.getUrl(), null, null, preprocessorFile, artifactInfo.getPreProcessorOutputExtension(), artifactType, StringUtils.isEmpty(artifactInfo.getType())?null:List.of(artifactInfo.getType()), httpVersion));
+                FileInfo downloadedFile = getFileFromURL(remoteConfigPath, artifactInfo.getUrl(), null, null, preprocessorFile, artifactInfo.getPreProcessorOutputExtension(), artifactType, StringUtils.isEmpty(artifactInfo.getType())?null:List.of(artifactInfo.getType()), httpVersion);
+                files.add(postProcessDownloadedRemoteFile(artifactInfo, downloadedFile));
             }
         }
         return files;
+    }
+
+    /**
+     * Post-process a downloaded remote file. By default, this returns the downloaded file unchanged.
+     *
+     * @param declaredFileInfo The declared file information.
+     * @param downloadedFile The downloaded file.
+     * @return The file to record.
+     */
+    protected FileInfo postProcessDownloadedRemoteFile(RemoteValidationArtifactInfo declaredFileInfo, FileInfo downloadedFile) {
+        return downloadedFile;
     }
 
     /**
