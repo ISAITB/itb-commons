@@ -171,7 +171,7 @@ public class ParseUtils {
      * @return The map.
      */
     public static Map<String, Boolean> parseBooleanMap(String key, Configuration config, List<String> types, boolean defaultIfMissing) {
-        return parseBooleanMap(key, config, types, (type) -> defaultIfMissing);
+        return parseBooleanMap(key, config, types, type -> defaultIfMissing);
     }
 
     /**
@@ -345,7 +345,7 @@ public class ParseUtils {
      * @return The map.
      */
     public static Map<String, Path> parseFileMap(String key, Configuration config, String entryDescription, ApplicationConfig appConfig, DomainConfig domainConfig) {
-        List<Pair<String, Path>> mappingList = ParseUtils.parseValueList(key, config, (entry) -> {
+        List<Pair<String, Path>> mappingList = ParseUtils.parseValueList(key, config, entry -> {
             String uri = entry.get("uri");
             String file = entry.get("file");
             if (StringUtils.isNotBlank(uri) && StringUtils.isNotBlank(file)) {
