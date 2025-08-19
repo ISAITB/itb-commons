@@ -351,7 +351,6 @@ public class ParseUtils {
             if (StringUtils.isNotBlank(uri) && StringUtils.isNotBlank(file)) {
                 uri = uri.trim();
                 if (!uri.toLowerCase().startsWith("http://") && !uri.toLowerCase().startsWith("https://")) {
-                    // OWL import
                     throw new IllegalStateException("%s mapping for URI [%s] does not start with 'http://' or 'https://'".formatted(entryDescription, uri));
                 }
                 file = file.trim();
