@@ -59,7 +59,7 @@
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.cxf>4.1.3</version.cxf>
         <version.xerces>2.12.2</version.xerces>
-        <version.saxon>12.4</version.saxon>
+        <version.saxon>12.8</version.saxon>
         <version.tika>3.2.2</version.tika>
         <version.helgerSchematron>8.0.6</version.helgerSchematron>
         <version.jaxWs>4.0.2</version.jaxWs>
