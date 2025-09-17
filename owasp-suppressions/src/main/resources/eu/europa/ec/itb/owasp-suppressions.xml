@@ -280,4 +280,11 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring-.*@.*$</packageUrl>
         <vulnerabilityName>CVE-2025-41249</vulnerabilityName>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-security-core-6.5.3.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-.*@.*$</packageUrl>
+        <vulnerabilityName>CVE-2025-41248</vulnerabilityName>
+    </suppress>
 </suppressions>
