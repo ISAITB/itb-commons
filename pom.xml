@@ -40,6 +40,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>isaitb</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <ossIndexUsername>ossIndexUsername</ossIndexUsername>
+        <ossIndexPassword>ossIndexPassword</ossIndexPassword>
         <version.springBoot>3.5.5</version.springBoot> <!-- When upgrading adapt Tomcat version (below) as needed. -->
         <version.tomcat>10.1.44</version.tomcat>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
@@ -165,6 +167,8 @@
                     </dependencies>
                     <configuration>
                         <nvdApiServerId>nvdApi</nvdApiServerId>
+                        <ossIndexUsername>${ossIndexUsername}</ossIndexUsername>
+                        <ossIndexPassword>${ossIndexPassword}</ossIndexPassword>
                         <failBuildOnCVSS>0</failBuildOnCVSS>
                         <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
                         <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
