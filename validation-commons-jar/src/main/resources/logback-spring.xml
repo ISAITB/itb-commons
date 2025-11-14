@@ -36,4 +36,8 @@
         <appender-ref ref="FILE" />
     </logger>
 
+    <logger name="org.apache" level="ERROR" additivity="true">
+        <appender-ref ref="FILE" />
+    </logger>
+
 </configuration>
