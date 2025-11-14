@@ -294,4 +294,11 @@
         <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback-.*@.*$</packageUrl>
         <vulnerabilityName>CVE-2025-11226</vulnerabilityName>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: angus-activation-2.0.3.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.angus/angus-activation@.*$</packageUrl>
+        <cve>CVE-2025-7962</cve>
+    </suppress>
 </suppressions>
