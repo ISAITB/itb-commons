@@ -79,7 +79,7 @@
                             </optgroup>
                         </th:block>
                         <th:block th:case="false">
-                            <option value="" selected="true" disabled="true"></option>
+                            <option th:if="!${config.hasSplitGroups()}" value="" selected="true" disabled="true"></option>
                             <option th:each="type : ${config.declaredType}" th:if="!${config.isHiddenType(type)}" th:text="${config.getValidationTypeLabel(type, localiser)}" th:attr="value=${type},data-group=${config.getGroupOfValidationType(type)}">Type</option>
                         </th:block>
                     </select>

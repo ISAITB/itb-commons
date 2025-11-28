@@ -277,15 +277,23 @@ function validationTypeGroupChanged() {
     var validationTypeSelect = $('#validationType');
     var validationTypes = validationTypeSelect.find('option');
     var i;
-    for (i = 1; i < validationTypes.length; i++) {
+    for (i = 0; i < validationTypes.length; i++) {
         var validationType = $(validationTypes[i]);
-        if (validationType.attr('data-group') == selectedGroup) {
-            validationType.removeClass('hidden');
-        } else {
-            validationType.addClass('hidden');
+        var dataGroupAttribute = validationType.attr('data-group')
+        if (dataGroupAttribute) {
+            if (dataGroupAttribute == selectedGroup) {
+                validationType.removeClass('hidden');
+            } else {
+                validationType.addClass('hidden');
+            }
         }
     }
-    $(validationTypes[0]).prop('selected', true);
+    var firstVisible = validationTypes.filter(function () {
+        return !$(this).hasClass('hidden');
+    }).first();
+    if (firstVisible) {
+        firstVisible.prop('selected', true);
+    }
     $('#validationTypeDiv').removeClass('hidden');
     var optionDiv = $('#validationTypeOptionDiv');
     if (optionDiv) {
