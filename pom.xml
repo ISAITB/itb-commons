@@ -68,7 +68,7 @@
         <version.jws>3.0.0</version.jws>
         <version.commonsBeanutils>1.9.4</version.commonsBeanutils>
         <version.jakartaActivation>2.1.2</version.jakartaActivation>
-        <version.json-schema-validator>2.0.0</version.json-schema-validator>
+        <version.json-schema-validator>2.0.1</version.json-schema-validator>
         <version.jakartaJson>2.0.0</version.jakartaJson>
         <version.jayway>2.9.0</version.jayway>
         <version.gson>2.9.0</version.gson>
