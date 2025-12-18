@@ -301,4 +301,12 @@
         <packageUrl regex="true">^pkg:maven/org\.eclipse\.angus/angus-activation@.*$</packageUrl>
         <cve>CVE-2025-7962</cve>
     </suppress>
+    <suppress>
+        <!-- This CVE affects v1.10.0 which we do not use. This is a false-positive. -->
+        <notes><![CDATA[
+   file name: commons-text-1.12.0.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons-text@.*$</packageUrl>
+        <vulnerabilityName>CVE-2025-46295</vulnerabilityName>
+    </suppress>
 </suppressions>
