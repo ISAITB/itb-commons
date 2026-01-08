@@ -73,7 +73,7 @@
         <version.jayway>2.9.0</version.jayway>
         <version.gson>2.9.0</version.gson>
         <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
-        <version.commonsCompress>1.27.1</version.commonsCompress>
+        <version.commonsCompress>1.28.0</version.commonsCompress>
         <version.commonsValidator>1.9.0</version.commonsValidator>
         <version.springdoc>2.7.0</version.springdoc>
         <version.topbraid>1.4.4</version.topbraid>
