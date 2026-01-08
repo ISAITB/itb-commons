@@ -1121,19 +1121,23 @@ function showMessage(message, isError) {
 }
 function raiseAlert(errorInfo, isFinal) {
     var message = 'An unexpected error occurred';
-    if (isFinal) {
-        message = errorInfo;
+    if (errorInfo && errorInfo.status == 429) {
+      message = "Validation rate limit exceeded. Please try again later."
     } else {
-        try {
-            if (errorInfo) {
-                if (errorInfo.responseJSON && errorInfo.responseJSON.errorMessage) {
-                    message = errorInfo.responseJSON.errorMessage;
-                } else if (errorInfo.responseText) {
-                    message = JSON.parse(request.responseText).errorMessage;
+        if (isFinal) {
+            message = errorInfo;
+        } else {
+            try {
+                if (errorInfo) {
+                    if (errorInfo.responseJSON && errorInfo.responseJSON.errorMessage) {
+                        message = errorInfo.responseJSON.errorMessage;
+                    } else if (errorInfo.responseText) {
+                        message = JSON.parse(request.responseText).errorMessage;
+                    }
                 }
+            } catch (error) {
+                message = 'An unexpected error occurred';
             }
-        } catch (error) {
-            message = 'An unexpected error occurred';
         }
     }
     showMessage(message, true);
