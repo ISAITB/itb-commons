@@ -42,8 +42,8 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <ossIndexUsername>ossIndexUsername</ossIndexUsername>
         <ossIndexPassword>ossIndexPassword</ossIndexPassword>
-        <version.springBoot>3.5.7</version.springBoot> <!-- When upgrading adapt Tomcat version (below) as needed. -->
-        <version.tomcat>10.1.48</version.tomcat>
+        <version.springBoot>3.5.9</version.springBoot> <!-- When upgrading adapt Tomcat version (below) as needed. -->
+        <version.tomcat>10.1.50</version.tomcat>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
         <version.gitbTypes>1.26.0</version.gitbTypes>
         <version.commonsLang>3.18.0</version.commonsLang>
@@ -59,7 +59,7 @@
         <version.jaxb-impl>4.0.4</version.jaxb-impl>
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
-        <version.cxf>4.1.3</version.cxf>
+        <version.cxf>4.1.4</version.cxf>
         <version.xerces>2.12.2</version.xerces>
         <version.saxon>12.8</version.saxon>
         <version.tika>3.2.2</version.tika>
@@ -93,7 +93,7 @@
         <!-- Plugin versions -->
         <version.plugin.mavenCompilerPlugin>3.11.0</version.plugin.mavenCompilerPlugin>
         <version.plugin.mavenJarPlugin>3.3.0</version.plugin.mavenJarPlugin>
-        <version.plugin.dependencyCheckPlugin>12.1.7</version.plugin.dependencyCheckPlugin>
+        <version.plugin.dependencyCheckPlugin>12.1.8</version.plugin.dependencyCheckPlugin>
         <version.plugin.frontendMavenPlugin>1.12.1</version.plugin.frontendMavenPlugin>
         <version.plugin.jacocoMavenPlugin>0.8.10</version.plugin.jacocoMavenPlugin>
         <version.plugin.versionsMavenPlugin>2.16.0</version.plugin.versionsMavenPlugin>
