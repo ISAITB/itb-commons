@@ -84,6 +84,8 @@
         <version.owaspHtmlSanitizer>20220608.1</version.owaspHtmlSanitizer>
         <version.bouncycastle>1.81</version.bouncycastle>
         <version.batik>1.17</version.batik>
+        <version.bucket4j>8.16.0</version.bucket4j>
+        <version.caffeine>3.2.3</version.caffeine>
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
         <version.jena>5.2.0</version.jena>
         <!-- Override the transitive httpclient5 version to resolve CVE-2025-27820 -->
@@ -367,6 +369,21 @@
             <dependency>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+                <version>${version.cxf}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-core</artifactId>
+                <version>${version.cxf}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-bindings-soap</artifactId>
+                <version>${version.cxf}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http</artifactId>
                 <version>${version.cxf}</version>
             </dependency>
             <dependency>
@@ -687,6 +704,16 @@
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-el</artifactId>
                 <version>${version.tomcat}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bucket4j</groupId>
+                <artifactId>bucket4j_jdk17-core</artifactId>
+                <version>${version.bucket4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${version.caffeine}</version>
             </dependency>
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
             <dependency>

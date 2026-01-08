@@ -25,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import eu.europa.ec.itb.validation.commons.RateLimitPolicy;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ import org.springframework.core.env.Environment;
 public abstract class ApplicationConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
+    public static final String RATE_LIMIT_ENABLED_PROPERTY = "validator.rateLimit.enabled";
 
     @Autowired
     private Environment env = null;
@@ -51,6 +53,7 @@ public abstract class ApplicationConfig {
     private String resourceUpdateTimestamp;
     private long cleanupWebRate = 300000L;
     private boolean restrictResourcesToDomain = Boolean.TRUE;
+    private final RateLimit rateLimit = new RateLimit();
     private final Webhook webhook = new Webhook();
     private String identifier;
     private boolean supportsTestDefinitionInReportItems;
@@ -198,6 +201,13 @@ public abstract class ApplicationConfig {
     }
 
     /**
+     * @return Configuration for validation rate limiting.
+     */
+    public RateLimit getRateLimit() {
+        return rateLimit;
+    }
+
+    /**
      * @return Configuration on the statistics collection webhook.
      */
     public Webhook getWebhook() {
@@ -280,9 +290,76 @@ public abstract class ApplicationConfig {
     }
 
     /**
-     * Private class for the webhook config properties
-     * */
-    public static class Webhook{
+     * Class to hold the validation rate limiting configuration.
+     */
+    public static class RateLimit {
+
+        private boolean enabled;
+        private Map<RateLimitPolicy, Long> capacity;
+        private boolean warnOnly;
+        private String ipHeader;
+
+        /**
+         * @return Whether rate limiting is enabled.
+         */
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        /**
+         * @param enabled Whether rate limiting is enabled.
+         */
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        /**
+         * @return The rate capacities per type of endpoint (policy).
+         */
+        public Map<RateLimitPolicy, Long> getCapacity() {
+            return capacity;
+        }
+
+        /**
+         * @param capacity The rate capacities per type of endpoint (policy).
+         */
+        public void setCapacity(Map<RateLimitPolicy, Long> capacity) {
+            this.capacity = capacity;
+        }
+
+        /**
+         * @return Whether hitting the rate limit results only in a warning as opposed to blocking the request.
+         */
+        public boolean isWarnOnly() {
+            return warnOnly;
+        }
+
+        /**
+         * @param warnOnly Whether hitting the rate limit results only in a warning as opposed to blocking the request.
+         */
+        public void setWarnOnly(boolean warnOnly) {
+            this.warnOnly = warnOnly;
+        }
+
+        /**
+         * @return The name of an HTTP header to read the client's IP address from.
+         */
+        public String getIpHeader() {
+            return ipHeader;
+        }
+
+        /**
+         * @param ipHeader The name of an HTTP header to read the client's IP address from.
+         */
+        public void setIpHeader(String ipHeader) {
+            this.ipHeader = ipHeader;
+        }
+    }
+
+    /**
+     * Private class for the webhook config properties.
+     */
+    public static class Webhook {
     	
     	private String statistics;
     	
