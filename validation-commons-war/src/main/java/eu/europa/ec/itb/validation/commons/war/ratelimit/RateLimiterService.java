@@ -27,6 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.LinkedHashSet;
+import java.util.Objects;
 
 /**
  * Component used to enforce validation rate limits based on a rolling bucket system (requests per minute).
@@ -69,11 +72,31 @@ public class RateLimiterService {
                     policyBandwidths.put(policy, limit);
                 });
             }
+            // Make sure we have all bandwidth policies evaluated to log warnings early.
+            var policiesToConfigure = EnumSet.allOf(RateLimitPolicy.class);
+            policiesToConfigure.removeAll(policyBandwidths.keySet());
+            policiesToConfigure.forEach(policy -> {
+                LOG.warn("No rate limit found for [{}]. A default limit of {} per minute will be applied.", policy.getConfigurationKey(), policy.getDefaultCapacity());
+                Bandwidth bandwidth = Bandwidth.builder()
+                        .capacity(policy.getDefaultCapacity())
+                        .refillIntervally(policy.getDefaultCapacity(), Duration.ofMinutes(1))
+                        .build();
+                policyBandwidths.put(policy, bandwidth);
+            });
             // Maintain the latest 10000 distinct addresses.
             buckets = Caffeine.newBuilder()
                     .maximumSize(10_000)
                     .expireAfterAccess(Duration.ofDays(1))
                     .build();
+            // Print summary status in log.
+            LOG.info("Rate limiting enabled ({}) per client IP address{}. Limits per minute: {}({}) {}({}) {}({}) {}({}).",
+                    config.isWarnOnly()?"warnings only":"blocking",
+                    (config.getIpHeader() == null)?"":" (provided through HTTP header '%s')".formatted(config.getIpHeader()),
+                    RateLimitPolicy.UI_VALIDATE.getConfigurationKey(), policyBandwidths.get(RateLimitPolicy.UI_VALIDATE).getCapacity(),
+                    RateLimitPolicy.REST_VALIDATE.getConfigurationKey(), policyBandwidths.get(RateLimitPolicy.REST_VALIDATE).getCapacity(),
+                    RateLimitPolicy.REST_VALIDATE_MULTIPLE.getConfigurationKey(), policyBandwidths.get(RateLimitPolicy.REST_VALIDATE_MULTIPLE).getCapacity(),
+                    RateLimitPolicy.SOAP_VALIDATE.getConfigurationKey(), policyBandwidths.get(RateLimitPolicy.SOAP_VALIDATE).getCapacity()
+            );
         } else {
             policyBandwidths = null;
         }
@@ -115,16 +138,8 @@ public class RateLimiterService {
      * @return The created bucket.
      */
     private Bucket newBucket(RateLimitPolicy policy) {
-        Bandwidth limit = policyBandwidths.computeIfAbsent(policy, (p) -> {
-            // This will be absent if rate limiting is enabled but all endpoint types are not configured.
-            LOG.warn("No rate limit found for [{}]. A default limit of {} per minute will be applied.", p.getConfigurationKey(), p.getDefaultCapacity());
-            return Bandwidth.builder()
-                    .capacity(p.getDefaultCapacity())
-                    .refillIntervally(p.getDefaultCapacity(), Duration.ofMinutes(1))
-                    .build();
-        });
         return Bucket.builder()
-                .addLimit(policyBandwidths.getOrDefault(policy, limit))
+                .addLimit(Objects.requireNonNull(policyBandwidths.get(policy), "Policy bandwidth missing for [%s]".formatted(policy.getConfigurationKey())))
                 .build();
     }
 
