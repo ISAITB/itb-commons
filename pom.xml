@@ -78,8 +78,8 @@
         <version.springdoc>2.7.0</version.springdoc>
         <version.topbraid>1.4.4</version.topbraid>
         <version.freemarker>2.3.32</version.freemarker>
-        <version.pdfbox>3.0.5</version.pdfbox>
-        <version.openhtmltopdf>1.1.28</version.openhtmltopdf>
+        <version.pdfbox>3.0.6</version.pdfbox>
+        <version.openhtmltopdf>1.1.37</version.openhtmltopdf>
         <version.org.jsoup>1.15.4</version.org.jsoup>
         <version.owaspHtmlSanitizer>20220608.1</version.owaspHtmlSanitizer>
         <version.bouncycastle>1.81</version.bouncycastle>
