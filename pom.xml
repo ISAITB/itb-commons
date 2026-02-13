@@ -60,7 +60,6 @@
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.cxf>4.1.4</version.cxf>
-        <version.xerces>2.12.2</version.xerces>
         <version.saxon>12.8</version.saxon>
         <version.tika>3.2.2</version.tika>
         <version.helgerSchematron>9.0.1</version.helgerSchematron>
@@ -86,6 +85,18 @@
         <version.batik>1.17</version.batik>
         <version.bucket4j>8.16.0</version.bucket4j>
         <version.caffeine>3.2.3</version.caffeine>
+        <!--
+            Xerces versions to support the XML Schema v1.1 distribution (not published on Maven
+            The version in the following sections must remain consistent with the latest Xerces
+            binary distribution (see https://xerces.apache.org/mirrors.cgi#binary).
+            The dependencies using version.xercesBuild are manually installed in the necessary
+            downstream project(s). Section START.
+        -->
+        <version.xercesBuild>2.12.2-xsd11</version.xercesBuild>
+        <version.xmlResolver>1.2</version.xmlResolver>
+        <version.serializer>2.7.2</version.serializer>
+        <version.xmlApis>2.0.2</version.xmlApis>
+        <!-- Section END. -->
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
         <version.jena>5.2.0</version.jena>
         <!-- Override the transitive httpclient5 version to resolve CVE-2025-27820 -->
@@ -515,11 +526,6 @@
             	<version>${version.aspectjWeaver}</version>
             </dependency>
             <dependency>
-                <groupId>xerces</groupId>
-                <artifactId>xercesImpl</artifactId>
-                <version>${version.xerces}</version>
-            </dependency>
-            <dependency>
                 <groupId>net.sf.saxon</groupId>
                 <artifactId>Saxon-HE</artifactId>
                 <version>${version.saxon}</version>
@@ -715,6 +721,47 @@
                 <artifactId>caffeine</artifactId>
                 <version>${version.caffeine}</version>
             </dependency>
+            <!--
+                Dependencies for Xerces with XML Schema 1.1 support - Section START.
+            -->
+            <dependency>
+                <groupId>eu.europa.ec.itb.xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>${version.xercesBuild}</version>
+            </dependency>
+            <dependency>
+                <groupId>eu.europa.ec.itb.xerces</groupId>
+                <artifactId>org.eclipse.wst.xml.xpath2.processor_1.2.1</artifactId>
+                <version>${version.xercesBuild}</version>
+            </dependency>
+            <dependency>
+                <groupId>eu.europa.ec.itb.xerces</groupId>
+                <artifactId>cupv10k-runtime</artifactId>
+                <version>${version.xercesBuild}</version>
+            </dependency>
+            <dependency>
+                <groupId>eu.europa.ec.itb.xerces</groupId>
+                <artifactId>icu4j</artifactId>
+                <version>${version.xercesBuild}</version>
+            </dependency>
+            <dependency>
+                <groupId>xml-resolver</groupId>
+                <artifactId>xml-resolver</artifactId>
+                <version>${version.xmlResolver}</version>
+            </dependency>
+            <dependency>
+                <groupId>xalan</groupId>
+                <artifactId>serializer</artifactId>
+                <version>${version.serializer}</version>
+            </dependency>
+            <dependency>
+                <groupId>xml-apis</groupId>
+                <artifactId>xml-apis</artifactId>
+                <version>${version.xmlApis}</version>
+            </dependency>
+            <!--
+                Section END.
+            -->
             <!-- The spring-boot-dependencies dependency comes in last to allow being overriden above -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>

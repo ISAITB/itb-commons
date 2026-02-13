@@ -595,14 +595,18 @@ function triggerFileUploadExternal(elementId) {
     $("#"+elementId).click();
 }
 function fileInputChangedExternal(type){
-	if($('#contentType-'+type).val()=="fileType" && $("#inputFile-"+type+"")[0].files[0]!=null){
-		$("#inputFileName-"+type+"").val($("#inputFile-"+type+"")[0].files[0].name);
+	if ($('#contentType-'+type).val()=='fileType' && $('#inputFile-'+type)[0].files[0]!=null){
+		$('#inputFileName-'+type).val($('#inputFile-'+type)[0].files[0].name);
+	} else {
+	  $('#inputFileName-'+type).val('');
 	}
 	checkForSubmit();
 }
 function fileInputChanged() {
-	if($('#contentType').val()=="fileType" && $('#inputFile')[0].files[0]!=null){
+	if ($('#contentType').val()=='fileType' && $('#inputFile')[0].files[0]!=null){
 		$('#inputFileName').val($('#inputFile')[0].files[0].name);
+	} else {
+	  $('#inputFileName').val('');
 	}
 	checkForSubmit();
 }
