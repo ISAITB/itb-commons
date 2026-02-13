@@ -285,6 +285,8 @@
                             <includedLicense>UnRAR License</includedLicense>
                             <includedLicense>JDOM License</includedLicense>
                             <includedLicense>Bouncy Castle Licence</includedLicense>
+                            <includedLicense>CUP Parser Generator Copyright Notice, License, and Disclaimer</includedLicense>
+                            <includedLicense>ICU License - ICU 1.8.1 and later</includedLicense>
                         </includedLicenses>
                     </configuration>
                     <!--
