@@ -19,8 +19,8 @@ This product depends on software developed by third parties as listed in the fol
 
 | Licence type | Name | Dependency | Version | Link |
 | :----------- | :--- | :--------- | :------ | :--- |
-| Eclipse Public License - v1.0, GNU Lesser General Public License (LGPL), Version 2.1 | Logback Classic Module | ch.qos.logback:logback-classic | 1.5.25 | http://logback.qos.ch/logback-classic |
-| Eclipse Public License - v1.0, GNU Lesser General Public License (LGPL), Version 2.1 | Logback Core Module | ch.qos.logback:logback-core | 1.5.25 | http://logback.qos.ch/logback-core |
+| Eclipse Public License - v 2.0, GNU Lesser General Public License (LGPL), Version 2.1 | Logback Classic Module | ch.qos.logback:logback-classic | 1.5.32 | http://logback.qos.ch/logback-classic |
+| Eclipse Public License - v 2.0, GNU Lesser General Public License (LGPL), Version 2.1 | Logback Core Module | ch.qos.logback:logback-core | 1.5.32 | http://logback.qos.ch/logback-core |
 | Apache License, Version 2.0 | bucket4j_jdk17-core | com.bucket4j:bucket4j_jdk17-core | 8.16.0 | http://github.com/bucket4j/bucket4j/bucket4j_jdk17-core |
 | Apache License, Version 2.0 | Jackson-annotations | com.fasterxml.jackson.core:jackson-annotations | 2.19.4 | https://github.com/FasterXML/jackson |
 | Apache License, Version 2.0 | Jackson-core | com.fasterxml.jackson.core:jackson-core | 2.19.4 | https://github.com/FasterXML/jackson-core |
@@ -55,8 +55,8 @@ This product depends on software developed by third parties as listed in the fol
 | GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf PDF Rendering (Apache PDF-BOX 3) | io.github.openhtmltopdf:openhtmltopdf-pdfbox | 1.1.37 | https://github.com/openhtmltopdf/openhtmltopdf/openhtmltopdf-pdfbox |
 | GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf slf4j Support | io.github.openhtmltopdf:openhtmltopdf-slf4j | 1.1.37 | https://github.com/openhtmltopdf/openhtmltopdf/openhtmltopdf-slf4j |
 | GNU Lesser General Public License (LGPL), Version 2.1 | Openhtmltopdf SVG Support | io.github.openhtmltopdf:openhtmltopdf-svg-support | 1.1.37 | https://github.com/openhtmltopdf/openhtmltopdf/openhtmltopdf-svg-support |
-| Apache License, Version 2.0 | micrometer-commons | io.micrometer:micrometer-commons | 1.15.8 | https://github.com/micrometer-metrics/micrometer |
-| Apache License, Version 2.0 | micrometer-observation | io.micrometer:micrometer-observation | 1.15.8 | https://github.com/micrometer-metrics/micrometer |
+| Apache License, Version 2.0 | micrometer-commons | io.micrometer:micrometer-commons | 1.15.9 | https://github.com/micrometer-metrics/micrometer |
+| Apache License, Version 2.0 | micrometer-observation | io.micrometer:micrometer-observation | 1.15.9 | https://github.com/micrometer-metrics/micrometer |
 | Apache License, Version 2.0 | swagger-annotations-jakarta | io.swagger.core.v3:swagger-annotations-jakarta | 2.2.25 | https://github.com/swagger-api/swagger-core/modules/swagger-annotations-jakarta |
 | Apache License, Version 2.0 | swagger-core-jakarta | io.swagger.core.v3:swagger-core-jakarta | 2.2.25 | https://github.com/swagger-api/swagger-core/modules/swagger-core-jakarta |
 | Apache License, Version 2.0 | swagger-models-jakarta | io.swagger.core.v3:swagger-models-jakarta | 2.2.25 | https://github.com/swagger-api/swagger-core/modules/swagger-models-jakarta |
@@ -82,9 +82,9 @@ This product depends on software developed by third parties as listed in the fol
 | Apache License, Version 2.0 | Apache PDFBox | org.apache.pdfbox:pdfbox | 3.0.6 | https://www.apache.org/pdfbox-parent/pdfbox/ |
 | Apache License, Version 2.0 | Apache PDFBox io | org.apache.pdfbox:pdfbox-io | 3.0.6 | https://www.apache.org/pdfbox-parent/pdfbox-io/ |
 | Apache License, Version 2.0 | Apache XmpBox | org.apache.pdfbox:xmpbox | 3.0.3 | https://www.apache.org/pdfbox-parent/xmpbox/ |
-| Apache License, Version 2.0 | tomcat-embed-core | org.apache.tomcat.embed:tomcat-embed-core | 10.1.50 | https://tomcat.apache.org/ |
-| Apache License, Version 2.0 | tomcat-embed-el | org.apache.tomcat.embed:tomcat-embed-el | 10.1.50 | https://tomcat.apache.org/ |
-| Apache License, Version 2.0 | tomcat-embed-websocket | org.apache.tomcat.embed:tomcat-embed-websocket | 10.1.50 | https://tomcat.apache.org/ |
+| Apache License, Version 2.0 | tomcat-embed-core | org.apache.tomcat.embed:tomcat-embed-core | 10.1.52 | https://tomcat.apache.org/ |
+| Apache License, Version 2.0 | tomcat-embed-el | org.apache.tomcat.embed:tomcat-embed-el | 10.1.52 | https://tomcat.apache.org/ |
+| Apache License, Version 2.0 | tomcat-embed-websocket | org.apache.tomcat.embed:tomcat-embed-websocket | 10.1.52 | https://tomcat.apache.org/ |
 | Apache License, Version 2.0 | XmlSchema Core | org.apache.ws.xmlschema:xmlschema-core | 2.3.2 | https://ws.apache.org/commons/xmlschema20/xmlschema-core/ |
 | Apache License, Version 2.0 | org.apache.xmlgraphics:batik-anim | org.apache.xmlgraphics:batik-anim | 1.17 | http://xmlgraphics.apache.org/batik/batik-anim/ |
 | Apache License, Version 2.0 | org.apache.xmlgraphics:batik-awt-util | org.apache.xmlgraphics:batik-awt-util | 1.17 | http://xmlgraphics.apache.org/batik/batik-awt-util/ |
@@ -122,27 +122,27 @@ This product depends on software developed by third parties as listed in the fol
 | Apache License, Version 2.0 | springdoc-openapi-starter-common | org.springdoc:springdoc-openapi-starter-common | 2.7.0 | https://springdoc.org/springdoc-openapi-starter-common/ |
 | Apache License, Version 2.0 | springdoc-openapi-starter-webmvc-api | org.springdoc:springdoc-openapi-starter-webmvc-api | 2.7.0 | https://springdoc.org/springdoc-openapi-starter-webmvc-api/ |
 | Apache License, Version 2.0 | springdoc-openapi-starter-webmvc-ui | org.springdoc:springdoc-openapi-starter-webmvc-ui | 2.7.0 | https://springdoc.org/springdoc-openapi-starter-webmvc-ui/ |
-| Apache License, Version 2.0 | Spring AOP | org.springframework:spring-aop | 6.2.15 | https://github.com/spring-projects/spring-framework |
-| Apache License, Version 2.0 | Spring Beans | org.springframework:spring-beans | 6.2.15 | https://github.com/spring-projects/spring-framework |
-| Apache License, Version 2.0 | Spring Context | org.springframework:spring-context | 6.2.15 | https://github.com/spring-projects/spring-framework |
-| Apache License, Version 2.0 | Spring Core | org.springframework:spring-core | 6.2.15 | https://github.com/spring-projects/spring-framework |
-| Apache License, Version 2.0 | Spring Expression Language (SpEL) | org.springframework:spring-expression | 6.2.15 | https://github.com/spring-projects/spring-framework |
-| Apache License, Version 2.0 | Spring Commons Logging Bridge | org.springframework:spring-jcl | 6.2.15 | https://github.com/spring-projects/spring-framework |
-| Apache License, Version 2.0 | Spring Web | org.springframework:spring-web | 6.2.15 | https://github.com/spring-projects/spring-framework |
-| Apache License, Version 2.0 | Spring Web MVC | org.springframework:spring-webmvc | 6.2.15 | https://github.com/spring-projects/spring-framework |
-| Apache License, Version 2.0 | spring-boot | org.springframework.boot:spring-boot | 3.5.10 | https://spring.io/projects/spring-boot |
-| Apache License, Version 2.0 | spring-boot-autoconfigure | org.springframework.boot:spring-boot-autoconfigure | 3.5.10 | https://spring.io/projects/spring-boot |
-| Apache License, Version 2.0 | spring-boot-starter | org.springframework.boot:spring-boot-starter | 3.5.10 | https://spring.io/projects/spring-boot |
-| Apache License, Version 2.0 | spring-boot-starter-json | org.springframework.boot:spring-boot-starter-json | 3.5.10 | https://spring.io/projects/spring-boot |
-| Apache License, Version 2.0 | spring-boot-starter-logging | org.springframework.boot:spring-boot-starter-logging | 3.5.10 | https://spring.io/projects/spring-boot |
-| Apache License, Version 2.0 | spring-boot-starter-security | org.springframework.boot:spring-boot-starter-security | 3.5.10 | https://spring.io/projects/spring-boot |
-| Apache License, Version 2.0 | spring-boot-starter-thymeleaf | org.springframework.boot:spring-boot-starter-thymeleaf | 3.5.10 | https://spring.io/projects/spring-boot |
-| Apache License, Version 2.0 | spring-boot-starter-tomcat | org.springframework.boot:spring-boot-starter-tomcat | 3.5.10 | https://spring.io/projects/spring-boot |
-| Apache License, Version 2.0 | spring-boot-starter-web | org.springframework.boot:spring-boot-starter-web | 3.5.10 | https://spring.io/projects/spring-boot |
-| Apache License, Version 2.0 | spring-security-config | org.springframework.security:spring-security-config | 6.5.7 | https://spring.io/projects/spring-security |
-| Apache License, Version 2.0 | spring-security-core | org.springframework.security:spring-security-core | 6.5.7 | https://spring.io/projects/spring-security |
-| Apache License, Version 2.0 | spring-security-crypto | org.springframework.security:spring-security-crypto | 6.5.7 | https://spring.io/projects/spring-security |
-| Apache License, Version 2.0 | spring-security-web | org.springframework.security:spring-security-web | 6.5.7 | https://spring.io/projects/spring-security |
+| Apache License, Version 2.0 | Spring AOP | org.springframework:spring-aop | 6.2.16 | https://github.com/spring-projects/spring-framework |
+| Apache License, Version 2.0 | Spring Beans | org.springframework:spring-beans | 6.2.16 | https://github.com/spring-projects/spring-framework |
+| Apache License, Version 2.0 | Spring Context | org.springframework:spring-context | 6.2.16 | https://github.com/spring-projects/spring-framework |
+| Apache License, Version 2.0 | Spring Core | org.springframework:spring-core | 6.2.16 | https://github.com/spring-projects/spring-framework |
+| Apache License, Version 2.0 | Spring Expression Language (SpEL) | org.springframework:spring-expression | 6.2.16 | https://github.com/spring-projects/spring-framework |
+| Apache License, Version 2.0 | Spring Commons Logging Bridge | org.springframework:spring-jcl | 6.2.16 | https://github.com/spring-projects/spring-framework |
+| Apache License, Version 2.0 | Spring Web | org.springframework:spring-web | 6.2.16 | https://github.com/spring-projects/spring-framework |
+| Apache License, Version 2.0 | Spring Web MVC | org.springframework:spring-webmvc | 6.2.16 | https://github.com/spring-projects/spring-framework |
+| Apache License, Version 2.0 | spring-boot | org.springframework.boot:spring-boot | 3.5.11 | https://spring.io/projects/spring-boot |
+| Apache License, Version 2.0 | spring-boot-autoconfigure | org.springframework.boot:spring-boot-autoconfigure | 3.5.11 | https://spring.io/projects/spring-boot |
+| Apache License, Version 2.0 | spring-boot-starter | org.springframework.boot:spring-boot-starter | 3.5.11 | https://spring.io/projects/spring-boot |
+| Apache License, Version 2.0 | spring-boot-starter-json | org.springframework.boot:spring-boot-starter-json | 3.5.11 | https://spring.io/projects/spring-boot |
+| Apache License, Version 2.0 | spring-boot-starter-logging | org.springframework.boot:spring-boot-starter-logging | 3.5.11 | https://spring.io/projects/spring-boot |
+| Apache License, Version 2.0 | spring-boot-starter-security | org.springframework.boot:spring-boot-starter-security | 3.5.11 | https://spring.io/projects/spring-boot |
+| Apache License, Version 2.0 | spring-boot-starter-thymeleaf | org.springframework.boot:spring-boot-starter-thymeleaf | 3.5.11 | https://spring.io/projects/spring-boot |
+| Apache License, Version 2.0 | spring-boot-starter-tomcat | org.springframework.boot:spring-boot-starter-tomcat | 3.5.11 | https://spring.io/projects/spring-boot |
+| Apache License, Version 2.0 | spring-boot-starter-web | org.springframework.boot:spring-boot-starter-web | 3.5.11 | https://spring.io/projects/spring-boot |
+| Apache License, Version 2.0 | spring-security-config | org.springframework.security:spring-security-config | 6.5.8 | https://spring.io/projects/spring-security |
+| Apache License, Version 2.0 | spring-security-core | org.springframework.security:spring-security-core | 6.5.8 | https://spring.io/projects/spring-security |
+| Apache License, Version 2.0 | spring-security-crypto | org.springframework.security:spring-security-crypto | 6.5.8 | https://spring.io/projects/spring-security |
+| Apache License, Version 2.0 | spring-security-web | org.springframework.security:spring-security-web | 6.5.8 | https://spring.io/projects/spring-security |
 | Apache License, Version 2.0 | thymeleaf | org.thymeleaf:thymeleaf | 3.1.3.RELEASE | http://www.thymeleaf.org/thymeleaf-lib/thymeleaf |
 | Apache License, Version 2.0 | thymeleaf-spring6 | org.thymeleaf:thymeleaf-spring6 | 3.1.3.RELEASE | http://www.thymeleaf.org/thymeleaf-lib/thymeleaf-spring6 |
 | Apache License, Version 2.0 | unbescape | org.unbescape:unbescape | 1.1.6.RELEASE | http://www.unbescape.org |
@@ -156,7 +156,7 @@ This product depends on software developed by third parties as listed in the fol
 | Apache License, Version 2.0 | XML Resolver | org.xmlresolver:xmlresolver | 5.3.3 | https://github.com/xmlresolver/xmlresolver |
 | Apache License, Version 2.0 | SnakeYAML | org.yaml:snakeyaml | 2.4 | https://bitbucket.org/snakeyaml/snakeyaml |
 | Common Public License 1.0 | WSDL4J | wsdl4j:wsdl4j | 1.6.3 | http://sf.net/projects/wsdl4j |
-| Apache License, Version 2.0, The SAX License, The W3C License | XML Commons External Components XML APIs | xml-apis:xml-apis | 1.4.01 | http://xml.apache.org/commons/components/external/ |
+| Apache License, Version 2.0 | XML Commons External Components XML APIs | xml-apis:xml-apis | 1.0.b2 | http://xml.apache.org/commons/#external |
 | Apache License, Version 2.0 | XML Commons External Components XML APIs Extensions | xml-apis:xml-apis-ext | 1.3.04 | http://xml.apache.org/commons/components/external/ |
 
 ## Third-party library licences
@@ -2794,7 +2794,7 @@ Copyright (c) 2013 James Ward
    =========================================================================
 
    Apache Xerces Java
-   Copyright 1999-2018 The Apache Software Foundation
+   Copyright 1999-2022 The Apache Software Foundation
 
    This product includes software developed at
    The Apache Software Foundation (http://www.apache.org/).
@@ -2805,4 +2805,13 @@ Copyright (c) 2013 James Ward
      - voluntary contributions made by Paul Eng on behalf of the
        Apache Software Foundation that were originally developed at iClick, Inc.,
        software copyright (c) 1999.
+
+   This product includes/uses the PsychoPath XPath 2.0 Processor
+   (org.eclipse.wst.xml.xpath2.processor_1.2.1.jar) developed at
+   The Eclipse Foundation (http://www.eclipse.org) and made available under
+   the Eclipse Public License v1.0.
+
+   This product includes/uses the CUP Parser Generator (cupv10k-runtime.jar)
+   maintained at (http://www2.cs.tum.edu/projects/cup/)
+   Copyright 1996-1999 by Scott Hudson, Frank Flannery, C. Scott Ananian
 ```
