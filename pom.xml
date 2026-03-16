@@ -650,6 +650,11 @@
                 <version>${version.pdfbox}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>xmpbox</artifactId>
+                <version>${version.pdfbox}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
                 <artifactId>owasp-java-html-sanitizer</artifactId>
                 <version>${version.owaspHtmlSanitizer}</version>
