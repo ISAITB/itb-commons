@@ -88,7 +88,7 @@ This product depends on software developed by third parties as listed in the fol
 | Apache License, Version 2.0 | Apache FontBox | org.apache.pdfbox:fontbox | 3.0.7 | http://pdfbox.apache.org/ |
 | Apache License, Version 2.0 | Apache PDFBox | org.apache.pdfbox:pdfbox | 3.0.7 | https://www.apache.org/pdfbox-parent/pdfbox/ |
 | Apache License, Version 2.0 | Apache PDFBox io | org.apache.pdfbox:pdfbox-io | 3.0.7 | https://www.apache.org/pdfbox-parent/pdfbox-io/ |
-| Apache License, Version 2.0 | Apache XmpBox | org.apache.pdfbox:xmpbox | 3.0.3 | https://www.apache.org/pdfbox-parent/xmpbox/ |
+| Apache License, Version 2.0 | Apache XmpBox | org.apache.pdfbox:xmpbox | 3.0.7 | https://www.apache.org/pdfbox-parent/xmpbox/ |
 | Apache License, Version 2.0 | tomcat-embed-core | org.apache.tomcat.embed:tomcat-embed-core | 10.1.52 | https://tomcat.apache.org/ |
 | Apache License, Version 2.0 | tomcat-embed-el | org.apache.tomcat.embed:tomcat-embed-el | 10.1.52 | https://tomcat.apache.org/ |
 | Apache License, Version 2.0 | tomcat-embed-websocket | org.apache.tomcat.embed:tomcat-embed-websocket | 10.1.52 | https://tomcat.apache.org/ |
