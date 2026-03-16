@@ -5,6 +5,7 @@ import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.test.BaseTest;
 import org.junit.jupiter.api.Test;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +77,7 @@ class RateLimiterServiceTest extends BaseTest {
     void testInvalidConfigurationReplacement() {
         var config = new ApplicationConfig.RateLimit();
         config.setEnabled(true);
-        config.setCapacity(new HashMap<>());
+        config.setCapacity(new EnumMap<>(RateLimitPolicy.class));
         config.getCapacity().put(RateLimitPolicy.UI_VALIDATE, null);
         config.getCapacity().put(RateLimitPolicy.REST_VALIDATE, -1L);
         var service = new RateLimiterService(config);

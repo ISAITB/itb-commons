@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RateLimitKeyGeneratorTest extends BaseTest {
+class RateLimitKeyGeneratorTest extends BaseTest {
 
     @Test
     void testConfigurationWithIpHeader() {

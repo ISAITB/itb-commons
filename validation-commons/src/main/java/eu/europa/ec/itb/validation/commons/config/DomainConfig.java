@@ -24,6 +24,7 @@ import eu.europa.ec.itb.validation.commons.artifact.ValidationArtifactInfo;
 import eu.europa.ec.itb.validation.plugin.PluginInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
 
 import java.net.URLClassLoader;
 import java.net.http.HttpClient;
@@ -77,6 +78,17 @@ public class DomainConfig {
     private String validationServiceVersion;
     private HttpClient.Version httpVersion;
     private GroupPresentationEnum groupPresentation;
+    private Map<String, AuthorizedClientServiceOAuth2AuthorizedClientManager> oAuthManagers;
+
+    /** @return The map of OAuth service configuration to service identifiers. */
+    public Map<String, AuthorizedClientServiceOAuth2AuthorizedClientManager> getOAuthManagers() {
+        return oAuthManagers;
+    }
+
+    /** @param oAuthManagers The map of OAuth service configuration to service identifiers. */
+    public void setOAuthManagers(Map<String, AuthorizedClientServiceOAuth2AuthorizedClientManager> oAuthManagers) {
+        this.oAuthManagers = oAuthManagers;
+    }
 
     /** @return The protocol version to use HTTP requests. **/
     public HttpClient.Version getHttpVersion() {
