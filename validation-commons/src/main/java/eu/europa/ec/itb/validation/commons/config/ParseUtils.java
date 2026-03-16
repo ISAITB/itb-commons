@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Utility class to facilitate parsing of properties from configuration.
@@ -183,14 +184,14 @@ public class ParseUtils {
      * @param defaultValueProvider A function to provide the default value for missing properties (per validation type).
      * @return The map.
      */
-    public static Map<String, Boolean> parseBooleanMap(String key, Configuration config, List<String> types, Function<String, Boolean> defaultValueProvider) {
+    public static Map<String, Boolean> parseBooleanMap(String key, Configuration config, List<String> types, Predicate<String> defaultValueProvider) {
         Map<String, Boolean> map = new HashMap<>();
         for (String type: types) {
             boolean value;
             try {
-                value = config.getBoolean(key+"."+type, defaultValueProvider.apply(type));
+                value = config.getBoolean(key+"."+type, defaultValueProvider.test(type));
             } catch (Exception e) {
-                value = defaultValueProvider.apply(type);
+                value = defaultValueProvider.test(type);
             }
             map.put(type, value);
         }

@@ -48,12 +48,12 @@ public class RateLimiterService {
      * @param config The application's configuration.
      */
     public RateLimiterService(ApplicationConfig.RateLimit config) {
-        boolean enabled = false;
-        Cache<String, Bucket> buckets = null;
-        EnumMap<RateLimitPolicy, Bandwidth> policyBandwidths;
+        boolean setAsEnabled = false;
+        Cache<String, Bucket> bucketsToSet = null;
+        EnumMap<RateLimitPolicy, Bandwidth> policyBandwidthsToSet;
         if (config.isEnabled()) {
-            enabled = true;
-            policyBandwidths = new EnumMap<>(RateLimitPolicy.class);
+            setAsEnabled = true;
+            policyBandwidthsToSet = new EnumMap<>(RateLimitPolicy.class);
             // Eagerly process and validate the configured capacities to catch errors early on.
             if (config.getCapacity() != null) {
                 config.getCapacity().forEach((policy, capacity) -> {
@@ -68,22 +68,22 @@ public class RateLimiterService {
                             .capacity(capacity)
                             .refillIntervally(capacity, Duration.ofMinutes(1))
                             .build();
-                    policyBandwidths.put(policy, limit);
+                    policyBandwidthsToSet.put(policy, limit);
                 });
             }
             // Make sure we have all bandwidth policies evaluated to log warnings early.
             var policiesToConfigure = EnumSet.allOf(RateLimitPolicy.class);
-            policiesToConfigure.removeAll(policyBandwidths.keySet());
+            policiesToConfigure.removeAll(policyBandwidthsToSet.keySet());
             policiesToConfigure.forEach(policy -> {
                 LOG.warn("No rate limit found for [{}]. A default limit of {} per minute will be applied.", policy.getConfigurationKey(), policy.getDefaultCapacity());
                 Bandwidth bandwidth = Bandwidth.builder()
                         .capacity(policy.getDefaultCapacity())
                         .refillIntervally(policy.getDefaultCapacity(), Duration.ofMinutes(1))
                         .build();
-                policyBandwidths.put(policy, bandwidth);
+                policyBandwidthsToSet.put(policy, bandwidth);
             });
             // Maintain the latest 10000 distinct addresses.
-            buckets = Caffeine.newBuilder()
+            bucketsToSet = Caffeine.newBuilder()
                     .maximumSize(10_000)
                     .expireAfterAccess(Duration.ofDays(1))
                     .build();
@@ -91,17 +91,17 @@ public class RateLimiterService {
             LOG.info("Rate limiting enabled ({}) per client IP address{}. Limits per minute: {}({}) {}({}) {}({}) {}({}).",
                     config.isWarnOnly()?"warnings only":"blocking",
                     (config.getIpHeader() == null)?"":" (provided through HTTP header '%s')".formatted(config.getIpHeader()),
-                    RateLimitPolicy.UI_VALIDATE.getConfigurationKey(), policyBandwidths.get(RateLimitPolicy.UI_VALIDATE).getCapacity(),
-                    RateLimitPolicy.REST_VALIDATE.getConfigurationKey(), policyBandwidths.get(RateLimitPolicy.REST_VALIDATE).getCapacity(),
-                    RateLimitPolicy.REST_VALIDATE_MULTIPLE.getConfigurationKey(), policyBandwidths.get(RateLimitPolicy.REST_VALIDATE_MULTIPLE).getCapacity(),
-                    RateLimitPolicy.SOAP_VALIDATE.getConfigurationKey(), policyBandwidths.get(RateLimitPolicy.SOAP_VALIDATE).getCapacity()
+                    RateLimitPolicy.UI_VALIDATE.getConfigurationKey(), policyBandwidthsToSet.get(RateLimitPolicy.UI_VALIDATE).getCapacity(),
+                    RateLimitPolicy.REST_VALIDATE.getConfigurationKey(), policyBandwidthsToSet.get(RateLimitPolicy.REST_VALIDATE).getCapacity(),
+                    RateLimitPolicy.REST_VALIDATE_MULTIPLE.getConfigurationKey(), policyBandwidthsToSet.get(RateLimitPolicy.REST_VALIDATE_MULTIPLE).getCapacity(),
+                    RateLimitPolicy.SOAP_VALIDATE.getConfigurationKey(), policyBandwidthsToSet.get(RateLimitPolicy.SOAP_VALIDATE).getCapacity()
             );
         } else {
-            policyBandwidths = null;
+            policyBandwidthsToSet = null;
         }
-        this.enabled = enabled;
-        this.buckets = buckets;
-        this.policyBandwidths = policyBandwidths;
+        this.enabled = setAsEnabled;
+        this.buckets = bucketsToSet;
+        this.policyBandwidths = policyBandwidthsToSet;
         this.warnOnly = config.isWarnOnly();
     }
 

@@ -44,7 +44,7 @@ public class RateLimitKeyGenerator {
             addressExtractor = ServletRequest::getRemoteAddr;
         } else {
             // IP header configured (in case of proxy usage) - use this with the remote address as stated in the request as the fallback.
-            addressExtractor = (request) -> {
+            addressExtractor = request -> {
                 String headerValue = request.getHeader(config.getIpHeader());
                 if (headerValue == null) {
                     LOG.warn("Expected address header [{}] not found in request.", config.getIpHeader());
