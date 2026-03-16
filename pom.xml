@@ -244,7 +244,7 @@
                         <failOnBlacklist>true</failOnBlacklist>
                         <overrideFile>${project.basedir}/etc/licence/overrides.txt</overrideFile>
                         <licenseMerges>
-                            <licenseMerge>Apache License, Version 2.0|The Apache Software License, Version 2.0|Apache-2.0|Apache License 2.0|Apache 2|The Apache License, Version 2.0|Apache License|Apache License version 2.0|Apache 2.0|Apache License v2.0|Apache License v2|Apache License Version 2.0|The Apache Software License, version 2.0</licenseMerge>
+                            <licenseMerge>Apache License, Version 2.0|The Apache Software License, Version 2.0|Apache-2.0|Apache License 2.0|Apache 2|The Apache License, Version 2.0|Apache License|Apache License version 2.0|Apache 2.0|Apache License v2.0|Apache License v2|Apache License Version 2.0|The Apache Software License, version 2.0|Apache License, version 2.0</licenseMerge>
                             <licenseMerge>Eclipse Public License - v1.0|Eclipse Public License - v 1.0</licenseMerge>
                             <licenseMerge>Eclipse Public License - v2.0|EPL 2.0|Eclipse Public License 2.0</licenseMerge>
                             <licenseMerge>GNU Lesser General Public License (LGPL), Version 2.1|GNU Lesser General Public License (LGPL), version 2.1 or later|LGPL 2.1|GNU Lesser General Public License|LGPL, v2.1 or later</licenseMerge>
@@ -383,6 +383,11 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
                 <version>${version.cxf}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-oauth2-client</artifactId>
+                <version>${version.springBoot}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>

@@ -30,6 +30,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Component responsible for reading a stream from a given URL.
@@ -47,6 +48,20 @@ public class URLReader {
      * @throws ValidatorException If the URL cannot be read.
      */
     StreamInfo stream(URI uri, List<String> acceptedContentTypes, HttpClient.Version httpVersion) {
+        return stream(uri, acceptedContentTypes, httpVersion, null);
+    }
+
+    /**
+     * Open a stream to the provided URL.
+     *
+     * @param uri The URL.
+     * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
+     * @param httpVersion The HTTP version to use.
+     * @param requestDecorator A custom decorator function to apply on the HTTP request (null if not needed).
+     * @return The data of the response (stream and content type).
+     * @throws ValidatorException If the URL cannot be read.
+     */
+    StreamInfo stream(URI uri, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) {
         try {
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(uri)
@@ -57,6 +72,9 @@ public class URLReader {
                 if (!nonEmptyContentTypes.isEmpty()) {
                     requestBuilder = requestBuilder.header("Accept", String.join(",", nonEmptyContentTypes));
                 }
+            }
+            if (requestDecorator != null) {
+                requestDecorator.accept(requestBuilder);
             }
             HttpRequest request = requestBuilder.build();
             HttpResponse<InputStream> response = HttpClient.newBuilder()

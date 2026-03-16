@@ -37,6 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,6 +52,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,6 +61,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Consumer;
 
 import static eu.europa.ec.itb.validation.commons.Utils.limitReportItemsIfNeeded;
 
@@ -381,6 +386,26 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @throws IOException If the file could not be retrieved or stored.
      */
     public FileInfo getFileFromURL(File targetFolder, String url, String extension, String fileName, File preprocessorFile, String preprocessorOutputExtension, String artifactType, List<String> acceptedContentTypes, HttpClient.Version httpVersion) throws IOException {
+        return getFileFromURL(targetFolder, url, extension, fileName, preprocessorFile, preprocessorOutputExtension, artifactType, acceptedContentTypes, httpVersion, null);
+    }
+
+    /**
+     * Store and return the file loaded (and cached) from the provided URL.
+     *
+     * @param targetFolder The folder to store the file in.
+     * @param url The URL to load.
+     * @param extension The file extension for the created file.
+     * @param fileName The name of the file to use.
+     * @param preprocessorFile An optional file for a preprocessing resource to be used to determine the final loaded file.
+     * @param preprocessorOutputExtension The file extension for the file produced via preprocessing (if applicable).
+     * @param artifactType The type of validation artifact.
+     * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
+     * @param httpVersion The HTTP version to use.
+     * @param requestDecorator A decorator function to apply customisations to the artifact's HTTP request.
+     * @return The stored file and the returned content type from the remote URI.
+     * @throws IOException If the file could not be retrieved or stored.
+     */
+    public FileInfo getFileFromURL(File targetFolder, String url, String extension, String fileName, File preprocessorFile, String preprocessorOutputExtension, String artifactType, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) throws IOException {
         URL urlObj = Utils.parseUrl(url);
         if (fileName == null) {
             fileName = FilenameUtils.getName(urlObj.getPath());
@@ -391,7 +416,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         StreamInfo streamInfo = null;
         Path targetFilePath;
         try {
-            streamInfo = getInputStreamFromURL(url, acceptedContentTypes, httpVersion);
+            streamInfo = getInputStreamFromURL(url, acceptedContentTypes, httpVersion, requestDecorator);
             if (StringUtils.isEmpty(extension) && streamInfo.contentType().isPresent()) {
                 extension = getFileExtension(streamInfo.contentType().get());
             }
@@ -501,8 +526,21 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @return The input stream.
      */
     public StreamInfo getInputStreamFromURL(String url, List<String> acceptedContentTypes, HttpClient.Version httpVersion) {
+        return getInputStreamFromURL(url, acceptedContentTypes, httpVersion, null);
+    }
+
+    /**
+     * Open an input stream to read the contents of the provided URL.
+     *
+     * @param url The URL to load.
+     * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
+     * @param httpVersion The HTTP version to use.
+     * @param requestDecorator A decorator function to apply customisations to the outgoing HTTP request.
+     * @return The input stream.
+     */
+    public StreamInfo getInputStreamFromURL(String url, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) {
         // Read the resource from the provided URI.
-        return urlReader.stream(URI.create(StringUtils.defaultString(url).trim()), acceptedContentTypes, httpVersion);
+        return urlReader.stream(URI.create(StringUtils.defaultString(url).trim()), acceptedContentTypes, httpVersion, requestDecorator);
     }
 
     /**
@@ -868,7 +906,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     /**
      * Recurring method to clean up and refresh the cached remote artefacts.
      */
-    @Scheduled(fixedDelayString = "${validator.cleanupRate}")
+    @Scheduled(fixedDelayString = "${validator.cleanupRate}", initialDelayString = "${validator.cleanupRate}")
     public void resetRemoteFileCache() {
         logger.debug("Resetting remote validation artifact cache");
         for (DomainConfig domainConfig: domainConfigCache.getAllDomainConfigurations()) {
@@ -938,7 +976,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         try {
             artifactType = Objects.toString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
             File remoteFolderForType = new File(remoteConfigFolder, artifactType);
-            List<FileInfo> downloadedFiles = downloadRemoteFiles(domainConfig.getDomain(), typedArtifactInfo.get(artifactType).getRemoteArtifacts(), remoteFolderForType, artifactType, domainConfig.getHttpVersion());
+            List<FileInfo> downloadedFiles = downloadRemoteFiles(domainConfig, typedArtifactInfo.get(artifactType).getRemoteArtifacts(), remoteFolderForType, artifactType, domainConfig.getHttpVersion());
             // Update cache map.
             String key = domainConfig.getDomainName() + "|" + validationType + "|" + Objects.toString(artifactType, TypedValidationArtifactInfo.DEFAULT_TYPE);
             preconfiguredRemoteArtifactMap.put(key, downloadedFiles);
@@ -956,7 +994,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     /**
      * Download and store the provided set of remote validation artifacts.
      *
-     * @param domain The domain to consider.
+     * @param domainConfig The domain to consider.
      * @param remoteFiles The list of information per remote file to be loaded.
      * @param remoteConfigPath The folder in which to store the resulting files.
      * @param artifactType The artifact type in question.
@@ -964,19 +1002,62 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @return The list of downloaded files.
      * @throws IOException If a processing error occurs.
      */
-    private List<FileInfo> downloadRemoteFiles(String domain, List<RemoteValidationArtifactInfo> remoteFiles, File remoteConfigPath, String artifactType, HttpClient.Version httpVersion) throws IOException {
+    private List<FileInfo> downloadRemoteFiles(DomainConfig domainConfig, List<RemoteValidationArtifactInfo> remoteFiles, File remoteConfigPath, String artifactType, HttpClient.Version httpVersion) throws IOException {
         List<FileInfo> files = new ArrayList<>();
         if (remoteFiles != null) {
             for (RemoteValidationArtifactInfo artifactInfo: remoteFiles) {
                 File preprocessorFile = null;
                 if (artifactInfo.getPreProcessorPath() != null) {
-                    preprocessorFile = Paths.get(config.getResourceRoot(), domain, artifactInfo.getPreProcessorPath()).toFile();
+                    preprocessorFile = Paths.get(config.getResourceRoot(), domainConfig.getDomain(), artifactInfo.getPreProcessorPath()).toFile();
                 }
-                FileInfo downloadedFile = getFileFromURL(remoteConfigPath, artifactInfo.getUrl(), null, null, preprocessorFile, artifactInfo.getPreProcessorOutputExtension(), artifactType, StringUtils.isEmpty(artifactInfo.getType())?null:List.of(artifactInfo.getType()), httpVersion);
+                FileInfo downloadedFile = getFileFromURL(remoteConfigPath, artifactInfo.getUrl(), null, null,
+                        preprocessorFile,artifactInfo.getPreProcessorOutputExtension(), artifactType,
+                        StringUtils.isEmpty(artifactInfo.getType())?null:List.of(artifactInfo.getType()), httpVersion,
+                        createRemoteFileRequestDecorator(domainConfig, artifactInfo)
+                );
                 files.add(postProcessDownloadedRemoteFile(artifactInfo, downloadedFile));
             }
         }
         return files;
+    }
+
+    /**
+     * Create a decorator function to be used for the outgoing HTTP request when retrieving the remote file.
+     *
+     * @param domainConfig The domain configuration.
+     * @param artifactInfo The artifact's information.
+     * @return The function to apply, or null if one is not needed.
+     */
+    private Consumer<HttpRequest.Builder> createRemoteFileRequestDecorator(DomainConfig domainConfig, RemoteValidationArtifactInfo artifactInfo) {
+        if (artifactInfo.getAuthenticationType() == null) {
+            // No customisation needed.
+            return null;
+        } else {
+            return switch (artifactInfo.getAuthenticationType()) {
+                case OAUTH -> (builder) -> {
+                    // Apply OAuth2.0 authentication.
+                    var request = OAuth2AuthorizeRequest
+                            .withClientRegistrationId(artifactInfo.getServiceIdentifier())
+                            .principal(artifactInfo.getServiceIdentifier())
+                            .build();
+                    var managers = Objects.requireNonNull(domainConfig.getOAuthManagers(), "No OAuth managers present in the configuration.");
+                    OAuth2AuthorizedClient client = Objects.requireNonNull(managers.get(artifactInfo.getServiceIdentifier()).authorize(request), "OAuth service registration not found for identifier [%s].".formatted(artifactInfo.getServiceIdentifier()));
+                    String token = client.getAccessToken().getTokenValue();
+                    builder.header("Authorization", "Bearer " + token);
+                };
+                case BASIC -> (builder) -> {
+                    // Apply HTTP basic authentication.
+                    String credentials = artifactInfo.getUsername() + ":" + String.valueOf(artifactInfo.getPassword());
+                    String encoded = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+                    builder.header("Authorization", "Basic " + encoded);
+                };
+                case HEADER -> (builder) -> {
+                    // Apply HTTP header based authentication.
+                    builder.header(artifactInfo.getHeaderName(), artifactInfo.getHeaderValue());
+                };
+                default -> null;
+            };
+        }
     }
 
     /**

@@ -167,7 +167,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     @Test
     void testGetInputStreamFromURL() {
         var testURI = URI.create("http://test.com");
-        when(urlReader.stream(any(), any(), any())).thenAnswer((Answer<StreamInfo>) invocationOnMock -> {
+        when(urlReader.stream(any(), any(), any(), any())).thenAnswer((Answer<StreamInfo>) invocationOnMock -> {
             var arg = invocationOnMock.getArgument(0, URI.class);
             if (!testURI.equals(arg)) {
                 fail("Unexpected URL called.");
@@ -182,7 +182,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     void testGetFileFromURL() throws IOException {
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_test");
         var testURI = URI.create("http://test.com");
-        when(urlReader.stream(any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getFileFromURL(targetFolder.toFile(), testURI.toString(), "txt", "aFile", HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(Path.of(targetFolder.toString(), "aFile.txt"), result.toPath());
@@ -193,7 +193,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     void testGetFileFromURLWithURL() throws IOException {
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_test");
         var testURI = URI.create("http://test.com");
-        when(urlReader.stream(any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getFileFromURL(targetFolder.toFile(), testURI.toString(), HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(targetFolder, result.getParentFile().toPath());
@@ -204,7 +204,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     void testGetFileFromURLWithURLAndFilename() throws IOException {
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_test");
         var testURI = URI.create("http://test.com");
-        when(urlReader.stream(any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getFileFromURL(targetFolder.toFile(), testURI.toString(),"aFile.txt", HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(Path.of(targetFolder.toString(), "aFile.txt"), result.toPath());
@@ -215,7 +215,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     void testGetFileFromURLWithURLAndFilenameAndExtension() throws IOException {
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_test");
         var testURI = URI.create("http://test.com");
-        when(urlReader.stream(any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getFileFromURL(targetFolder.toFile(), testURI.toString(),".txt", "aFile", HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(Path.of(targetFolder.toString(), "aFile.txt"), result.toPath());
@@ -226,7 +226,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     void testGetFileFromURLWithURLAndFilenameAndExtensionAndArtifactType() throws IOException {
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_test");
         var testURI = URI.create("http://test.com");
-        when(urlReader.stream(any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getFileFromURL(targetFolder.toFile(), testURI.toString(),".txt", "aFile", "artifact1", HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(Path.of(targetFolder.toString(), "aFile.txt"), result.toPath());
@@ -237,7 +237,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     void testGetFileFromURLDetermineFileName() throws IOException {
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_test");
         var testURI = URI.create("http://test.com/determinedFile.txt");
-        when(urlReader.stream(any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getFileFromURL(targetFolder.toFile(), testURI.toString(), null, null, HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(Path.of(targetFolder.toString(), "determinedFile.txt"), result.toPath());
@@ -248,7 +248,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     void testGetFileFromURLWithQueryString() throws IOException {
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_test");
         var testURI = URI.create("http://test.com/determinedFile.txt?something=1");
-        when(urlReader.stream(any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getFileFromURL(targetFolder.toFile(), testURI.toString(), null, null, HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(Path.of(targetFolder.toString(), "determinedFile.txt"), result.toPath());
@@ -260,7 +260,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         fileManager.preprocessor = new TestPreprocessor();
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_test");
         var testURI = URI.create("http://test.com");
-        when(urlReader.stream(any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getFileFromURL(targetFolder.toFile(), testURI.toString(), "txt", "aFile", targetFolder.toFile(), "", "", List.of("text/turtle"), HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(Path.of(targetFolder.toString(), "PROCESSED_aFile.txt"), result.getFile().toPath());
@@ -307,7 +307,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     @Test
     void testGetFileFromURLOrBase64ForFileAndContentAndContentTypeAndArtifactTypeForURL() throws IOException {
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_or_base64_test");
-        when(urlReader.stream(any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getFileFromURLOrBase64(targetFolder.toFile(), "http://test.com", "text/plain", null, HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(targetFolder, result.getFile().getParentFile().toPath());
@@ -553,7 +553,7 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         file3.setContent("http://test.com");
         file3.setEmbeddingMethod(ValueEmbeddingEnumeration.URI);
         List<FileContent> externalArtifactContents = List.of(file1, file2, file3);
-        when(urlReader.stream(any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST3".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST3".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getExternalValidationArtifacts(new DomainConfig(), "type1", "artifact1", targetFolder.toFile(), externalArtifactContents, HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(3, result.size());
@@ -613,9 +613,9 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         config1.getArtifactInfo().get("type2").get("artifact1").getRemoteArtifacts().get(0).setUrl("http://test1.com");
         createFileWithContents(Path.of(appConfig.getResourceRoot(), "domain1", "preprocess", "aFile.txt"), "CONTENT");
         fileManager.preprocessor = new TestPreprocessor();
-        when(urlReader.stream(eq(URI.create("http://test1.com")), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST1".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
-        when(urlReader.stream(eq(URI.create("http://test2.com")), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST2".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
-        when(urlReader.stream(eq(URI.create("http://test3.com")), any(), any())).thenThrow(new IllegalStateException("File not loaded"));
+        when(urlReader.stream(eq(URI.create("http://test1.com")), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST1".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(eq(URI.create("http://test2.com")), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST2".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        when(urlReader.stream(eq(URI.create("http://test3.com")), any(), any(), any())).thenThrow(new IllegalStateException("File not loaded"));
         when(domainConfigCache.getAllDomainConfigurations()).thenReturn(List.of(config1));
         fileManager.resetRemoteFileCache();
         assertTrue(Files.exists(Path.of(appConfig.getTmpFolder(), "remote_config", "domain1", "type1", "artifact1")));

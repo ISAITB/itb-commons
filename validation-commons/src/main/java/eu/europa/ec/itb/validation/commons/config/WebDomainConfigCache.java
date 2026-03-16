@@ -18,9 +18,16 @@ package eu.europa.ec.itb.validation.commons.config;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for the loading and storing of domain configuration for validators that are web applications.
@@ -72,5 +79,31 @@ public abstract class WebDomainConfigCache <T extends WebDomainConfig> extends D
         domainConfig.setSupportMinimalUserInterface(config.getBoolean("validator.supportMinimalUserInterface", false));
         domainConfig.setSupportUserInterfaceEmbedding(domainConfig.getChannels().contains(ValidatorChannel.FORM) && config.getBoolean("validator.supportUserInterfaceEmbedding", true));
         domainConfig.setHiddenTypes(Arrays.stream(StringUtils.split(config.getString("validator.hiddenType", ""), ',')).map(String::trim).toList());
+        domainConfig.setOAuthManagers(ParseUtils.parseObjectMap("validator.oAuthService", config, this::toOAuthConfiguration));
+    }
+
+    /**
+     * Parse the configuration of an OAuth2.0 service to use when authenticating remote artifact lookups.
+     *
+     * @param configName The configuration name.
+     * @param configValues The configuration values.
+     * @return The service configuration.
+     */
+    private AuthorizedClientServiceOAuth2AuthorizedClientManager toOAuthConfiguration(String configName, Map<String, String> configValues) {
+        ClientRegistration registration = ClientRegistration
+                .withRegistrationId(configName)
+                .clientId(configValues.get("clientId"))
+                .clientSecret(configValues.get("clientSecret"))
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .tokenUri(configValues.get("tokenUrl"))
+                .build();
+        var repo = new InMemoryClientRegistrationRepository(registration);
+        var service = new InMemoryOAuth2AuthorizedClientService(repo);
+        var manager = new AuthorizedClientServiceOAuth2AuthorizedClientManager(repo, service);
+        manager.setAuthorizedClientProvider(
+                OAuth2AuthorizedClientProviderBuilder.builder()
+                        .clientCredentials()
+                        .build());
+        return manager;
     }
 }

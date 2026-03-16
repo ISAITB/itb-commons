@@ -555,7 +555,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
     }
 
     /**
-     * Complete the configuration of validation artifacts (aggregate flags) based on the loaded configuration.
+     * Complete the configuration of validation artifacts based on the loaded configuration.
      *
      * @param domainConfig The domain's configuration.
      */
@@ -574,6 +574,18 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                         logger.warn("Domain [{}] defines no preconfigured validation artifacts for validation type [{}] but also doesn't expect externally provided artifacts. At least one of the defined artifact types should be set with optional external artifacts.", domainConfig.getDomainName(), validationType);
                     }
                 }
+                // Ensure that remote artifacts configured with OAuth authentication refer to an existing service configuration.
+                artifactInfo.getTypes().forEach(artifactType -> {
+                    ValidationArtifactInfo info = artifactInfo.get(artifactType);
+                    if (info.getRemoteArtifacts() != null) {
+                        info.getRemoteArtifacts().forEach(remoteArtifact -> {
+                            if (remoteArtifact.getAuthenticationType() == RemoteArtifactAuthentication.OAUTH && !domainConfig.getOAuthManagers().containsKey(remoteArtifact.getServiceIdentifier())) {
+                                logger.warn("Remote artifact for validation type [{}] is configured to use OAuth service with identifier [{}] that does not match an OAuth service configuration. The OAuth authentication will be skipped.", validationType, remoteArtifact.getServiceIdentifier());
+                                remoteArtifact.setAuthenticationType(RemoteArtifactAuthentication.NONE);
+                            }
+                        });
+                    }
+                });
             }
         }
     }
@@ -737,6 +749,18 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                 remoteInfo.setType(StringUtils.trim(config.getString(typeKey+".remote."+remoteCounter+".type")));
                 remoteInfo.setPreProcessorPath(StringUtils.trim(config.getString(typeKey+".remote."+remoteCounter+".preprocessor")));
                 remoteInfo.setPreProcessorOutputExtension(StringUtils.trim(config.getString(typeKey+".remote."+remoteCounter+".preprocessor.output")));
+                // Authentication configuration - start.
+                remoteInfo.setAuthenticationType(RemoteArtifactAuthentication.fromValue(StringUtils.trim(config.getString(typeKey+".remote."+remoteCounter+".authType"))));
+                if (remoteInfo.getAuthenticationType() == RemoteArtifactAuthentication.BASIC) {
+                    remoteInfo.setUsername(Objects.requireNonNull(StringUtils.trim(config.getString(typeKey+".remote."+remoteCounter+".username")), "When using basic HTTP authentication for remote artifact lookups, the username is required."));
+                    remoteInfo.setPassword(Objects.requireNonNull(StringUtils.trim(config.getString(typeKey+".remote."+remoteCounter+".password")), "When using basic HTTP authentication for remote artifact lookups, the password is required.").toCharArray());
+                } else if (remoteInfo.getAuthenticationType() == RemoteArtifactAuthentication.OAUTH) {
+                    remoteInfo.setServiceIdentifier(Objects.requireNonNull(StringUtils.trim(config.getString(typeKey+".remote."+remoteCounter+".serviceId")), "When using OAuth authentication for remote artifact lookups, the service identifier is required."));
+                } else if (remoteInfo.getAuthenticationType() == RemoteArtifactAuthentication.HEADER) {
+                    remoteInfo.setHeaderName(Objects.requireNonNull(StringUtils.trim(config.getString(typeKey+".remote."+remoteCounter+".headerName")), "When using HTTP header based authentication for remote artifact lookups, the HTTP header name is required."));
+                    remoteInfo.setHeaderValue(Objects.requireNonNull(StringUtils.trim(config.getString(typeKey+".remote."+remoteCounter+".headerValue")), "When using HTTP header based authentication for remote artifact lookups, the HTTP header value is required."));
+                }
+                // Authentication configuration - end.
                 info.getRemoteArtifacts().add(remoteInfo);
                 remoteCounter += 1;
             }
