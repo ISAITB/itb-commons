@@ -18,8 +18,10 @@ package eu.europa.ec.itb.validation.commons;
 import com.gitb.core.ValueEmbeddingEnumeration;
 import com.gitb.tr.ObjectFactory;
 import com.gitb.tr.TAR;
+import eu.europa.ec.itb.validation.commons.artifact.CommonValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.artifact.RemoteValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
+import eu.europa.ec.itb.validation.commons.artifact.ValidationArtifactInfo;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
@@ -437,7 +439,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         } catch (URISyntaxException e) {
             // No need to handle this - the URL parsing in the beginning fo the method already ensures this error will never be raised.
         }
-        return new FileInfo(targetFile, streamInfo.contentType().orElse(null), source);
+        return new FileInfo(targetFile, streamInfo.contentType().orElse(null), source, requestDecorator);
     }
 
     /**
@@ -620,7 +622,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param artifactType The artifact's type.
      * @param fileToProcess The artifact's file to process.
      * @param isExternal True if the file is external (user-provided).
-     * @return The file file to use. If there is no preprocessor or preprocessing artifact for the specific artifact type
+     * @return The file to use. If there is no preprocessor or preprocessing artifact for the specific artifact type
      * this will be the same file provided as the method's original input.
      */
     public File preprocessFileIfNeeded(DomainConfig domainConfig, String validationType, String artifactType, File fileToProcess, boolean isExternal) {
@@ -828,19 +830,27 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      */
     public List<FileInfo> getExternalValidationArtifacts(DomainConfig domainConfig, String validationType, String artifactType, File parentFolder, List<FileContent> externalArtifactContents, HttpClient.Version httpVersion) {
         List<FileInfo> externalArtifactFiles = new ArrayList<>();
+        ValidationArtifactInfo artifactInfo = null;
+        if (domainConfig.getArtifactInfo() != null && validationType != null) {
+            var infoForValidationType = domainConfig.getArtifactInfo().get(validationType);
+            if (infoForValidationType != null && artifactType != null) {
+                artifactInfo = domainConfig.getArtifactInfo().get(validationType).get(artifactType);
+            }
+        }
+        Consumer<HttpRequest.Builder> requestDecorator = createRemoteFileRequestDecorator(domainConfig, artifactInfo);
         if (externalArtifactContents != null && !externalArtifactContents.isEmpty()) {
             File externalArtifactFolder = new File(parentFolder, UUID.randomUUID().toString());
             for (FileContent externalArtifact: externalArtifactContents) {
-                FileInfo file = storeFileContent(externalArtifactFolder, externalArtifact, artifactType, httpVersion);
+                FileInfo file = storeFileContent(externalArtifactFolder, externalArtifact, artifactType, httpVersion, requestDecorator);
                 externalArtifactFiles.add(file);
             }
         }
         List<FileInfo> filesToReturn;
         // Apply pre-processing (if needed).
-        if (preprocessor != null && domainConfig.getArtifactInfo().get(validationType).get(artifactType).getExternalArtifactPreProcessorPath() != null) {
+        if (preprocessor != null && artifactInfo != null && artifactInfo.getExternalArtifactPreProcessorPath() != null) {
             filesToReturn = new ArrayList<>();
             for (FileInfo fileInfo: externalArtifactFiles) {
-                filesToReturn.add(new FileInfo(preprocessFile(domainConfig, fileInfo.getFile(), domainConfig.getArtifactInfo().get(validationType).get(artifactType).getExternalArtifactPreProcessorPath(), domainConfig.getArtifactInfo().get(validationType).get(artifactType).getExternalArtifactPreProcessorOutputExtension()), fileInfo.getType(), fileInfo.getSource()));
+                filesToReturn.add(new FileInfo(preprocessFile(domainConfig, fileInfo.getFile(), artifactInfo.getExternalArtifactPreProcessorPath(), artifactInfo.getExternalArtifactPreProcessorOutputExtension()), fileInfo.getType(), fileInfo.getSource(), requestDecorator));
             }
         } else {
             filesToReturn = externalArtifactFiles;
@@ -1022,38 +1032,38 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     }
 
     /**
-     * Create a decorator function to be used for the outgoing HTTP request when retrieving the remote file.
+     * Create a decorator function to be used for the outgoing HTTP request when retrieving a remote file.
      *
      * @param domainConfig The domain configuration.
      * @param artifactInfo The artifact's information.
      * @return The function to apply, or null if one is not needed.
      */
-    private Consumer<HttpRequest.Builder> createRemoteFileRequestDecorator(DomainConfig domainConfig, RemoteValidationArtifactInfo artifactInfo) {
-        if (artifactInfo.getAuthenticationType() == null) {
+    public <X extends CommonValidationArtifactInfo> Consumer<HttpRequest.Builder> createRemoteFileRequestDecorator(DomainConfig domainConfig, X artifactInfo) {
+        if (artifactInfo == null || artifactInfo.getAuthenticationInfo() == null || artifactInfo.getAuthenticationInfo().authenticationType() == null) {
             // No customisation needed.
             return null;
         } else {
-            return switch (artifactInfo.getAuthenticationType()) {
+            return switch (artifactInfo.getAuthenticationInfo().authenticationType()) {
                 case OAUTH -> (builder) -> {
                     // Apply OAuth2.0 authentication.
                     var request = OAuth2AuthorizeRequest
-                            .withClientRegistrationId(artifactInfo.getServiceIdentifier())
-                            .principal(artifactInfo.getServiceIdentifier())
+                            .withClientRegistrationId(artifactInfo.getAuthenticationInfo().serviceIdentifier())
+                            .principal(artifactInfo.getAuthenticationInfo().serviceIdentifier())
                             .build();
                     var managers = Objects.requireNonNull(domainConfig.getOAuthManagers(), "No OAuth managers present in the configuration.");
-                    OAuth2AuthorizedClient client = Objects.requireNonNull(managers.get(artifactInfo.getServiceIdentifier()).authorize(request), "OAuth service registration not found for identifier [%s].".formatted(artifactInfo.getServiceIdentifier()));
+                    OAuth2AuthorizedClient client = Objects.requireNonNull(managers.get(artifactInfo.getAuthenticationInfo().serviceIdentifier()).authorize(request), "OAuth service registration not found for identifier [%s].".formatted(artifactInfo.getAuthenticationInfo().serviceIdentifier()));
                     String token = client.getAccessToken().getTokenValue();
                     builder.header("Authorization", "Bearer " + token);
                 };
                 case BASIC -> (builder) -> {
                     // Apply HTTP basic authentication.
-                    String credentials = artifactInfo.getUsername() + ":" + String.valueOf(artifactInfo.getPassword());
+                    String credentials = artifactInfo.getAuthenticationInfo().username() + ":" + String.valueOf(artifactInfo.getAuthenticationInfo().password());
                     String encoded = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
                     builder.header("Authorization", "Basic " + encoded);
                 };
                 case HEADER -> (builder) -> {
                     // Apply HTTP header based authentication.
-                    builder.header(artifactInfo.getHeaderName(), artifactInfo.getHeaderValue());
+                    builder.header(artifactInfo.getAuthenticationInfo().headerName(), artifactInfo.getAuthenticationInfo().headerValue());
                 };
                 default -> null;
             };
@@ -1203,9 +1213,10 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param contentType The type of the content (as a mime type).
      * @param artifactType The artifact type.
      * @param httpVersion The HTTP version to use.
+     * @param requestDecorator The request decorator to use.
      * @return The stored file.
      */
-    public FileInfo storeFileContent(File targetFolder, String content, ValueEmbeddingEnumeration embeddingMethod, String contentType, String artifactType, HttpClient.Version httpVersion) {
+    public FileInfo storeFileContent(File targetFolder, String content, ValueEmbeddingEnumeration embeddingMethod, String contentType, String artifactType, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) {
         FileInfo file;
         if (content != null) {
             if (embeddingMethod != null) {
@@ -1222,7 +1233,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                         // Read the string from the provided URI.
                         FileInfo loadedFile;
                         try {
-                            loadedFile = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion);
+                            loadedFile = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion, requestDecorator);
                         } catch (IOException e) {
                             throw new ValidatorException("validator.label.exception.unableToProcessURI", e);
                         }
@@ -1256,10 +1267,11 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param embeddingMethod The method determining how the content string is to be handled.
      * @param artifactType The artifact type.
      * @param httpVersion The HTTP version to use.
+     * @param requestDecorator The request decorator to use.
      * @return The stored file.
      */
-    public FileInfo storeFileContent(File targetFolder, String content, ValueEmbeddingEnumeration embeddingMethod, String artifactType, HttpClient.Version httpVersion) {
-        return storeFileContent(targetFolder, content, embeddingMethod, null, artifactType, httpVersion);
+    public FileInfo storeFileContent(File targetFolder, String content, ValueEmbeddingEnumeration embeddingMethod, String artifactType, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) {
+        return storeFileContent(targetFolder, content, embeddingMethod, null, artifactType, httpVersion, requestDecorator);
     }
 
     /**
@@ -1269,10 +1281,11 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @param content The content's information (can be a URL, BASE64 string or the content directly).
      * @param artifactType The artifact type.
      * @param httpVersion The HTTP version to use.
+     * @param requestDecorator The request decorator to use.
      * @return The stored file.
      */
-    public FileInfo storeFileContent(File targetFolder, FileContent content, String artifactType, HttpClient.Version httpVersion) {
-        return storeFileContent(targetFolder, content.getContent(), content.getEmbeddingMethod(), content.getContentType(), artifactType, httpVersion);
+    public FileInfo storeFileContent(File targetFolder, FileContent content, String artifactType, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) {
+        return storeFileContent(targetFolder, content.getContent(), content.getEmbeddingMethod(), content.getContentType(), artifactType, httpVersion, requestDecorator);
     }
 
 }

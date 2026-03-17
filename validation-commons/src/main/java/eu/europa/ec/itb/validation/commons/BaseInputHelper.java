@@ -114,7 +114,7 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
      * @return The file to validate.
      */
     public FileInfo validateContentToValidate(String value, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder, HttpClient.Version httpVersion) {
-        return fileManager.storeFileContent(parentFolder, value, explicitEmbeddingMethod, contentSyntax, null, httpVersion);
+        return fileManager.storeFileContent(parentFolder, value, explicitEmbeddingMethod, contentSyntax, null, httpVersion, null);
     }
 
     /**
