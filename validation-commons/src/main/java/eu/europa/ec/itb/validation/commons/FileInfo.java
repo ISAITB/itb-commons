@@ -17,7 +17,9 @@ package eu.europa.ec.itb.validation.commons;
 
 import java.io.File;
 import java.net.URI;
+import java.net.http.HttpRequest;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Record information on a file.
@@ -27,6 +29,7 @@ public class FileInfo {
     private final File file;
     private final String type;
     private final URI source;
+    private final Consumer<HttpRequest.Builder> requestDecorator;
 
     /**
      * Constructor.
@@ -44,7 +47,7 @@ public class FileInfo {
      * @param type The type string (artifact type).
      */
     public FileInfo(File file, String type) {
-        this(file, type, null);
+        this(file, type, null, null);
     }
 
     /**
@@ -55,9 +58,22 @@ public class FileInfo {
      * @param source The source from which this file was loaded.
      */
     public FileInfo(File file, String type, URI source) {
+        this(file, type, source, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param file The file.
+     * @param type The type string (artifact type).
+     * @param source The source from which this file was loaded.
+     * @param requestDecorator A decorator to apply to requests to load schemas.
+     */
+    public FileInfo(File file, String type, URI source, Consumer<HttpRequest.Builder> requestDecorator) {
         this.file = Objects.requireNonNull(file);
         this.type = type;
         this.source = Objects.requireNonNullElseGet(source, file::toURI);
+        this.requestDecorator = requestDecorator;
     }
 
     /**
@@ -80,4 +96,12 @@ public class FileInfo {
     public URI getSource() {
         return source;
     }
+
+    /**
+     * @return Get the applicable request decorator for remote schema lookups.
+     */
+    public Consumer<HttpRequest.Builder> getRequestDecorator() {
+        return requestDecorator;
+    }
+
 }

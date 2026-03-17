@@ -23,6 +23,7 @@ public abstract class CommonValidationArtifactInfo {
     private String type;
     private String preProcessorPath;
     private String preProcessorOutputExtension;
+    private ArtifactAuthenticationInfo authenticationInfo;
 
     /**
      * @return The artifact type.
@@ -65,4 +66,19 @@ public abstract class CommonValidationArtifactInfo {
     public void setPreProcessorOutputExtension(String preProcessorOutputExtension) {
         this.preProcessorOutputExtension = preProcessorOutputExtension;
     }
+
+    /**
+     * @return The authentication information.
+     */
+    public ArtifactAuthenticationInfo getAuthenticationInfo() {
+        return authenticationInfo;
+    }
+
+    /**
+     * @param authenticationInfo The authentication information.
+     */
+    public void setAuthenticationInfo(ArtifactAuthenticationInfo authenticationInfo) {
+        this.authenticationInfo = authenticationInfo;
+    }
+
 }

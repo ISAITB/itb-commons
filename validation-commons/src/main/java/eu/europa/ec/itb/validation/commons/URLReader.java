@@ -47,7 +47,7 @@ public class URLReader {
      * @return The data of the response (stream and content type).
      * @throws ValidatorException If the URL cannot be read.
      */
-    StreamInfo stream(URI uri, List<String> acceptedContentTypes, HttpClient.Version httpVersion) {
+    public StreamInfo stream(URI uri, List<String> acceptedContentTypes, HttpClient.Version httpVersion) {
         return stream(uri, acceptedContentTypes, httpVersion, null);
     }
 
@@ -61,7 +61,7 @@ public class URLReader {
      * @return The data of the response (stream and content type).
      * @throws ValidatorException If the URL cannot be read.
      */
-    StreamInfo stream(URI uri, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) {
+    public StreamInfo stream(URI uri, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) {
         try {
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(uri)
