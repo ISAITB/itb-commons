@@ -330,7 +330,7 @@
         <notes><![CDATA[
    file name: pdfbox-3.0.7.jar
    ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.pdfbox/pdfbox.*@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.pdfbox/.*@.*$</packageUrl>
         <cve>CVE-2026-23907</cve>
     </suppress>
     <suppress>
@@ -338,7 +338,7 @@
         <notes><![CDATA[
    file name: xmpbox-3.0.7.jar
    ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.pdfbox/xmpbox.*@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.pdfbox/.*@.*$</packageUrl>
         <cve>CVE-2026-23907</cve>
     </suppress>
 </suppressions>
