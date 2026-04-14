@@ -43,7 +43,7 @@
         <ossIndexUsername>ossIndexUsername</ossIndexUsername>
         <ossIndexPassword>ossIndexPassword</ossIndexPassword>
         <version.springBoot>3.5.13</version.springBoot> <!-- When upgrading adapt Tomcat version (below) as needed. -->
-        <version.tomcat>10.1.53</version.tomcat>
+        <version.tomcat>10.1.54</version.tomcat>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
         <version.gitbTypes>1.26.0</version.gitbTypes>
         <version.commonsLang>3.18.0</version.commonsLang>
