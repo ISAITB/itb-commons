@@ -59,7 +59,7 @@
         <version.jaxb-impl>4.0.4</version.jaxb-impl>
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
-        <version.cxf>4.1.4</version.cxf>
+        <version.cxf>4.2.0</version.cxf>
         <version.saxon>12.8</version.saxon>
         <version.tika>3.3.0</version.tika>
         <version.helgerSchematron>9.0.1</version.helgerSchematron>
