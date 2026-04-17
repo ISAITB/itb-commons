@@ -1044,7 +1044,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             return null;
         } else {
             return switch (artifactInfo.getAuthenticationInfo().authenticationType()) {
-                case OAUTH -> (builder) -> {
+                case OAUTH -> builder -> {
                     // Apply OAuth2.0 authentication.
                     var request = OAuth2AuthorizeRequest
                             .withClientRegistrationId(artifactInfo.getAuthenticationInfo().serviceIdentifier())
@@ -1055,16 +1055,15 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                     String token = client.getAccessToken().getTokenValue();
                     builder.header("Authorization", "Bearer " + token);
                 };
-                case BASIC -> (builder) -> {
+                case BASIC -> builder -> {
                     // Apply HTTP basic authentication.
                     String credentials = artifactInfo.getAuthenticationInfo().username() + ":" + String.valueOf(artifactInfo.getAuthenticationInfo().password());
                     String encoded = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
                     builder.header("Authorization", "Basic " + encoded);
                 };
-                case HEADER -> (builder) -> {
+                case HEADER -> builder ->
                     // Apply HTTP header based authentication.
                     builder.header(artifactInfo.getAuthenticationInfo().headerName(), artifactInfo.getAuthenticationInfo().headerValue());
-                };
                 default -> null;
             };
         }
