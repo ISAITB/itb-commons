@@ -54,7 +54,7 @@ public final class JsonConfig {
         module.addSerializer(TestAssertionGroupReportsType.class, new TestAssertionGroupReportsTypeSerializer());
         module.addSerializer(AnyContent.class, new AnyContentSerializer());
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY);
         mapper.registerModule(module);
         return mapper;
     }

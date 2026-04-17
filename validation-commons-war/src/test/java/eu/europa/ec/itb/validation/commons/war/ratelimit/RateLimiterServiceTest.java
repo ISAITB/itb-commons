@@ -6,7 +6,6 @@ import eu.europa.ec.itb.validation.commons.test.BaseTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;

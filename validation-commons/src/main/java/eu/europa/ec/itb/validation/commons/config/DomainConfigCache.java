@@ -581,9 +581,7 @@ public abstract class DomainConfigCache <T extends DomainConfig> {
                         checkAuthenticationInfo(info, validationType, domainConfig);
                     }
                     if (info.getRemoteArtifacts() != null) {
-                        info.getRemoteArtifacts().forEach(remoteArtifact -> {
-                            checkAuthenticationInfo(remoteArtifact, validationType, domainConfig);
-                        });
+                        info.getRemoteArtifacts().forEach(remoteArtifact -> checkAuthenticationInfo(remoteArtifact, validationType, domainConfig));
                     }
                 });
             }
