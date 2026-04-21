@@ -357,4 +357,12 @@
         <packageUrl regex="true">^pkg:maven/org\.thymeleaf/.*@.*$</packageUrl>
         <vulnerabilityName>CVE-2026-40478</vulnerabilityName>
     </suppress>
+    <suppress>
+        <!-- WebFlux not used and Docker image is linux-based. -->
+        <notes><![CDATA[
+    file name: spring-core-6.2.17.jar
+    ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/.*@.*$</packageUrl>
+        <vulnerabilityName>CVE-2026-22745</vulnerabilityName>
+    </suppress>
 </suppressions>
