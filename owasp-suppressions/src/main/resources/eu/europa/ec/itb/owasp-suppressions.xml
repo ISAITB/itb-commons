@@ -373,4 +373,20 @@
         <packageUrl regex="true">^pkg:maven/org\.apache\.pdfbox/.*@.*$</packageUrl>
         <cve>CVE-2026-33929</cve>
     </suppress>
+    <suppress>
+        <!-- WebFlux not used. -->
+        <notes><![CDATA[
+    file name: spring-web-6.2.17.jar
+    ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/.*@.*$</packageUrl>
+        <vulnerabilityName>CVE-2026-22740</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <!-- Preconditions for CVE to apply not satisfied. -->
+        <notes><![CDATA[
+    file name: spring-webmvc-6.2.17.jar
+    ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/.*@.*$</packageUrl>
+        <vulnerabilityName>CVE-2026-22741</vulnerabilityName>
+    </suppress>
 </suppressions>
