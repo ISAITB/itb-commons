@@ -83,7 +83,7 @@
         <version.owaspHtmlSanitizer>20260313.1</version.owaspHtmlSanitizer>
         <version.bouncycastle>1.84</version.bouncycastle>
         <version.batik>1.17</version.batik>
-        <version.bucket4j>8.16.0</version.bucket4j>
+        <version.bucket4j>8.18.0</version.bucket4j>
         <version.caffeine>3.2.3</version.caffeine>
         <!--
             Xerces versions to support the XML Schema v1.1 distribution (not published on Maven
