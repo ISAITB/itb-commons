@@ -55,8 +55,8 @@
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.7.1</version.webjarsJQuery>
-        <version.jaxb>4.0.2</version.jaxb>
-        <version.jaxb-impl>4.0.4</version.jaxb-impl>
+        <version.jaxb>4.0.5</version.jaxb>
+        <version.jaxb-impl>4.0.7</version.jaxb-impl>
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.cxf>4.2.0</version.cxf>
@@ -80,10 +80,10 @@
         <version.pdfbox>3.0.7</version.pdfbox>
         <version.openhtmltopdf>1.1.37</version.openhtmltopdf>
         <version.org.jsoup>1.15.4</version.org.jsoup>
-        <version.owaspHtmlSanitizer>20220608.1</version.owaspHtmlSanitizer>
+        <version.owaspHtmlSanitizer>20260313.1</version.owaspHtmlSanitizer>
         <version.bouncycastle>1.84</version.bouncycastle>
         <version.batik>1.17</version.batik>
-        <version.bucket4j>8.16.0</version.bucket4j>
+        <version.bucket4j>8.18.0</version.bucket4j>
         <version.caffeine>3.2.3</version.caffeine>
         <!--
             Xerces versions to support the XML Schema v1.1 distribution (not published on Maven
