@@ -55,8 +55,8 @@
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.7.1</version.webjarsJQuery>
-        <version.jaxb>4.0.2</version.jaxb>
-        <version.jaxb-impl>4.0.4</version.jaxb-impl>
+        <version.jaxb>4.0.5</version.jaxb>
+        <version.jaxb-impl>4.0.7</version.jaxb-impl>
         <version.geoip2>3.0.1</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.cxf>4.2.0</version.cxf>
