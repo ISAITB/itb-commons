@@ -397,4 +397,12 @@
         <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/.*@.*$</packageUrl>
         <cve>CVE-2026-34481</cve>
     </suppress>
+    <suppress>
+        <!-- Spring Security and certificate based authorisation not used. -->
+        <notes><![CDATA[
+    file name: spring-security-web-6.5.10.jar
+    ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-web@.*$</packageUrl>
+        <vulnerabilityName>CVE-2026-22747</vulnerabilityName>
+    </suppress>
 </suppressions>
