@@ -36,20 +36,18 @@ public record NormalizedURI(String scheme, String host, int port, String path) {
      */
     public static NormalizedURI of(URI uri) {
         URI normalised = uri.normalize();
-        int port = normalised.getPort() != -1
-                ? normalised.getPort()
-                : switch (normalised.getScheme().toLowerCase()) {
-            case "https" -> 443;
-            case "http"  -> 80;
-            default      -> -1;
-        };
+        String scheme = normalised.getScheme() != null ? normalised.getScheme().toLowerCase() : null;
+        String host = normalised.getHost() != null ? normalised.getHost().toLowerCase() : null;
         String path = normalised.getPath() != null ? normalised.getPath() : "";
-        return new NormalizedURI(
-                normalised.getScheme().toLowerCase(),
-                normalised.getHost() != null ? normalised.getHost().toLowerCase() : null,
-                port,
-                path
-        );
+        int port = normalised.getPort();
+        if (port == -1 && scheme != null) {
+            port = switch (scheme) {
+                case "https" -> 443;
+                case "http" -> 80;
+                default -> -1;
+            };
+        }
+        return new NormalizedURI(scheme, host, port, path);
     }
 
     /**
