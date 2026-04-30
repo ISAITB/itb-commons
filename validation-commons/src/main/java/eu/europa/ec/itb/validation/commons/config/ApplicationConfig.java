@@ -15,7 +15,18 @@
 
 package eu.europa.ec.itb.validation.commons.config;
 
+import eu.europa.ec.itb.validation.commons.RateLimitPolicy;
+import eu.europa.ec.itb.validation.commons.error.ValidatorException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,14 +35,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import eu.europa.ec.itb.validation.commons.RateLimitPolicy;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 /**
  * Common application-level configuration properties shared by all validators.
@@ -59,6 +62,61 @@ public abstract class ApplicationConfig {
     private boolean supportsTestDefinitionInReportItems;
     private boolean supportsAdditionalInformationInReportItems;
     private String baseSoapEndpointUrl;
+    private boolean allowUriInputs = false;
+    private Set<String> allowedUriInputs;
+    private List<NormalizedURI> normalizedAllowedUriInputs;
+
+    /**
+     * @return The normalized allowed URI inputs for consistent comparisons.
+     */
+    public List<NormalizedURI> getNormalizedAllowedUriInputs() {
+        if (normalizedAllowedUriInputs == null) {
+            normalizedAllowedUriInputs = getAllowedUriInputs().stream()
+                    .map(input -> {
+                        try {
+                            return NormalizedURI.of(new URI(input));
+                        } catch (URISyntaxException e) {
+                            logger.warn("Allowed URI input [{}] was not a valid URI and will be skipped.", input, e);
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+            if (normalizedAllowedUriInputs.isEmpty() && allowUriInputs) {
+                logger.warn("URI inputs are configured as enabled but no allowed base URIs have been defined. URI inputs will be disabled.");
+                allowUriInputs = false;
+            }
+        }
+        return normalizedAllowedUriInputs;
+    }
+
+    /**
+     * @return The allowed input URI prefixes (treated as a whitelist).
+     */
+    public Set<String> getAllowedUriInputs() {
+        return Objects.requireNonNullElseGet(allowedUriInputs, Collections::emptySet);
+    }
+
+    /**
+     * @param allowedUriInputs The allowed input URI prefixes (treated as a whitelist).
+     */
+    public void setAllowedUriInputs(Set<String> allowedUriInputs) {
+        this.allowedUriInputs = allowedUriInputs;
+    }
+
+    /**
+     * @return Whether or not URI external inputs are allowed.
+     */
+    public boolean isAllowUriInputs() {
+        return allowUriInputs;
+    }
+
+    /**
+     * @param allowUriInputs Whether or not URI external inputs are allowed.
+     */
+    public void setAllowUriInputs(boolean allowUriInputs) {
+        this.allowUriInputs = allowUriInputs;
+    }
 
     /**
      * @return The base public URL for the validator's SOAP endpoints (up to, and without including, the domain).
@@ -229,6 +287,27 @@ public abstract class ApplicationConfig {
     }
 
     /**
+     * Check to see if the provided URI is allowed to be loaded.
+     * <p/>
+     * Externally provided URIs must be generally allowed, but also the provided
+     * URI must match one of the whitelisted URI prefixes.
+     *
+     * @param uri The URI to check.
+     * @return Whether reading is allowed (always true otherwise an exception is raised).
+     * @throws ValidatorException If reading the provided URI is not allowed.
+     */
+    public boolean isUriReadAllowed(String uri) {
+        boolean allowed = false;
+        if (isAllowUriInputs()) {
+            var normalizedUri = NormalizedURI.of(URI.create(uri));
+            allowed = getNormalizedAllowedUriInputs().stream()
+                    .anyMatch(whitelistedUri -> whitelistedUri.isPrefixOf(normalizedUri));
+        }
+        if (!allowed) throw new ValidatorException("validator.label.exception.notAllowedToReadUri");
+        return true;
+    }
+
+    /**
      * Initialisation method to be called when creating subclasses of this class.
      */
     protected void init() {
@@ -277,6 +356,8 @@ public abstract class ApplicationConfig {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss (XXX)");
         startupTimestamp = dtf.format(ZonedDateTime.now());
         resourceUpdateTimestamp = sdf.format(new Date(Paths.get(resourceRoot).toFile().lastModified()));
+        // Load URI input configuration
+        getNormalizedAllowedUriInputs();
     }
 
     /**

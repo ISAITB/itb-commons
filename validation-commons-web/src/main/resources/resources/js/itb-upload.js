@@ -186,6 +186,7 @@ function configure(config) {
         if (config.labels) {
             _config.labels = config.labels;
         }
+        _config.allowUriInputs = config.allowUriInputs;
     }
 }
 
@@ -653,7 +654,7 @@ function addElement(artifactType, placeholderText, focus) {
     	"<div class='col-sm-2'>"+
 			"<select class='form-control contentTypeExternal contentTypeChangedExternal' id='contentType-"+elementId+"' data-element-id='"+elementId+"' name='contentType-external_"+artifactType+"'>"+
 				"<option value='fileType' selected='true'>"+_config.externalArtifactFileLabel+"</option>"+
-				"<option value='uriType'>"+_config.externalArtifactURILabel+"</option>"+
+				(_config.allowUriInputs?("<option value='uriType'>"+_config.externalArtifactURILabel+"</option>"):"")+
 				"<option value='stringType'>"+_config.externalArtifactTextLabel+"</option>"+
 		    "</select>"+
 		"</div>"+
