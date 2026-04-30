@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +26,7 @@ public abstract class BaseSpringTest extends BaseTest {
         var resourceRoot = Path.of(tmpFolder.toString(), "resourceRoot");
         Files.createDirectory(resourceRoot);
         when(appConfig.getResourceRoot()).thenReturn(resourceRoot.toString());
+        when(appConfig.isUriReadAllowed(anyString())).thenReturn(true);
     }
 
     @Override
