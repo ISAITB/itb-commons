@@ -74,9 +74,15 @@ public abstract class ApplicationConfig {
             normalizedAllowedUriInputs = getAllowedUriInputs().stream()
                     .map(input -> {
                         try {
-                            return NormalizedURI.of(new URI(input));
+                            var uri = new URI(input);
+                            if (uri.isAbsolute()) {
+                                return NormalizedURI.of(uri);
+                            } else {
+                                logger.warn("Allowed base URI for inputs [{}] was not absolute and will be skipped.", input);
+                                return null;
+                            }
                         } catch (URISyntaxException e) {
-                            logger.warn("Allowed URI input [{}] was not a valid URI and will be skipped.", input, e);
+                            logger.warn("Allowed base URI for inputs[{}] was not a valid URI and will be skipped.", input, e);
                             return null;
                         }
                     })
