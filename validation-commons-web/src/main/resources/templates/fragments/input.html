@@ -30,7 +30,7 @@
                     <div class="col-sm-2">
                         <select class="form-control contentTypeChanged" id="contentType" name="contentType">
                             <option th:text="${localiser.localise('validator.label.optionContentFile')}" value="fileType">Type</option>
-                            <option th:text="${localiser.localise('validator.label.optionContentURI')}" value="uriType">Type</option>
+                            <option th:if="${appConfig.allowUriInputs}" th:text="${localiser.localise('validator.label.optionContentURI')}" value="uriType">Type</option>
                             <option th:text="${localiser.localise('validator.label.optionContentDirectInput')}" value="stringType">Type</option>
                         </select>
                     </div>

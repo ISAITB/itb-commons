@@ -299,19 +299,20 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         if (targetFolder == null) {
             targetFolder = getWebTmpFolder();
         }
-        FileInfo outputFile;
-        try {
-            outputFile = getFileFromURL(targetFolder, urlOrBase64, getFileExtension(contentType), fileName, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion);
-        } catch (MalformedURLException e) {
-            // Exception means that the text is not a valid URL.
+        FileInfo outputFile = null;
+        if (Utils.isValidUrl(urlOrBase64)) {
+            if (config.isUriReadAllowed(urlOrBase64)) {
+                outputFile = getFileFromURL(targetFolder, urlOrBase64, getFileExtension(contentType), fileName, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion);
+            }
+        } else {
             try {
                 outputFile = new FileInfo(getFileFromBase64(targetFolder, urlOrBase64, contentType, fileName, false), contentType);
-            } catch (Exception e2) {
+            } catch (Exception e) {
                 // This likely means that the is not a valid BASE64 string. Try to get the value as a plain string.
                 outputFile = new FileInfo(getFileFromString(targetFolder, urlOrBase64, contentType, fileName), contentType);
             }
         }
-        return outputFile;
+        return Objects.requireNonNull(outputFile);
     }
 
     /**
@@ -1216,7 +1217,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @return The stored file.
      */
     public FileInfo storeFileContent(File targetFolder, String content, ValueEmbeddingEnumeration embeddingMethod, String contentType, String artifactType, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) {
-        FileInfo file;
+        FileInfo file = null;
         if (content != null) {
             if (embeddingMethod != null) {
                 switch (embeddingMethod) {
@@ -1230,13 +1231,15 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                         break;
                     case URI:
                         // Read the string from the provided URI.
-                        FileInfo loadedFile;
-                        try {
-                            loadedFile = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion, requestDecorator);
-                        } catch (IOException e) {
-                            throw new ValidatorException("validator.label.exception.unableToProcessURI", e);
+                        if (config.isUriReadAllowed(content)) {
+                            FileInfo loadedFile;
+                            try {
+                                loadedFile = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion, requestDecorator);
+                            } catch (IOException e) {
+                                throw new ValidatorException("validator.label.exception.unableToProcessURI", e);
+                            }
+                            file = new FileInfo(loadedFile.getFile(), getContentTypeForFile(loadedFile, contentType), loadedFile.getSource());
                         }
-                        file = new FileInfo(loadedFile.getFile(), getContentTypeForFile(loadedFile, contentType), loadedFile.getSource());
                         break;
                     default: // BASE_64
                         // Construct the string from its BASE64 encoded bytes.
@@ -1255,7 +1258,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         } else {
             throw new ValidatorException("validator.label.exception.unableToSaveEmpty");
         }
-        return file;
+        return Objects.requireNonNull(file);
     }
 
     /**
