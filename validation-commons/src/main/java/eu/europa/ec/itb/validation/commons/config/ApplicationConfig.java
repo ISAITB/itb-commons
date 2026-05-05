@@ -65,35 +65,51 @@ public abstract class ApplicationConfig {
     private boolean allowUriInputs = false;
     private Set<String> allowedUriInputs;
     private List<NormalizedURI> normalizedAllowedUriInputs;
+    private Set<String> allowedUriImports;
+    private List<NormalizedURI> normalizedAllowedUriImports;
+
+    private List<NormalizedURI> parseNormalizedUris(Set<String> allowedUris) {
+        return allowedUris.stream()
+                .map(input -> {
+                    try {
+                        var uri = new URI(input);
+                        if (uri.isAbsolute()) {
+                            return NormalizedURI.of(uri);
+                        } else {
+                            logger.warn("Allowed base URI [{}] was not absolute and will be skipped.", input);
+                            return null;
+                        }
+                    } catch (URISyntaxException e) {
+                        logger.warn("Allowed base URI [{}] was not a valid URI and will be skipped.", input, e);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
 
     /**
      * @return The normalized allowed URI inputs for consistent comparisons.
      */
     public List<NormalizedURI> getNormalizedAllowedUriInputs() {
         if (normalizedAllowedUriInputs == null) {
-            normalizedAllowedUriInputs = getAllowedUriInputs().stream()
-                    .map(input -> {
-                        try {
-                            var uri = new URI(input);
-                            if (uri.isAbsolute()) {
-                                return NormalizedURI.of(uri);
-                            } else {
-                                logger.warn("Allowed base URI for inputs [{}] was not absolute and will be skipped.", input);
-                                return null;
-                            }
-                        } catch (URISyntaxException e) {
-                            logger.warn("Allowed base URI for inputs[{}] was not a valid URI and will be skipped.", input, e);
-                            return null;
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .toList();
+            normalizedAllowedUriInputs = parseNormalizedUris(getAllowedUriInputs());
             if (normalizedAllowedUriInputs.isEmpty() && allowUriInputs) {
                 logger.warn("URI inputs are configured as enabled but no allowed base URIs have been defined. URI inputs will be disabled.");
                 allowUriInputs = false;
             }
         }
         return normalizedAllowedUriInputs;
+    }
+
+    /**
+     * @return The normalized allowed URI inputs for consistent comparisons.
+     */
+    public List<NormalizedURI> getNormalizedAllowedUriImports() {
+        if (normalizedAllowedUriImports == null) {
+            normalizedAllowedUriImports = parseNormalizedUris(getAllowedUriInputs());
+        }
+        return normalizedAllowedUriImports;
     }
 
     /**
@@ -108,6 +124,20 @@ public abstract class ApplicationConfig {
      */
     public void setAllowedUriInputs(Set<String> allowedUriInputs) {
         this.allowedUriInputs = allowedUriInputs;
+    }
+
+    /**
+     * @return The allowed imported URI prefixes (treated as a whitelist).
+     */
+    public Set<String> getAllowedUriImports() {
+        return Objects.requireNonNullElseGet(allowedUriImports, Collections::emptySet);
+    }
+
+    /**
+     * @param allowedUriImports The allowed imported URI prefixes (treated as a whitelist).
+     */
+    public void setAllowedUriImports(Set<String> allowedUriImports) {
+        this.allowedUriImports = allowedUriImports;
     }
 
     /**
