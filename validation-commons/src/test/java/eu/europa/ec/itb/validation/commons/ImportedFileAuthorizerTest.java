@@ -19,9 +19,11 @@ class ImportedFileAuthorizerTest {
     void testPaths() {
         var appConfig1 = mock(ApplicationConfig.class);
         when(appConfig1.isRestrictResourcesToDomain()).thenReturn(true);
+        when(appConfig1.getTmpFolder()).thenReturn("/tmp/folder");
         when(appConfig1.getResourceRoot()).thenReturn("/tmp/resourceRoot");
         var appConfig2 = mock(ApplicationConfig.class);
         when(appConfig2.isRestrictResourcesToDomain()).thenReturn(false);
+        when(appConfig2.getTmpFolder()).thenReturn("/tmp/folder");
         when(appConfig2.getResourceRoot()).thenReturn("/tmp/resourceRoot");
         var domainConfig1 = mock(DomainConfig.class);
         when(domainConfig1.getDomainRoot()).thenReturn("/tmp/resourceRoot/domain1");

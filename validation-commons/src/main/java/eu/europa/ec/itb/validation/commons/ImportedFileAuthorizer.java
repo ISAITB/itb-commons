@@ -85,10 +85,10 @@ public class ImportedFileAuthorizer {
     public static ImportedFileAuthorizer from(ApplicationConfig appConfig, DomainConfig domainConfig, Path tempFolderForValidation) {
         if (appConfig.isRestrictResourcesToDomain()) {
             // Allow referenced files to be either under the temp folder for the specific validation, or under the domain's root folder.
-            return new ImportedFileAuthorizer(List.of(tempFolderForValidation, Path.of(domainConfig.getDomainRoot())));
+            return new ImportedFileAuthorizer(List.of(tempFolderForValidation, Path.of(appConfig.getTmpFolder()), Path.of(domainConfig.getDomainRoot())));
         } else {
             // Allow referenced files to be either under the temp folder for the specific validation, or under the validator's resource root folder.
-            return new ImportedFileAuthorizer(List.of(tempFolderForValidation, Path.of(appConfig.getResourceRoot())));
+            return new ImportedFileAuthorizer(List.of(tempFolderForValidation, Path.of(appConfig.getTmpFolder()), Path.of(appConfig.getResourceRoot())));
         }
     }
 
