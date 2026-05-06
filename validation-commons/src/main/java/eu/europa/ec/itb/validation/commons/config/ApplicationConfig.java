@@ -107,7 +107,7 @@ public abstract class ApplicationConfig {
      */
     public List<NormalizedURI> getNormalizedAllowedUriImports() {
         if (normalizedAllowedUriImports == null) {
-            normalizedAllowedUriImports = parseNormalizedUris(getAllowedUriInputs());
+            normalizedAllowedUriImports = parseNormalizedUris(getAllowedUriImports());
         }
         return normalizedAllowedUriImports;
     }
@@ -392,8 +392,9 @@ public abstract class ApplicationConfig {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss (XXX)");
         startupTimestamp = dtf.format(ZonedDateTime.now());
         resourceUpdateTimestamp = sdf.format(new Date(Paths.get(resourceRoot).toFile().lastModified()));
-        // Load URI input configuration
+        // Load URI input and import configuration
         getNormalizedAllowedUriInputs();
+        getNormalizedAllowedUriImports();
     }
 
     /**
