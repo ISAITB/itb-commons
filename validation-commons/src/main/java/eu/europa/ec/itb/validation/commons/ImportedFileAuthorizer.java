@@ -46,10 +46,10 @@ public class ImportedFileAuthorizer {
      */
     public boolean isUriAllowed(URI uri) {
         if (uri == null) {
-            throw new ValidatorException("validator.label.exception.notAllowedToReadImportedPath", (Object) null);
+            throw new ValidatorException("validator.label.exception.notAllowedToReadImportedPath");
         }
         if (!"file".equalsIgnoreCase(uri.getScheme())) {
-            throw new ValidatorException("validator.label.exception.notAllowedToReadImportedPath", uri);
+            throw new ValidatorException("validator.label.exception.notAllowedToReadImportedPath");
         }
         return isPathAllowed(Path.of(uri));
     }
@@ -63,13 +63,13 @@ public class ImportedFileAuthorizer {
      */
     public boolean isPathAllowed(Path path) {
         if (path == null) {
-            throw new ValidatorException("validator.label.exception.notAllowedToReadImportedPath", (Object) null);
+            throw new ValidatorException("validator.label.exception.notAllowedToReadImportedPath");
         }
         Path candidate = path.toAbsolutePath().normalize();
         boolean allowed = acceptedRootPaths.stream()
                 .anyMatch(candidate::startsWith);
         if (!allowed) {
-            throw new ValidatorException("validator.label.exception.notAllowedToReadImportedPath", path);
+            throw new ValidatorException("validator.label.exception.notAllowedToReadImportedPath");
         }
         return true;
     }
