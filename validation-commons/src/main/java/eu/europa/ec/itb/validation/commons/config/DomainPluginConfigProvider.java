@@ -29,6 +29,8 @@ import java.util.Map;
  * <p>
  * The implementation of this class would differ based on how plugins are loaded from
  * a configuration file.
+ *
+ * @param <T> The domain configuration type.
  */
 public class DomainPluginConfigProvider<T extends DomainConfig> implements PluginConfigProvider {
 
