@@ -324,7 +324,7 @@ public abstract class ApplicationConfig {
 
     /**
      * Check to see if the provided URI is allowed to be loaded.
-     * <p/>
+     * <p>
      * Externally provided URIs must be generally allowed, but also the provided
      * URI must match one of the whitelisted URI prefixes.
      *
