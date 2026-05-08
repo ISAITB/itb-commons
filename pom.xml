@@ -84,7 +84,7 @@
         <version.bouncycastle>1.84</version.bouncycastle>
         <version.batik>1.17</version.batik>
         <version.bucket4j>8.18.0</version.bucket4j>
-        <version.caffeine>3.2.3</version.caffeine>
+        <version.caffeine>3.2.4</version.caffeine>
         <!--
             Xerces versions to support the XML Schema v1.1 distribution (not published on Maven
             The version in the following sections must remain consistent with the latest Xerces
