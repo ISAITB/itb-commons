@@ -42,22 +42,22 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <ossIndexUsername>ossIndexUsername</ossIndexUsername>
         <ossIndexPassword>ossIndexPassword</ossIndexPassword>
-        <version.springBoot>3.5.14</version.springBoot> <!-- When upgrading adapt Tomcat version (below) as needed. -->
-        <version.tomcat>10.1.54</version.tomcat>
+        <version.springBoot>4.0.6</version.springBoot> <!-- When upgrading adapt Tomcat version (below) as needed. -->
+        <version.tomcat>11.0.21</version.tomcat>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
         <version.gitbTypes>1.26.0</version.gitbTypes>
         <version.commonsLang>3.18.0</version.commonsLang>
         <version.commonsConfiguration>2.11.0</version.commonsConfiguration>
         <version.commonsIo>2.17.0</version.commonsIo>
         <version.commonsCsv>1.12.0</version.commonsCsv>
-        <version.webjarsLocator>0.53</version.webjarsLocator>
+        <version.webjarsLocator>0.59</version.webjarsLocator>
         <version.webjarsBootstrap>3.4.1</version.webjarsBootstrap>
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.7.1</version.webjarsJQuery>
         <version.jaxb>4.0.5</version.jaxb>
         <version.jaxb-impl>4.0.7</version.jaxb-impl>
-        <version.geoip2>3.0.1</version.geoip2>
+        <version.geoip2>5.0.2</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.cxf>4.2.0</version.cxf>
         <version.saxon>12.8</version.saxon>
@@ -67,14 +67,14 @@
         <version.jws>3.0.0</version.jws>
         <version.commonsBeanutils>1.9.4</version.commonsBeanutils>
         <version.jakartaActivation>2.1.2</version.jakartaActivation>
-        <version.json-schema-validator>2.0.1</version.json-schema-validator>
+        <version.json-schema-validator>3.0.2</version.json-schema-validator>
         <version.jakartaJson>2.0.0</version.jakartaJson>
         <version.jayway>2.9.0</version.jayway>
         <version.gson>2.9.0</version.gson>
         <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
         <version.commonsCompress>1.28.0</version.commonsCompress>
         <version.commonsValidator>1.9.0</version.commonsValidator>
-        <version.springdoc>2.7.0</version.springdoc>
+        <version.springdoc>3.0.3</version.springdoc>
         <version.topbraid>1.5.0</version.topbraid>
         <version.freemarker>2.3.32</version.freemarker>
         <version.pdfbox>3.0.7</version.pdfbox>
