@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -216,6 +217,7 @@ public class ImportedUriAuthorizer {
      * @param prefixLength The prefix length.
      */
     private record CidrInfo(byte[] rangeAddressBytes, int prefixLength) {
+
         private static CidrInfo from(String cidr) {
             String[] parts = StringUtils.split(cidr, '/');
             try {
@@ -225,6 +227,26 @@ public class ImportedUriAuthorizer {
                 throw new IllegalStateException("Unable to parse CIDR", e);
             }
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof CidrInfo other)) return false;
+            return prefixLength == other.prefixLength && Arrays.equals(rangeAddressBytes, other.rangeAddressBytes);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Integer.hashCode(prefixLength);
+            result = 31 * result + Arrays.hashCode(rangeAddressBytes);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "CidrInfo[rangeAddressBytes=" + Arrays.toString(rangeAddressBytes) + ", prefixLength=" + prefixLength + "]";
+        }
+
     }
 
 }
