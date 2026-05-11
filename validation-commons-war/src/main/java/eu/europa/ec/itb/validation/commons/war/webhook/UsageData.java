@@ -15,12 +15,12 @@
 
 package eu.europa.ec.itb.validation.commons.war.webhook;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import tools.jackson.databind.annotation.JsonAppend;
+
+import java.util.Date;
 
 /**
  * Class that holds the usage data attributes.
@@ -38,7 +38,7 @@ public class UsageData {
     private final Result result;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private final Date validationTime;
-    @JsonInclude(Include.NON_EMPTY)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private final String country;
 
     /**
@@ -129,10 +129,13 @@ public class UsageData {
     public enum Result {
 
         /** Validation was successful. */
+        @JsonProperty("SUCCESS")
         SUCCESS("success"),
         /** Validation was successful but generated warnings. */
+        @JsonProperty("WARNING")
         WARNING("warning"),
         /** Validation failed. */
+        @JsonProperty("FAILURE")
         FAILURE("failure");
 
         private final String name;

@@ -15,9 +15,6 @@
 
 package eu.europa.ec.itb.validation.commons.war.webhook;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import eu.europa.ec.itb.validation.commons.Utils;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import jakarta.annotation.PostConstruct;
@@ -33,6 +30,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
 
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -111,7 +111,7 @@ public class WebHook {
             if (response.getStatusCode().value() >= 300) { // Unexpected response codes
                 logger.warn("Statistics reporting received response {} and message {}", response.getStatusCode().value() , response.getBody());
             }
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             logger.warn("Error serializing UsageData object to JSON format.", ex);
         } catch(Exception ex) {
             logger.warn("Error during statistics reporting", ex);

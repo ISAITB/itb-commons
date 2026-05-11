@@ -1,6 +1,5 @@
 package eu.europa.ec.itb.validation.commons.war.webhook;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -36,7 +36,7 @@ class WebHookTest {
         configField.set(webhook, appConfig);
         var objectMapperField = WebHook.class.getDeclaredField("objectMapper");
         objectMapperField.setAccessible(true);
-        objectMapperField.set(webhook, new ObjectMapper());
+        objectMapperField.set(webhook, JsonMapper.shared());
         webhook.initializeAttributes();
         var restTemplateField = WebHook.class.getDeclaredField("restTemplate");
         restTemplateField.setAccessible(true);
@@ -74,8 +74,7 @@ class WebHookTest {
         when(restTemplate.postForEntity(any(), any(), any(), any(Map.class))).thenAnswer((Answer<?>) invocation -> {
             var entity = invocation.getArgument(1, HttpEntity.class);
             assertNotNull(entity.getBody());
-            ObjectMapper mapper = new ObjectMapper();
-            var json = mapper.readTree(new StringReader(entity.getBody().toString()));
+            var json = JsonMapper.shared().readTree(new StringReader(entity.getBody().toString()));
             assertNotNull(json.get("validator"));
             assertNotNull(json.get("domain"));
             assertNotNull(json.get("api"));

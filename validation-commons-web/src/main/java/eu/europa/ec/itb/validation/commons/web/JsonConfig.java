@@ -16,17 +16,17 @@
 package eu.europa.ec.itb.validation.commons.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.gitb.core.AnyContent;
 import com.gitb.tr.BAR;
 import com.gitb.tr.TestAssertionGroupReportsType;
 import org.apache.commons.lang3.StringUtils;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,26 +49,26 @@ public final class JsonConfig {
      * @return The object mapper.
      */
     public static ObjectMapper objectMapper() {
-        var mapper = new ObjectMapper();
         var module = new SimpleModule("TAR");
         module.addSerializer(TestAssertionGroupReportsType.class, new TestAssertionGroupReportsTypeSerializer());
         module.addSerializer(AnyContent.class, new AnyContentSerializer());
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
-        mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY);
-        mapper.registerModule(module);
-        return mapper;
+        return JsonMapper.builder()
+                .defaultDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"))
+                .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.NON_EMPTY))
+                .addModule(module)
+                .build();
     }
 
     /**
      * Serializer for TAR report items.
      */
-    static class TestAssertionGroupReportsTypeSerializer extends JsonSerializer<TestAssertionGroupReportsType> {
+    static class TestAssertionGroupReportsTypeSerializer extends ValueSerializer<TestAssertionGroupReportsType> {
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void serialize(TestAssertionGroupReportsType type, JsonGenerator json, SerializerProvider serializerProvider) throws IOException {
+        public void serialize(TestAssertionGroupReportsType type, JsonGenerator json, SerializationContext serializerProvider) {
             json.writeStartObject();
             List<BAR> errors = new ArrayList<>();
             List<BAR> warnings = new ArrayList<>();
@@ -85,13 +85,13 @@ public final class JsonConfig {
                 }
             }
             if (!errors.isEmpty()) {
-                json.writeObjectField("error", errors);
+                json.writePOJOProperty("error", errors);
             }
             if (!warnings.isEmpty()) {
-                json.writeObjectField("warning", warnings);
+                json.writePOJOProperty("warning", warnings);
             }
             if (!messages.isEmpty()) {
-                json.writeObjectField("info", messages);
+                json.writePOJOProperty("info", messages);
             }
             json.writeEndObject();
         }
@@ -101,24 +101,24 @@ public final class JsonConfig {
     /**
      * Serializer for context map entries.
      */
-    static class AnyContentSerializer extends JsonSerializer<AnyContent> {
+    static class AnyContentSerializer extends ValueSerializer<AnyContent> {
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void serialize(AnyContent type, JsonGenerator json, SerializerProvider serializerProvider) throws IOException {
+        public void serialize(AnyContent type, JsonGenerator json, SerializationContext serializerProvider) {
             json.writeStartObject();
             if (!type.getItem().isEmpty() || StringUtils.isNotEmpty(type.getValue())) {
-                if (StringUtils.isNotEmpty(type.getName())) json.writeStringField("name", type.getName());
-                if (StringUtils.isNotEmpty(type.getType())) json.writeStringField("type", type.getType());
+                if (StringUtils.isNotEmpty(type.getName())) json.writeStringProperty("name", type.getName());
+                if (StringUtils.isNotEmpty(type.getType())) json.writeStringProperty("type", type.getType());
                 if (!type.getItem().isEmpty()) {
-                    json.writeObjectField("items", type.getItem());
+                    json.writePOJOProperty("items", type.getItem());
                 } else {
-                    if (StringUtils.isNotEmpty(type.getMimeType())) json.writeStringField("mimeType", type.getMimeType());
-                    if (type.getEmbeddingMethod() != null) json.writeObjectField("embeddingMethod", type.getEmbeddingMethod());
-                    if (StringUtils.isNotEmpty(type.getEncoding())) json.writeStringField("encoding", type.getEncoding());
-                    json.writeStringField("value", type.getValue());
+                    if (StringUtils.isNotEmpty(type.getMimeType())) json.writeStringProperty("mimeType", type.getMimeType());
+                    if (type.getEmbeddingMethod() != null) json.writePOJOProperty("embeddingMethod", type.getEmbeddingMethod());
+                    if (StringUtils.isNotEmpty(type.getEncoding())) json.writeStringProperty("encoding", type.getEncoding());
+                    json.writeStringProperty("value", type.getValue());
                 }
             }
             json.writeEndObject();
