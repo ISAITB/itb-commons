@@ -99,7 +99,7 @@ public abstract class StatisticReporting {
         try {
             InetAddress address = InetAddress.getByName(ip);
             CountryResponse response = this.reader.country(address);
-            countryISO = response.getCountry().getIsoCode();
+            countryISO = response.country().isoCode();
         } catch (AddressNotFoundException ex){
             logger.warn("Unable to resolve country for ip: {}", ip);
         } catch (Exception ex){
