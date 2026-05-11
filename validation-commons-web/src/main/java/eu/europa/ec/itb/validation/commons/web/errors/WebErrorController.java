@@ -20,6 +20,9 @@ import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.web.Constants;
 import eu.europa.ec.itb.validation.commons.web.locale.CustomLocaleResolver;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +31,7 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,9 +39,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
@@ -124,7 +124,7 @@ public class WebErrorController implements ErrorController {
      * @return The model data.
      */
     private ModelAndView ajaxError(Object status, HttpServletResponse response, Throwable cause) {
-    	MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+        JacksonJsonHttpMessageConverter jsonConverter = new JacksonJsonHttpMessageConverter();
     	MediaType jsonMimeType = MediaType.APPLICATION_JSON;
     	Map<String, String> responseMessage = new HashMap<>();
     	responseMessage.put("errorMessage", getErrorMessage(status, cause));
