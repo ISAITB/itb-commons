@@ -51,7 +51,7 @@ public class RateLimitSoapInterceptor extends AbstractPhaseInterceptor<SoapMessa
      */
     @Override
     public void handleMessage(SoapMessage soapMessage) throws Fault {
-        String operation = soapMessage.getExchange().getBindingOperationInfo().getOperationInfo().getName().getLocalPart();
+        String operation = determineOperation(soapMessage);
         if ("validate".equals(operation)) {
             HttpServletRequest request = (HttpServletRequest) soapMessage.get(AbstractHTTPDestination.HTTP_REQUEST);
             if (request != null) {
@@ -63,4 +63,34 @@ public class RateLimitSoapInterceptor extends AbstractPhaseInterceptor<SoapMessa
             }
         }
     }
+
+    /**
+     * Determine the name of the requested operation.
+     *
+     * @param soapMessage The SOAP message.
+     * @return The operation name.
+     */
+    private String determineOperation(SoapMessage soapMessage) {
+        String operation = null;
+        if (soapMessage != null) {
+            var exchange = soapMessage.getExchange();
+            if (exchange != null) {
+                var operationBinding = exchange.getBindingOperationInfo();
+                if (operationBinding != null) {
+                    var operationInfo = operationBinding.getOperationInfo();
+                    if (operationInfo != null) {
+                        var operationName = operationInfo.getName();
+                        if (operationName != null) {
+                            operation = operationName.getLocalPart();
+                        }
+                    }
+                }
+            }
+        }
+        if (operation == null) {
+            throw new Fault(new RuntimeException("Unable to determine operation from received SOAP message"));
+        }
+        return operation;
+    }
+
 }
