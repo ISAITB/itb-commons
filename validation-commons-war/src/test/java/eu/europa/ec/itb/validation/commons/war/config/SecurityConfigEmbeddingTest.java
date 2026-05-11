@@ -5,11 +5,11 @@ import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,8 +23,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
-@ContextConfiguration(classes = { SecurityConfigEmbeddingTest.TestConfig.class, SecurityConfig.class })
+@SpringBootTest(
+        classes = { SecurityConfigEmbeddingTest.TestConfig.class, SecurityConfig.class },
+        webEnvironment = SpringBootTest.WebEnvironment.MOCK
+)
+@AutoConfigureMockMvc
 class SecurityConfigEmbeddingTest {
 
     @TestConfiguration
@@ -34,13 +37,14 @@ class SecurityConfigEmbeddingTest {
             return mock(ApplicationConfig.class);
         }
         @Bean
+        @SuppressWarnings("unchecked")
         WebDomainConfigCache<WebDomainConfig> webDomainConfigCache() {
             var cache = mock(WebDomainConfigCache.class);
             var domainConfig = mock(WebDomainConfig.class);
             when(domainConfig.isSupportUserInterfaceEmbedding()).thenReturn(true);
             when(cache.getAllDomainConfigurations()).thenAnswer(call -> List.of(domainConfig));
             when(cache.getConfigForDomainName(anyString())).thenReturn(domainConfig);
-            return cache;
+            return (WebDomainConfigCache<WebDomainConfig>) cache;
         }
         @Controller
         static class TestController {

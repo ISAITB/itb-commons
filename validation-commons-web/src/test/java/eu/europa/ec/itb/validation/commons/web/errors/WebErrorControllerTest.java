@@ -2,14 +2,12 @@ package eu.europa.ec.itb.validation.commons.web.errors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.itb.validation.commons.web.Constants;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.web.servlet.error.ErrorAttributes;
-
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,27 +15,20 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class WebErrorControllerTest {
 
     private WebErrorController getController() {
-        var controller = new WebErrorController();
-        try {
-            var field = WebErrorController.class.getDeclaredField("errorAttributes");
-            field.setAccessible(true);
-            field.set(controller, mock(ErrorAttributes.class));
-            field.setAccessible(false);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        return controller;
+        return new WebErrorController();
     }
 
     @Test
     void testHandleErrorNormalRequest() {
         var request = mock(HttpServletRequest.class);
         when(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).thenReturn(500);
+        when(request.getAttribute(RequestDispatcher.ERROR_EXCEPTION)).thenReturn(null);
         when(request.getAttribute(Constants.IS_MINIMAL)).thenReturn(false);
         when(request.getHeader(Constants.AJAX_REQUEST_HEADER)).thenReturn(null);
         when(request.getHeader("referer")).thenReturn(null);
@@ -56,6 +47,7 @@ class WebErrorControllerTest {
     void testHandleErrorAjaxRequest() throws IOException {
         var request = mock(HttpServletRequest.class);
         when(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).thenReturn(500);
+        when(request.getAttribute(RequestDispatcher.ERROR_EXCEPTION)).thenReturn(null);
         when(request.getAttribute(Constants.IS_MINIMAL)).thenReturn(false);
         when(request.getHeader(Constants.AJAX_REQUEST_HEADER)).thenReturn("XmlHttpRequest");
         when(request.getHeader("referer")).thenReturn(null);

@@ -26,8 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.error.ErrorAttributes;
-import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.boot.webmvc.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -36,7 +35,6 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -56,8 +54,6 @@ public class WebErrorController implements ErrorController {
     private CustomLocaleResolver localeResolver;
     @Autowired
     private ApplicationConfig appConfig;
-    @Autowired
-    private ErrorAttributes errorAttributes;
 
     /**
      * Handle a web error. The handling here forwards to a common error page or, in case of errors
@@ -69,7 +65,7 @@ public class WebErrorController implements ErrorController {
      */
     @RequestMapping(value = "/error", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView handleError(HttpServletRequest request, HttpServletResponse response) {
-        Throwable cause = errorAttributes.getError(new ServletWebRequest(request));
+        Throwable cause = (Throwable) request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         var domainConfig = (WebDomainConfig) request.getAttribute(WebDomainConfig.DOMAIN_CONFIG_REQUEST_ATTRIBUTE);
         String xRequestedWith = request.getHeader(Constants.AJAX_REQUEST_HEADER);

@@ -5,11 +5,11 @@ import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,8 +21,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
-@ContextConfiguration(classes = { SecurityConfigTest.TestConfig.class, SecurityConfig.class })
+@SpringBootTest(
+        classes = { SecurityConfigTest.TestConfig.class, SecurityConfig.class },
+        webEnvironment = SpringBootTest.WebEnvironment.MOCK
+)
+@AutoConfigureMockMvc
 class SecurityConfigTest {
 
     @TestConfiguration
@@ -32,8 +35,9 @@ class SecurityConfigTest {
             return mock(ApplicationConfig.class);
         }
         @Bean
+        @SuppressWarnings("unchecked")
         WebDomainConfigCache<WebDomainConfig> webDomainConfigCache() {
-            return mock(WebDomainConfigCache.class);
+            return (WebDomainConfigCache<WebDomainConfig>) mock(WebDomainConfigCache.class);
         }
         @Controller
         static class TestController {
