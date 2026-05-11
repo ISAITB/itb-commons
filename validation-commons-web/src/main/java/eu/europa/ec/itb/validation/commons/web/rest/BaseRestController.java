@@ -15,7 +15,6 @@
 
 package eu.europa.ec.itb.validation.commons.web.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitb.tr.TAR;
 import eu.europa.ec.itb.validation.commons.BaseFileManager;
 import eu.europa.ec.itb.validation.commons.BaseInputHelper;
@@ -44,9 +43,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
@@ -223,7 +223,7 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
         limitReportItemsIfNeeded(report, domainConfig);
         try {
             tarObjectMapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, report);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException("An error occurred while writing the JSON report.", e);
         }
     }

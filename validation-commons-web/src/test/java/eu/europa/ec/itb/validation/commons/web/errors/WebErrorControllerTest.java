@@ -1,6 +1,5 @@
 package eu.europa.ec.itb.validation.commons.web.errors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.itb.validation.commons.web.Constants;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletOutputStream;
@@ -8,6 +7,7 @@ import jakarta.servlet.WriteListener;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -70,9 +70,8 @@ class WebErrorControllerTest {
         var controller = getController();
         var result = controller.handleError(request, response);
         assertNull(result);
-        ObjectMapper mapper = new ObjectMapper();
-        var node = mapper.readTree(new StringReader(bos.toString(StandardCharsets.UTF_8)));
-        assertNotNull(node.get("errorMessage").asText());
+        var node = JsonMapper.shared().readTree(new StringReader(bos.toString(StandardCharsets.UTF_8)));
+        assertNotNull(node.get("errorMessage").asString());
     }
 
 }

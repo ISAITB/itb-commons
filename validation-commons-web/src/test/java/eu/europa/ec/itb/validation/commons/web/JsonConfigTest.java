@@ -1,6 +1,5 @@
 package eu.europa.ec.itb.validation.commons.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gitb.core.AnyContent;
 import com.gitb.core.ValueEmbeddingEnumeration;
 import com.gitb.tr.*;
@@ -60,7 +59,7 @@ class JsonConfigTest {
     }
 
     @Test
-    void testSerialize() throws JsonProcessingException, DatatypeConfigurationException {
+    void testSerialize() throws DatatypeConfigurationException {
         var mapper = JsonConfig.objectMapper();
         assertNotNull(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(createTAR()));
     }

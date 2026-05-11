@@ -15,19 +15,19 @@
 
 package eu.europa.ec.itb.validation.commons.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.web.dto.UploadResult;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,7 +49,7 @@ public abstract class BaseUploadController <X extends WebDomainConfig, Y extends
     /** The content type value in case of text from an editor. */
     public static final String CONTENT_TYPE_STRING = "stringType" ;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonMapper.shared();
 
     /**
      * Get the request's relevant domain configuration object.
@@ -76,7 +76,7 @@ public abstract class BaseUploadController <X extends WebDomainConfig, Y extends
             var writer = new StringWriter();
             objectMapper.writeValue(writer, result);
             return writer.toString();
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException("Error while serialising validation result", e);
         }
     }
@@ -167,7 +167,7 @@ public abstract class BaseUploadController <X extends WebDomainConfig, Y extends
         typeAndOptionRelated.forEach(entry -> addTypeAndOptionTranslations(translations, localisationHelper, config, entry.getLeft(), entry.getRight()));
         try {
             return objectMapper.writeValueAsString(translations);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException("Unable to serialise label configuration", e);
         }
     }

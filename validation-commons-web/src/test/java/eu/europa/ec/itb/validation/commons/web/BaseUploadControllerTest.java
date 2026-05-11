@@ -1,18 +1,19 @@
 package eu.europa.ec.itb.validation.commons.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
 import eu.europa.ec.itb.validation.commons.web.dto.UploadResult;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
@@ -37,11 +38,10 @@ class BaseUploadControllerTest {
         uploadResult.setMessage("Message");
         var result = controller.writeResultToString(uploadResult);
         assertNotNull(result);
-        var mapper = new ObjectMapper();
         UploadResult<?> readResult = null;
         try {
-            readResult = mapper.readValue(result, UploadResult.class);
-        } catch (JsonProcessingException e) {
+            readResult = JsonMapper.shared().readValue(result, UploadResult.class);
+        } catch (JacksonException e) {
             fail("Invalid JSON returned");
         }
         assertNotNull(readResult);
@@ -50,8 +50,8 @@ class BaseUploadControllerTest {
 
     @Test
     void testWriteResultToStringError() throws NoSuchFieldException, IOException, IllegalAccessException {
-        var badObjectMapper = mock(ObjectMapper.class);
-        doThrow(IOException.class).when(badObjectMapper).writeValue(any(Writer.class), any(Object.class));
+        var badObjectMapper = mock(JsonMapper.class);
+        doThrow(JacksonException.class).when(badObjectMapper).writeValue(any(Writer.class), any(Object.class));
         var mapper = BaseUploadController.class.getDeclaredField("objectMapper");
         mapper.setAccessible(true);
         mapper.set(controller, badObjectMapper);
@@ -114,7 +114,7 @@ class BaseUploadControllerTest {
     }
 
     @Test
-    void testGetDynamicLabelConfiguration() throws JsonProcessingException {
+    void testGetDynamicLabelConfiguration() {
         var helper = mock(LocalisationHelper.class);
         var config = mock(WebDomainConfig.class);
         when(config.hasValidationTypeOptions()).thenReturn(true);
@@ -126,8 +126,7 @@ class BaseUploadControllerTest {
         var typeRelated = List.of(Pair.of("configA", "jsonA"));
         var typeAndOptionRelated = List.of(Pair.of("otherConfigA", "otherJsonA"));
         var jsonContent = controller.getDynamicLabelConfiguration(helper, config, typeRelated, typeAndOptionRelated);
-        var objectMapper = new ObjectMapper();
-        var json = objectMapper.readTree(jsonContent);
+        var json = JsonMapper.shared().readTree(jsonContent);
         assertNotNull(json.get("option"));
         assertNotNull(json.get("jsonA"));
         assertNotNull(json.get("jsonA.type1"));
