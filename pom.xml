@@ -59,9 +59,11 @@
         <version.jaxb-impl>4.0.7</version.jaxb-impl>
         <version.geoip2>5.0.2</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
-        <version.cxf>4.2.0</version.cxf>
+        <version.cxf>4.2.0</version.cxf> <!-- When upgrading ensure that the neethi version is up to date. -->
+        <version.neethi>3.2.2</version.neethi>
         <version.saxon>12.8</version.saxon>
-        <version.tika>3.3.0</version.tika>
+        <version.tika>3.3.0</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
+        <version.junrar>7.5.10</version.junrar>
         <version.helgerSchematron>9.0.1</version.helgerSchematron>
         <version.jaxWs>4.0.2</version.jaxWs>
         <version.jws>3.0.0</version.jws>
@@ -99,7 +101,9 @@
         <version.xmlApis>2.0.2</version.xmlApis>
         <!-- Section END. -->
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
-        <version.jena>6.0.0</version.jena>
+        <version.jena>6.1.0</version.jena>
+        <!-- Ensure the libthrift version matches the one used within Jena. -->
+        <version.libthrift>0.23.0</version.libthrift>
         <!-- Override the transitive httpclient5 version to resolve CVE-2025-27820 -->
         <version.httpclient5>5.4.4</version.httpclient5>
         <!-- Plugin versions -->
@@ -796,6 +800,21 @@
                 <groupId>xml-apis</groupId>
                 <artifactId>xml-apis</artifactId>
                 <version>${version.xmlApis}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.neethi</groupId>
+                <artifactId>neethi</artifactId>
+                <version>${version.neethi}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.thrift</groupId>
+                <artifactId>libthrift</artifactId>
+                <version>${version.libthrift}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.junrar</groupId>
+                <artifactId>junrar</artifactId>
+                <version>${version.junrar}</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
