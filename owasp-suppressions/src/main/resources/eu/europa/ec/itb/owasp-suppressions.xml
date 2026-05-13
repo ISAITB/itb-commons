@@ -446,6 +446,13 @@
         <cve>CVE-2023-22665</cve>
     </suppress>
     <suppress>
+        <notes><![CDATA[
+    file name: jelly-jena-3.7.1.jar
+    ]]></notes>
+        <packageUrl regex="true">^pkg:maven/eu\.neverblink\.jelly/jelly-jena@.*$</packageUrl>
+        <cve>CVE-2025-50151</cve>
+    </suppress>
+    <suppress>
         <!-- False-positive as this des not apply to the TopBraid SHACL project. -->
         <notes><![CDATA[
     file name: shacl-1.5.0.jar
