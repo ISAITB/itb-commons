@@ -47,7 +47,7 @@
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
         <version.gitbTypes>1.26.0</version.gitbTypes>
         <version.commonsLang>3.18.0</version.commonsLang>
-        <version.commonsConfiguration>2.11.0</version.commonsConfiguration>
+        <version.commonsConfiguration>2.15.0</version.commonsConfiguration>
         <version.commonsIo>2.17.0</version.commonsIo>
         <version.commonsCsv>1.12.0</version.commonsCsv>
         <version.webjarsLocator>0.59</version.webjarsLocator>
