@@ -4,7 +4,7 @@
     <groupId>eu.europa.ec.itb.commons</groupId>
     <artifactId>commons</artifactId>
     <packaging>pom</packaging>
-    <version>1.12.0-SNAPSHOT</version>
+    <version>1.11.3-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Common utilities, parent build definitions, and foundation classes for all validators.</description>
 
@@ -55,8 +55,7 @@
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.7.1</version.webjarsJQuery>
-        <version.jaxb>4.0.5</version.jaxb>
-        <version.jaxb-impl>4.0.7</version.jaxb-impl>
+        <version.jaxb-impl>4.0.8</version.jaxb-impl>
         <version.geoip2>5.0.2</version.geoip2>
         <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
         <version.cxf>4.2.0</version.cxf> <!-- When upgrading ensure that the neethi version is up to date. -->
@@ -68,7 +67,6 @@
         <version.jaxWs>4.0.2</version.jaxWs>
         <version.jws>3.0.0</version.jws>
         <version.commonsBeanutils>1.9.4</version.commonsBeanutils>
-        <version.jakartaActivation>2.1.2</version.jakartaActivation>
         <version.json-schema-validator>3.0.2</version.json-schema-validator>
         <version.jakartaJson>2.0.0</version.jakartaJson>
         <version.jayway>2.9.0</version.jayway>
@@ -449,11 +447,6 @@
                 <version>${version.jakartaAnnotationApi}</version>
             </dependency>
             <dependency>
-                <groupId>jakarta.activation</groupId>
-                <artifactId>jakarta.activation-api</artifactId>
-                <version>${version.jakartaActivation}</version>
-            </dependency>
-            <dependency>
                 <groupId>jakarta.xml.ws</groupId>
                 <artifactId>jakarta.xml.ws-api</artifactId>
                 <version>${version.jaxWs}</version>
@@ -540,16 +533,6 @@
                 <groupId>org.webjars</groupId>
                 <artifactId>jquery</artifactId>
                 <version>${version.webjarsJQuery}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.xml.bind</groupId>
-                <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>${version.jaxb}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${version.jaxb-impl}</version>
             </dependency>
             <dependency>
                 <groupId>com.maxmind.geoip2</groupId>
@@ -821,6 +804,14 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${version.mockito}</version>
                 <scope>test</scope>
+            </dependency>
+            <!-- JAXB BOM to align JAXB-related APIs and implementations. -->
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-bom</artifactId>
+                <version>${version.jaxb-impl}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <!--
                 Section END.
