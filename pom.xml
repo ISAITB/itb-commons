@@ -4,7 +4,7 @@
     <groupId>eu.europa.ec.itb.commons</groupId>
     <artifactId>commons</artifactId>
     <packaging>pom</packaging>
-    <version>1.11.3-SNAPSHOT</version>
+    <version>1.11.3</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Common utilities, parent build definitions, and foundation classes for all validators.</description>
 
@@ -118,7 +118,7 @@
         <version.plugin.mavenResourcesPlugin>3.5.0</version.plugin.mavenResourcesPlugin>
         <version.plugin.mavenAntRunPlugin>3.2.0</version.plugin.mavenAntRunPlugin>
         <version.plugin.licenseMavenPlugin>2.7.1</version.plugin.licenseMavenPlugin>
-        <argLine/>
+        <argLine />
     </properties>
 
     <repositories>
@@ -153,7 +153,7 @@
 
     <scm>
         <developerConnection>scm:git:https://webgate.ec.europa.eu/CITnet/stash/scm/itb/itb-commons.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>1.11.3</tag>
     </scm>
 
     <build>

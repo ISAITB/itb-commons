@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.itb.commons</groupId>
         <artifactId>commons</artifactId>
-        <version>1.11.3-SNAPSHOT</version>
+        <version>1.11.3</version>
     </parent>
     <artifactId>owasp-suppressions</artifactId>
     <properties>
