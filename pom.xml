@@ -42,7 +42,7 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <ossIndexUsername>ossIndexUsername</ossIndexUsername>
         <ossIndexPassword>ossIndexPassword</ossIndexPassword>
-        <version.springBoot>4.0.6</version.springBoot> <!-- When upgrading adapt Tomcat version (below) as needed. -->
+        <version.springBoot>4.1.0</version.springBoot> <!-- When upgrading adapt Tomcat version (below) as needed. -->
         <version.tomcat>11.0.22</version.tomcat>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
         <version.gitbTypes>1.26.0</version.gitbTypes>
@@ -67,7 +67,7 @@
         <version.jaxWs>4.0.2</version.jaxWs>
         <version.jws>3.0.0</version.jws>
         <version.commonsBeanutils>1.9.4</version.commonsBeanutils>
-        <version.json-schema-validator>3.0.2</version.json-schema-validator>
+        <version.json-schema-validator>3.0.4</version.json-schema-validator>
         <version.jakartaJson>2.0.0</version.jakartaJson>
         <version.jayway>2.9.0</version.jayway>
         <version.gson>2.9.0</version.gson>
