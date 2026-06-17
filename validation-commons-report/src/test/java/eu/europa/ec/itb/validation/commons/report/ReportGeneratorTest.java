@@ -10,6 +10,7 @@ import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,13 +37,12 @@ class ReportGeneratorTest {
 
     @BeforeEach
     void setup() throws IOException {
-//        tmpPath = Files.createTempDirectory("itb");
-        tmpPath = Path.of("C:/work/_dev/_pdf");
+        tmpPath = Files.createTempDirectory("itb");
     }
 
     @AfterEach
     void teardown() {
-//        FileUtils.deleteQuietly(tmpPath.toFile());
+        FileUtils.deleteQuietly(tmpPath.toFile());
     }
 
     private ReportProperties createProperties() {
