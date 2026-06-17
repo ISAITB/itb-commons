@@ -253,6 +253,7 @@ public class ReportGenerator {
             parameters.put("errorsLabel", labels.getErrors());
             parameters.put("warningsLabel", labels.getWarnings());
             parameters.put("messagesLabel", labels.getMessages());
+            parameters.put("totalFindingsLabel", labels.getTotalFindings());
             parameters.put("errorSectionTitle", labels.getErrorSectionTitle());
             parameters.put("warningSectionTitle", labels.getWarningSectionTitle());
             parameters.put("messageSectionTitle", labels.getMessageSectionTitle());

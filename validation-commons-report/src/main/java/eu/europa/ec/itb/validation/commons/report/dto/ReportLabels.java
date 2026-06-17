@@ -45,9 +45,24 @@ public class ReportLabels {
     private String errors;
     private String warnings;
     private String messages;
+    private String totalFindings;
     private String errorSectionTitle;
     private String warningSectionTitle;
     private String messageSectionTitle;
+
+    /**
+     * @return The total findings label.
+     */
+    public String getTotalFindings() {
+        return totalFindings;
+    }
+
+    /**
+     * @param totalFindings The total findings label.
+     */
+    public void setTotalFindings(String totalFindings) {
+        this.totalFindings = totalFindings;
+    }
 
     /**
      * @return The error section title label.

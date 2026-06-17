@@ -314,7 +314,7 @@
                                   </td><#t>
                                 </tr><#t>
                                 <tr>
-                                  <td class="cell-label total"><div class="cell-label-content">Total findings:</div></td>
+                                  <td class="cell-label total"><div class="cell-label-content">${escape(totalFindingsLabel)}</div></td>
                                   <td class="cell-value total"><div class="cell-value-content">${totalCount}</div></td>
                                 </tr>
                               </table>

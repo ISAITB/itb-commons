@@ -156,6 +156,7 @@ class ReportGeneratorTest {
         when(mock.getErrors()).thenReturn("Errors:");
         when(mock.getWarnings()).thenReturn("Warnings:");
         when(mock.getMessages()).thenReturn("Messages:");
+        when(mock.getTotalFindings()).thenReturn("Total findings:");
         when(mock.getErrorSectionTitle()).thenReturn("Validation errors");
         when(mock.getWarningSectionTitle()).thenReturn("Validation warnings");
         when(mock.getMessageSectionTitle()).thenReturn("Validation messages");
