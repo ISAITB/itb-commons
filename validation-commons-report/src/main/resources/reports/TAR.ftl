@@ -375,13 +375,13 @@
                                     </div>
                                 </#if>
                                 <#if item.assertionId??>
-                                    <div class="row"><#t>
-                                        <div class="label">${escape(assertionIdLabel)}</div><#t>
+                                    <div class="row">
+                                        <div class="label">${escape(assertionIdLabel)}</div>
                                         <#if richTextReportItems><#t>
-                                            <div class="value-inline">${item.assertionId}</div><#t>
-                                        <#else><#t>
-                                            <div class="value-inline">${escape(item.assertionId)}</div><#t>
-                                        </#if><#t>
+                                            <div class="value-inline">${item.assertionId}</div>
+                                        <#else>
+                                            <div class="value-inline">${escape(item.assertionId)}</div>
+                                        </#if>
                                     </div>
                                 </#if>
                             </div>
