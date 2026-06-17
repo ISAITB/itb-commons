@@ -34,6 +34,216 @@ public class ReportLabels {
     private String assertionId;
     private String findings;
     private String findingsDetails;
+    private String validationType;
+    private String validationTypeName;
+    private String customMessageOverview;
+    private String customMessageErrors;
+    private String customMessageWarnings;
+    private String customMessageMessages;
+    private String uniqueRule;
+    private String uniqueRules;
+    private String errors;
+    private String warnings;
+    private String messages;
+    private String errorSectionTitle;
+    private String warningSectionTitle;
+    private String messageSectionTitle;
+
+    /**
+     * @return The error section title label.
+     */
+    public String getErrorSectionTitle() {
+        return errorSectionTitle;
+    }
+
+    /**
+     * @param errorSectionTitle The error section title label.
+     */
+    public void setErrorSectionTitle(String errorSectionTitle) {
+        this.errorSectionTitle = errorSectionTitle;
+    }
+
+    /**
+     * @return The warning section title label.
+     */
+    public String getWarningSectionTitle() {
+        return warningSectionTitle;
+    }
+
+    /**
+     * @param warningSectionTitle The warning section title label.
+     */
+    public void setWarningSectionTitle(String warningSectionTitle) {
+        this.warningSectionTitle = warningSectionTitle;
+    }
+
+    /**
+     * @return The messages section title label.
+     */
+    public String getMessageSectionTitle() {
+        return messageSectionTitle;
+    }
+
+    /**
+     * @param messageSectionTitle The messages section title label.
+     */
+    public void setMessageSectionTitle(String messageSectionTitle) {
+        this.messageSectionTitle = messageSectionTitle;
+    }
+
+    /**
+     * @return The errors label.
+     */
+    public String getErrors() {
+        return errors;
+    }
+
+    /**
+     * @param errors The errors label.
+     */
+    public void setErrors(String errors) {
+        this.errors = errors;
+    }
+
+    /**
+     * @return The warnings label.
+     */
+    public String getWarnings() {
+        return warnings;
+    }
+
+    /**
+     * @param warnings The warnings label.
+     */
+    public void setWarnings(String warnings) {
+        this.warnings = warnings;
+    }
+
+    /**
+     * @return The messages label.
+     */
+    public String getMessages() {
+        return messages;
+    }
+
+    /**
+     * @param messages The messages label.
+     */
+    public void setMessages(String messages) {
+        this.messages = messages;
+    }
+
+    /**
+     * @return The (single) rule text.
+     */
+    public String getUniqueRule() {
+        return uniqueRule;
+    }
+
+    /**
+     * @param uniqueRule The (single) rule text.
+     */
+    public void setUniqueRule(String uniqueRule) {
+        this.uniqueRule = uniqueRule;
+    }
+
+    /**
+     * @return The rules text.
+     */
+    public String getUniqueRules() {
+        return uniqueRules;
+    }
+
+    /**
+     * @param uniqueRules The rules text.
+     */
+    public void setUniqueRules(String uniqueRules) {
+        this.uniqueRules = uniqueRules;
+    }
+
+    /**
+     * @return The overview custom message.
+     */
+    public String getCustomMessageOverview() {
+        return customMessageOverview;
+    }
+
+    /**
+     * @param customMessageOverview The overview custom message.
+     */
+    public void setCustomMessageOverview(String customMessageOverview) {
+        this.customMessageOverview = customMessageOverview;
+    }
+
+    /**
+     * @return The error-level custom message.
+     */
+    public String getCustomMessageErrors() {
+        return customMessageErrors;
+    }
+
+    /**
+     * @param customMessageErrors The error-level custom message.
+     */
+    public void setCustomMessageErrors(String customMessageErrors) {
+        this.customMessageErrors = customMessageErrors;
+    }
+
+    /**
+     * @return The warning-level custom message.
+     */
+    public String getCustomMessageWarnings() {
+        return customMessageWarnings;
+    }
+
+    /**
+     * @param customMessageWarnings The warning-level custom message.
+     */
+    public void setCustomMessageWarnings(String customMessageWarnings) {
+        this.customMessageWarnings = customMessageWarnings;
+    }
+
+    /**
+     * @return The message-level custom message.
+     */
+    public String getCustomMessageMessages() {
+        return customMessageMessages;
+    }
+
+    /**
+     * @param customMessageMessages The message-level custom message.
+     */
+    public void setCustomMessageMessages(String customMessageMessages) {
+        this.customMessageMessages = customMessageMessages;
+    }
+
+    /**
+     * @return The validation type label.
+     */
+    public String getValidationType() {
+        return validationType;
+    }
+
+    /**
+     * @param validationType The validation type label.
+     */
+    public void setValidationType(String validationType) {
+        this.validationType = validationType;
+    }
+
+    /**
+     * @return The label for the validation type.
+     */
+    public String getValidationTypeName() {
+        return validationTypeName;
+    }
+
+    /**
+     * @param validationTypeName  The label for the validation type.
+     */
+    public void setValidationTypeName(String validationTypeName) {
+        this.validationTypeName = validationTypeName;
+    }
 
     /**
      * @return The title of the report.

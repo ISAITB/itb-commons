@@ -4,6 +4,8 @@ import com.gitb.tr.TAR;
 import com.gitb.tr.TestResultType;
 import com.gitb.tr.ValidationCounters;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
+import eu.europa.ec.itb.validation.commons.ReportProperties;
+import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
 import org.apache.commons.io.FileUtils;
@@ -47,6 +49,10 @@ class ReportGeneratorBeanTest {
         return bean;
     }
 
+    private ReportProperties createProperties() {
+        return new ReportProperties("myFile.xml", "validationType1");
+    }
+
     private ReportLabels createLabels() {
         var labels = new ReportLabels();
         labels.setTitle("Title1");
@@ -63,6 +69,10 @@ class ReportGeneratorBeanTest {
         labels.setOverview("Overview");
         labels.setOf("Of");
         labels.setAssertionId("Assertion");
+        labels.setCustomMessageOverview("Custom overview message");
+        labels.setValidationType("type1");
+        labels.setValidationTypeName("typeName1");
+        labels.setFileName("fileName");
         return labels;
     }
 
@@ -70,6 +80,7 @@ class ReportGeneratorBeanTest {
     void testWriteReportFromObject() throws Exception {
         var tar = new TAR();
         var labels = createLabels();
+        var properties = createProperties();
         var outputFile = Path.of(tmpPath.toString(), "report.pdf");
         var reportGenerator = mock(ReportGenerator.class);
         doAnswer((Answer<?>) invocation -> {
@@ -80,21 +91,22 @@ class ReportGeneratorBeanTest {
             assertInstanceOf(ReportLabels.class, result);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             return null;
-        }).when(reportGenerator).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
+        }).when(reportGenerator).writeTARReport(any(TAR.class), any(), any(), any(), any());
         var bean = createBean(reportGenerator);
-        assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), report -> labels, false));
-        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
+        assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), report -> labels, properties, new DomainConfig()));
+        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any(), any(), any());
         // Alternate call.
         reset(reportGenerator);
         var localiser = mock(LocalisationHelper.class);
         when(localiser.localise(anyString())).thenReturn("Label");
-        assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), localiser, false));
-        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
+        assertDoesNotThrow(() -> bean.writeReport(tar, outputFile.toFile(), localiser, properties, new DomainConfig()));
+        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any(), any(), any());
     }
 
     @Test
     void testWriteReportFromObjectError() throws Exception {
         var labels = createLabels();
+        var properties = createProperties();
         var tar = new TAR();
         var outputFile = Path.of(tmpPath.toString(), "report.pdf");
         var reportGenerator = mock(ReportGenerator.class);
@@ -106,16 +118,17 @@ class ReportGeneratorBeanTest {
             assertInstanceOf(ReportLabels.class, result);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             throw new IllegalStateException();
-        }).when(reportGenerator).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
+        }).when(reportGenerator).writeTARReport(any(TAR.class), any(), any(), any(), any());
         var bean = createBean(reportGenerator);
-        assertThrows(ValidatorException.class, () -> bean.writeReport(tar, outputFile.toFile(), report -> labels, false));
-        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any(), anyBoolean());
+        assertThrows(ValidatorException.class, () -> bean.writeReport(tar, outputFile.toFile(), report -> labels, properties, new DomainConfig()));
+        verify(reportGenerator, times(1)).writeTARReport(any(TAR.class), any(), any(), any(), any());
     }
 
 
     @Test
     void testWriteReportFromFile() throws Exception {
         var labels = createLabels();
+        var properties = createProperties();
         var inputFile = Path.of(tmpPath.toString(), "report.xml");
         Files.createFile(inputFile);
         Files.writeString(inputFile, "<tar></tar>");
@@ -129,21 +142,22 @@ class ReportGeneratorBeanTest {
             assertInstanceOf(ReportLabels.class, result);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             return null;
-        }).when(reportGenerator).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
+        }).when(reportGenerator).writeTARReport(any(FileInputStream.class), any(), any(), any(), any());
         var bean = createBean(reportGenerator);
-        assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), report -> labels, false));
-        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
+        assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), report -> labels, properties, new DomainConfig()));
+        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any(), any(), any());
         // Alternate call.
         reset(reportGenerator);
         var localiser = mock(LocalisationHelper.class);
         when(localiser.localise(anyString())).thenReturn("Label");
-        assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), localiser, false));
-        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
+        assertDoesNotThrow(() -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), localiser, properties, new DomainConfig()));
+        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any(), any(), any());
     }
 
     @Test
     void testWriteReportFromFileError() throws Exception {
         var labels = createLabels();
+        var properties = createProperties();
         var inputFile = Path.of(tmpPath.toString(), "report.xml");
         Files.createFile(inputFile);
         Files.writeString(inputFile, "<tar></tar>");
@@ -157,15 +171,18 @@ class ReportGeneratorBeanTest {
             assertInstanceOf(ReportLabels.class, result);
             assertEquals("Title1", ((ReportLabels) result).getTitle());
             throw new IllegalStateException();
-        }).when(reportGenerator).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
+        }).when(reportGenerator).writeTARReport(any(FileInputStream.class), any(), any(), any(), any());
         var bean = createBean(reportGenerator);
-        assertThrows(ValidatorException.class, () -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), report -> labels, false));
-        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any(), anyBoolean());
+        assertThrows(ValidatorException.class, () -> bean.writeReport(inputFile.toFile(), outputFile.toFile(), report -> labels, properties, new DomainConfig()));
+        verify(reportGenerator, times(1)).writeTARReport(any(FileInputStream.class), any(), any(), any(), any());
     }
 
     @Test
     void testGetReportLabels() throws Exception {
         var reportGenerator = mock(ReportGenerator.class);
+        var domainConfig = mock(DomainConfig.class);
+        when(domainConfig.getCompleteTypeOptionLabel(any(), any())).thenReturn("TypeOptionLabel");
+        var properties = createProperties();
         var successText = TestResultType.SUCCESS.value().toLowerCase(Locale.ROOT);
         var bean = createBean(reportGenerator);
         var helper = getDefaultLabelMockHelper(List.of("validator.reportTitle", "validator.label.resultSubSectionOverviewTitle", "validator.label.resultSubSectionDetailsTitle",
@@ -179,7 +196,7 @@ class ReportGeneratorBeanTest {
         tar.getCounters().setNrOfErrors(BigInteger.ZERO);
         tar.getCounters().setNrOfWarnings(BigInteger.ZERO);
         tar.getCounters().setNrOfAssertions(BigInteger.ZERO);
-        var result = bean.getReportLabels(helper, tar);
+        var result = bean.getReportLabels(helper, tar, properties, domainConfig);
         assertNotNull(result);
         assertEquals("validator.reportTitle_translated", result.getTitle());
         assertEquals("validator.label.resultSubSectionOverviewTitle_translated", result.getOverview());

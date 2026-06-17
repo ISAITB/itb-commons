@@ -169,4 +169,37 @@ public class Report {
     public void setContextItems(List<ContextItem> contextItems) {
         this.contextItems = contextItems;
     }
+
+    /**
+     * Split the report items per severity.
+     *
+     * @return The split report items.
+     */
+    public ItemsPerSeverity splitPerSeverity() {
+        List<ReportItem> errors = new ArrayList<>();
+        List<ReportItem> warnings = new ArrayList<>();
+        List<ReportItem> messages = new ArrayList<>();
+        if (reportItems != null) {
+            reportItems.forEach(item -> {
+                if ("error".equals(item.getLevel())) {
+                    errors.add(item);
+                } else if ("warning".equals(item.getLevel())) {
+                    warnings.add(item);
+                } else {
+                    messages.add(item);
+                }
+            });
+        }
+        return new ItemsPerSeverity(errors, warnings, messages);
+    }
+
+    /**
+     * Record holding the severity-split report items.
+     *
+     * @param errors Error findings.
+     * @param warnings Warning findings.
+     * @param messages Information message findings.
+     */
+    public record ItemsPerSeverity(List<ReportItem> errors, List<ReportItem> warnings, List<ReportItem> messages) {
+    }
 }

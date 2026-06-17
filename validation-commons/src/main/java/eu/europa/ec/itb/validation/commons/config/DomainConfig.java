@@ -17,6 +17,7 @@ package eu.europa.ec.itb.validation.commons.config;
 
 import com.gitb.tr.TAR;
 import com.gitb.tr.ValidationOverview;
+import eu.europa.ec.itb.validation.commons.LocalisationHelper;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.artifact.ExternalArtifactSupport;
 import eu.europa.ec.itb.validation.commons.artifact.TypedValidationArtifactInfo;
@@ -812,4 +813,80 @@ public class DomainConfig {
             return null;
         }
     }
+
+    /**
+     * The label for a validation type.
+     *
+     * @param type The validation type.
+     * @param helper The helper to lookup translations.
+     * @return The label.
+     */
+    public String getValidationTypeLabel(String type, LocalisationHelper helper) {
+        String text;
+        if (helper.propertyExists(String.format("validator.typeLabel.%s", type))) {
+            text = helper.localise(String.format("validator.typeLabel.%s", type));
+        } else {
+            text = type;
+        }
+        return text;
+    }
+
+    /**
+     * The label for an option of a validation type.
+     *
+     * @param type The validation type.
+     * @param option The option.
+     * @param helper The helper to lookup translations.
+     * @return The label.
+     */
+    public String getValidationTypeOptionLabel(String type, String option, LocalisationHelper helper) {
+        String text;
+        if (helper.propertyExists(String.format("validator.typeOptionLabel.%s.%s", type, option))) {
+            text = helper.localise(String.format("validator.typeOptionLabel.%s.%s", type, option));
+        } else if (helper.propertyExists(String.format("validator.optionLabel.%s", option))) {
+            text = helper.localise(String.format("validator.optionLabel.%s", option));
+        } else {
+            text = option;
+        }
+        return text;
+    }
+
+    /**
+     * The complete type and option label for a given validation type and option combination.
+     *
+     * @param typeOption The complete validation type (includes type and option as TYPE.OPTION).
+     * @param helper The helper to lookup translations.
+     * @return The option's label.
+     */
+    public String getCompleteTypeOptionLabel(String typeOption, LocalisationHelper helper) {
+        String text = null;
+        if (helper.propertyExists(String.format("validator.completeTypeOptionLabel.%s", typeOption))) {
+            text = helper.localise(String.format("validator.completeTypeOptionLabel.%s", typeOption));
+        } else {
+            for (var type: getDeclaredType()) {
+                var options = getValidationTypeOptions().get(type);
+                if (options == null || options.isEmpty()) {
+                    if (type.equals(typeOption)) {
+                        // Return label for type.
+                        text = getValidationTypeLabel(type, helper);
+                    }
+                } else {
+                    for (var option: options) {
+                        if (typeOption.equals(type+"."+option)) {
+                            text = getValidationTypeLabel(type, helper) + " - " + getValidationTypeOptionLabel(type, option, helper);
+                            break;
+                        }
+                    }
+                }
+                if (text != null) {
+                    break;
+                }
+            }
+            if (text == null) {
+                throw new IllegalStateException(String.format("The validation type and option combination [%s] was invalid", typeOption));
+            }
+        }
+        return text;
+    }
+
 }

@@ -1104,6 +1104,64 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     }
 
     /**
+     * Save the report metadata properties to use for report generation.
+     *
+     * @param properties The properties to save.
+     * @param uuid The validation UUID.
+     */
+    public void saveReportProperties(ReportProperties properties, String uuid) {
+        Path parentFolder = getReportFolder().toPath();
+        try {
+            Files.createDirectories(parentFolder);
+        } catch (IOException e) {
+            logger.warn("Unable to save report properties", e);
+        }
+        saveReportProperties(properties, parentFolder.resolve(uuid+".properties"));
+    }
+
+    /**
+     * Save the report metadata properties to use for report generation.
+     *
+     * @param properties The properties to save.
+     * @param outputFile The target file path.
+     */
+    public void saveReportProperties(ReportProperties properties, Path outputFile) {
+        try (var out = Files.newBufferedWriter(outputFile)) {
+            properties.toProperties().store(out, null);
+        } catch (IOException e) {
+            logger.warn("Unable to save report properties", e);
+        }
+    }
+
+    /**
+     * Load the report metadata properties for a given validation session.
+     *
+     * @param uuid The session UUID.
+     * @return The properties.
+     */
+    public ReportProperties loadReportProperties(String uuid) {
+        Path storedFile = getReportFolder().toPath().resolve(uuid+".properties");
+        return loadReportProperties(storedFile);
+    }
+
+    /**
+     * Load the report metadata properties for a given validation session.
+     *
+     * @param storedFile The file to read from.
+     * @return The properties.
+     */
+    public ReportProperties loadReportProperties(Path storedFile) {
+        try (var in = Files.newInputStream(storedFile)) {
+            var props = new Properties();
+            props.load(in);
+            return ReportProperties.fromProperties(props);
+        } catch (IOException e) {
+            logger.warn("Unable to load report properties", e);
+            return null;
+        }
+    }
+
+    /**
      * Save the provided TAR report in the validator's temporary file system as a detailed TAR report.
      *
      * @param report The report to serialise and persist.
