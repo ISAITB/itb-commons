@@ -57,12 +57,32 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
 
+import static org.owasp.html.Sanitizers.*;
+
 /**
  * Class holding utility methods for common operations.
  */
 public class Utils {
 
     private static final JAXBContext tdlJaxbContext;
+
+    private static final PolicyFactory LINKS_WITH_TARGET = new HtmlPolicyBuilder()
+            .allowElements((elementName, attrs) -> {
+                int targetIndex = attrs.indexOf("target");
+                if (targetIndex < 0) {
+                    attrs.add("target");
+                    attrs.add("_blank");
+                } else {
+                    attrs.set(targetIndex + 1, "_blank");
+                }
+                return elementName;
+            }, "a")
+            .allowStandardUrlProtocols()
+            .allowAttributes("href", "target").onElements("a").requireRelsOnLinks("noopener", "noreferrer", "nofollow")
+            .toFactory();
+
+    private static final PolicyFactory CUSTOM_MESSAGE_POLICY = BLOCKS.and(FORMATTING).and(LINKS_WITH_TARGET).and(STYLES);
+
     private static final PolicyFactory REPORT_ITEM_POLICY = (new HtmlPolicyBuilder())
             .allowStandardUrlProtocols()
             .allowElements("a")
@@ -634,6 +654,16 @@ public class Utils {
                 }
             }
         }
+    }
+
+    /**
+     * Sanitize a custom message to include in PDF reports.
+     *
+     * @param customMessage The custom message.
+     * @return The message to use.
+     */
+    public static String sanitizeCustomReportMessage(String customMessage) {
+        return CUSTOM_MESSAGE_POLICY.sanitize(customMessage);
     }
 
     /**

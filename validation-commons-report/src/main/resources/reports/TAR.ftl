@@ -43,6 +43,7 @@
     }
     .sub-title {
         font-size: 18px;
+        margin-top: 30px;
         margin-bottom: 30px;
         background-color: #ededed;
         padding: 10px;
@@ -51,13 +52,14 @@
         position: relative;
         page-break-inside: avoid;
     }
-    .sub-title-text {
+    .section-title-text {
         display: inline-block;
         margin-right: 30px;
         width: 90%;
     }
-    .sub-title-link {
+    .section-title-link {
         margin-top: 2px;
+        margin-right: 10px;
         font-size: 14px;
         text-align: right;
         float: right;
@@ -109,6 +111,7 @@
         padding-right: 10px;
         text-align: right;
         min-width: 120px;
+        white-space: nowrap
     }
     td.cell-label, td.cell-value {
         vertical-align: top;
@@ -131,7 +134,7 @@
     }
     .icon img {
         width: 16px;
-        margin-top: -4px;
+        margin-top: -3px;
     }
     .separator {
         margin-top: 10px;
@@ -187,7 +190,6 @@
     }
     .report-item {
         margin-top: 10px;
-        margin-bottom: 10px;
         border-radius: 4px;
         page-break-inside: avoid;
     }
@@ -232,83 +234,157 @@
         font-family: "FreeMono";
         font-size: 12px;
     }
+    .findings-summary {
+        border: 1px solid #000000;
+        border-radius: 5px;
+        background-color: #ededed;
+    }
+    .findings-summary td.cell-label {
+        font-weight: normal;
+    }
+    .findings-summary table {
+        width: 100%;
+    }
+    .findings-summary td.cell-label.total, .findings-summary td.cell-value.total {
+        border-top: 1px solid #000000;
+    }
+    .findings-summary .cell-label-content {
+        padding-left: 20px;
+    }
+    .findings-summary .cell-value-content {
+        padding-right: 30px;
+    }
+    .findings-summary td.cell-label.total {
+        font-weight: bold;
+    }
+    .custom-message-container {
+        padding: 15px;
+    }
 	    </style>
     </head>
     <body>
-        <div class="title">${title}</div>
+        <div id="top" class="title">${title}</div>
         <div class="step-report">
             <div class="section overview">
+                <#if customMessageOverview??><div class="custom-message-container">${customMessageOverview}</div></#if>
                 <div class="section-title">
                     <div>${escape(overviewLabel)}</div>
                 </div>
                 <div class="section-content">
                     <table>
-                        <tr>
-                            <td class="cell-label">${escape(dateLabel)}</td>
-                            <td class="cell-value">${reportDate}</td>
-                        </tr>
-                        <#if reportFileName??>
-                            <tr>
-                                <td class="cell-label">${escape(fileNameLabel)}</td>
-                                <td class="cell-value">${reportFileName}</td>
-                            </tr>
-                        </#if>
-                        <tr>
-                            <td class="cell-label">${escape(resultFindingsLabel)}</td>
-                            <td class="cell-value">${escape(resultFindingsDetailsLabel)}</td>
-                        </tr>
-                        <tr>
-                            <td class="cell-label">${escape(resultLabel)}</td>
-                            <td class="cell-value"><div class="value-inline result background-${reportResult}">${escape(resultTypeLabel)}</div></td>
-                        </tr>
+                      <tr>
+                        <td style="width: 100%">
+                          <table>
+                              <tr>
+                                  <td class="cell-label">${escape(dateLabel)}</td>
+                                  <td class="cell-value">${reportDate}</td>
+                              </tr>
+                              <#if reportFileName??>
+                                  <tr>
+                                      <td class="cell-label">${escape(fileNameLabel)}</td>
+                                      <td class="cell-value">${reportFileName}</td>
+                                  </tr>
+                              </#if>
+                              <tr>
+                                  <td class="cell-label">${escape(validationTypeLabel)}</td>
+                                  <td class="cell-value">${escape(validationTypeName)}</td>
+                              </tr>
+                              <tr>
+                                  <td class="cell-label">${escape(resultLabel)}</td>
+                                  <td class="cell-value"><div class="value-inline result background-${reportResult}">${escape(resultTypeLabel)}</div></td>
+                              </tr>
+                          </table>
+                        </td>
+                        <td style="width: 1px;white-space: nowrap">
+                          <div class="findings-summary">
+                              <table>
+                                <tr><#t>
+                                    <td class="cell-label"><div class="cell-label-content"><#if errorItems??><a class="page-link" href="#section-errors">${escape(errorsLabel)}</a><#else>${escape(errorsLabel)}</#if></div></td><#t>
+                                    <td class="cell-value"><div class="cell-value-content">${errorCount}</div></td><#t>
+                                  </td><#t>
+                                </tr><#t>
+                                <tr><#t>
+                                    <td class="cell-label"><div class="cell-label-content"><#if warningItems??><a class="page-link" href="#section-warnings">${escape(warningsLabel)}</a><#else>${escape(warningsLabel)}</#if></div></td><#t>
+                                    <td class="cell-value"><div class="cell-value-content">${warningCount}</div></td><#t>
+                                  </td><#t>
+                                </tr><#t>
+                                <tr><#t>
+                                    <td class="cell-label"><div class="cell-label-content"><#if messageItems??><a class="page-link" href="#section-messages">${escape(messagesLabel)}</a><#else>${escape(messagesLabel)}</#if></div></td><#t>
+                                    <td class="cell-value"><div class="cell-value-content">${messageCount}</div></td><#t>
+                                  </td><#t>
+                                </tr><#t>
+                                <tr>
+                                  <td class="cell-label total"><div class="cell-label-content">Total findings:</div></td>
+                                  <td class="cell-value total"><div class="cell-value-content">${totalCount}</div></td>
+                                </tr>
+                              </table>
+                          </div>
+                        </td>
+                      </tr>
                     </table>
                 </div>
             </div>
-            <#if reportItems??>
-                <div class="section details">
-                    <div class="section-title">
-                        <div>${escape(detailsLabel)}</div>
-                    </div>
-                    <div class="section-content">
-                        <#list reportItems as item>
-                            <div class="report-item background-strong-${item.level}">
-                                <div class="report-item-container background-${item.level} border-${item.level}">
-                                    <div class="row">
-                                        <div class="icon"><img src="classpath:reports/images/${item.level}.svg"/></div>
-                                        <#if richTextReportItems>
-                                            <div class="description">${item.description}</div>
-                                        <#else>
-                                            <div class="description">${escape(item.description)}</div>
-                                        </#if>
-                                    </div>
-                                    <#if item.location?? || item.test?? || item.assertionId??>
-                                        <div class="metadata">
-                                            <#if item.test??>
-                                                <div class="row">
-                                                    <div class="label">${escape(testLabel)}</div>
-                                                    <div class="value-inline">${escape(item.test)}</div>
-                                                </div>
-                                            </#if>
-                                            <#if item.location??>
-                                                <div class="row">
-                                                    <div class="label">${escape(locationLabel)}</div>
-                                                    <div class="value-inline">${escape(item.location)}</div>
-                                                </div>
-                                            </#if>
-                                            <#if item.assertionId??>
-                                                <div class="row">
-                                                    <div class="label">${escape(assertionIdLabel)}</div>
-                                                    <div class="value-inline">${escape(item.assertionId)}</div>
-                                                </div>
-                                            </#if>
-                                        </div>
-                                    </#if>
-                                </div>
-                            </div>
-                        </#list>
-                    </div>
-                </div>
+            <#if errorItems??>
+              <@itemSection title=errorSectionTitle reportItems=errorItems anchor="errors" message=customMessageErrors/>
+            </#if>
+            <#if warningItems??>
+              <@itemSection title=warningSectionTitle reportItems=warningItems anchor="warnings" message=customMessageWarnings/>
+            </#if>
+            <#if messageItems??>
+              <@itemSection title=messageSectionTitle reportItems=messageItems anchor="messages" message=customMessageMessages/>
             </#if>
         </div>
     </body>
 </html>
+<#macro subTitle text link="">
+    <div class="sub-title">
+        <div class="sub-title-text">${escape(text)}</div>
+        <#if link != "">
+            <div class="sub-title-link"><a href="#${link}">Top</a></div>
+        </#if>
+    </div>
+</#macro>
+<#macro itemSection title reportItems anchor message="">
+    <div id="section-${anchor}" class="section"><#t>
+        <div class="section-title">${escape(title)}</div><#t>
+        <#if message?has_content><div class="custom-message-container">${message}</div></#if><#t>
+        <div class="section-content"><#t>
+            <#list reportItems as item>
+                <div class="report-item background-strong-${item.level}">
+                    <div class="report-item-container background-${item.level} border-${item.level}">
+                        <div class="row">
+                            <div class="icon"><img src="classpath:reports/images/${item.level}.svg"/></div>
+                            <#if richTextReportItems>
+                                <div class="description">${item.description}</div>
+                            <#else>
+                                <div class="description">${escape(item.description)}</div>
+                            </#if>
+                        </div>
+                        <#if item.location?? || item.test?? || item.assertionId??>
+                            <div class="metadata">
+                                <#if item.test??>
+                                    <div class="row">
+                                        <div class="label">${escape(testLabel)}</div>
+                                        <div class="value-inline">${escape(item.test)}</div>
+                                    </div>
+                                </#if>
+                                <#if item.location??>
+                                    <div class="row">
+                                        <div class="label">${escape(locationLabel)}</div>
+                                        <div class="value-inline">${escape(item.location)}</div>
+                                    </div>
+                                </#if>
+                                <#if item.assertionId??>
+                                    <div class="row">
+                                        <div class="label">${escape(assertionIdLabel)}</div>
+                                        <div class="value-inline">${escape(item.assertionId)}</div>
+                                    </div>
+                                </#if>
+                            </div>
+                        </#if>
+                    </div>
+                </div>
+            </#list>
+        </div>
+    </div>
+</#macro>

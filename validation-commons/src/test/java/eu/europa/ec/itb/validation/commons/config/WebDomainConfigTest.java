@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class WebDomainConfigTest {
 
@@ -15,18 +17,20 @@ class WebDomainConfigTest {
     void testApplyWebServiceMetadata() {
         var config = new WebDomainConfig();
         var module = new ValidationModule();
-        config.applyWebServiceMetadata(module);
+        var appConfig = mock(ApplicationConfig.class);
+        when(appConfig.getVersionNumber()).thenReturn("1.1.0");
+        config.applyWebServiceMetadata(module, appConfig);
         assertEquals("ValidationService", module.getId());
         assertEquals("V", module.getOperation());
         assertNotNull(module.getMetadata());
         assertEquals("ValidationService", module.getMetadata().getName());
-        assertEquals("1.0.0", module.getMetadata().getVersion());
+        assertEquals("1.1.0", module.getMetadata().getVersion());
 
         module = new ValidationModule();
         config.setWebServiceId("id");
         config.setValidationServiceName("Name");
         config.setValidationServiceVersion("Version");
-        config.applyWebServiceMetadata(module);
+        config.applyWebServiceMetadata(module, appConfig);
         assertNotNull(module.getMetadata());
         assertEquals("Name", module.getMetadata().getName());
         assertEquals("Version", module.getMetadata().getVersion());

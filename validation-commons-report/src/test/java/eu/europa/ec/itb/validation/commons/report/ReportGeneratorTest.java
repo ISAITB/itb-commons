@@ -4,6 +4,8 @@ import com.gitb.core.AnyContent;
 import com.gitb.core.ValueEmbeddingEnumeration;
 import com.gitb.tbs.TestStepStatus;
 import com.gitb.tr.*;
+import eu.europa.ec.itb.validation.commons.ReportProperties;
+import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -41,6 +43,10 @@ class ReportGeneratorTest {
     @AfterEach
     void teardown() {
         FileUtils.deleteQuietly(tmpPath.toFile());
+    }
+
+    private ReportProperties createProperties() {
+        return new ReportProperties("myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile myFile.xml", "validationType1");
     }
 
     private TAR createTAR() throws DatatypeConfigurationException {
@@ -106,7 +112,8 @@ class ReportGeneratorTest {
     @Test
     void testWriteTARReportFromObject() {
         var pdfPath = Path.of(tmpPath.toString(), "report.pdf");
-        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(createTAR(), Files.newOutputStream(pdfPath), report -> mockReportLabels(), false));
+        var properties = createProperties();
+        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(createTAR(), Files.newOutputStream(pdfPath), report -> mockReportLabels(), properties, new DomainConfig()));
         assertTrue(Files.exists(pdfPath));
         assertTrue(Files.isRegularFile(pdfPath));
     }
@@ -114,31 +121,44 @@ class ReportGeneratorTest {
     @Test
     void testWriteTARReportFromXML() throws JAXBException, DatatypeConfigurationException, IOException {
         var report = createTAR();
+        var properties = createProperties();
         var xmlPath = Path.of(tmpPath.toString(), "report.xml");
         var jaxbContext = JAXBContext.newInstance(TAR.class, TestCaseReportType.class, TestStepStatus.class);
         jaxbContext.createMarshaller().marshal(new JAXBElement<>(new QName("http://www.gitb.com/tr/v1/", "TestCaseReport"), TAR.class, report), Files.newOutputStream(xmlPath));
         var pdfPath = Path.of(tmpPath.toString(), "report.pdf");
-        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(Files.newInputStream(xmlPath), Files.newOutputStream(pdfPath), r -> mockReportLabels(), false));
+        assertDoesNotThrow(() -> new ReportGenerator().writeTARReport(Files.newInputStream(xmlPath), Files.newOutputStream(pdfPath), r -> mockReportLabels(), properties, new DomainConfig()));
         assertTrue(Files.exists(pdfPath));
         assertTrue(Files.isRegularFile(pdfPath));
     }
 
     private ReportLabels mockReportLabels() {
         var mock = mock(ReportLabels.class);
-        when(mock.getAssertionId()).thenReturn("assertionId");
-        when(mock.getDate()).thenReturn("date");
-        when(mock.getDetails()).thenReturn("details");
-        when(mock.getFileName()).thenReturn("fileName");
-        when(mock.getFindings()).thenReturn("findings");
-        when(mock.getFindingsDetails()).thenReturn("findingsDetails");
-        when(mock.getLocation()).thenReturn("location");
+        when(mock.getAssertionId()).thenReturn("Assertion ID:");
+        when(mock.getDate()).thenReturn("Date:");
+        when(mock.getDetails()).thenReturn("Details");
+        when(mock.getFileName()).thenReturn("File name:");
+        when(mock.getFindings()).thenReturn("Findings:");
+        when(mock.getFindingsDetails()).thenReturn("4 error(s), 1 warning(s), 0 message(s)");
+        when(mock.getLocation()).thenReturn("Location:");
         when(mock.getOf()).thenReturn("of");
-        when(mock.getOverview()).thenReturn("overview");
+        when(mock.getOverview()).thenReturn("Overview");
         when(mock.getPage()).thenReturn("page");
-        when(mock.getResult()).thenReturn("result");
-        when(mock.getResultType()).thenReturn("resultType");
-        when(mock.getTest()).thenReturn("test");
-        when(mock.getTitle()).thenReturn("title");
+        when(mock.getResult()).thenReturn("Result:");
+        when(mock.getResultType()).thenReturn("FAILURE");
+        when(mock.getTest()).thenReturn("Test:");
+        when(mock.getTitle()).thenReturn("Validation report");
+        when(mock.getValidationType()).thenReturn("Validation type:");
+        when(mock.getValidationTypeName()).thenReturn("Large purchase order");
+        when(mock.getUniqueRule()).thenReturn("{0} rule");
+        when(mock.getUniqueRules()).thenReturn("{0} rules");
+        when(mock.getCustomMessageOverview()).thenReturn("Custom <b>overview</b> message");
+        when(mock.getCustomMessageErrors()).thenReturn("Custom <b>error</b> message");
+        when(mock.getErrors()).thenReturn("Errors:");
+        when(mock.getWarnings()).thenReturn("Warnings:");
+        when(mock.getMessages()).thenReturn("Messages:");
+        when(mock.getErrorSectionTitle()).thenReturn("Validation errors");
+        when(mock.getWarningSectionTitle()).thenReturn("Validation warnings");
+        when(mock.getMessageSectionTitle()).thenReturn("Validation messages");
         return mock;
     }
 

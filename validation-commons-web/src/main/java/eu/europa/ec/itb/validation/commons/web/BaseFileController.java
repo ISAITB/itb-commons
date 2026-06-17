@@ -15,16 +15,15 @@
 
 package eu.europa.ec.itb.validation.commons.web;
 
-import eu.europa.ec.itb.validation.commons.BaseFileManager;
-import eu.europa.ec.itb.validation.commons.CsvReportGenerator;
-import eu.europa.ec.itb.validation.commons.LocalisationHelper;
-import eu.europa.ec.itb.validation.commons.ValidatorChannel;
+import eu.europa.ec.itb.validation.commons.*;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfigCache;
 import eu.europa.ec.itb.validation.commons.report.ReportGeneratorBean;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
 import eu.europa.ec.itb.validation.commons.web.locale.CustomLocaleResolver;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +32,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 
 import static eu.europa.ec.itb.validation.commons.web.Constants.MDC_DOMAIN;
@@ -177,11 +174,13 @@ public abstract class BaseFileController<T extends BaseFileManager, R extends Ap
             // Generate the PDF.
             File reportFileXml = new File(fileManager.getReportFolder(), getReportFileNameXml(id, aggregate));
             if (reportFileXml.exists() && reportFileXml.isFile()) {
+                ReportProperties properties = fileManager.loadReportProperties(id);
                 reportGenerator.writeReport(
                         reportFileXml,
                         reportFile,
                         new LocalisationHelper(domainConfig, localeResolver.resolveLocale(request, response, domainConfig, appConfig)),
-                        domainConfig.isRichTextReports()
+                        properties,
+                        domainConfig
                 );
             } else {
                 throw new NotFoundException();

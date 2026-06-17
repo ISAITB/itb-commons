@@ -37,14 +37,16 @@ public class WebDomainConfig extends DomainConfig {
     private boolean supportMinimalUserInterface;
     private boolean showAbout;
     private boolean supportUserInterfaceEmbedding;
+    private boolean showVersion;
     private List<String> hiddenType;
 
     /**
      * Apply the configuration's metadata to the web service validation module definition.
      *
      * @param module The module to update.
+     * @param appConfig The application configuration.
      */
-    public void applyWebServiceMetadata(ValidationModule module) {
+    public void applyWebServiceMetadata(ValidationModule module, ApplicationConfig appConfig) {
         if (module != null) {
             module.setId(webServiceId);
             module.setOperation("V");
@@ -58,7 +60,10 @@ public class WebDomainConfig extends DomainConfig {
             // Version.
             var version = getValidationServiceVersion();
             if (version == null) {
-                version = "1.0.0";
+                version = appConfig.getVersionNumber();
+                if (version == null) {
+                    version = "1.0.0";
+                }
             }
             module.getMetadata().setVersion(version);
         }
@@ -121,6 +126,20 @@ public class WebDomainConfig extends DomainConfig {
     }
 
     /**
+     * @return True if the version number should be displayed on the UI.
+     */
+    public boolean isShowVersion() {
+        return showVersion;
+    }
+
+    /**
+     * @param showVersion True if the version number should be displayed on the UI.
+     */
+    public void setShowVersion(boolean showVersion) {
+        this.showVersion = showVersion;
+    }
+
+    /**
      * @return True if the about banner should be displayed on the UI.
      */
     public boolean isShowAbout() {
@@ -134,60 +153,6 @@ public class WebDomainConfig extends DomainConfig {
         this.showAbout = showAbout;
     }
 
-    /**
-     * The complete type and option label for a given validation type and option combination.
-     *
-     * @param typeOption The complete validation type (includes type and option as TYPE.OPTION).
-     * @param helper The helper to lookup translations.
-     * @return The option's label.
-     */
-    public String getCompleteTypeOptionLabel(String typeOption, LocalisationHelper helper) {
-        String text = null;
-        if (helper.propertyExists(String.format("validator.completeTypeOptionLabel.%s", typeOption))) {
-            text = helper.localise(String.format("validator.completeTypeOptionLabel.%s", typeOption));
-        } else {
-            for (var type: getDeclaredType()) {
-                var options = getValidationTypeOptions().get(type);
-                if (options == null || options.isEmpty()) {
-                    if (type.equals(typeOption)) {
-                        // Return label for type.
-                        text = getValidationTypeLabel(type, helper);
-                    }
-                } else {
-                    for (var option: options) {
-                        if (typeOption.equals(type+"."+option)) {
-                            text = getValidationTypeLabel(type, helper) + " - " + getValidationTypeOptionLabel(type, option, helper);
-                            break;
-                        }
-                    }
-                }
-                if (text != null) {
-                    break;
-                }
-            }
-            if (text == null) {
-                throw new IllegalStateException(String.format("The validation type and option combination [%s] was invalid", typeOption));
-            }
-        }
-        return text;
-    }
-
-    /**
-     * The label for a validation type.
-     *
-     * @param type The validation type.
-     * @param helper The helper to lookup translations.
-     * @return The label.
-     */
-    public String getValidationTypeLabel(String type, LocalisationHelper helper) {
-        String text;
-        if (helper.propertyExists(String.format("validator.typeLabel.%s", type))) {
-            text = helper.localise(String.format("validator.typeLabel.%s", type));
-        } else {
-            text = type;
-        }
-        return text;
-    }
 
     /**
      * Get the group of the provided validation type.
@@ -222,26 +187,6 @@ public class WebDomainConfig extends DomainConfig {
             text = helper.localise(String.format("validator.typeGroupLabel.%s", group));
         } else {
             text = group;
-        }
-        return text;
-    }
-
-    /**
-     * The label for an option of a validation type.
-     *
-     * @param type The validation type.
-     * @param option The option.
-     * @param helper The helper to lookup translations.
-     * @return The label.
-     */
-    public String getValidationTypeOptionLabel(String type, String option, LocalisationHelper helper) {
-        String text;
-        if (helper.propertyExists(String.format("validator.typeOptionLabel.%s.%s", type, option))) {
-            text = helper.localise(String.format("validator.typeOptionLabel.%s.%s", type, option));
-        } else if (helper.propertyExists(String.format("validator.optionLabel.%s", option))) {
-            text = helper.localise(String.format("validator.optionLabel.%s", option));
-        } else {
-            text = option;
         }
         return text;
     }

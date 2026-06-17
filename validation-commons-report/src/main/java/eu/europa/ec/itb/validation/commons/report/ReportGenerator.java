@@ -30,7 +30,9 @@ import com.openhtmltopdf.slf4j.Slf4jLogger;
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer;
 import com.openhtmltopdf.swing.NaiveUserAgent;
 import com.openhtmltopdf.util.XRLog;
+import eu.europa.ec.itb.validation.commons.ReportProperties;
 import eu.europa.ec.itb.validation.commons.Utils;
+import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.report.dto.ContextItem;
 import eu.europa.ec.itb.validation.commons.report.dto.Report;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportItem;
@@ -94,10 +96,11 @@ public class ReportGenerator {
      * @param inputStream The stream for the TAR XML report to use as input.
      * @param outputStream The stream on which to write the generated report.
      * @param labelProvider A function to provide the labels to use in the report.
-     * @param richTextReportItems Whether rich text report items are allowed.
+     * @param properties The additional properties to consider when generating the report.
+     * @param domainConfig The domain configuration.
      */
-    public void writeTARReport(InputStream inputStream, OutputStream outputStream, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
-        writeTARReport(inputStream, outputStream, true, labelProvider, richTextReportItems);
+    public <R extends DomainConfig> void writeTARReport(InputStream inputStream, OutputStream outputStream, Function<TAR, ReportLabels> labelProvider, ReportProperties properties, R domainConfig) {
+        writeTARReport(inputStream, outputStream, true, labelProvider, properties, domainConfig);
     }
 
     /**
@@ -106,10 +109,11 @@ public class ReportGenerator {
      * @param reportType The TAR report to use as input.
      * @param outputStream The stream on which to write the generated report.
      * @param labelProvider A function to provide the labels to use in the report.
-     * @param richTextReportItems Whether rich text report items are allowed.
+     * @param properties The additional properties to consider when generating the report.
+     * @param domainConfig The domain configuration.
      */
-    public void writeTARReport(TAR reportType, OutputStream outputStream, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
-        writeTARReport(reportType, outputStream, true, labelProvider, richTextReportItems);
+    public <R extends DomainConfig> void writeTARReport(TAR reportType, OutputStream outputStream, Function<TAR, ReportLabels> labelProvider, ReportProperties properties, R domainConfig) {
+        writeTARReport(reportType, outputStream, true, labelProvider, properties, domainConfig);
     }
 
     /**
@@ -119,10 +123,11 @@ public class ReportGenerator {
      * @param outputStream The stream on which to write the generated report.
      * @param addContext True if the context information from the TAR object should also be added to the PDF output.
      * @param labelProvider A function to provide the labels to use in the report.
-     * @param richTextReportItems Whether rich text report items are allowed.
+     * @param properties The additional properties to consider when generating the report.
+     * @param domainConfig The domain configuration.
      */
-    public void writeTARReport(TAR reportType, OutputStream outputStream, boolean addContext, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
-        writeTestStepReport(reportType, outputStream, addContext, labelProvider, richTextReportItems);
+    public <R extends DomainConfig> void writeTARReport(TAR reportType, OutputStream outputStream, boolean addContext, Function<TAR, ReportLabels> labelProvider, ReportProperties properties, R domainConfig) {
+        writeTestStepReport(reportType, outputStream, addContext, labelProvider, properties, domainConfig);
     }
 
     /**
@@ -132,10 +137,11 @@ public class ReportGenerator {
      * @param outputStream The stream on which to write the generated report.
      * @param addContext True if the context information from the TAR object should also be added to the PDF output.
      * @param labelProvider A function to provide the labels to use in the report.
-     * @param richTextReportItems Whether rich text report items are allowed.
+     * @param properties The additional properties to consider when generating the report.
+     * @param domainConfig The domain configuration.
      */
-    public void writeTARReport(InputStream inputStream, OutputStream outputStream, boolean addContext, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
-        writeTARReport(Utils.toTAR(inputStream), outputStream, addContext, labelProvider, richTextReportItems);
+    public <R extends DomainConfig> void writeTARReport(InputStream inputStream, OutputStream outputStream, boolean addContext, Function<TAR, ReportLabels> labelProvider, ReportProperties properties, R domainConfig) {
+        writeTARReport(Utils.toTAR(inputStream), outputStream, addContext, labelProvider, properties, domainConfig);
     }
 
     /**
@@ -220,9 +226,10 @@ public class ReportGenerator {
      * @param outputStream The stream on which to write the generated report.
      * @param addContext True if the context information from the TAR object should also be added to the PDF output.
      * @param labelProvider A function to provide the labels to use in the report.
-     * @param richTextReportItems Whether rich text report items are allowed.
+     * @param properties The additional properties to consider when generating the report.
+     * @param domainConfig The domain configuration.
      */
-    private <T extends TestStepReportType> void writeTestStepReport(T reportType, OutputStream outputStream, boolean addContext, Function<T, ReportLabels> labelProvider, boolean richTextReportItems) {
+    private <T extends TestStepReportType, R extends DomainConfig> void writeTestStepReport(T reportType, OutputStream outputStream, boolean addContext, Function<T, ReportLabels> labelProvider, ReportProperties properties, R domainConfig) {
         try {
             var labels = labelProvider.apply(reportType);
             Report report = fromTestStepReportType(reportType, labels.getTitle(), addContext);
@@ -230,15 +237,11 @@ public class ReportGenerator {
             parameters.put("title", report.getTitle());
             parameters.put("reportDate", report.getReportDate());
             parameters.put("reportResult", report.getReportResult());
-            parameters.put("errorCount", report.getErrorCount());
-            parameters.put("warningCount", report.getWarningCount());
-            parameters.put("messageCount", report.getMessageCount());
             parameters.put("overviewLabel", labels.getOverview());
             parameters.put("detailsLabel", labels.getDetails());
             parameters.put("resultLabel", labels.getResult());
             parameters.put("resultTypeLabel", labels.getResultType());
             parameters.put("dateLabel", labels.getDate());
-            parameters.put("fileNameLabel", labels.getFileName());
             parameters.put("testLabel", labels.getTest());
             parameters.put("locationLabel", labels.getLocation());
             parameters.put("pageLabel", labels.getPage());
@@ -246,16 +249,69 @@ public class ReportGenerator {
             parameters.put("assertionIdLabel", labels.getAssertionId());
             parameters.put("resultFindingsLabel", labels.getFindings());
             parameters.put("resultFindingsDetailsLabel", labels.getFindingsDetails());
-            parameters.put("richTextReportItems", richTextReportItems);
+            parameters.put("richTextReportItems", domainConfig.isRichTextReports());
+            parameters.put("errorsLabel", labels.getErrors());
+            parameters.put("warningsLabel", labels.getWarnings());
+            parameters.put("messagesLabel", labels.getMessages());
+            parameters.put("errorSectionTitle", labels.getErrorSectionTitle());
+            parameters.put("warningSectionTitle", labels.getWarningSectionTitle());
+            parameters.put("messageSectionTitle", labels.getMessageSectionTitle());
+            if (properties != null) {
+                // File name.
+                parameters.put("fileNameLabel", labels.getFileName());
+                parameters.put("reportFileName", properties.inputFileName());
+                // Validation type.
+                parameters.put("validationTypeLabel", labels.getValidationType());
+                parameters.put("validationTypeName", labels.getValidationTypeName());
+            }
+            // Custom message.
+            if (labels.getCustomMessageOverview() != null) parameters.put("customMessageOverview", labels.getCustomMessageOverview());
+            if (labels.getCustomMessageErrors() != null) parameters.put("customMessageErrors", labels.getCustomMessageErrors());
+            if (labels.getCustomMessageWarnings() != null) parameters.put("customMessageWarnings", labels.getCustomMessageWarnings());
+            if (labels.getCustomMessageMessages() != null) parameters.put("customMessageMessages", labels.getCustomMessageMessages());
+            int errorCountUnique = 0;
+            int warningCountUnique = 0;
+            int messageCountUnique = 0;
             if (report.getReportItems() != null && !report.getReportItems().isEmpty()) {
                 parameters.put("reportItems", report.getReportItems());
+                var splitReport = report.splitPerSeverity();
+                errorCountUnique = splitReport.errors().size();
+                warningCountUnique = splitReport.warnings().size();
+                messageCountUnique = splitReport.messages().size();
+                if (!splitReport.errors().isEmpty()) parameters.put("errorItems", splitReport.errors());
+                if (!splitReport.warnings().isEmpty()) parameters.put("warningItems", splitReport.warnings());
+                if (!splitReport.messages().isEmpty()) parameters.put("messageItems", splitReport.messages());
             }
+            parameters.put("errorCount", getFindingCountMessage(report.getErrorCount(), errorCountUnique, labels));
+            parameters.put("warningCount", getFindingCountMessage(report.getWarningCount(), warningCountUnique, labels));
+            parameters.put("messageCount", getFindingCountMessage(report.getMessageCount(), messageCountUnique, labels));
+            parameters.put("totalCount", getFindingCountMessage(report.getErrorCount()+report.getWarningCount()+report.getMessageCount(), errorCountUnique+warningCountUnique+messageCountUnique, labels));
             if (report.getContextItems() != null && !report.getContextItems().isEmpty()) {
                 parameters.put("contextItems", report.getContextItems());
             }
             writeClasspathReport(parameters, outputStream);
         } catch (Exception e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    /**
+     * Create the count message for the provided findings totals.
+     *
+     * @param totalCount The totals.
+     * @param uniqueCount The unique rules.
+     * @param labels The labels to use.
+     * @return the message.
+     */
+    private String getFindingCountMessage(int totalCount, int uniqueCount, ReportLabels labels) {
+        if (totalCount == uniqueCount) {
+            return String.valueOf(totalCount);
+        } else {
+            if (uniqueCount == 1) {
+                return "%s (%s)".formatted(totalCount, labels.getUniqueRule().replace("{0}", String.valueOf(uniqueCount)));
+            } else {
+                return "%s (%s)".formatted(totalCount, labels.getUniqueRules().replace("{0}", String.valueOf(uniqueCount)));
+            }
         }
     }
 

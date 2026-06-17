@@ -17,6 +17,9 @@ package eu.europa.ec.itb.validation.commons.report;
 
 import com.gitb.tr.TAR;
 import eu.europa.ec.itb.validation.commons.LocalisationHelper;
+import eu.europa.ec.itb.validation.commons.ReportProperties;
+import eu.europa.ec.itb.validation.commons.Utils;
+import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import eu.europa.ec.itb.validation.commons.report.dto.ReportLabels;
 import org.springframework.stereotype.Component;
@@ -41,10 +44,11 @@ public class ReportGeneratorBean {
      * @param inFile The input XML report.
      * @param outFile The output PDF report.
      * @param helper The localisation helper to use for the report's labels.
-     * @param richTextReportItems Whether rich text report items are allowed.
+     * @param properties The additional properties to consider when generating the report.
+     * @param domainConfig The domain configuration.
      */
-    public void writeReport(File inFile, File outFile, LocalisationHelper helper, boolean richTextReportItems) {
-        writeReport(inFile, outFile, tar -> getReportLabels(helper, tar), richTextReportItems);
+    public <R extends DomainConfig> void writeReport(File inFile, File outFile, LocalisationHelper helper, ReportProperties properties, R domainConfig) {
+        writeReport(inFile, outFile, tar -> getReportLabels(helper, tar, properties, domainConfig), properties, domainConfig);
     }
 
     /**
@@ -53,11 +57,12 @@ public class ReportGeneratorBean {
      * @param inFile The input XML report.
      * @param outFile The output PDF report.
      * @param labelProvider A function to provide the labels to use in the report.
-     * @param richTextReportItems Whether rich text report items are allowed.
+     * @param properties The additional properties to consider when generating the report.
+     * @param domainConfig The domain configuration.
      */
-    public void writeReport(File inFile, File outFile, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
+    public <R extends DomainConfig> void writeReport(File inFile, File outFile, Function<TAR, ReportLabels> labelProvider, ReportProperties properties, R domainConfig) {
         try (FileInputStream fis = new FileInputStream(inFile); FileOutputStream fos = new FileOutputStream(outFile)) {
-            reportGenerator.writeTARReport(fis, fos, labelProvider, richTextReportItems);
+            reportGenerator.writeTARReport(fis, fos, labelProvider, properties, domainConfig);
         } catch (Exception e) {
             throw new ValidatorException("validator.label.exception.unableToGeneratePDFReport", e);
         }
@@ -69,10 +74,11 @@ public class ReportGeneratorBean {
      * @param report The TAR report object as input.
      * @param outFile The output PDF report.
      * @param helper The localisation helper to use for the report's labels.
-     * @param richTextReportItems Whether rich text report items are allowed.
+     * @param properties The additional properties to consider when generating the report.
+     * @param domainConfig The domain configuration.
      */
-    public void writeReport(TAR report, File outFile, LocalisationHelper helper, boolean richTextReportItems) {
-        writeReport(report, outFile, tar -> getReportLabels(helper, tar), richTextReportItems);
+    public <R extends DomainConfig> void writeReport(TAR report, File outFile, LocalisationHelper helper, ReportProperties properties, R domainConfig) {
+        writeReport(report, outFile, tar -> getReportLabels(helper, tar, properties, domainConfig), properties, domainConfig);
     }
 
     /**
@@ -81,11 +87,12 @@ public class ReportGeneratorBean {
      * @param report The TAR report object as input.
      * @param outFile The output PDF report.
      * @param labelProvider A function to provide the labels to use in the report.
-     * @param richTextReportItems Whether rich text report items are allowed.
+     * @param properties The additional properties to consider when generating the report.
+     * @param domainConfig The domain configuration.
      */
-    public void writeReport(TAR report, File outFile, Function<TAR, ReportLabels> labelProvider, boolean richTextReportItems) {
+    public <R extends DomainConfig> void writeReport(TAR report, File outFile, Function<TAR, ReportLabels> labelProvider, ReportProperties properties, R domainConfig) {
         try (FileOutputStream fos = new FileOutputStream(outFile)) {
-            reportGenerator.writeTARReport(report, fos, labelProvider, richTextReportItems);
+            reportGenerator.writeTARReport(report, fos, labelProvider, properties, domainConfig);
         } catch (Exception e) {
             throw new ValidatorException("validator.label.exception.unableToGeneratePDFReport", e);
         }
@@ -98,7 +105,7 @@ public class ReportGeneratorBean {
      * @param report The report to consider.
      * @return The labels.
      */
-    public ReportLabels getReportLabels(LocalisationHelper helper, TAR report) {
+    public <R extends DomainConfig> ReportLabels getReportLabels(LocalisationHelper helper, TAR report, ReportProperties properties, R domainConfig) {
         var reportLabels = new ReportLabels();
         reportLabels.setTitle(helper.localise("validator.reportTitle"));
         reportLabels.setOverview(helper.localise("validator.label.resultSubSectionOverviewTitle"));
@@ -118,7 +125,55 @@ public class ReportGeneratorBean {
                 ((report.getCounters() != null && report.getCounters().getNrOfWarnings() != null)?report.getCounters().getNrOfWarnings().intValue():0),
                 ((report.getCounters() != null && report.getCounters().getNrOfAssertions() != null)?report.getCounters().getNrOfAssertions().intValue():0)
         ));
+        reportLabels.setFileName(helper.localise("validator.label.resultFileNameLabel"));
+        reportLabels.setValidationType(helper.localise("validator.label.resultValidationTypeLabel"));
+        reportLabels.setValidationTypeName(domainConfig.getCompleteTypeOptionLabel(properties.validationType(), helper));
+        String resultKey = report.getResult().value().toLowerCase();
+        reportLabels.setCustomMessageOverview(getCustomReportMessage("validator.customReportMessage.overviewSection", properties.validationType(), resultKey, helper));
+        reportLabels.setCustomMessageErrors(getCustomReportMessage("validator.customReportMessage.errorsSection", properties.validationType(), resultKey, helper));
+        reportLabels.setCustomMessageWarnings(getCustomReportMessage("validator.customReportMessage.warningsSection", properties.validationType(), resultKey, helper));
+        reportLabels.setCustomMessageMessages(getCustomReportMessage("validator.customReportMessage.messagesSection", properties.validationType(), resultKey, helper));
+        reportLabels.setUniqueRule(helper.localise("validator.label.uniqueRule"));
+        reportLabels.setUniqueRules(helper.localise("validator.label.uniqueRules"));
+        reportLabels.setErrors(helper.localise("validator.label.errors"));
+        reportLabels.setWarnings(helper.localise("validator.label.warnings"));
+        reportLabels.setMessages(helper.localise("validator.label.messages"));
+        reportLabels.setErrorSectionTitle(helper.localise("validator.label.errorSectionTitle"));
+        reportLabels.setWarningSectionTitle(helper.localise("validator.label.warningSectionTitle"));
+        reportLabels.setMessageSectionTitle(helper.localise("validator.label.messageSectionTitle"));
         return reportLabels;
+    }
+
+    /**
+     * Generate the custom report message to use.
+     *
+     * @param basePropertyKey The base config property key.
+     * @param typeOption The validation type.
+     * @param resultKey The key part for the result.
+     * @param helper The localisation helper.
+     * @return The message.
+     */
+    public String getCustomReportMessage(String basePropertyKey, String typeOption, String resultKey, LocalisationHelper helper) {
+        String propertyKeyToCheck = "%s.%s.%s".formatted(basePropertyKey, resultKey, typeOption);
+        String propertyKeyToLookup = null;
+        if (helper.propertyExists(propertyKeyToCheck)) {
+            propertyKeyToLookup = propertyKeyToCheck;
+        } else {
+            propertyKeyToCheck = "%s.%s".formatted(basePropertyKey, resultKey);
+            if (helper.propertyExists(propertyKeyToCheck)) {
+                propertyKeyToLookup = propertyKeyToCheck;
+            } else {
+                propertyKeyToCheck = basePropertyKey;
+                if (helper.propertyExists(propertyKeyToCheck)) {
+                    propertyKeyToLookup = basePropertyKey;
+                }
+            }
+        }
+        if (propertyKeyToLookup != null) {
+            return Utils.sanitizeCustomReportMessage(helper.localise(propertyKeyToLookup));
+        } else {
+            return null;
+        }
     }
 
 }

@@ -12,13 +12,13 @@ import eu.europa.ec.itb.validation.commons.report.ReportGeneratorBean;
 import eu.europa.ec.itb.validation.commons.test.BaseTest;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
 import eu.europa.ec.itb.validation.commons.web.locale.CustomLocaleResolver;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -135,7 +135,7 @@ class BaseFileControllerTest extends BaseTest {
         assertNotNull(result);
         assertEquals(expectedPdfFile, result.getFile().toPath());
         verify(servletResponse, times(1)).setHeader("Content-Disposition", "attachment; filename=report_"+reportUuid+".pdf");
-        verify(reportGenerator, times(1)).writeReport(eq(xmlFile.toFile()), eq(expectedPdfFile.toFile()), any(LocalisationHelper.class), anyBoolean());
+        verify(reportGenerator, times(1)).writeReport(eq(xmlFile.toFile()), eq(expectedPdfFile.toFile()), any(LocalisationHelper.class), any(), any());
     }
 
     @Test
