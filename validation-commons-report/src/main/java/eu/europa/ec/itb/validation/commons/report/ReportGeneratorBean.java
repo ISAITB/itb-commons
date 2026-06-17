@@ -138,6 +138,7 @@ public class ReportGeneratorBean {
         reportLabels.setErrors(helper.localise("validator.label.errors"));
         reportLabels.setWarnings(helper.localise("validator.label.warnings"));
         reportLabels.setMessages(helper.localise("validator.label.messages"));
+        reportLabels.setTotalFindings(helper.localise("validator.label.totalFindings"));
         reportLabels.setErrorSectionTitle(helper.localise("validator.label.errorSectionTitle"));
         reportLabels.setWarningSectionTitle(helper.localise("validator.label.warningSectionTitle"));
         reportLabels.setMessageSectionTitle(helper.localise("validator.label.messageSectionTitle"));
