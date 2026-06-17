@@ -215,6 +215,19 @@ body {
 .no-display {
     display: none
 }
+.validator-ui-footer {
+    display: flex;
+}
+.validator-ui-footer-contents {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.version-div {
+    opacity: 0.5;
+    font-size: x-small;
+}
 .locale-div {
     display: flex;
 }

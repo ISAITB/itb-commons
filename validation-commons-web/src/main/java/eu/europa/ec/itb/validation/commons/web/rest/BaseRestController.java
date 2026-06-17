@@ -27,6 +27,7 @@ import eu.europa.ec.itb.validation.commons.web.JsonConfig;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
 import eu.europa.ec.itb.validation.commons.web.rest.model.ApiInfo;
 import eu.europa.ec.itb.validation.commons.web.rest.model.SchemaInfo;
+import eu.europa.ec.itb.validation.commons.web.rest.model.VersionInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -65,6 +66,8 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
 
     @Autowired
     protected DomainConfigCache<T> domainConfigs;
+    @Autowired
+    protected X appConfig;
     @Autowired
     protected Z inputHelper;
     protected ObjectMapper tarObjectMapper = JsonConfig.objectMapper();
@@ -140,6 +143,23 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
     ) {
         if (domain != null && !domain.isEmpty()) validateDomain(domain);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Get the validator software version information.
+     *
+     * @return The version information.
+     */
+    @Operation(summary = "Return the version of the validator's software",
+            description = "Return the version number and built timestamp for the validator's underlying software.")
+    @ApiResponse(responseCode = "200", description = "Success", content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = VersionInfo.class)) })
+    @ApiResponse(responseCode = "500", description = "Error (If a problem occurred with processing the request)", content = @Content)
+    @GetMapping(value = {"/api/version"}, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public VersionInfo versionInfo() {
+        var versionInfo = new VersionInfo();
+        versionInfo.setVersionNumber(appConfig.getVersionNumber());
+        versionInfo.setBuildTimestamp(appConfig.getVersionBuildTimestamp());
+        return versionInfo;
     }
 
     /**

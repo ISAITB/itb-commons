@@ -37,14 +37,16 @@ public class WebDomainConfig extends DomainConfig {
     private boolean supportMinimalUserInterface;
     private boolean showAbout;
     private boolean supportUserInterfaceEmbedding;
+    private boolean showVersion;
     private List<String> hiddenType;
 
     /**
      * Apply the configuration's metadata to the web service validation module definition.
      *
      * @param module The module to update.
+     * @param appConfig The application configuration.
      */
-    public void applyWebServiceMetadata(ValidationModule module) {
+    public void applyWebServiceMetadata(ValidationModule module, ApplicationConfig appConfig) {
         if (module != null) {
             module.setId(webServiceId);
             module.setOperation("V");
@@ -58,7 +60,10 @@ public class WebDomainConfig extends DomainConfig {
             // Version.
             var version = getValidationServiceVersion();
             if (version == null) {
-                version = "1.0.0";
+                version = appConfig.getVersionNumber();
+                if (version == null) {
+                    version = "1.0.0";
+                }
             }
             module.getMetadata().setVersion(version);
         }
@@ -118,6 +123,20 @@ public class WebDomainConfig extends DomainConfig {
      */
     public void setSupportMinimalUserInterface(boolean supportMinimalUserInterface) {
         this.supportMinimalUserInterface = supportMinimalUserInterface;
+    }
+
+    /**
+     * @return True if the version number should be displayed on the UI.
+     */
+    public boolean isShowVersion() {
+        return showVersion;
+    }
+
+    /**
+     * @param showVersion True if the version number should be displayed on the UI.
+     */
+    public void setShowVersion(boolean showVersion) {
+        this.showVersion = showVersion;
     }
 
     /**

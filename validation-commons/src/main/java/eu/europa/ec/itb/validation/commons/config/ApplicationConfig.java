@@ -68,6 +68,30 @@ public abstract class ApplicationConfig {
     private Set<String> allowedUriImports;
     private List<NormalizedURI> normalizedAllowedUriImports;
 
+    /**
+     * Get the build version of the validator.
+     *
+     * @return The build version.
+     */
+    public String getVersionNumber() {
+        return env.getProperty("validator.buildVersion");
+    }
+
+    /**
+     * Get the built timestamp for the validator.
+     *
+     * @return The timestamp.
+     */
+    public String getVersionBuildTimestamp() {
+        return env.getProperty("validator.buildTimestamp");
+    }
+
+    /**
+     * Parse the normalized URIs
+     *
+     * @param allowedUris The URIs to process.
+     * @return The normalized URIs.
+     */
     private List<NormalizedURI> parseNormalizedUris(Set<String> allowedUris) {
         return allowedUris.stream()
                 .map(input -> {
