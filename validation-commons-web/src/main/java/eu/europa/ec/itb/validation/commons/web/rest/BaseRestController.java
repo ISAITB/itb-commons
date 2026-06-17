@@ -125,7 +125,7 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
      * @param domain The domain.
      * @return A 200 status code.
      */
-    @Operation(summary = "Check if the validator is responding to requests",
+    @Operation(summary = "Check if the validator is responding to requests.",
             description = "Check if the API for the given domain is available to respond to requests. " +
                     "Can also be used as a general healthcheck, by not specifying a domain." +
                     "This request does not return a body. Only a 200 status code if the healthcheck passes.")
@@ -150,7 +150,7 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
      *
      * @return The version information.
      */
-    @Operation(summary = "Return the version of the validator's software",
+    @Operation(summary = "Return the version of the validator's software.",
             description = "Return the version number and built timestamp for the validator's underlying software.")
     @ApiResponse(responseCode = "200", description = "Success", content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = VersionInfo.class)) })
     @ApiResponse(responseCode = "500", description = "Error (If a problem occurred with processing the request)", content = @Content)
