@@ -651,6 +651,9 @@ public class Utils {
             for (var reportItem: report.getReports().getInfoOrWarningOrError()) {
                 if (reportItem.getValue() instanceof BAR barItem) {
                     barItem.setDescription(REPORT_ITEM_POLICY.sanitize(barItem.getDescription()));
+                    if (barItem.getAssertionID() != null) {
+                        barItem.setAssertionID(REPORT_ITEM_POLICY.sanitize(barItem.getAssertionID()));
+                    }
                 }
             }
         }

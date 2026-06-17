@@ -27,7 +27,14 @@
                         <div class="col-xs-12 report-item-test"><span class="report-item-test-label">{{../data.translations.resultTestLabel}}</span><span>{{value.test}}</span></div>
                     {{/if}}
                     {{#if value.assertionID}}
-                        <div class="col-xs-12 report-item-test"><span class="report-item-test-label">{{../data.translations.additionalInfoLabel}}</span><span>{{value.assertionID}}</span></div>
+                        <div class="col-xs-12 report-item-test">
+                            <span class="report-item-test-label">{{../data.translations.additionalInfoLabel}}</span>
+                            {{#if ../data.richTextReports}}
+                                <span class="item-info-text-rich">{{{value.assertionID}}}</span>
+                            {{else}}
+                                <span>{{value.assertionID}}</span>
+                            {{/if}}
+                        </div>
                     {{/if}}
                 </div>
             </div>
