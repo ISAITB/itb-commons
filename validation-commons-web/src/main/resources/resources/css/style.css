@@ -218,6 +218,9 @@ body {
 .validator-ui-footer {
     display: flex;
 }
+.validator-ui-footer.with-footer {
+    margin-bottom: 10px;
+}
 .validator-ui-footer-contents {
     margin-left: auto;
     display: flex;
