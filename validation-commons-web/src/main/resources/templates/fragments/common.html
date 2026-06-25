@@ -73,5 +73,14 @@
             </div>
         </th:block>
 
+        <th:block th:fragment="uiBottom(config, appConfig, localiser)">
+            <div class="validator-ui-footer" th:classappend="${localiser.propertyExists('validator.footerHtml')} ? with-footer : ''">
+                <div class="validator-ui-footer-contents">
+                    <div th:if="${config.showVersion}" class="version-div">v<th:block th:text="${appConfig.versionNumber}">1.0.0</th:block></div>
+                    <th:block th:replace="~{fragments/common :: localeSelector(${config}, ${localiser.getLocale()})}"/>
+                </div>
+            </div>
+        </th:block>
+
     </body>
 </html>
