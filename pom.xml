@@ -27,6 +27,11 @@
         </license>
     </licenses>
 
+    <organization>
+        <name>European Commission, DIGIT, Interoperable Europe Unit</name>
+        <url>https://interoperable-europe.ec.europa.eu/</url>
+    </organization>
+
     <developers>
         <developer>
             <name>European Commission, DIGIT, Interoperable Europe Unit</name>
@@ -145,6 +150,10 @@
     </repositories>
 
     <distributionManagement>
+        <site>
+            <id>local-staging</id>
+            <url>file://${maven.multiModuleProjectDirectory}/target/staging</url>
+        </site>
         <repository>
             <id>itbRepoWrite</id>
             <!-- Property set in profile settings that is used in development. Not needed if itb-commons is installed locally. -->
@@ -394,7 +403,8 @@
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <!-- empty = suppress all default reports -->
+                            <!-- index only = suppress all default reports -->
+                            <report>index</report>
                         </reports>
                     </reportSet>
                 </reportSets>
@@ -403,10 +413,24 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${version.plugin.versionsMavenPlugin}</version>
+                <configuration>
+                    <onlyProjectDependencies>true</onlyProjectDependencies>
+                </configuration>
                 <reportSets>
+                    <!-- Aggregate report: root only -->
                     <reportSet>
+                        <id>aggregate</id>
+                        <inherited>false</inherited>
                         <reports>
+                            <report>dependency-updates-aggregate-report</report>
                             <report>plugin-updates-report</report>
+                        </reports>
+                    </reportSet>
+                    <!-- Per-module reports: run in each module -->
+                    <reportSet>
+                        <id>modules</id>
+                        <reports>
+                            <report>dependency-updates-report</report>
                         </reports>
                     </reportSet>
                 </reportSets>
