@@ -395,6 +395,9 @@
     </build>
 
     <reporting>
+        <!--
+            Generate project reports with `mvn install site site:stage`.
+        -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -413,14 +416,15 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${version.plugin.versionsMavenPlugin}</version>
-                <configuration>
-                    <onlyProjectDependencies>true</onlyProjectDependencies>
-                </configuration>
                 <reportSets>
                     <!-- Aggregate report: root only -->
                     <reportSet>
                         <id>aggregate</id>
                         <inherited>false</inherited>
+                        <configuration>
+                            <onlyProjectDependencies>true</onlyProjectDependencies>
+                            <processDependencyManagement>false</processDependencyManagement>
+                        </configuration>
                         <reports>
                             <report>dependency-updates-aggregate-report</report>
                             <report>plugin-updates-report</report>
@@ -429,6 +433,10 @@
                     <!-- Per-module reports: run in each module -->
                     <reportSet>
                         <id>modules</id>
+                        <configuration>
+                            <onlyProjectDependencies>true</onlyProjectDependencies>
+                            <processDependencyManagement>false</processDependencyManagement>
+                        </configuration>
                         <reports>
                             <report>dependency-updates-report</report>
                         </reports>
