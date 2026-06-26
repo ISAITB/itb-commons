@@ -27,6 +27,11 @@
         </license>
     </licenses>
 
+    <organization>
+        <name>European Commission, DIGIT, Interoperable Europe Unit</name>
+        <url>https://interoperable-europe.ec.europa.eu/</url>
+    </organization>
+
     <developers>
         <developer>
             <name>European Commission, DIGIT, Interoperable Europe Unit</name>
@@ -139,17 +144,24 @@
         </repository>
         <repository>
             <id>itbRepoRead</id>
+            <!-- Property set in profile settings that is used in development. Not needed if itb-commons is installed locally. -->
             <url>${itbRepoReadUrl}</url>
         </repository>
     </repositories>
 
     <distributionManagement>
+        <site>
+            <id>local-staging</id>
+            <url>file://${maven.multiModuleProjectDirectory}/target/staging</url>
+        </site>
         <repository>
             <id>itbRepoWrite</id>
+            <!-- Property set in profile settings that is used in development. Not needed if itb-commons is installed locally. -->
             <url>${itbRepoWriteUrl}</url>
         </repository>
         <snapshotRepository>
             <id>itbRepoWrite</id>
+            <!-- Property set in profile settings that is used in development. Not needed if itb-commons is installed locally. -->
             <url>${itbRepoWriteUrl}</url>
         </snapshotRepository>
     </distributionManagement>
@@ -383,6 +395,9 @@
     </build>
 
     <reporting>
+        <!--
+            Generate project reports with `mvn install site site:stage`.
+        -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -391,7 +406,8 @@
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <!-- empty = suppress all default reports -->
+                            <!-- index only = suppress all default reports -->
+                            <report>index</report>
                         </reports>
                     </reportSet>
                 </reportSets>
@@ -401,9 +417,28 @@
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${version.plugin.versionsMavenPlugin}</version>
                 <reportSets>
+                    <!-- Aggregate report: root only -->
                     <reportSet>
+                        <id>aggregate</id>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <onlyProjectDependencies>true</onlyProjectDependencies>
+                            <processDependencyManagement>false</processDependencyManagement>
+                        </configuration>
                         <reports>
+                            <report>dependency-updates-aggregate-report</report>
                             <report>plugin-updates-report</report>
+                        </reports>
+                    </reportSet>
+                    <!-- Per-module reports: run in each module -->
+                    <reportSet>
+                        <id>modules</id>
+                        <configuration>
+                            <onlyProjectDependencies>true</onlyProjectDependencies>
+                            <processDependencyManagement>false</processDependencyManagement>
+                        </configuration>
+                        <reports>
+                            <report>dependency-updates-report</report>
                         </reports>
                     </reportSet>
                 </reportSets>
