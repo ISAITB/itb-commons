@@ -540,4 +540,12 @@
         <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/.*@.*$</packageUrl>
         <vulnerabilityName>CVE-2026-13006</vulnerabilityName>
     </suppress>
+    <suppress>
+        <!-- CVE not applicable as exploit preconditions are not met. -->
+        <notes><![CDATA[
+    file name: spring-security-web-7.1.0.jar
+    ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/.*@.*$</packageUrl>
+        <vulnerabilityName>CVE-2026-47838</vulnerabilityName>
+    </suppress>
 </suppressions>
