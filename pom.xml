@@ -50,48 +50,49 @@
         <version.springBoot>4.1.0</version.springBoot> <!-- When upgrading adapt Tomcat version (below) as needed. -->
         <version.tomcat>11.0.23</version.tomcat>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
-        <version.gitbTypes>1.26.0</version.gitbTypes>
-        <version.commonsLang>3.18.0</version.commonsLang>
-        <version.commonsConfiguration>2.15.0</version.commonsConfiguration>
-        <version.commonsIo>2.17.0</version.commonsIo>
-        <version.commonsCsv>1.12.0</version.commonsCsv>
+        <version.gitbTypes>1.29.5</version.gitbTypes>
+        <version.commonsLang>3.20.0</version.commonsLang>
+        <version.commonsConfiguration>2.15.1</version.commonsConfiguration>
+        <version.commonsIo>2.22.0</version.commonsIo>
+        <version.commonsCsv>1.14.1</version.commonsCsv>
         <version.webjarsLocator>0.59</version.webjarsLocator>
         <version.webjarsBootstrap>3.4.1</version.webjarsBootstrap>
         <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.7.1</version.webjarsJQuery>
-        <version.jaxb-impl>4.0.8</version.jaxb-impl>
-        <version.geoip2>5.0.2</version.geoip2>
-        <version.aspectjWeaver>1.9.6</version.aspectjWeaver>
+        <version.jaxb-impl>4.0.9</version.jaxb-impl>
+        <version.geoip2>5.1.0</version.geoip2>
+        <version.aspectjWeaver>1.9.25.1</version.aspectjWeaver>
         <version.cxf>4.2.2</version.cxf> <!-- When upgrading ensure that the neethi version is up to date. -->
         <version.neethi>3.2.2</version.neethi>
-        <version.saxon>12.8</version.saxon>
-        <version.tika>3.3.0</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
-        <version.junrar>7.5.10</version.junrar>
-        <version.helgerSchematron>9.0.1</version.helgerSchematron>
-        <version.jaxWs>4.0.2</version.jaxWs>
+        <version.saxon>12.9</version.saxon>
+        <version.tika>3.3.1</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
+        <version.junrar>7.6.0</version.junrar>
+        <version.helgerSchematron>9.2.0</version.helgerSchematron>
+        <version.jaxWs>4.0.3</version.jaxWs>
         <version.jws>3.0.0</version.jws>
         <version.commonsBeanutils>1.9.4</version.commonsBeanutils>
-        <version.json-schema-validator>3.0.4</version.json-schema-validator>
+        <version.json-schema-validator>3.0.5</version.json-schema-validator>
         <version.jakartaJson>2.0.0</version.jakartaJson>
-        <version.jayway>2.9.0</version.jayway>
-        <version.gson>2.9.0</version.gson>
+        <version.jayway>3.0.0</version.jayway>
+        <version.gson>2.14.0</version.gson>
         <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
         <version.commonsCompress>1.28.0</version.commonsCompress>
-        <version.commonsValidator>1.9.0</version.commonsValidator>
+        <version.commonsValidator>1.10.1</version.commonsValidator>
         <version.springdoc>3.0.3</version.springdoc>
         <version.topbraid>1.5.0</version.topbraid>
-        <version.freemarker>2.3.32</version.freemarker>
+        <version.freemarker>2.3.34</version.freemarker>
         <version.pdfbox>3.0.7</version.pdfbox>
-        <version.openhtmltopdf>1.1.37</version.openhtmltopdf>
-        <version.org.jsoup>1.15.4</version.org.jsoup>
+        <version.openhtmltopdf>1.1.40</version.openhtmltopdf>
+        <version.org.jsoup>1.22.2</version.org.jsoup>
         <version.owaspHtmlSanitizer>20260313.1</version.owaspHtmlSanitizer>
         <version.bouncycastle>1.84</version.bouncycastle>
         <version.batik>1.17</version.batik>
-        <version.bucket4j>8.18.0</version.bucket4j>
+        <version.bucket4j>8.19.0</version.bucket4j>
         <version.caffeine>3.2.4</version.caffeine>
         <version.mockito>5.23.0</version.mockito>
         <version.asm>9.10.1</version.asm>
+        <version.jackson>3.2.0</version.jackson>
         <!--
             Xerces versions to support the XML Schema v1.1 distribution (not published on Maven
             The version in the following sections must remain consistent with the latest Xerces
@@ -435,7 +436,7 @@
                         <id>modules</id>
                         <configuration>
                             <onlyProjectDependencies>true</onlyProjectDependencies>
-                            <processDependencyManagement>false</processDependencyManagement>
+                            <processDependencyManagement>true</processDependencyManagement>
                         </configuration>
                         <reports>
                             <report>dependency-updates-report</report>
@@ -886,6 +887,14 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${version.mockito}</version>
                 <scope>test</scope>
+            </dependency>
+            <!-- Jackson BOM -->
+            <dependency>
+                <groupId>tools.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${version.jackson}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <!-- JAXB BOM to align JAXB-related APIs and implementations. -->
             <dependency>
