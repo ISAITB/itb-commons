@@ -64,7 +64,7 @@
         <version.geoip2>5.1.0</version.geoip2>
         <version.aspectjWeaver>1.9.25.1</version.aspectjWeaver>
         <version.cxf>4.2.2</version.cxf> <!-- When upgrading ensure that the neethi version is up to date. -->
-        <version.neethi>3.2.2</version.neethi>
+        <version.neethi>3.2.3</version.neethi>
         <version.saxon>12.9</version.saxon>
         <version.tika>3.3.1</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
         <version.junrar>7.6.0</version.junrar>
