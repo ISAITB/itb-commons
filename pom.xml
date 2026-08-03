@@ -64,7 +64,7 @@
         <version.geoip2>5.1.0</version.geoip2>
         <version.aspectjWeaver>1.9.25.1</version.aspectjWeaver>
         <version.cxf>4.2.2</version.cxf> <!-- When upgrading ensure that the neethi version is up to date. -->
-        <version.neethi>3.2.2</version.neethi>
+        <version.neethi>3.2.3</version.neethi>
         <version.saxon>12.9</version.saxon>
         <version.tika>3.3.1</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
         <version.junrar>7.6.0</version.junrar>
@@ -92,7 +92,8 @@
         <version.caffeine>3.2.4</version.caffeine>
         <version.mockito>5.23.0</version.mockito>
         <version.asm>9.10.1</version.asm>
-        <version.jackson>3.2.0</version.jackson>
+        <version.jackson>3.2.1</version.jackson>
+        <version.jackson2>2.22.1</version.jackson2>
         <!--
             Xerces versions to support the XML Schema v1.1 distribution (not published on Maven
             The version in the following sections must remain consistent with the latest Xerces
@@ -108,7 +109,7 @@
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
         <version.jena>6.1.0</version.jena>
         <!-- Ensure the libthrift version matches the one used within Jena. -->
-        <version.libthrift>0.23.0</version.libthrift>
+        <version.libthrift>0.24.0</version.libthrift>
         <!-- Override the transitive httpclient5 version to resolve CVE-2025-27820 -->
         <version.httpclient5>5.4.4</version.httpclient5>
         <!-- Plugin versions -->
@@ -889,6 +890,14 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${version.mockito}</version>
                 <scope>test</scope>
+            </dependency>
+            <!-- Jackson 2 BOM -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${version.jackson2}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <!-- Jackson BOM -->
             <dependency>
