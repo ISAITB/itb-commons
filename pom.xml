@@ -92,7 +92,8 @@
         <version.caffeine>3.2.4</version.caffeine>
         <version.mockito>5.23.0</version.mockito>
         <version.asm>9.10.1</version.asm>
-        <version.jackson>3.2.0</version.jackson>
+        <version.jackson>3.2.1</version.jackson>
+        <version.jackson2>2.22.1</version.jackson2>
         <!--
             Xerces versions to support the XML Schema v1.1 distribution (not published on Maven
             The version in the following sections must remain consistent with the latest Xerces
@@ -889,6 +890,14 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${version.mockito}</version>
                 <scope>test</scope>
+            </dependency>
+            <!-- Jackson 2 BOM -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${version.jackson2}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <!-- Jackson BOM -->
             <dependency>
