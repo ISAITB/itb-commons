@@ -109,7 +109,7 @@
         <!-- Ensure the Jena version matches the one used within the TopBraid SHACL library. -->
         <version.jena>6.1.0</version.jena>
         <!-- Ensure the libthrift version matches the one used within Jena. -->
-        <version.libthrift>0.23.0</version.libthrift>
+        <version.libthrift>0.24.0</version.libthrift>
         <!-- Override the transitive httpclient5 version to resolve CVE-2025-27820 -->
         <version.httpclient5>5.4.4</version.httpclient5>
         <!-- Plugin versions -->
