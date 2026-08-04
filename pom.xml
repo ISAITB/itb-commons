@@ -86,7 +86,7 @@
         <version.openhtmltopdf>1.1.66</version.openhtmltopdf>
         <version.org.jsoup>1.23.1</version.org.jsoup>
         <version.owaspHtmlSanitizer>20260313.1</version.owaspHtmlSanitizer>
-        <version.bouncycastle>1.84</version.bouncycastle>
+        <version.bouncycastle>1.85</version.bouncycastle>
         <version.batik>1.17</version.batik>
         <version.bucket4j>8.19.0</version.bucket4j>
         <version.caffeine>3.2.4</version.caffeine>
