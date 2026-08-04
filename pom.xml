@@ -61,13 +61,13 @@
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.7.1</version.webjarsJQuery>
         <version.jaxb-impl>4.0.9</version.jaxb-impl>
-        <version.geoip2>5.1.0</version.geoip2>
+        <version.geoip2>5.2.0</version.geoip2>
         <version.aspectjWeaver>1.9.25.1</version.aspectjWeaver>
         <version.cxf>4.2.2</version.cxf> <!-- When upgrading ensure that the neethi version is up to date. -->
         <version.neethi>3.2.3</version.neethi>
-        <version.saxon>12.9</version.saxon>
-        <version.tika>3.3.1</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
-        <version.junrar>7.6.0</version.junrar>
+        <version.saxon>12.10</version.saxon>
+        <version.tika>3.3.2</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
+        <version.junrar>7.6.1</version.junrar>
         <version.helgerSchematron>9.2.0</version.helgerSchematron>
         <version.jaxWs>4.0.3</version.jaxWs>
         <version.jws>3.0.0</version.jws>
@@ -79,14 +79,14 @@
         <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
         <version.commonsCompress>1.28.0</version.commonsCompress>
         <version.commonsValidator>1.10.1</version.commonsValidator>
-        <version.springdoc>3.0.3</version.springdoc>
+        <version.springdoc>3.1.0</version.springdoc>
         <version.topbraid>1.5.0</version.topbraid>
         <version.freemarker>2.3.34</version.freemarker>
-        <version.pdfbox>3.0.7</version.pdfbox>
-        <version.openhtmltopdf>1.1.40</version.openhtmltopdf>
-        <version.org.jsoup>1.22.2</version.org.jsoup>
+        <version.pdfbox>3.0.8</version.pdfbox>
+        <version.openhtmltopdf>1.1.66</version.openhtmltopdf>
+        <version.org.jsoup>1.23.1</version.org.jsoup>
         <version.owaspHtmlSanitizer>20260313.1</version.owaspHtmlSanitizer>
-        <version.bouncycastle>1.84</version.bouncycastle>
+        <version.bouncycastle>1.85</version.bouncycastle>
         <version.batik>1.17</version.batik>
         <version.bucket4j>8.19.0</version.bucket4j>
         <version.caffeine>3.2.4</version.caffeine>
@@ -114,9 +114,9 @@
         <version.httpclient5>5.4.4</version.httpclient5>
         <!-- Plugin versions -->
         <version.plugin.mavenCompilerPlugin>3.15.0</version.plugin.mavenCompilerPlugin>
-        <version.plugin.mavenJarPlugin>3.5.0</version.plugin.mavenJarPlugin>
+        <version.plugin.mavenJarPlugin>3.5.1</version.plugin.mavenJarPlugin>
         <version.plugin.dependencyCheckPlugin>12.2.2</version.plugin.dependencyCheckPlugin>
-        <version.plugin.frontendMavenPlugin>2.0.1</version.plugin.frontendMavenPlugin>
+        <version.plugin.frontendMavenPlugin>2.0.2</version.plugin.frontendMavenPlugin>
         <version.plugin.jacocoMavenPlugin>0.8.15</version.plugin.jacocoMavenPlugin>
         <version.plugin.versionsMavenPlugin>2.21.0</version.plugin.versionsMavenPlugin>
         <version.plugin.mavenEnforcerPlugin>3.6.3</version.plugin.mavenEnforcerPlugin>
