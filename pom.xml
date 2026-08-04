@@ -114,9 +114,9 @@
         <version.httpclient5>5.4.4</version.httpclient5>
         <!-- Plugin versions -->
         <version.plugin.mavenCompilerPlugin>3.15.0</version.plugin.mavenCompilerPlugin>
-        <version.plugin.mavenJarPlugin>3.5.0</version.plugin.mavenJarPlugin>
+        <version.plugin.mavenJarPlugin>3.5.1</version.plugin.mavenJarPlugin>
         <version.plugin.dependencyCheckPlugin>12.2.2</version.plugin.dependencyCheckPlugin>
-        <version.plugin.frontendMavenPlugin>2.0.1</version.plugin.frontendMavenPlugin>
+        <version.plugin.frontendMavenPlugin>2.0.2</version.plugin.frontendMavenPlugin>
         <version.plugin.jacocoMavenPlugin>0.8.15</version.plugin.jacocoMavenPlugin>
         <version.plugin.versionsMavenPlugin>2.21.0</version.plugin.versionsMavenPlugin>
         <version.plugin.mavenEnforcerPlugin>3.6.3</version.plugin.mavenEnforcerPlugin>
