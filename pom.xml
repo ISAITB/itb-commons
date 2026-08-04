@@ -61,7 +61,7 @@
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.7.1</version.webjarsJQuery>
         <version.jaxb-impl>4.0.9</version.jaxb-impl>
-        <version.geoip2>5.1.0</version.geoip2>
+        <version.geoip2>5.2.0</version.geoip2>
         <version.aspectjWeaver>1.9.25.1</version.aspectjWeaver>
         <version.cxf>4.2.2</version.cxf> <!-- When upgrading ensure that the neethi version is up to date. -->
         <version.neethi>3.2.3</version.neethi>
