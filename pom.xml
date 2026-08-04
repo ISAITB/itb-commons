@@ -66,8 +66,8 @@
         <version.cxf>4.2.2</version.cxf> <!-- When upgrading ensure that the neethi version is up to date. -->
         <version.neethi>3.2.3</version.neethi>
         <version.saxon>12.9</version.saxon>
-        <version.tika>3.3.1</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
-        <version.junrar>7.6.0</version.junrar>
+        <version.tika>3.3.2</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
+        <version.junrar>7.6.1</version.junrar>
         <version.helgerSchematron>9.2.0</version.helgerSchematron>
         <version.jaxWs>4.0.3</version.jaxWs>
         <version.jws>3.0.0</version.jws>
