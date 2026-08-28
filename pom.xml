@@ -84,7 +84,7 @@
         <version.freemarker>2.3.34</version.freemarker>
         <version.pdfbox>3.0.8</version.pdfbox>
         <version.openhtmltopdf>1.1.66</version.openhtmltopdf>
-        <version.org.jsoup>1.23.1</version.org.jsoup>
+        <version.org.jsoup>1.23.2</version.org.jsoup>
         <version.owaspHtmlSanitizer>20260313.1</version.owaspHtmlSanitizer>
         <version.bouncycastle>1.85</version.bouncycastle>
         <version.batik>1.17</version.batik>
@@ -92,8 +92,8 @@
         <version.caffeine>3.2.4</version.caffeine>
         <version.mockito>5.23.0</version.mockito>
         <version.asm>9.10.1</version.asm>
-        <version.jackson>3.2.1</version.jackson>
-        <version.jackson2>2.22.1</version.jackson2>
+        <version.jackson>3.2.2</version.jackson>
+        <version.jackson2>2.22.2</version.jackson2>
         <!--
             Xerces versions to support the XML Schema v1.1 distribution (not published on Maven
             The version in the following sections must remain consistent with the latest Xerces
