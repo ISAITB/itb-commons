@@ -43,9 +43,9 @@ public abstract class BaseValidationRunner<X extends DomainConfig> implements Va
     /** The fixed pad to ensure consistent messages by validators. */
     protected static final String PAD = "   ";
     /** Flag to switch off console output. */
-    public static final String FLAG_NO_OUTPUT = "-nooutput";
+    public static final String FLAG_NO_OUTPUT = "-noOutput";
     /** Flag to switch off file log output. */
-    public static final String FLAG_NO_LOG = "-nolog";
+    public static final String FLAG_NO_LOG = "-noLog";
 
     protected X domainConfig;
 
