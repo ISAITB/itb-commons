@@ -129,6 +129,7 @@
         <version.plugin.mavenSitePlugin>3.22.0</version.plugin.mavenSitePlugin>
         <version.plugin.mavenDependencyPlugin>3.11.0</version.plugin.mavenDependencyPlugin>
         <version.plugin.projectInfoReports>3.9.0</version.plugin.projectInfoReports>
+        <version.plugin.cycloneDxPlugin>2.9.3</version.plugin.cycloneDxPlugin>
         <argLine />
     </properties>
 
