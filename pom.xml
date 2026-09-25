@@ -118,10 +118,10 @@
         <version.plugin.dependencyCheckPlugin>12.2.2</version.plugin.dependencyCheckPlugin>
         <version.plugin.frontendMavenPlugin>2.0.2</version.plugin.frontendMavenPlugin>
         <version.plugin.jacocoMavenPlugin>0.8.15</version.plugin.jacocoMavenPlugin>
-        <version.plugin.versionsMavenPlugin>2.21.0</version.plugin.versionsMavenPlugin>
+        <version.plugin.versionsMavenPlugin>2.22.0</version.plugin.versionsMavenPlugin>
         <version.plugin.mavenEnforcerPlugin>3.6.3</version.plugin.mavenEnforcerPlugin>
         <version.plugin.mavenReleasePlugin>3.3.1</version.plugin.mavenReleasePlugin>
-        <version.plugin.mavenSurefirePlugin>3.5.6</version.plugin.mavenSurefirePlugin>
+        <version.plugin.mavenSurefirePlugin>3.6.0</version.plugin.mavenSurefirePlugin>
         <version.plugin.mavenJavadocPlugin>3.12.0</version.plugin.mavenJavadocPlugin>
         <version.plugin.mavenResourcesPlugin>3.5.0</version.plugin.mavenResourcesPlugin>
         <version.plugin.mavenAntRunPlugin>3.2.0</version.plugin.mavenAntRunPlugin>
