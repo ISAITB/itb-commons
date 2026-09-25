@@ -48,23 +48,23 @@
         <ossIndexUsername>ossIndexUsername</ossIndexUsername>
         <ossIndexPassword>ossIndexPassword</ossIndexPassword>
         <version.springBoot>4.1.1</version.springBoot> <!-- When upgrading adapt Tomcat version (below) as needed. -->
-        <version.tomcat>11.0.25</version.tomcat>
+        <version.tomcat>11.0.26</version.tomcat>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
-        <version.gitbTypes>1.29.5</version.gitbTypes>
+        <version.gitbTypes>1.30.0</version.gitbTypes>
         <version.commonsLang>3.20.0</version.commonsLang>
         <version.commonsConfiguration>2.15.1</version.commonsConfiguration>
         <version.commonsIo>2.22.0</version.commonsIo>
         <version.commonsCsv>1.14.1</version.commonsCsv>
         <version.webjarsLocator>0.59</version.webjarsLocator>
         <version.webjarsBootstrap>3.4.1</version.webjarsBootstrap>
-        <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
+        <version.webjarsFontAwesome>5.15.4</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.7.1</version.webjarsJQuery>
         <version.jaxb-impl>4.0.9</version.jaxb-impl>
         <version.geoip2>5.2.0</version.geoip2>
         <version.aspectjWeaver>1.9.25.1</version.aspectjWeaver>
         <version.cxf>4.2.3</version.cxf> <!-- When upgrading ensure that the neethi version is up to date. -->
-        <version.neethi>3.2.3</version.neethi>
+        <version.neethi>3.2.4</version.neethi>
         <version.saxon>12.10</version.saxon>
         <version.tika>3.3.2</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
         <version.junrar>7.6.1</version.junrar>
@@ -79,21 +79,21 @@
         <version.frictionlessTableSchema>1.0.1</version.frictionlessTableSchema>
         <version.commonsCompress>1.28.0</version.commonsCompress>
         <version.commonsValidator>1.10.1</version.commonsValidator>
-        <version.springdoc>3.1.0</version.springdoc>
+        <version.springdoc>3.1.1</version.springdoc>
         <version.topbraid>1.5.0</version.topbraid>
         <version.freemarker>2.3.35</version.freemarker>
         <version.pdfbox>3.0.8</version.pdfbox>
-        <version.openhtmltopdf>1.1.66</version.openhtmltopdf>
+        <version.openhtmltopdf>1.1.86</version.openhtmltopdf>
         <version.org.jsoup>1.23.2</version.org.jsoup>
         <version.owaspHtmlSanitizer>20260313.1</version.owaspHtmlSanitizer>
         <version.bouncycastle>1.85</version.bouncycastle>
-        <version.batik>1.17</version.batik>
-        <version.bucket4j>8.19.0</version.bucket4j>
-        <version.caffeine>3.2.4</version.caffeine>
+        <version.batik>1.19</version.batik>
+        <version.bucket4j>8.20.0</version.bucket4j>
+        <version.caffeine>3.3.0</version.caffeine>
         <version.mockito>5.23.0</version.mockito>
         <version.asm>9.10.1</version.asm>
-        <version.jackson>3.2.2</version.jackson>
-        <version.jackson2>2.22.2</version.jackson2>
+        <version.jackson>3.2.3</version.jackson>
+        <version.jackson2>2.22.3</version.jackson2>
         <!--
             Xerces versions to support the XML Schema v1.1 distribution (not published on Maven
             The version in the following sections must remain consistent with the latest Xerces
@@ -118,10 +118,10 @@
         <version.plugin.dependencyCheckPlugin>12.2.2</version.plugin.dependencyCheckPlugin>
         <version.plugin.frontendMavenPlugin>2.0.2</version.plugin.frontendMavenPlugin>
         <version.plugin.jacocoMavenPlugin>0.8.15</version.plugin.jacocoMavenPlugin>
-        <version.plugin.versionsMavenPlugin>2.21.0</version.plugin.versionsMavenPlugin>
+        <version.plugin.versionsMavenPlugin>2.22.0</version.plugin.versionsMavenPlugin>
         <version.plugin.mavenEnforcerPlugin>3.6.3</version.plugin.mavenEnforcerPlugin>
         <version.plugin.mavenReleasePlugin>3.3.1</version.plugin.mavenReleasePlugin>
-        <version.plugin.mavenSurefirePlugin>3.5.6</version.plugin.mavenSurefirePlugin>
+        <version.plugin.mavenSurefirePlugin>3.6.0</version.plugin.mavenSurefirePlugin>
         <version.plugin.mavenJavadocPlugin>3.12.0</version.plugin.mavenJavadocPlugin>
         <version.plugin.mavenResourcesPlugin>3.5.0</version.plugin.mavenResourcesPlugin>
         <version.plugin.mavenAntRunPlugin>3.2.0</version.plugin.mavenAntRunPlugin>
