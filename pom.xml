@@ -88,7 +88,7 @@
         <version.owaspHtmlSanitizer>20260313.1</version.owaspHtmlSanitizer>
         <version.bouncycastle>1.85</version.bouncycastle>
         <version.batik>1.17</version.batik>
-        <version.bucket4j>8.19.0</version.bucket4j>
+        <version.bucket4j>8.20.0</version.bucket4j>
         <version.caffeine>3.2.4</version.caffeine>
         <version.mockito>5.23.0</version.mockito>
         <version.asm>9.10.1</version.asm>
