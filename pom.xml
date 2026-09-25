@@ -57,7 +57,7 @@
         <version.commonsCsv>1.14.1</version.commonsCsv>
         <version.webjarsLocator>0.59</version.webjarsLocator>
         <version.webjarsBootstrap>3.4.1</version.webjarsBootstrap>
-        <version.webjarsFontAwesome>5.13.0</version.webjarsFontAwesome>
+        <version.webjarsFontAwesome>5.15.4</version.webjarsFontAwesome>
         <version.webjarsCodeMirror>5.62.2</version.webjarsCodeMirror>
         <version.webjarsJQuery>3.7.1</version.webjarsJQuery>
         <version.jaxb-impl>4.0.9</version.jaxb-impl>
