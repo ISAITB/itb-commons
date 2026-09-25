@@ -50,7 +50,7 @@
         <version.springBoot>4.1.1</version.springBoot> <!-- When upgrading adapt Tomcat version (below) as needed. -->
         <version.tomcat>11.0.25</version.tomcat>
         <version.jakartaAnnotationApi>2.1.1</version.jakartaAnnotationApi>
-        <version.gitbTypes>1.29.5</version.gitbTypes>
+        <version.gitbTypes>1.30.0</version.gitbTypes>
         <version.commonsLang>3.20.0</version.commonsLang>
         <version.commonsConfiguration>2.15.1</version.commonsConfiguration>
         <version.commonsIo>2.22.0</version.commonsIo>
