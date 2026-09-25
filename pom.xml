@@ -89,7 +89,7 @@
         <version.bouncycastle>1.85</version.bouncycastle>
         <version.batik>1.17</version.batik>
         <version.bucket4j>8.20.0</version.bucket4j>
-        <version.caffeine>3.2.4</version.caffeine>
+        <version.caffeine>3.3.0</version.caffeine>
         <version.mockito>5.23.0</version.mockito>
         <version.asm>9.10.1</version.asm>
         <version.jackson>3.2.3</version.jackson>
