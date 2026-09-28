@@ -71,7 +71,7 @@
         <version.helgerSchematron>9.2.0</version.helgerSchematron>
         <version.jaxWs>4.0.3</version.jaxWs>
         <version.jws>3.0.0</version.jws>
-        <version.commonsBeanutils>1.9.4</version.commonsBeanutils>
+        <version.commonsBeanutils>1.11.0</version.commonsBeanutils>
         <version.json-schema-validator>3.0.7</version.json-schema-validator>
         <version.jakartaJson>2.0.0</version.jakartaJson>
         <version.jayway>3.0.0</version.jayway>
@@ -86,7 +86,7 @@
         <version.openhtmltopdf>1.1.86</version.openhtmltopdf>
         <version.org.jsoup>1.23.2</version.org.jsoup>
         <version.owaspHtmlSanitizer>20260313.1</version.owaspHtmlSanitizer>
-        <version.bouncycastle>1.85</version.bouncycastle>
+        <version.bouncycastle>1.86</version.bouncycastle>
         <version.batik>1.19</version.batik>
         <version.bucket4j>8.20.0</version.bucket4j>
         <version.caffeine>3.3.0</version.caffeine>
