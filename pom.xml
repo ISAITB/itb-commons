@@ -71,7 +71,7 @@
         <version.helgerSchematron>9.2.0</version.helgerSchematron>
         <version.jaxWs>4.0.3</version.jaxWs>
         <version.jws>3.0.0</version.jws>
-        <version.commonsBeanutils>1.9.4</version.commonsBeanutils>
+        <version.commonsBeanutils>1.11.0</version.commonsBeanutils>
         <version.json-schema-validator>3.0.7</version.json-schema-validator>
         <version.jakartaJson>2.0.0</version.jakartaJson>
         <version.jayway>3.0.0</version.jayway>
