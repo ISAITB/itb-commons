@@ -63,8 +63,9 @@
         <version.jaxb-impl>4.0.9</version.jaxb-impl>
         <version.geoip2>5.2.0</version.geoip2>
         <version.aspectjWeaver>1.9.25.1</version.aspectjWeaver>
-        <version.cxf>4.2.3</version.cxf> <!-- When upgrading ensure that the neethi version is up to date. -->
+        <version.cxf>4.2.3</version.cxf> <!-- When upgrading ensure that the neethi and xmlschema-core versions are up to date. -->
         <version.neethi>3.2.4</version.neethi>
+        <version.xmlSchemaCore>2.3.3</version.xmlSchemaCore>
         <version.saxon>12.10</version.saxon>
         <version.tika>3.3.2</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
         <version.junrar>7.6.1</version.junrar>
@@ -875,6 +876,11 @@
                 <groupId>org.apache.neethi</groupId>
                 <artifactId>neethi</artifactId>
                 <version>${version.neethi}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.xmlschema</groupId>
+                <artifactId>xmlschema-core</artifactId>
+                <version>${version.xmlSchemaCore}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.thrift</groupId>
