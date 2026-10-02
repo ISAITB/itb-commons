@@ -69,7 +69,7 @@
         <version.saxon>12.10</version.saxon>
         <version.tika>3.3.2</version.tika> <!-- When upgrading ensure junrar is up to date (transitive dependency of tika-parser-pkg-module). -->
         <version.junrar>7.6.1</version.junrar>
-        <version.helgerSchematron>9.2.0</version.helgerSchematron>
+        <version.helgerSchematron>10.2.0</version.helgerSchematron>
         <version.jaxWs>4.0.3</version.jaxWs>
         <version.jws>3.0.0</version.jws>
         <version.commonsBeanutils>1.11.0</version.commonsBeanutils>
@@ -656,6 +656,11 @@
             <dependency>
                 <groupId>com.helger.schematron</groupId>
                 <artifactId>ph-schematron-xslt</artifactId>
+                <version>${version.helgerSchematron}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.helger.schematron</groupId>
+                <artifactId>ph-schematron-isosch</artifactId>
                 <version>${version.helgerSchematron}</version>
             </dependency>
             <dependency>
