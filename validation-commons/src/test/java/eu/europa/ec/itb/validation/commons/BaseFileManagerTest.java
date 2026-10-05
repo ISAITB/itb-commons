@@ -681,9 +681,11 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         var testFileManager = mock(BaseFileManager.class);
         testFileManager.domainConfigCache = domainConfigCache;
         doReturn(tmpFolder.toFile()).when(testFileManager).getTempFolder();
+        doCallRealMethod().when(testFileManager).getMultipartTmpFolder();
         doCallRealMethod().when(testFileManager).init();
         testFileManager.init();
         assertTrue(Files.notExists(existingFile));
+        assertTrue(Files.isDirectory(Path.of(tmpFolder.toString(), "multipart")));
         verify(testFileManager, times(1)).resetRemoteFileCache();
     }
 
