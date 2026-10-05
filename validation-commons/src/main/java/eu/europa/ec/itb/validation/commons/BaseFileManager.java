@@ -151,6 +151,16 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     }
 
     /**
+     * Get the temporary folder used by the web server to store uploaded multipart request parts (see the
+     * spring.servlet.multipart.location property). The web server removes these files at the end of each request.
+     *
+     * @return The folder to use, a sub-folder beneath the overall temp folder.
+     */
+    public File getMultipartTmpFolder() {
+        return new File(getTempFolder(), "multipart");
+    }
+
+    /**
      * Get the root temporary folder within which all transient files will be created. Anythins placed within this
      * folder is subject for perioddic deletion if not explicitly deleted.
      *
@@ -865,6 +875,8 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     @PostConstruct
     public void init() {
         FileUtils.deleteQuietly(getTempFolder());
+        // The web server requires the folder for uploaded parts to exist.
+        getMultipartTmpFolder().mkdirs();
         for (DomainConfig domainConfig: domainConfigCache.getAllDomainConfigurations()) {
             getExternalDomainFileCacheLock(domainConfig.getDomainName());
         }
