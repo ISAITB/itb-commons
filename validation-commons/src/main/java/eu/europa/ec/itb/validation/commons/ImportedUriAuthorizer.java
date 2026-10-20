@@ -211,6 +211,18 @@ public class ImportedUriAuthorizer {
     }
 
     /**
+     * Construct an authorizer to apply to content provided by the user at request time (e.g. the input to validate),
+     * as opposed to artefacts configured for the validator. All referenced URIs must be public or - if internal -
+     * whitelisted, irrespective of whether the validation type supports user-provided artefacts.
+     *
+     * @param appConfig The application configuration.
+     * @return The authorizer to use.
+     */
+    public static ImportedUriAuthorizer forUserContent(ApplicationConfig appConfig) {
+        return new ImportedUriAuthorizer(appConfig.getNormalizedAllowedUriImports());
+    }
+
+    /**
      * Helper record to record CIDR info.
      *
      * @param rangeAddressBytes The address bytes.

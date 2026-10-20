@@ -46,4 +46,17 @@ class ImportedUriAuthorizerTest {
         assertFalse(authorizer.isPresent());
     }
 
+    @Test
+    void testForUserContent() {
+        var appConfig = mock(ApplicationConfig.class);
+        when(appConfig.getNormalizedAllowedUriImports()).thenReturn(List.of(NormalizedURI.of(URI.create("http://10.0.0.1/test"))));
+        var authorizer = ImportedUriAuthorizer.forUserContent(appConfig);
+        assertTrue(authorizer.isUriAllowed("https://www.itb.ec.europa.eu/test/resource"));
+        assertTrue(authorizer.isUriAllowed("http://10.0.0.1/test/resource"));
+        assertThrows(ValidatorException.class, () -> authorizer.isUriAllowed("http://10.0.0.2/test"));
+        assertThrows(ValidatorException.class, () -> authorizer.isUriAllowed("http://127.0.0.1/test"));
+        assertThrows(ValidatorException.class, () -> authorizer.isUriAllowed("http://169.254.169.254/latest/meta-data/"));
+        assertThrows(ValidatorException.class, () -> authorizer.isUriAllowed("file:///etc/passwd"));
+    }
+
 }
