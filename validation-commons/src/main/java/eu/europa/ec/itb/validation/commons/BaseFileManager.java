@@ -556,6 +556,21 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     }
 
     /**
+     * Open an input stream to read the contents of the provided URL, applying restrictions to the requests made
+     * (including those that result from redirects).
+     *
+     * @param url The URL to load.
+     * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
+     * @param httpVersion The HTTP version to use.
+     * @param requestDecorator A decorator function to apply customisations to the outgoing HTTP request.
+     * @param guard The restrictions to apply to the requests (if null no restrictions are applied).
+     * @return The input stream.
+     */
+    public StreamInfo getInputStreamFromURL(String url, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator, RemoteRequestGuard guard) {
+        return urlReader.stream(URI.create(StringUtils.defaultString(url).trim()), acceptedContentTypes, httpVersion, requestDecorator, guard);
+    }
+
+    /**
      * Create the path for a temporary folder beneath the web temp folder.
      *
      * @return The folder path.
