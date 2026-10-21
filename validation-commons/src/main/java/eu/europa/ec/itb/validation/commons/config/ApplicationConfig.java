@@ -265,6 +265,20 @@ public abstract class ApplicationConfig {
     }
 
     /**
+     * Get the folder in which the web server stores the parts of uploaded multipart requests (removed by the web server
+     * at the end of each request).
+     * <p>
+     * The folder is returned as an absolute path. This is important because the web server interprets a relative path
+     * as relative to its own work folder, which is located in the OS temp folder. A path such as "/validator/tmp" is for
+     * example not absolute on Windows (it has no drive), even though it is resolved against the current drive by Java.
+     *
+     * @return The folder, a sub-folder beneath the validator's temporary work folder.
+     */
+    public File getMultipartTmpFolder() {
+        return new File(getTmpFolder(), "multipart").getAbsoluteFile();
+    }
+
+    /**
      * @return A set of folder names under the resource root from which domain configurations will be loaded.
      */
     public Set<String> getDomain() {

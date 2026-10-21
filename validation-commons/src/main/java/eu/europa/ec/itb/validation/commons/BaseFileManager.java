@@ -152,12 +152,13 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
 
     /**
      * Get the temporary folder used by the web server to store uploaded multipart request parts (see the
-     * spring.servlet.multipart.location property). The web server removes these files at the end of each request.
+     * MultipartConfiguration in the web module). The web server removes these files at the end of each request.
      *
      * @return The folder to use, a sub-folder beneath the overall temp folder.
+     * @see ApplicationConfig#getMultipartTmpFolder()
      */
     public File getMultipartTmpFolder() {
-        return new File(getTempFolder(), "multipart");
+        return config.getMultipartTmpFolder();
     }
 
     /**

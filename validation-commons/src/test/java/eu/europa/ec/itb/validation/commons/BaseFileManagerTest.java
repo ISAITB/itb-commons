@@ -682,6 +682,9 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         var existingFile = createFileWithContents(Path.of(tmpFolder.toString(), "existingFile.txt"), "DATA");
         var testFileManager = mock(BaseFileManager.class);
         testFileManager.domainConfigCache = domainConfigCache;
+        var testConfig = mock(ApplicationConfig.class);
+        when(testConfig.getMultipartTmpFolder()).thenReturn(tmpFolder.resolve("multipart").toFile());
+        testFileManager.config = testConfig;
         doReturn(tmpFolder.toFile()).when(testFileManager).getTempFolder();
         doCallRealMethod().when(testFileManager).getMultipartTmpFolder();
         doCallRealMethod().when(testFileManager).init();
