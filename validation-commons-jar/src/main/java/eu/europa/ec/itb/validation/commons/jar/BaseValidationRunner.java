@@ -15,7 +15,9 @@
 
 package eu.europa.ec.itb.validation.commons.jar;
 
+import eu.europa.ec.itb.validation.commons.RemoteResourceBudget;
 import eu.europa.ec.itb.validation.commons.Utils;
+import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
 import jakarta.annotation.PostConstruct;
@@ -51,6 +53,17 @@ public abstract class BaseValidationRunner<X extends DomainConfig> implements Va
 
     @Autowired
     protected DomainConfigCache<X> domainConfigCache;
+    @Autowired
+    private ApplicationConfig baseAppConfig;
+
+    /**
+     * Open the limits on the remote resources that can be loaded, to be applied for the validation of a single input.
+     *
+     * @return The scope to close once the input has been validated.
+     */
+    protected RemoteResourceBudget.Scope openRemoteBudget() {
+        return RemoteResourceBudget.open(baseAppConfig.getRemoteLimits());
+    }
 
     /**
      * Initialisation method to determine if the domain configurations are well-defined.

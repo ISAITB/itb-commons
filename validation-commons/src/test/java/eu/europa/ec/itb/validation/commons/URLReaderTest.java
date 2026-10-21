@@ -160,11 +160,16 @@ class URLReaderTest {
     }
 
     @Test
-    void testSameHostCheck() {
-        assertTrue(RemoteRequestGuard.isSameHost(URI.create("https://Example.org/a"), URI.create("http://example.ORG:8080/b")));
-        assertFalse(RemoteRequestGuard.isSameHost(URI.create("https://example.org/a"), URI.create("https://other.example.org/b")));
-        assertFalse(RemoteRequestGuard.isSameHost(URI.create("file:///tmp/a"), URI.create("https://example.org/b")));
-        assertFalse(RemoteRequestGuard.isSameHost(null, URI.create("https://example.org/b")));
+    void testSameOriginCheck() {
+        // Same scheme, host and (default or explicit) port, irrespective of case and path.
+        assertTrue(RemoteRequestGuard.isSameOrigin(URI.create("https://Example.org/a"), URI.create("https://example.ORG:443/b")));
+        assertTrue(RemoteRequestGuard.isSameOrigin(URI.create("http://example.org:8080/a"), URI.create("http://example.org:8080/b")));
+        // Credentials must not be sent over an unencrypted connection (downgrade) or to another service on the same host.
+        assertFalse(RemoteRequestGuard.isSameOrigin(URI.create("https://example.org/a"), URI.create("http://example.org/b")));
+        assertFalse(RemoteRequestGuard.isSameOrigin(URI.create("https://example.org/a"), URI.create("https://example.org:8443/b")));
+        assertFalse(RemoteRequestGuard.isSameOrigin(URI.create("https://example.org/a"), URI.create("https://other.example.org/b")));
+        assertFalse(RemoteRequestGuard.isSameOrigin(URI.create("file:///tmp/a"), URI.create("https://example.org/b")));
+        assertFalse(RemoteRequestGuard.isSameOrigin(null, URI.create("https://example.org/b")));
     }
 
 }

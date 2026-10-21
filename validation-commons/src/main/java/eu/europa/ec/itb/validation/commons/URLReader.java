@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -44,6 +43,8 @@ public class URLReader {
      * The maximum number of redirects followed when requests are guarded.
      */
     static final int MAX_REDIRECTS = 10;
+
+    private static final RemoteRequestGuard UNRESTRICTED = new RemoteRequestGuard(null, null);
 
     /**
      * Open a stream to the provided URL.
@@ -69,34 +70,16 @@ public class URLReader {
      * @throws ValidatorException If the URL cannot be read.
      */
     public StreamInfo stream(URI uri, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) {
-        try {
-            HttpRequest.Builder requestBuilder = newRequestBuilder(uri, acceptedContentTypes, httpVersion);
-            if (requestDecorator != null) {
-                requestDecorator.accept(requestBuilder);
-            }
-            HttpRequest request = requestBuilder.build();
-            HttpResponse<InputStream> response = HttpClient.newBuilder()
-                    .connectTimeout(Duration.ofSeconds(10))
-                    .followRedirects(HttpClient.Redirect.ALWAYS)
-                    .proxy(ProxySelector.getDefault())
-                    .build()
-                    .send(request, HttpResponse.BodyHandlers.ofInputStream());
-            if (response.statusCode() >= 400) {
-                throw new ValidatorException("validator.label.exception.uriReturnedError", uri.toString(), response.statusCode());
-            }
-            return toStreamInfo(response);
-        } catch (IOException | InterruptedException e) {
-            throw new ValidatorException("validator.label.exception.unableToReadURI", e, uri.toString());
-        }
+        return stream(uri, acceptedContentTypes, httpVersion, requestDecorator, null);
     }
 
     /**
      * Open a stream to the provided URL, applying restrictions to the requests made.
      * <p>
-     * In contrast to the unrestricted approach, redirects are not followed automatically. They are followed here (up to a
-     * maximum number) after checking each target with the provided guard. This ensures that an allowed URI cannot be used to
-     * reach a URI that is not allowed. The request decorator (e.g. configured credentials) is only applied to the requests
-     * that the guard permits it for.
+     * Redirects are not followed automatically. They are followed here (up to a maximum number) after checking each target
+     * with the provided guard. This ensures that an allowed URI cannot be used to reach a URI that is not allowed. The request
+     * decorator (e.g. configured credentials) is only applied to the requests that the guard permits it for. In all cases
+     * each request is made via a {@link BudgetedHttpClient}, i.e. it counts towards the limits of the current validation.
      *
      * @param uri The URL.
      * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
@@ -108,14 +91,10 @@ public class URLReader {
      */
     public StreamInfo stream(URI uri, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator, RemoteRequestGuard guard) {
         if (guard == null) {
-            return stream(uri, acceptedContentTypes, httpVersion, requestDecorator);
+            guard = UNRESTRICTED;
         }
         try {
-            HttpClient client = HttpClient.newBuilder()
-                    .connectTimeout(Duration.ofSeconds(10))
-                    .followRedirects(HttpClient.Redirect.NEVER)
-                    .proxy(ProxySelector.getDefault())
-                    .build();
+            HttpClient client = BudgetedHttpClient.newClient(Duration.ofSeconds(10));
             Set<URI> visited = new HashSet<>();
             URI current = uri;
             for (int redirects = 0; redirects <= MAX_REDIRECTS; redirects++) {

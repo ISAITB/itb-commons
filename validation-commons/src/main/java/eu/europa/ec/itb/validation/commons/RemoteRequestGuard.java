@@ -15,8 +15,11 @@
 
 package eu.europa.ec.itb.validation.commons;
 
+import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
+import eu.europa.ec.itb.validation.commons.config.NormalizedURI;
+
 import java.net.URI;
-import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -44,22 +47,53 @@ public record RemoteRequestGuard(Consumer<URI> uriCheck, Predicate<URI> decorato
     public static RemoteRequestGuard forArtefact(ImportedUriAuthorizer uriAuthorizer, URI artefactSource) {
         return new RemoteRequestGuard(
                 uriAuthorizer == null ? null : uriAuthorizer::isUriAllowed,
-                uri -> isSameHost(artefactSource, uri)
+                uri -> isSameOrigin(artefactSource, uri)
         );
     }
 
     /**
-     * Check whether the two URIs refer to the same (non-empty) host.
+     * Create the guard for requests made to retrieve content that the user referred to by means of a URI (e.g. the
+     * content to validate). The user-provided URI is expected to have been checked against the configured allowed URI
+     * inputs already, but redirects can lead elsewhere. Every request is therefore only allowed if its URI is one of the
+     * allowed input URIs, or otherwise a public address (or an internal one that is explicitly whitelisted as an import).
+     * <p>
+     * Credentials provided by the user for the content (if any) are only sent to the origin of the provided URI.
+     *
+     * @param appConfig The application configuration.
+     * @param source The URI the user provided.
+     * @return The guard.
+     */
+    public static RemoteRequestGuard forUserInput(ApplicationConfig appConfig, URI source) {
+        var importAuthorizer = ImportedUriAuthorizer.forUserContent(appConfig);
+        return new RemoteRequestGuard(
+                uri -> {
+                    var normalizedUri = NormalizedURI.of(uri);
+                    if (appConfig.getNormalizedAllowedUriInputs().stream().noneMatch(allowed -> allowed.isPrefixOf(normalizedUri))) {
+                        importAuthorizer.isUriAllowed(uri);
+                    }
+                },
+                uri -> isSameOrigin(source, uri)
+        );
+    }
+
+    /**
+     * Check whether the two URIs refer to the same origin, i.e. have the same scheme, (non-empty) host and port.
+     * Differing schemes or ports are considered different origins, so that e.g. credentials are not sent over
+     * an unencrypted connection or to another service on the same host.
      *
      * @param first The first URI (may be null).
      * @param second The second URI (may be null).
      * @return The check result.
      */
-    static boolean isSameHost(URI first, URI second) {
-        if (first == null || second == null || first.getHost() == null || second.getHost() == null) {
+    static boolean isSameOrigin(URI first, URI second) {
+        if (first == null || second == null || first.getHost() == null || second.getHost() == null || first.getScheme() == null || second.getScheme() == null) {
             return false;
         }
-        return first.getHost().toLowerCase(Locale.ROOT).equals(second.getHost().toLowerCase(Locale.ROOT));
+        var firstUri = NormalizedURI.of(first);
+        var secondUri = NormalizedURI.of(second);
+        return Objects.equals(firstUri.scheme(), secondUri.scheme())
+                && Objects.equals(firstUri.host(), secondUri.host())
+                && firstUri.port() == secondUri.port();
     }
 
     /**
