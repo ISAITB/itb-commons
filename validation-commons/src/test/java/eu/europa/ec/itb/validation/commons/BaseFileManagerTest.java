@@ -307,7 +307,8 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
     @Test
     void testGetFileFromURLOrBase64ForFileAndContentAndContentTypeAndArtifactTypeForURL() throws IOException {
         var targetFolder = Path.of(appConfig.getTmpFolder(), "url_or_base64_test");
-        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        // Content referred to by users must be loaded with restrictions applied to all requests (a non-null guard is required to match).
+        when(urlReader.stream(any(), any(), any(), any(), any(RemoteRequestGuard.class))).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getFileFromURLOrBase64(targetFolder.toFile(), "http://test.com", "text/plain", null, HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(targetFolder, result.getFile().getParentFile().toPath());
@@ -553,7 +554,8 @@ In est ante in nibh mauris cursus mattis molestie a. In vitae turpis massa sed e
         file3.setContent("http://test.com");
         file3.setEmbeddingMethod(ValueEmbeddingEnumeration.URI);
         List<FileContent> externalArtifactContents = List.of(file1, file2, file3);
-        when(urlReader.stream(any(), any(), any(), any())).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST3".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
+        // Content referred to by users must be loaded with restrictions applied to all requests (a non-null guard is required to match).
+        when(urlReader.stream(any(), any(), any(), any(), any(RemoteRequestGuard.class))).thenReturn(new StreamInfo(new ByteArrayInputStream("TEST3".getBytes(StandardCharsets.UTF_8)), Optional.of("text/turtle")));
         var result = fileManager.getExternalValidationArtifacts(new DomainConfig(), "type1", "artifact1", targetFolder.toFile(), externalArtifactContents, HttpClient.Version.HTTP_2);
         assertNotNull(result);
         assertEquals(3, result.size());

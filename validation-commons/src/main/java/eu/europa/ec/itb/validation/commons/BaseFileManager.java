@@ -311,7 +311,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         FileInfo outputFile = null;
         if (Utils.isValidUrl(urlOrBase64)) {
             if (config.isUriReadAllowed(urlOrBase64)) {
-                outputFile = getFileFromURL(targetFolder, urlOrBase64, getFileExtension(contentType), fileName, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion);
+                outputFile = getFileFromURL(targetFolder, urlOrBase64, getFileExtension(contentType), fileName, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion, null, userInputGuard(urlOrBase64));
             }
         } else {
             try {
@@ -418,6 +418,39 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @throws IOException If the file could not be retrieved or stored.
      */
     public FileInfo getFileFromURL(File targetFolder, String url, String extension, String fileName, File preprocessorFile, String preprocessorOutputExtension, String artifactType, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) throws IOException {
+        return getFileFromURL(targetFolder, url, extension, fileName, preprocessorFile, preprocessorOutputExtension, artifactType, acceptedContentTypes, httpVersion, requestDecorator, null);
+    }
+
+    /**
+     * Create the restrictions to apply when loading content that the user referred to by means of a URI (e.g. the content to
+     * validate, or a validation artefact provided by the user). Callers are expected to have checked the URI with
+     * {@link ApplicationConfig#isUriReadAllowed(String)}.
+     *
+     * @param url The URL provided by the user.
+     * @return The restrictions to apply to all requests made to load the content (including redirects).
+     */
+    public RemoteRequestGuard userInputGuard(String url) {
+        return RemoteRequestGuard.forUserInput(config, URI.create(StringUtils.defaultString(url).trim()));
+    }
+
+    /**
+     * Store and return the file loaded (and cached) from the provided URL.
+     *
+     * @param targetFolder The folder to store the file in.
+     * @param url The URL to load.
+     * @param extension The file extension for the created file.
+     * @param fileName The name of the file to use.
+     * @param preprocessorFile An optional file for a preprocessing resource to be used to determine the final loaded file.
+     * @param preprocessorOutputExtension The file extension for the file produced via preprocessing (if applicable).
+     * @param artifactType The type of validation artifact.
+     * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
+     * @param httpVersion The HTTP version to use.
+     * @param requestDecorator A decorator function to apply customisations to the artifact's HTTP request.
+     * @param guard The restrictions to apply to the requests made (if null no restrictions are applied).
+     * @return The stored file and the returned content type from the remote URI.
+     * @throws IOException If the file could not be retrieved or stored.
+     */
+    public FileInfo getFileFromURL(File targetFolder, String url, String extension, String fileName, File preprocessorFile, String preprocessorOutputExtension, String artifactType, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator, RemoteRequestGuard guard) throws IOException {
         URL urlObj = Utils.parseUrl(url);
         if (fileName == null) {
             fileName = FilenameUtils.getName(urlObj.getPath());
@@ -428,7 +461,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         StreamInfo streamInfo = null;
         Path targetFilePath;
         try {
-            streamInfo = getInputStreamFromURL(url, acceptedContentTypes, httpVersion, requestDecorator);
+            streamInfo = getInputStreamFromURL(url, acceptedContentTypes, httpVersion, requestDecorator, guard);
             if (StringUtils.isEmpty(extension) && streamInfo.contentType().isPresent()) {
                 extension = getFileExtension(streamInfo.contentType().get());
             }
@@ -553,6 +586,25 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
     public StreamInfo getInputStreamFromURL(String url, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) {
         // Read the resource from the provided URI.
         return urlReader.stream(URI.create(StringUtils.defaultString(url).trim()), acceptedContentTypes, httpVersion, requestDecorator);
+    }
+
+    /**
+     * Open an input stream to read the contents of the provided URL, applying restrictions to the requests made
+     * (including those that result from redirects).
+     *
+     * @param url The URL to load.
+     * @param acceptedContentTypes A (nullable) list of content types to accept for the request.
+     * @param httpVersion The HTTP version to use.
+     * @param requestDecorator A decorator function to apply customisations to the outgoing HTTP request.
+     * @param guard The restrictions to apply to the requests (if null no restrictions are applied).
+     * @return The input stream.
+     */
+    public StreamInfo getInputStreamFromURL(String url, List<String> acceptedContentTypes, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator, RemoteRequestGuard guard) {
+        var uri = URI.create(StringUtils.defaultString(url).trim());
+        if (guard == null) {
+            return urlReader.stream(uri, acceptedContentTypes, httpVersion, requestDecorator);
+        }
+        return urlReader.stream(uri, acceptedContentTypes, httpVersion, requestDecorator, guard);
     }
 
     /**
@@ -1026,8 +1078,9 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      */
     private List<FileInfo> downloadRemoteFiles(DomainConfig domainConfig, List<RemoteValidationArtifactInfo> remoteFiles, File remoteConfigPath, String artifactType, HttpClient.Version httpVersion) throws IOException {
         List<FileInfo> files = new ArrayList<>();
-        if (remoteFiles != null) {
-            for (RemoteValidationArtifactInfo artifactInfo: remoteFiles) {
+        // The artefacts configured by the validator's administrator are trusted, and not subject to the limits of a validation.
+        try (var ignored = RemoteResourceBudget.suspend()) {
+            for (RemoteValidationArtifactInfo artifactInfo: remoteFiles == null ? List.<RemoteValidationArtifactInfo>of() : remoteFiles) {
                 File preprocessorFile = null;
                 if (artifactInfo.getPreProcessorPath() != null) {
                     preprocessorFile = Paths.get(config.getResourceRoot(), domainConfig.getDomain(), artifactInfo.getPreProcessorPath()).toFile();
@@ -1303,7 +1356,7 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
                         if (config.isUriReadAllowed(content)) {
                             FileInfo loadedFile;
                             try {
-                                loadedFile = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion, requestDecorator);
+                                loadedFile = getFileFromURL(targetFolder, content, getFileExtension(contentType), null, null, null, artifactType, StringUtils.isEmpty(contentType)?null:List.of(contentType), httpVersion, requestDecorator, userInputGuard(content));
                             } catch (IOException e) {
                                 throw new ValidatorException("validator.label.exception.unableToProcessURI", e);
                             }

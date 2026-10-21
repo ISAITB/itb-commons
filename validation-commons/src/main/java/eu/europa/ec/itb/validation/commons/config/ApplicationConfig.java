@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.util.unit.DataSize;
 
 import java.io.File;
 import java.net.URI;
@@ -57,6 +58,7 @@ public abstract class ApplicationConfig {
     private long cleanupWebRate = 300000L;
     private boolean restrictResourcesToDomain = Boolean.TRUE;
     private final RateLimit rateLimit = new RateLimit();
+    private final RemoteLimits remoteLimits = new RemoteLimits();
     private final Webhook webhook = new Webhook();
     private String identifier;
     private boolean supportsTestDefinitionInReportItems;
@@ -326,6 +328,13 @@ public abstract class ApplicationConfig {
     }
 
     /**
+     * @return Configuration for the limits applied to remote resources loaded during a validation.
+     */
+    public RemoteLimits getRemoteLimits() {
+        return remoteLimits;
+    }
+
+    /**
      * @return Configuration on the statistics collection webhook.
      */
     public Webhook getWebhook() {
@@ -429,6 +438,91 @@ public abstract class ApplicationConfig {
      */
     protected String getGenericConfigPath() {
         return "any/config.properties";
+    }
+
+    /**
+     * Class to hold the limits applied to the remote resources loaded during a validation.
+     * <p>
+     * These apply per application instance (not per domain) and are configured via the {@code validator.remoteLimits.*}
+     * properties (e.g. {@code validator.remoteLimits.maxResourceSize=50MB}).
+     */
+    public static class RemoteLimits {
+
+        private DataSize maxResourceSize = DataSize.ofMegabytes(50);
+        private int maxRequests = 200;
+        private DataSize maxTotalSize = DataSize.ofMegabytes(250);
+        private long requestTimeout = 60000L;
+        private DataSize cacheMaxSize = DataSize.ofMegabytes(500);
+
+        /**
+         * @return The maximum size of a single remote resource.
+         */
+        public DataSize getMaxResourceSize() {
+            return maxResourceSize;
+        }
+
+        /**
+         * @param maxResourceSize The maximum size of a single remote resource.
+         */
+        public void setMaxResourceSize(DataSize maxResourceSize) {
+            this.maxResourceSize = maxResourceSize;
+        }
+
+        /**
+         * @return The maximum number of remote requests (including redirects) allowed for a single validation.
+         */
+        public int getMaxRequests() {
+            return maxRequests;
+        }
+
+        /**
+         * @param maxRequests The maximum number of remote requests (including redirects) allowed for a single validation.
+         */
+        public void setMaxRequests(int maxRequests) {
+            this.maxRequests = maxRequests;
+        }
+
+        /**
+         * @return The maximum total size of all remote resources loaded for a single validation.
+         */
+        public DataSize getMaxTotalSize() {
+            return maxTotalSize;
+        }
+
+        /**
+         * @param maxTotalSize The maximum total size of all remote resources loaded for a single validation.
+         */
+        public void setMaxTotalSize(DataSize maxTotalSize) {
+            this.maxTotalSize = maxTotalSize;
+        }
+
+        /**
+         * @return The maximum time (in milliseconds) allowed for a single remote request, including the reading of its response.
+         */
+        public long getRequestTimeout() {
+            return requestTimeout;
+        }
+
+        /**
+         * @param requestTimeout The maximum time (in milliseconds) allowed for a single remote request, including the reading of its response.
+         */
+        public void setRequestTimeout(long requestTimeout) {
+            this.requestTimeout = requestTimeout;
+        }
+
+        /**
+         * @return The maximum total size of the remote resources kept in the validator's local cache.
+         */
+        public DataSize getCacheMaxSize() {
+            return cacheMaxSize;
+        }
+
+        /**
+         * @param cacheMaxSize The maximum total size of the remote resources, imported by user-provided artefacts, kept in the validator's local cache.
+         */
+        public void setCacheMaxSize(DataSize cacheMaxSize) {
+            this.cacheMaxSize = cacheMaxSize;
+        }
     }
 
     /**
