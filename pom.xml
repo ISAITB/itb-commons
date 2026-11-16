@@ -53,6 +53,7 @@
         <version.gitbTypes>1.30.0</version.gitbTypes>
         <version.commonsLang>3.20.0</version.commonsLang>
         <version.commonsConfiguration>2.15.1</version.commonsConfiguration>
+        <version.commonsCodec>1.23.0</version.commonsCodec>
         <version.commonsIo>2.22.0</version.commonsIo>
         <version.commonsCsv>1.14.1</version.commonsCsv>
         <version.webjarsLocator>0.59</version.webjarsLocator>
@@ -543,6 +544,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-configuration2</artifactId>
                 <version>${version.commonsConfiguration}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${version.commonsCodec}</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
