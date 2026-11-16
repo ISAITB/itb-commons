@@ -148,11 +148,6 @@
             <id>osgeo.org</id>
             <url>https://repo.osgeo.org/repository/release/</url>
         </repository>
-        <repository>
-            <id>itbRepoRead</id>
-            <!-- Property set in profile settings that is used in development. Not needed if itb-commons is installed locally. -->
-            <url>${itbRepoReadUrl}</url>
-        </repository>
     </repositories>
 
     <distributionManagement>
@@ -160,16 +155,6 @@
             <id>local-staging</id>
             <url>file://${maven.multiModuleProjectDirectory}/target/staging</url>
         </site>
-        <repository>
-            <id>itbRepoWrite</id>
-            <!-- Property set in profile settings that is used in development. Not needed if itb-commons is installed locally. -->
-            <url>${itbRepoWriteUrl}</url>
-        </repository>
-        <snapshotRepository>
-            <id>itbRepoWrite</id>
-            <!-- Property set in profile settings that is used in development. Not needed if itb-commons is installed locally. -->
-            <url>${itbRepoWriteUrl}</url>
-        </snapshotRepository>
     </distributionManagement>
 
     <scm>
