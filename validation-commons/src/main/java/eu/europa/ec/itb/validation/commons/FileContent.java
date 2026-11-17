@@ -32,6 +32,21 @@ public class FileContent {
     private String content;
     private ValueEmbeddingEnumeration embeddingMethod;
     private String contentType;
+    private String inputReference;
+
+    /**
+     * @return The reference of the request input this content originates from (e.g. "externalRules[1]"), or null if unknown.
+     */
+    public String getInputReference() {
+        return inputReference;
+    }
+
+    /**
+     * @param inputReference The reference of the request input this content originates from (e.g. "externalRules[1]").
+     */
+    public void setInputReference(String inputReference) {
+        this.inputReference = inputReference;
+    }
 
     /**
      * @return The content string.

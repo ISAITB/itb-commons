@@ -95,9 +95,10 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
             String valueToProcess = content.getValue();
             if (content.getEmbeddingMethod() == ValueEmbeddingEnumeration.BASE_64 && explicitEmbeddingMethod != ValueEmbeddingEnumeration.BASE_64) {
                 // This is a URI or a plain text string encoded as BASE64.
-                valueToProcess = new String(Utils.decodeBase64String(valueToProcess, true));
+                final String base64Value = valueToProcess;
+                valueToProcess = ValidatorException.forInput(inputName, "validator.label.exception.base64", () -> new String(Utils.decodeBase64String(base64Value, true)));
             }
-            return validateContentToValidate(valueToProcess, explicitEmbeddingMethod, contentSyntax, parentFolder, httpVersion);
+            return validateContentToValidate(valueToProcess, explicitEmbeddingMethod, contentSyntax, parentFolder, httpVersion, inputName);
         } else {
             throw new ValidatorException("validator.label.exception.noContentProvided", inputName);
         }
@@ -114,7 +115,26 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
      * @return The file to validate.
      */
     public FileInfo validateContentToValidate(String value, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder, HttpClient.Version httpVersion) {
-        return fileManager.storeFileContent(parentFolder, value, explicitEmbeddingMethod, contentSyntax, null, httpVersion, null);
+        return validateContentToValidate(value, explicitEmbeddingMethod, contentSyntax, parentFolder, httpVersion, null);
+    }
+
+    /**
+     * Validation of the content.
+     *
+     * @param value The content to validate.
+     * @param explicitEmbeddingMethod The embedding method provided as an explicit choice used to determine the handling approach for the provided content.
+     * @param contentSyntax The input's content syntax.
+     * @param parentFolder The folder within which to create the resulting file.
+     * @param httpVersion The HTTP version to use.
+     * @param inputReference The reference of the request input the content comes from (e.g. "contentToValidate[1]"), used to
+     *                       identify the input in case of errors. Can be null.
+     * @return The file to validate (linked to the provided input reference).
+     */
+    public FileInfo validateContentToValidate(String value, ValueEmbeddingEnumeration explicitEmbeddingMethod, String contentSyntax, File parentFolder, HttpClient.Version httpVersion, String inputReference) {
+        return ValidatorException.forInput(inputReference, "validator.label.exception.unableToSaveContent", () -> {
+            var stored = fileManager.storeFileContent(parentFolder, value, explicitEmbeddingMethod, contentSyntax, null, httpVersion, null);
+            return (stored == null || inputReference == null) ? stored : stored.withInputReference(inputReference);
+        });
     }
 
     /**
@@ -224,7 +244,7 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
     public List<FileContent> toExternalArtifactContents(ValidateRequest validateRequest, String artifactContainerInputName, String artifactContentInputName, String artifactEmbeddingMethodInputName) {
         List<AnyContent> listInput = Utils.getInputFor(validateRequest, artifactContainerInputName);
         if (!listInput.isEmpty()) {
-            return toExternalArtifactContents(listInput.get(0), artifactContentInputName, artifactEmbeddingMethodInputName);
+            return withInputReferences(toExternalArtifactContents(listInput.get(0), artifactContentInputName, artifactEmbeddingMethodInputName), artifactContainerInputName);
         } else {
             return Collections.emptyList();
         }
@@ -272,7 +292,8 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
             var fileContent = new FileContent();
             if (contentItem.getEmbeddingMethod() == ValueEmbeddingEnumeration.BASE_64 && explicitEmbeddingMethod != null && explicitEmbeddingMethod != ValueEmbeddingEnumeration.BASE_64) {
                 // This is a URI or a plain text string encoded as BASE64.
-                fileContent.setContent(new String(Utils.decodeBase64String(contentItem.getValue(), true)));
+                final String base64Value = contentItem.getValue();
+                fileContent.setContent(ValidatorException.forInput(artifactContentInputName + "[" + results.size() + "]", "validator.label.exception.base64", () -> new String(Utils.decodeBase64String(base64Value, true))));
             } else {
                 fileContent.setContent(contentItem.getValue());
             }
@@ -301,7 +322,27 @@ public abstract class BaseInputHelper<Z extends ApplicationConfig, T extends Bas
      * @return The list of stored files.
      */
     public List<FileInfo> getExternalArtifactInfo(AnyContent containerContent, R domainConfig, String validationType, String artifactType, String artifactContentInputName, String artifactEmbeddingMethodInputName, File parentFolder) {
-        return fileManager.getExternalValidationArtifacts(domainConfig, validationType, artifactType, parentFolder, toExternalArtifactContents(containerContent, artifactContentInputName, artifactEmbeddingMethodInputName), domainConfig.getHttpVersion());
+        var contents = withInputReferences(toExternalArtifactContents(containerContent, artifactContentInputName, artifactEmbeddingMethodInputName), artifactContentInputName);
+        return fileManager.getExternalValidationArtifacts(domainConfig, validationType, artifactType, parentFolder, contents, domainConfig.getHttpVersion());
+    }
+
+    /**
+     * Record on each of the provided contents its reference, made of the input's name and the content's position (e.g. "externalRules[1]").
+     * Contents that already have a reference are not modified.
+     *
+     * @param contents The contents.
+     * @param inputName The name of the input the contents come from.
+     * @return The provided contents.
+     */
+    public static List<FileContent> withInputReferences(List<FileContent> contents, String inputName) {
+        if (contents != null) {
+            for (int i = 0; i < contents.size(); i++) {
+                if (contents.get(i).getInputReference() == null) {
+                    contents.get(i).setInputReference(inputName + "[" + i + "]");
+                }
+            }
+        }
+        return contents;
     }
 
     /**

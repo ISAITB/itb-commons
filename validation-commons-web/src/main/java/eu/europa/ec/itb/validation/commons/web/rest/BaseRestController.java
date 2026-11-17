@@ -18,11 +18,15 @@ package eu.europa.ec.itb.validation.commons.web.rest;
 import com.gitb.tr.TAR;
 import eu.europa.ec.itb.validation.commons.BaseFileManager;
 import eu.europa.ec.itb.validation.commons.BaseInputHelper;
+import eu.europa.ec.itb.validation.commons.FileContent;
 import eu.europa.ec.itb.validation.commons.FileInfo;
+import eu.europa.ec.itb.validation.commons.LocalisationHelper;
+import eu.europa.ec.itb.validation.commons.Utils;
 import eu.europa.ec.itb.validation.commons.ValidatorChannel;
 import eu.europa.ec.itb.validation.commons.config.ApplicationConfig;
 import eu.europa.ec.itb.validation.commons.config.DomainConfigCache;
 import eu.europa.ec.itb.validation.commons.config.WebDomainConfig;
+import eu.europa.ec.itb.validation.commons.error.ValidatorException;
 import eu.europa.ec.itb.validation.commons.web.JsonConfig;
 import eu.europa.ec.itb.validation.commons.web.errors.NotFoundException;
 import eu.europa.ec.itb.validation.commons.web.rest.model.ApiInfo;
@@ -36,6 +40,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,6 +184,30 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
     }
 
     /**
+     * Determine the locale requested for a validation call and record it so that any error raised while processing the
+     * request is reported in that locale (as is the case for the SOAP API). This should be called as early as
+     * possible, once the request's domain is known.
+     * <p>
+     * An unsupported locale results in the domain's default locale, and an invalid locale value is ignored (the
+     * resulting error, if any, is reported when the locale is used to produce the report).
+     *
+     * @param domainConfig The domain configuration.
+     * @param requestedLocale The value of the request's "locale" input (can be null).
+     * @return The helper to use to localise the request's messages.
+     */
+    protected LocalisationHelper recordErrorLocaliser(T domainConfig, String requestedLocale) {
+        Locale locale = null;
+        try {
+            locale = LocaleUtils.toLocale(requestedLocale);
+        } catch (IllegalArgumentException e) {
+            // Ignore an invalid locale value here.
+        }
+        var localiser = new LocalisationHelper(domainConfig, Utils.getSupportedLocale(locale, domainConfig));
+        BaseErrorHandler.recordLocaliser(localiser);
+        return localiser;
+    }
+
+    /**
      * Parse, validate and prepare the provided external validation artifacts.
      *
      * @param domainConfig The domain configuration.
@@ -189,11 +218,31 @@ public abstract class BaseRestController <T extends WebDomainConfig, X extends A
      * @return The list of artifact files to use.
      */
     protected List<FileInfo> getExternalSchemas(T domainConfig, List<SchemaInfo> providedSchemas, String validationType, String artifactType, File parentFolder) {
+        return getExternalSchemas(domainConfig, providedSchemas, "externalSchemas", validationType, artifactType, parentFolder);
+    }
+
+    /**
+     * Parse, validate and prepare the provided external validation artifacts.
+     *
+     * @param domainConfig The domain configuration.
+     * @param providedSchemas The provided artifacts.
+     * @param inputName The name of the request input holding the artifacts (used to identify the faulty artifact in errors, e.g. "externalSchemas[1]").
+     * @param validationType The validation type.
+     * @param artifactType The artifact type (can be null).
+     * @param parentFolder The parent folder to use for the validation run.
+     * @return The list of artifact files to use.
+     */
+    protected List<FileInfo> getExternalSchemas(T domainConfig, List<SchemaInfo> providedSchemas, String inputName, String validationType, String artifactType, File parentFolder) {
         List<SchemaInfo> schemaInfo = Objects.requireNonNullElse(providedSchemas, Collections.emptyList());
-        return inputHelper.validateExternalArtifacts(
-                domainConfig,
-                schemaInfo.stream().map(SchemaInfo::toFileContent).toList(),
-                validationType, artifactType, parentFolder);
+        List<FileContent> contents = new ArrayList<>();
+        for (int i = 0; i < schemaInfo.size(); i++) {
+            var reference = inputName + "[" + i + "]";
+            var schema = schemaInfo.get(i);
+            var content = ValidatorException.forInput(reference, ValidatorException.MESSAGE_DEFAULT, schema::toFileContent);
+            content.setInputReference(reference);
+            contents.add(content);
+        }
+        return inputHelper.validateExternalArtifacts(domainConfig, contents, validationType, artifactType, parentFolder);
     }
 
     /**

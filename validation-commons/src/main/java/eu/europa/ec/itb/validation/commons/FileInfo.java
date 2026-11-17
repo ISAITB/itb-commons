@@ -30,6 +30,7 @@ public class FileInfo {
     private final String type;
     private final URI source;
     private final Consumer<HttpRequest.Builder> requestDecorator;
+    private final String inputReference;
 
     /**
      * Constructor.
@@ -70,10 +71,39 @@ public class FileInfo {
      * @param requestDecorator A decorator to apply to requests to load schemas.
      */
     public FileInfo(File file, String type, URI source, Consumer<HttpRequest.Builder> requestDecorator) {
+        this(file, type, source, requestDecorator, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param file The file.
+     * @param type The type string (artifact type).
+     * @param source The source from which this file was loaded.
+     * @param requestDecorator A decorator to apply to requests to load schemas.
+     * @param inputReference The reference of the request input this file originates from (e.g. "contentToValidate[1]").
+     */
+    public FileInfo(File file, String type, URI source, Consumer<HttpRequest.Builder> requestDecorator, String inputReference) {
         this.file = Objects.requireNonNull(file);
         this.type = type;
         this.source = Objects.requireNonNullElseGet(source, file::toURI);
         this.requestDecorator = requestDecorator;
+        this.inputReference = inputReference;
+    }
+
+    /**
+     * @param reference The input reference to set.
+     * @return A copy of this instance with the provided input reference.
+     */
+    public FileInfo withInputReference(String reference) {
+        return new FileInfo(file, type, source, requestDecorator, reference);
+    }
+
+    /**
+     * @return The reference of the request input this file originates from (e.g. "contentToValidate[1]"), or null if unknown.
+     */
+    public String getInputReference() {
+        return inputReference;
     }
 
     /**
