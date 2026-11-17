@@ -15,6 +15,8 @@
 
 package eu.europa.ec.itb.validation.commons.web.rest;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.time.LocalDateTime;
 
 /**
@@ -24,6 +26,7 @@ public class ErrorInfo {
 
     private final String message;
     private final LocalDateTime timestamp;
+    private final String resource;
 
     /**
      * Constructor.
@@ -31,8 +34,27 @@ public class ErrorInfo {
      * @param message The message to wrap.
      */
     public ErrorInfo(String message) {
+        this(message, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param message The message to wrap.
+     * @param resource The reference of the request input that caused the error (e.g. "contentToValidate[1]"), if known.
+     */
+    public ErrorInfo(String message, String resource) {
         this.message = message;
         this.timestamp = LocalDateTime.now();
+        this.resource = resource;
+    }
+
+    /**
+     * @return The reference of the request input that caused the error (null, and omitted from JSON, if unknown).
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public String getResource() {
+        return resource;
     }
 
     /**

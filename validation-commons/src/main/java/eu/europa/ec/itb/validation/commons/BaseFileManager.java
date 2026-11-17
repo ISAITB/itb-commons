@@ -226,7 +226,8 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
             // Construct the string from its BASE64 encoded bytes.
             byte[] decodedBytes = Utils.decodeBase64String(content, tryAlsoAsMimeEncoded);
             FileUtils.writeByteArrayToFile(tempFile, decodedBytes);
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
+            // IllegalArgumentException is raised for content that is not valid BASE64.
             throw new ValidatorException("validator.label.exception.base64", e);
         }
         return tempFile;
@@ -912,8 +913,11 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
         // Apply pre-processing (if needed).
         if (preprocessor != null && artifactInfo != null && artifactInfo.getExternalArtifactPreProcessorPath() != null) {
             filesToReturn = new ArrayList<>();
+            final ValidationArtifactInfo preprocessingInfo = artifactInfo;
             for (FileInfo fileInfo: externalArtifactFiles) {
-                filesToReturn.add(new FileInfo(preprocessFile(domainConfig, fileInfo.getFile(), artifactInfo.getExternalArtifactPreProcessorPath(), artifactInfo.getExternalArtifactPreProcessorOutputExtension()), fileInfo.getType(), fileInfo.getSource(), requestDecorator));
+                var preprocessedFile = ValidatorException.forInput(fileInfo.getInputReference(), ValidatorException.MESSAGE_DEFAULT, () ->
+                        preprocessFile(domainConfig, fileInfo.getFile(), preprocessingInfo.getExternalArtifactPreProcessorPath(), preprocessingInfo.getExternalArtifactPreProcessorOutputExtension()));
+                filesToReturn.add(new FileInfo(preprocessedFile, fileInfo.getType(), fileInfo.getSource(), requestDecorator, fileInfo.getInputReference()));
             }
         } else {
             filesToReturn = externalArtifactFiles;
@@ -1410,7 +1414,10 @@ public abstract class BaseFileManager <T extends ApplicationConfig> {
      * @return The stored file.
      */
     public FileInfo storeFileContent(File targetFolder, FileContent content, String artifactType, HttpClient.Version httpVersion, Consumer<HttpRequest.Builder> requestDecorator) {
-        return storeFileContent(targetFolder, content.getContent(), content.getEmbeddingMethod(), content.getContentType(), artifactType, httpVersion, requestDecorator);
+        String inputReference = content.getInputReference();
+        return ValidatorException.forInput(inputReference, "validator.label.exception.unableToSaveContent", () ->
+                storeFileContent(targetFolder, content.getContent(), content.getEmbeddingMethod(), content.getContentType(), artifactType, httpVersion, requestDecorator)
+                        .withInputReference(inputReference));
     }
 
 }

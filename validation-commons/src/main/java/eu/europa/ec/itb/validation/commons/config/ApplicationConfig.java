@@ -382,7 +382,12 @@ public abstract class ApplicationConfig {
     public boolean isUriReadAllowed(String uri) {
         boolean allowed = false;
         if (isAllowUriInputs()) {
-            var normalizedUri = NormalizedURI.of(URI.create(uri));
+            NormalizedURI normalizedUri;
+            try {
+                normalizedUri = NormalizedURI.of(URI.create(uri));
+            } catch (IllegalArgumentException e) {
+                throw new ValidatorException("validator.label.exception.unableToProcessURI", e);
+            }
             allowed = getNormalizedAllowedUriInputs().stream()
                     .anyMatch(whitelistedUri -> whitelistedUri.isPrefixOf(normalizedUri));
         }
